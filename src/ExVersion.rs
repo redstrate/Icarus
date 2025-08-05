@@ -49,10 +49,13 @@ pub fn Name(&self) -> &ColumnData {
 pub fn MenuScreen(&self) -> &ColumnData {
 &self.columns[1]
 }
-pub fn AcceptJingle(&self) -> &ColumnData {
+pub fn Unknown0(&self) -> &ColumnData {
 &self.columns[2]
 }
-pub fn CompleteJingle(&self) -> &ColumnData {
+pub fn AcceptJingle(&self) -> &ColumnData {
 &self.columns[3]
+}
+pub fn CompleteJingle(&self) -> &ColumnData {
+&self.columns[4]
 }
 }

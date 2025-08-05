@@ -60,31 +60,37 @@ pub fn GatheringOpeningLevel(&self) -> &ColumnData {
 pub fn Unknown0(&self) -> &ColumnData {
 &self.columns[5]
 }
-pub fn CRPCraft(&self) -> &ColumnData {
+pub fn Unknown2(&self) -> &ColumnData {
 &self.columns[6]
 }
-pub fn BSMCraft(&self) -> &ColumnData {
+pub fn Unknown3(&self) -> &ColumnData {
 &self.columns[7]
 }
-pub fn ARMCraft(&self) -> &ColumnData {
+pub fn CRPCraft(&self) -> &ColumnData {
 &self.columns[8]
 }
-pub fn GSMCraft(&self) -> &ColumnData {
+pub fn BSMCraft(&self) -> &ColumnData {
 &self.columns[9]
 }
-pub fn LTWCraft(&self) -> &ColumnData {
+pub fn ARMCraft(&self) -> &ColumnData {
 &self.columns[10]
 }
-pub fn WVRCraft(&self) -> &ColumnData {
+pub fn GSMCraft(&self) -> &ColumnData {
 &self.columns[11]
 }
-pub fn ALCCraft(&self) -> &ColumnData {
+pub fn LTWCraft(&self) -> &ColumnData {
 &self.columns[12]
 }
-pub fn CULCraft(&self) -> &ColumnData {
+pub fn WVRCraft(&self) -> &ColumnData {
 &self.columns[13]
 }
-pub fn Unknown1(&self) -> &ColumnData {
+pub fn ALCCraft(&self) -> &ColumnData {
 &self.columns[14]
+}
+pub fn CULCraft(&self) -> &ColumnData {
+&self.columns[15]
+}
+pub fn Unknown1(&self) -> &ColumnData {
+&self.columns[16]
 }
 }

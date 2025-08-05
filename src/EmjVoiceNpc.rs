@@ -114,16 +114,19 @@ pub fn Unknown22(&self) -> &ColumnData {
 pub fn Unknown23(&self) -> &ColumnData {
 &self.columns[23]
 }
-pub fn Unknown24(&self) -> &ColumnData {
+pub fn Unknown28(&self) -> &ColumnData {
 &self.columns[24]
 }
-pub fn Unknown25(&self) -> &ColumnData {
+pub fn Unknown24(&self) -> &ColumnData {
 &self.columns[25]
 }
-pub fn Unknown26(&self) -> &ColumnData {
+pub fn Unknown25(&self) -> &ColumnData {
 &self.columns[26]
 }
-pub fn Unknown27(&self) -> &ColumnData {
+pub fn Unknown26(&self) -> &ColumnData {
 &self.columns[27]
+}
+pub fn Unknown27(&self) -> &ColumnData {
+&self.columns[28]
 }
 }

@@ -48,4 +48,7 @@ pub fn StartupText(&self) -> &ColumnData {
 pub fn RunningText(&self) -> &ColumnData {
 &self.columns[1]
 }
+pub fn Unknown0(&self) -> &ColumnData {
+&self.columns[2]
+}
 }

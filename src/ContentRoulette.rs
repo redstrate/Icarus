@@ -162,25 +162,28 @@ pub fn Unknown18(&self) -> &ColumnData {
 pub fn Unknown19(&self) -> &ColumnData {
 &self.columns[39]
 }
-pub fn Unknown20(&self) -> &ColumnData {
+pub fn Unknown27(&self) -> &ColumnData {
 &self.columns[40]
 }
-pub fn RequireAllDuties(&self) -> &ColumnData {
+pub fn Unknown20(&self) -> &ColumnData {
 &self.columns[41]
 }
-pub fn Unknown21(&self) -> &ColumnData {
+pub fn RequireAllDuties(&self) -> &ColumnData {
 &self.columns[42]
 }
-pub fn Unknown22(&self) -> &ColumnData {
+pub fn Unknown21(&self) -> &ColumnData {
 &self.columns[43]
 }
-pub fn Unknown23(&self) -> &ColumnData {
+pub fn Unknown22(&self) -> &ColumnData {
 &self.columns[44]
 }
-pub fn Unknown24(&self) -> &ColumnData {
+pub fn Unknown23(&self) -> &ColumnData {
 &self.columns[45]
 }
-pub fn Unknown26(&self) -> &ColumnData {
+pub fn Unknown24(&self) -> &ColumnData {
 &self.columns[46]
+}
+pub fn Unknown26(&self) -> &ColumnData {
+&self.columns[47]
 }
 }

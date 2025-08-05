@@ -69,4 +69,7 @@ pub fn ClassJobCategory(&self) -> &ColumnData {
 pub fn Unknown0(&self) -> &ColumnData {
 &self.columns[8]
 }
+pub fn Unknown1(&self) -> &ColumnData {
+&self.columns[9]
+}
 }

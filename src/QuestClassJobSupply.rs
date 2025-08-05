@@ -72,7 +72,10 @@ pub fn Unknown0(&self) -> &ColumnData {
 pub fn AmountRequired(&self) -> &ColumnData {
 &self.columns[9]
 }
-pub fn ItemHQ(&self) -> &ColumnData {
+pub fn Unknown3(&self) -> &ColumnData {
 &self.columns[10]
+}
+pub fn ItemHQ(&self) -> &ColumnData {
+&self.columns[11]
 }
 }

@@ -108,70 +108,64 @@ pub fn FATEChain(&self) -> &ColumnData {
 pub fn Unknown13(&self) -> &ColumnData {
 &self.columns[56]
 }
-pub fn ArrayIndex(&self) -> &ColumnData {
+pub fn FateRuleEx(&self) -> &ColumnData {
 &self.columns[57]
 }
-pub fn Unknown3(&self) -> &ColumnData {
+pub fn Music(&self) -> &ColumnData {
 &self.columns[58]
 }
-pub fn FateRuleEx(&self) -> &ColumnData {
+pub fn ScreenImageAccept(&self) -> &ColumnData {
 &self.columns[59]
 }
-pub fn Music(&self) -> &ColumnData {
+pub fn ScreenImageComplete(&self) -> &ColumnData {
 &self.columns[60]
 }
-pub fn ScreenImageAccept(&self) -> &ColumnData {
+pub fn ScreenImageFailed(&self) -> &ColumnData {
 &self.columns[61]
 }
-pub fn ScreenImageComplete(&self) -> &ColumnData {
+pub fn GivenStatus(&self) -> &ColumnData {
 &self.columns[62]
 }
-pub fn ScreenImageFailed(&self) -> &ColumnData {
+pub fn Unknown4(&self) -> &ColumnData {
 &self.columns[63]
 }
-pub fn GivenStatus(&self) -> &ColumnData {
+pub fn Unknown5(&self) -> &ColumnData {
 &self.columns[64]
 }
-pub fn Unknown4(&self) -> &ColumnData {
+pub fn EurekaFate(&self) -> &ColumnData {
 &self.columns[65]
 }
-pub fn Unknown5(&self) -> &ColumnData {
+pub fn Rule(&self) -> &ColumnData {
 &self.columns[66]
 }
-pub fn EurekaFate(&self) -> &ColumnData {
+pub fn ClassJobLevel(&self) -> &ColumnData {
 &self.columns[67]
 }
-pub fn Rule(&self) -> &ColumnData {
+pub fn ClassJobLevelMax(&self) -> &ColumnData {
 &self.columns[68]
 }
-pub fn ClassJobLevel(&self) -> &ColumnData {
-&self.columns[69]
-}
-pub fn ClassJobLevelMax(&self) -> &ColumnData {
-&self.columns[70]
-}
 pub fn StatusValue(&self) -> [&ColumnData; 3] {
-[&self.columns[71],&self.columns[72],&self.columns[73],]
+[&self.columns[69],&self.columns[70],&self.columns[71],]
 }
 pub fn Unknown6(&self) -> &ColumnData {
-&self.columns[74]
+&self.columns[72]
 }
 pub fn Unknown7(&self) -> &ColumnData {
-&self.columns[75]
+&self.columns[73]
 }
 pub fn SpecialFate(&self) -> &ColumnData {
-&self.columns[76]
+&self.columns[74]
 }
 pub fn Unknown8(&self) -> &ColumnData {
-&self.columns[77]
+&self.columns[75]
 }
 pub fn AdventEvent(&self) -> &ColumnData {
-&self.columns[78]
+&self.columns[76]
 }
 pub fn MoonFaireEvent(&self) -> &ColumnData {
-&self.columns[79]
+&self.columns[77]
 }
 pub fn Unknown9(&self) -> &ColumnData {
-&self.columns[80]
+&self.columns[78]
 }
 }

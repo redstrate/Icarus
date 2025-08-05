@@ -63,4 +63,7 @@ pub fn WepMinLv(&self) -> &ColumnData {
 pub fn ArmourMinLv(&self) -> &ColumnData {
 &self.columns[6]
 }
+pub fn Unknown0(&self) -> &ColumnData {
+&self.columns[7]
+}
 }

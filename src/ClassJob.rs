@@ -75,118 +75,121 @@ pub fn Unknown_70_1(&self) -> &ColumnData {
 pub fn Unknown_70_2(&self) -> &ColumnData {
 &self.columns[10]
 }
-pub fn ItemStartingWeapon(&self) -> &ColumnData {
+pub fn Unknown9(&self) -> &ColumnData {
 &self.columns[11]
 }
-pub fn Unknown1(&self) -> &ColumnData {
+pub fn ItemStartingWeapon(&self) -> &ColumnData {
 &self.columns[12]
 }
-pub fn ModifierHitPoints(&self) -> &ColumnData {
+pub fn Unknown1(&self) -> &ColumnData {
 &self.columns[13]
 }
-pub fn ModifierManaPoints(&self) -> &ColumnData {
+pub fn ModifierHitPoints(&self) -> &ColumnData {
 &self.columns[14]
 }
-pub fn ModifierStrength(&self) -> &ColumnData {
+pub fn ModifierManaPoints(&self) -> &ColumnData {
 &self.columns[15]
 }
-pub fn ModifierVitality(&self) -> &ColumnData {
+pub fn ModifierStrength(&self) -> &ColumnData {
 &self.columns[16]
 }
-pub fn ModifierDexterity(&self) -> &ColumnData {
+pub fn ModifierVitality(&self) -> &ColumnData {
 &self.columns[17]
 }
-pub fn ModifierIntelligence(&self) -> &ColumnData {
+pub fn ModifierDexterity(&self) -> &ColumnData {
 &self.columns[18]
 }
-pub fn ModifierMind(&self) -> &ColumnData {
+pub fn ModifierIntelligence(&self) -> &ColumnData {
 &self.columns[19]
 }
-pub fn ModifierPiety(&self) -> &ColumnData {
+pub fn ModifierMind(&self) -> &ColumnData {
 &self.columns[20]
 }
-pub fn Unknown2(&self) -> &ColumnData {
+pub fn ModifierPiety(&self) -> &ColumnData {
 &self.columns[21]
 }
-pub fn Unknown3(&self) -> &ColumnData {
+pub fn Unknown2(&self) -> &ColumnData {
 &self.columns[22]
 }
-pub fn Unknown4(&self) -> &ColumnData {
+pub fn Unknown3(&self) -> &ColumnData {
 &self.columns[23]
 }
-pub fn Unknown5(&self) -> &ColumnData {
+pub fn Unknown4(&self) -> &ColumnData {
 &self.columns[24]
 }
-pub fn Unknown6(&self) -> &ColumnData {
+pub fn Unknown5(&self) -> &ColumnData {
 &self.columns[25]
 }
-pub fn Unknown7(&self) -> &ColumnData {
+pub fn Unknown6(&self) -> &ColumnData {
 &self.columns[26]
 }
-pub fn LimitBreak1(&self) -> &ColumnData {
+pub fn Unknown7(&self) -> &ColumnData {
 &self.columns[27]
 }
-pub fn LimitBreak2(&self) -> &ColumnData {
+pub fn LimitBreak1(&self) -> &ColumnData {
 &self.columns[28]
 }
-pub fn LimitBreak3(&self) -> &ColumnData {
+pub fn LimitBreak2(&self) -> &ColumnData {
 &self.columns[29]
 }
-pub fn ClassJobCategory(&self) -> &ColumnData {
+pub fn LimitBreak3(&self) -> &ColumnData {
 &self.columns[30]
 }
-pub fn Unknown8(&self) -> &ColumnData {
+pub fn ClassJobCategory(&self) -> &ColumnData {
 &self.columns[31]
 }
-pub fn JobIndex(&self) -> &ColumnData {
+pub fn Unknown8(&self) -> &ColumnData {
 &self.columns[32]
 }
-pub fn PvPBaseParamValue(&self) -> &ColumnData {
+pub fn JobIndex(&self) -> &ColumnData {
 &self.columns[33]
 }
-pub fn PvPActionSortRow(&self) -> &ColumnData {
+pub fn PvPBaseParamValue(&self) -> &ColumnData {
 &self.columns[34]
 }
-pub fn PvPInitialSelectActionTrait(&self) -> &ColumnData {
+pub fn PvPActionSortRow(&self) -> &ColumnData {
 &self.columns[35]
 }
-pub fn ClassJobParent(&self) -> &ColumnData {
+pub fn PvPInitialSelectActionTrait(&self) -> &ColumnData {
 &self.columns[36]
 }
-pub fn Role(&self) -> &ColumnData {
+pub fn ClassJobParent(&self) -> &ColumnData {
 &self.columns[37]
 }
-pub fn StartingTown(&self) -> &ColumnData {
+pub fn Role(&self) -> &ColumnData {
 &self.columns[38]
 }
-pub fn PrimaryStat(&self) -> &ColumnData {
+pub fn StartingTown(&self) -> &ColumnData {
 &self.columns[39]
 }
-pub fn UIPriority(&self) -> &ColumnData {
+pub fn PrimaryStat(&self) -> &ColumnData {
 &self.columns[40]
 }
-pub fn StartingLevel(&self) -> &ColumnData {
+pub fn UIPriority(&self) -> &ColumnData {
 &self.columns[41]
 }
-pub fn PartyBonus(&self) -> &ColumnData {
+pub fn StartingLevel(&self) -> &ColumnData {
 &self.columns[42]
 }
-pub fn Unknown11(&self) -> &ColumnData {
+pub fn PartyBonus(&self) -> &ColumnData {
 &self.columns[43]
 }
-pub fn ExpArrayIndex(&self) -> &ColumnData {
+pub fn Unknown11(&self) -> &ColumnData {
 &self.columns[44]
 }
-pub fn BattleClassIndex(&self) -> &ColumnData {
+pub fn ExpArrayIndex(&self) -> &ColumnData {
 &self.columns[45]
 }
-pub fn DohDolJobIndex(&self) -> &ColumnData {
+pub fn BattleClassIndex(&self) -> &ColumnData {
 &self.columns[46]
 }
-pub fn MonsterNote(&self) -> &ColumnData {
+pub fn DohDolJobIndex(&self) -> &ColumnData {
 &self.columns[47]
 }
-pub fn IsLimitedJob(&self) -> &ColumnData {
+pub fn MonsterNote(&self) -> &ColumnData {
 &self.columns[48]
+}
+pub fn IsLimitedJob(&self) -> &ColumnData {
+&self.columns[49]
 }
 }

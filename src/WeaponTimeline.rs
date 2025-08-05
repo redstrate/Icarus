@@ -51,4 +51,7 @@ pub fn NextWeaponTimeline(&self) -> &ColumnData {
 pub fn Unknown0(&self) -> &ColumnData {
 &self.columns[2]
 }
+pub fn Unknown1(&self) -> &ColumnData {
+&self.columns[3]
+}
 }

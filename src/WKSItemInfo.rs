@@ -54,4 +54,7 @@ pub fn Unknown2(&self) -> &ColumnData {
 pub fn WKSItemSubCategory(&self) -> &ColumnData {
 &self.columns[3]
 }
+pub fn Unknown3(&self) -> &ColumnData {
+&self.columns[4]
+}
 }

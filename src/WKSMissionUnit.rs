@@ -87,13 +87,16 @@ pub fn WKSFunction(&self) -> &ColumnData {
 pub fn LevelGroup(&self) -> &ColumnData {
 &self.columns[17]
 }
-pub fn WKSMissionLotterySpecialCond(&self) -> &ColumnData {
+pub fn Unknown0(&self) -> &ColumnData {
 &self.columns[18]
 }
-pub fn IsSynced(&self) -> &ColumnData {
+pub fn WKSMissionLotterySpecialCond(&self) -> &ColumnData {
 &self.columns[19]
 }
-pub fn IsSpecialQuest(&self) -> &ColumnData {
+pub fn IsSynced(&self) -> &ColumnData {
 &self.columns[20]
+}
+pub fn IsSpecialQuest(&self) -> &ColumnData {
+&self.columns[21]
 }
 }

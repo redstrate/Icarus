@@ -54,4 +54,16 @@ pub fn ClassicFF(&self) -> &ColumnData {
 pub fn ClearBlue(&self) -> &ColumnData {
 &self.columns[3]
 }
+pub fn Unknown0(&self) -> &ColumnData {
+&self.columns[4]
+}
+pub fn Unknown1(&self) -> &ColumnData {
+&self.columns[5]
+}
+pub fn Unknown2(&self) -> &ColumnData {
+&self.columns[6]
+}
+pub fn Unknown3(&self) -> &ColumnData {
+&self.columns[7]
+}
 }

@@ -42,7 +42,7 @@ pub struct WKSCosmoToolDataAmountRow {
 columns: Vec<ColumnData>,
 }
 impl WKSCosmoToolDataAmountRow {
-pub fn Stages(&self) -> [&ColumnData; 9] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],]
+pub fn Stages(&self) -> [&ColumnData; 14] {
+[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],&self.columns[9],&self.columns[10],&self.columns[11],&self.columns[12],&self.columns[13],]
 }
 }

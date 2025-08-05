@@ -207,4 +207,7 @@ pub fn Unknown17(&self) -> &ColumnData {
 pub fn Unknown18(&self) -> &ColumnData {
 &self.columns[70]
 }
+pub fn Unknown19(&self) -> &ColumnData {
+&self.columns[71]
+}
 }

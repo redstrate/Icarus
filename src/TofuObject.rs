@@ -102,10 +102,4 @@ pub fn Unknown12(&self) -> &ColumnData {
 pub fn Unknown13(&self) -> &ColumnData {
 &self.columns[19]
 }
-pub fn Unknown14(&self) -> &ColumnData {
-&self.columns[20]
-}
-pub fn Unknown15(&self) -> &ColumnData {
-&self.columns[21]
-}
 }

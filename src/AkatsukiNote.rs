@@ -48,25 +48,25 @@ pub fn Unknown0(&self) -> &ColumnData {
 pub fn Unknown1(&self) -> &ColumnData {
 &self.columns[1]
 }
-pub fn Unknown2(&self) -> &ColumnData {
+pub fn ListName(&self) -> &ColumnData {
 &self.columns[2]
 }
-pub fn Unknown3(&self) -> &ColumnData {
+pub fn UnlockOnQuest(&self) -> &ColumnData {
 &self.columns[3]
 }
 pub fn Unknown4(&self) -> &ColumnData {
 &self.columns[4]
 }
-pub fn Unknown5(&self) -> &ColumnData {
+pub fn Title(&self) -> &ColumnData {
 &self.columns[5]
 }
-pub fn Unknown6(&self) -> &ColumnData {
+pub fn Icon(&self) -> &ColumnData {
 &self.columns[6]
 }
-pub fn Unknown7(&self) -> &ColumnData {
+pub fn Subtitle(&self) -> &ColumnData {
 &self.columns[7]
 }
-pub fn Unknown8(&self) -> &ColumnData {
+pub fn Text(&self) -> &ColumnData {
 &self.columns[8]
 }
 }

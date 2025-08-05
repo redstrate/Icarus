@@ -48,16 +48,19 @@ pub fn Type(&self) -> &ColumnData {
 pub fn Data(&self) -> &ColumnData {
 &self.columns[1]
 }
-pub fn Icon(&self) -> &ColumnData {
+pub fn Unknown2(&self) -> &ColumnData {
 &self.columns[2]
 }
-pub fn Unknown0(&self) -> &ColumnData {
+pub fn Icon(&self) -> &ColumnData {
 &self.columns[3]
 }
-pub fn Text(&self) -> &ColumnData {
+pub fn Unknown0(&self) -> &ColumnData {
 &self.columns[4]
 }
-pub fn Unknown1(&self) -> &ColumnData {
+pub fn Text(&self) -> &ColumnData {
 &self.columns[5]
+}
+pub fn Unknown1(&self) -> &ColumnData {
+&self.columns[6]
 }
 }

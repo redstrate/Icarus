@@ -42,13 +42,19 @@ pub struct WKSEmergencyProblemRow {
 columns: Vec<ColumnData>,
 }
 impl WKSEmergencyProblemRow {
-pub fn Unknown0(&self) -> &ColumnData {
+pub fn Unknown3(&self) -> &ColumnData {
 &self.columns[0]
 }
-pub fn Unknown1(&self) -> &ColumnData {
+pub fn Unknown4(&self) -> &ColumnData {
 &self.columns[1]
 }
-pub fn Unknown2(&self) -> &ColumnData {
+pub fn Unknown0(&self) -> &ColumnData {
 &self.columns[2]
+}
+pub fn Unknown1(&self) -> &ColumnData {
+&self.columns[3]
+}
+pub fn Unknown2(&self) -> &ColumnData {
+&self.columns[4]
 }
 }

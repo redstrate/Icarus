@@ -42,7 +42,7 @@ pub struct AkatsukiNoteStringRow {
 columns: Vec<ColumnData>,
 }
 impl AkatsukiNoteStringRow {
-pub fn Unknown0(&self) -> &ColumnData {
+pub fn Text(&self) -> &ColumnData {
 &self.columns[0]
 }
 }
