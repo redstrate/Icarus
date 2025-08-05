@@ -45,25 +45,61 @@ impl DeepDungeonRow {
 pub fn PomanderSlot(&self) -> [&ColumnData; 16] {
 [&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],&self.columns[9],&self.columns[10],&self.columns[11],&self.columns[12],&self.columns[13],&self.columns[14],&self.columns[15],]
 }
-pub fn MagiciteSlot(&self) -> [&ColumnData; 4] {
-[&self.columns[16],&self.columns[17],&self.columns[18],&self.columns[19],]
+pub fn Unknown2(&self) -> &ColumnData {
+&self.columns[16]
 }
-pub fn Name(&self) -> &ColumnData {
+pub fn Unknown3(&self) -> &ColumnData {
+&self.columns[17]
+}
+pub fn Unknown4(&self) -> &ColumnData {
+&self.columns[18]
+}
+pub fn Unknown5(&self) -> &ColumnData {
+&self.columns[19]
+}
+pub fn Unknown6(&self) -> &ColumnData {
 &self.columns[20]
 }
-pub fn ContentFinderConditionStart(&self) -> &ColumnData {
+pub fn Unknown7(&self) -> &ColumnData {
 &self.columns[21]
 }
-pub fn AetherpoolArm(&self) -> &ColumnData {
+pub fn Unknown8(&self) -> &ColumnData {
 &self.columns[22]
 }
-pub fn AetherpoolArmor(&self) -> &ColumnData {
+pub fn Unknown9(&self) -> &ColumnData {
 &self.columns[23]
 }
-pub fn DeepDungeonType(&self) -> &ColumnData {
+pub fn Unknown10(&self) -> &ColumnData {
 &self.columns[24]
 }
-pub fn Unknown1(&self) -> &ColumnData {
+pub fn Unknown11(&self) -> &ColumnData {
 &self.columns[25]
+}
+pub fn Unknown12(&self) -> &ColumnData {
+&self.columns[26]
+}
+pub fn Unknown13(&self) -> &ColumnData {
+&self.columns[27]
+}
+pub fn MagiciteSlot(&self) -> [&ColumnData; 4] {
+[&self.columns[28],&self.columns[29],&self.columns[30],&self.columns[31],]
+}
+pub fn Name(&self) -> &ColumnData {
+&self.columns[32]
+}
+pub fn Unknown14(&self) -> &ColumnData {
+&self.columns[33]
+}
+pub fn ContentFinderConditionStart(&self) -> &ColumnData {
+&self.columns[34]
+}
+pub fn AetherpoolArm(&self) -> &ColumnData {
+&self.columns[35]
+}
+pub fn AetherpoolArmor(&self) -> &ColumnData {
+&self.columns[36]
+}
+pub fn DeepDungeonType(&self) -> &ColumnData {
+&self.columns[37]
 }
 }

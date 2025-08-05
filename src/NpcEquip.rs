@@ -159,4 +159,7 @@ pub fn Dye2RightRing(&self) -> &ColumnData {
 pub fn Visor(&self) -> &ColumnData {
 &self.columns[38]
 }
+pub fn Unknown0(&self) -> &ColumnData {
+&self.columns[39]
+}
 }

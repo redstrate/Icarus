@@ -45,31 +45,37 @@ impl ReplaceActionRow {
 pub fn Action(&self) -> &ColumnData {
 &self.columns[0]
 }
-pub fn ReplaceActions(&self) -> [&ColumnData; 3] {
-[&self.columns[1],&self.columns[2],&self.columns[3],]
+pub fn ReplaceActions(&self) -> [&ColumnData; 4] {
+[&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],]
 }
 pub fn Param1(&self) -> &ColumnData {
-&self.columns[4]
-}
-pub fn Param2(&self) -> &ColumnData {
 &self.columns[5]
 }
-pub fn Param3(&self) -> &ColumnData {
+pub fn Param2(&self) -> &ColumnData {
 &self.columns[6]
 }
-pub fn Type1(&self) -> &ColumnData {
+pub fn Param3(&self) -> &ColumnData {
 &self.columns[7]
 }
-pub fn Type2(&self) -> &ColumnData {
+pub fn Param4(&self) -> &ColumnData {
 &self.columns[8]
 }
-pub fn Type3(&self) -> &ColumnData {
+pub fn Type1(&self) -> &ColumnData {
 &self.columns[9]
 }
-pub fn ReplaceSettable(&self) -> &ColumnData {
+pub fn Type2(&self) -> &ColumnData {
 &self.columns[10]
 }
-pub fn Unknown_70(&self) -> &ColumnData {
+pub fn Type3(&self) -> &ColumnData {
 &self.columns[11]
+}
+pub fn Type4(&self) -> &ColumnData {
+&self.columns[12]
+}
+pub fn ReplaceSettable(&self) -> &ColumnData {
+&self.columns[13]
+}
+pub fn Unknown_70(&self) -> &ColumnData {
+&self.columns[14]
 }
 }

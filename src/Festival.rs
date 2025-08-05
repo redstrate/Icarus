@@ -45,7 +45,10 @@ impl FestivalRow {
 pub fn Name(&self) -> &ColumnData {
 &self.columns[0]
 }
-pub fn Unknown0(&self) -> &ColumnData {
+pub fn Unknown1(&self) -> &ColumnData {
 &self.columns[1]
+}
+pub fn Unknown0(&self) -> &ColumnData {
+&self.columns[2]
 }
 }

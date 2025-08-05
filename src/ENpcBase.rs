@@ -276,4 +276,7 @@ pub fn Visor(&self) -> &ColumnData {
 pub fn NotRewriteHeight(&self) -> &ColumnData {
 &self.columns[108]
 }
+pub fn Unknown2(&self) -> &ColumnData {
+&self.columns[109]
+}
 }

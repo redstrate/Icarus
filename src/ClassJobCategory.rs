@@ -174,4 +174,13 @@ pub fn VPR(&self) -> &ColumnData {
 pub fn PCT(&self) -> &ColumnData {
 &self.columns[43]
 }
+pub fn Unknown0(&self) -> &ColumnData {
+&self.columns[44]
+}
+pub fn Unknown1(&self) -> &ColumnData {
+&self.columns[45]
+}
+pub fn Unknown2(&self) -> &ColumnData {
+&self.columns[46]
+}
 }

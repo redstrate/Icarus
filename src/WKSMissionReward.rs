@@ -42,49 +42,55 @@ pub struct WKSMissionRewardRow {
 columns: Vec<ColumnData>,
 }
 impl WKSMissionRewardRow {
-pub fn Unknown0(&self) -> &ColumnData {
+pub fn Unknown15(&self) -> &ColumnData {
 &self.columns[0]
 }
-pub fn Unknown1(&self) -> &ColumnData {
+pub fn Unknown16(&self) -> &ColumnData {
 &self.columns[1]
 }
-pub fn Unknown2(&self) -> &ColumnData {
+pub fn Unknown17(&self) -> &ColumnData {
 &self.columns[2]
 }
-pub fn Unknown3(&self) -> &ColumnData {
+pub fn Unknown18(&self) -> &ColumnData {
 &self.columns[3]
 }
-pub fn Unknown4(&self) -> &ColumnData {
+pub fn Unknown0(&self) -> &ColumnData {
 &self.columns[4]
 }
-pub fn Unknown5(&self) -> &ColumnData {
+pub fn Unknown1(&self) -> &ColumnData {
 &self.columns[5]
 }
-pub fn Unknown6(&self) -> &ColumnData {
+pub fn Unknown2(&self) -> &ColumnData {
 &self.columns[6]
 }
-pub fn Unknown7(&self) -> &ColumnData {
+pub fn Unknown3(&self) -> &ColumnData {
 &self.columns[7]
 }
-pub fn Unknown8(&self) -> &ColumnData {
+pub fn Unknown4(&self) -> &ColumnData {
 &self.columns[8]
 }
-pub fn Unknown9(&self) -> &ColumnData {
+pub fn Unknown8(&self) -> &ColumnData {
 &self.columns[9]
 }
-pub fn Unknown10(&self) -> &ColumnData {
+pub fn Unknown19(&self) -> &ColumnData {
 &self.columns[10]
 }
-pub fn Unknown11(&self) -> &ColumnData {
+pub fn Unknown9(&self) -> &ColumnData {
 &self.columns[11]
 }
-pub fn Unknown12(&self) -> &ColumnData {
+pub fn Unknown10(&self) -> &ColumnData {
 &self.columns[12]
 }
-pub fn Unknown13(&self) -> &ColumnData {
+pub fn Unknown11(&self) -> &ColumnData {
 &self.columns[13]
 }
-pub fn Unknown14(&self) -> &ColumnData {
+pub fn Unknown12(&self) -> &ColumnData {
 &self.columns[14]
+}
+pub fn Unknown13(&self) -> &ColumnData {
+&self.columns[15]
+}
+pub fn Unknown14(&self) -> &ColumnData {
+&self.columns[16]
 }
 }

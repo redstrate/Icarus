@@ -42,13 +42,37 @@ pub struct WKSAchievementDailyDefineRow {
 columns: Vec<ColumnData>,
 }
 impl WKSAchievementDailyDefineRow {
-pub fn RewardItem(&self) -> &ColumnData {
+pub fn Unknown0(&self) -> &ColumnData {
 &self.columns[0]
 }
-pub fn SuccessPointsRequired(&self) -> &ColumnData {
+pub fn Unknown1(&self) -> &ColumnData {
 &self.columns[1]
 }
-pub fn RewardQuantity(&self) -> &ColumnData {
+pub fn Unknown2(&self) -> &ColumnData {
 &self.columns[2]
+}
+pub fn Unknown3(&self) -> &ColumnData {
+&self.columns[3]
+}
+pub fn RewardItem(&self) -> [&ColumnData; 2] {
+[&self.columns[4],&self.columns[5],]
+}
+pub fn Unknown4(&self) -> &ColumnData {
+&self.columns[6]
+}
+pub fn Unknown5(&self) -> &ColumnData {
+&self.columns[7]
+}
+pub fn SuccessPointsRequired(&self) -> [&ColumnData; 2] {
+[&self.columns[8],&self.columns[9],]
+}
+pub fn Unknown6(&self) -> &ColumnData {
+&self.columns[10]
+}
+pub fn Unknown7(&self) -> &ColumnData {
+&self.columns[11]
+}
+pub fn RewardQuantity(&self) -> &ColumnData {
+&self.columns[12]
 }
 }

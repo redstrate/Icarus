@@ -42,16 +42,16 @@ pub struct WKSCosmoToolClassRow {
 columns: Vec<ColumnData>,
 }
 impl WKSCosmoToolClassRow {
-pub fn Stages(&self) -> [&ColumnData; 9] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],]
+pub fn Stages(&self) -> [&ColumnData; 14] {
+[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],&self.columns[9],&self.columns[10],&self.columns[11],&self.columns[12],&self.columns[13],]
 }
-pub fn Types(&self) -> [&ColumnData; 4] {
-[&self.columns[9],&self.columns[10],&self.columns[11],&self.columns[12],]
+pub fn Types(&self) -> [&ColumnData; 5] {
+[&self.columns[14],&self.columns[15],&self.columns[16],&self.columns[17],&self.columns[18],]
 }
 pub fn Name(&self) -> &ColumnData {
-&self.columns[13]
+&self.columns[19]
 }
 pub fn DataAmount(&self) -> &ColumnData {
-&self.columns[14]
+&self.columns[20]
 }
 }

@@ -42,16 +42,10 @@ pub struct WKSMissionPromotionConditionRow {
 columns: Vec<ColumnData>,
 }
 impl WKSMissionPromotionConditionRow {
-pub fn Unknown0(&self) -> &ColumnData {
+pub fn Unknown2(&self) -> &ColumnData {
 &self.columns[0]
 }
-pub fn Unknown1(&self) -> &ColumnData {
-&self.columns[1]
-}
-pub fn Unknown2(&self) -> &ColumnData {
-&self.columns[2]
-}
 pub fn Unknown3(&self) -> &ColumnData {
-&self.columns[3]
+&self.columns[1]
 }
 }

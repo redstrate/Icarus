@@ -54,10 +54,13 @@ pub fn Unknown2(&self) -> &ColumnData {
 pub fn Unknown3(&self) -> &ColumnData {
 &self.columns[3]
 }
-pub fn Unknown4(&self) -> &ColumnData {
+pub fn Unknown6(&self) -> &ColumnData {
 &self.columns[4]
 }
-pub fn Unknown5(&self) -> &ColumnData {
+pub fn Unknown4(&self) -> &ColumnData {
 &self.columns[5]
+}
+pub fn Unknown5(&self) -> &ColumnData {
+&self.columns[6]
 }
 }

@@ -42,37 +42,37 @@ pub struct BannerConditionRow {
 columns: Vec<ColumnData>,
 }
 impl BannerConditionRow {
-pub fn UnlockCriteria1(&self) -> [&ColumnData; 6] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],]
+pub fn UnlockCriteria1(&self) -> [&ColumnData; 2] {
+[&self.columns[0],&self.columns[1],]
 }
 pub fn UnlockCriteria2(&self) -> &ColumnData {
-&self.columns[6]
+&self.columns[2]
 }
 pub fn UnlockCriteria3(&self) -> &ColumnData {
-&self.columns[7]
+&self.columns[3]
 }
 pub fn UnlockCriteria4(&self) -> &ColumnData {
-&self.columns[8]
+&self.columns[4]
 }
 pub fn Unknown1(&self) -> &ColumnData {
-&self.columns[9]
+&self.columns[5]
 }
 pub fn Prerequisite(&self) -> &ColumnData {
-&self.columns[10]
+&self.columns[6]
 }
 pub fn UnlockType1(&self) -> &ColumnData {
-&self.columns[11]
+&self.columns[7]
 }
 pub fn UnlockType2(&self) -> &ColumnData {
-&self.columns[12]
+&self.columns[8]
 }
 pub fn PrerequisiteType(&self) -> &ColumnData {
-&self.columns[13]
+&self.columns[9]
 }
 pub fn UnlockHint(&self) -> &ColumnData {
-&self.columns[14]
+&self.columns[10]
 }
 pub fn Unknown0(&self) -> &ColumnData {
-&self.columns[15]
+&self.columns[11]
 }
 }

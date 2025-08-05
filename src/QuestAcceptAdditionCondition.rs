@@ -51,7 +51,10 @@ pub fn Requirement1(&self) -> &ColumnData {
 pub fn Unknown0(&self) -> &ColumnData {
 &self.columns[2]
 }
-pub fn Unknown1(&self) -> &ColumnData {
+pub fn Unknown2(&self) -> &ColumnData {
 &self.columns[3]
+}
+pub fn Unknown1(&self) -> &ColumnData {
+&self.columns[4]
 }
 }

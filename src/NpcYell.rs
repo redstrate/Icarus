@@ -45,37 +45,46 @@ impl NpcYellRow {
 pub fn Text(&self) -> &ColumnData {
 &self.columns[0]
 }
-pub fn BalloonTime(&self) -> &ColumnData {
+pub fn Unknown6(&self) -> &ColumnData {
 &self.columns[1]
 }
-pub fn Unknown0(&self) -> &ColumnData {
+pub fn BalloonTime(&self) -> &ColumnData {
 &self.columns[2]
 }
-pub fn OutputType(&self) -> &ColumnData {
+pub fn Unknown0(&self) -> &ColumnData {
 &self.columns[3]
 }
-pub fn Unknown_70(&self) -> &ColumnData {
+pub fn Unknown7(&self) -> &ColumnData {
 &self.columns[4]
 }
-pub fn Unknown1(&self) -> &ColumnData {
+pub fn Unknown8(&self) -> &ColumnData {
 &self.columns[5]
 }
-pub fn Unknown2(&self) -> &ColumnData {
+pub fn OutputType(&self) -> &ColumnData {
 &self.columns[6]
 }
-pub fn Unknown3(&self) -> &ColumnData {
+pub fn Unknown_70(&self) -> &ColumnData {
 &self.columns[7]
 }
-pub fn Unknown4(&self) -> &ColumnData {
+pub fn Unknown1(&self) -> &ColumnData {
 &self.columns[8]
 }
-pub fn Unknown5(&self) -> &ColumnData {
+pub fn Unknown2(&self) -> &ColumnData {
 &self.columns[9]
 }
-pub fn IsBalloonSlow(&self) -> &ColumnData {
+pub fn Unknown3(&self) -> &ColumnData {
 &self.columns[10]
 }
-pub fn BattleTalkTime(&self) -> &ColumnData {
+pub fn Unknown4(&self) -> &ColumnData {
 &self.columns[11]
+}
+pub fn Unknown5(&self) -> &ColumnData {
+&self.columns[12]
+}
+pub fn IsBalloonSlow(&self) -> &ColumnData {
+&self.columns[13]
+}
+pub fn BattleTalkTime(&self) -> &ColumnData {
+&self.columns[14]
 }
 }

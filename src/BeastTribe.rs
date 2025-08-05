@@ -78,25 +78,28 @@ pub fn Icon(&self) -> &ColumnData {
 pub fn Unknown1(&self) -> &ColumnData {
 &self.columns[11]
 }
-pub fn CurrencyItem(&self) -> &ColumnData {
+pub fn Unknown2(&self) -> &ColumnData {
 &self.columns[12]
 }
-pub fn MinLevel(&self) -> &ColumnData {
+pub fn CurrencyItem(&self) -> &ColumnData {
 &self.columns[13]
 }
-pub fn BeastRankBonus(&self) -> &ColumnData {
+pub fn MinLevel(&self) -> &ColumnData {
 &self.columns[14]
 }
-pub fn MaxRank(&self) -> &ColumnData {
+pub fn BeastRankBonus(&self) -> &ColumnData {
 &self.columns[15]
 }
-pub fn Expansion(&self) -> &ColumnData {
+pub fn MaxRank(&self) -> &ColumnData {
 &self.columns[16]
 }
-pub fn DisplayOrder(&self) -> &ColumnData {
+pub fn Expansion(&self) -> &ColumnData {
 &self.columns[17]
 }
-pub fn Unknown0(&self) -> &ColumnData {
+pub fn DisplayOrder(&self) -> &ColumnData {
 &self.columns[18]
+}
+pub fn Unknown0(&self) -> &ColumnData {
+&self.columns[19]
 }
 }

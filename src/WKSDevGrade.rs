@@ -42,40 +42,52 @@ pub struct WKSDevGradeRow {
 columns: Vec<ColumnData>,
 }
 impl WKSDevGradeRow {
-pub fn Stage(&self) -> &ColumnData {
+pub fn StageFull(&self) -> &ColumnData {
 &self.columns[0]
 }
-pub fn IndexText(&self) -> &ColumnData {
+pub fn Stage(&self) -> &ColumnData {
 &self.columns[1]
 }
-pub fn IndexNpc(&self) -> &ColumnData {
+pub fn IndexText2(&self) -> &ColumnData {
 &self.columns[2]
 }
-pub fn Unknown3(&self) -> &ColumnData {
+pub fn IndexText(&self) -> &ColumnData {
 &self.columns[3]
 }
-pub fn Unknown4(&self) -> &ColumnData {
+pub fn IndexNpc(&self) -> &ColumnData {
 &self.columns[4]
 }
-pub fn Unknown5(&self) -> &ColumnData {
+pub fn Unknown3(&self) -> &ColumnData {
 &self.columns[5]
 }
-pub fn Unknown6(&self) -> &ColumnData {
+pub fn Unknown4(&self) -> &ColumnData {
 &self.columns[6]
 }
-pub fn Unknown7(&self) -> &ColumnData {
+pub fn Unknown12(&self) -> &ColumnData {
 &self.columns[7]
 }
-pub fn Unknown8(&self) -> &ColumnData {
+pub fn Unknown13(&self) -> &ColumnData {
 &self.columns[8]
 }
-pub fn Unknown9(&self) -> &ColumnData {
+pub fn Unknown5(&self) -> &ColumnData {
 &self.columns[9]
 }
-pub fn Unknown10(&self) -> &ColumnData {
+pub fn Unknown6(&self) -> &ColumnData {
 &self.columns[10]
 }
-pub fn Unknown11(&self) -> &ColumnData {
+pub fn Unknown7(&self) -> &ColumnData {
 &self.columns[11]
+}
+pub fn Unknown8(&self) -> &ColumnData {
+&self.columns[12]
+}
+pub fn Unknown9(&self) -> &ColumnData {
+&self.columns[13]
+}
+pub fn Unknown10(&self) -> &ColumnData {
+&self.columns[14]
+}
+pub fn Unknown11(&self) -> &ColumnData {
+&self.columns[15]
 }
 }

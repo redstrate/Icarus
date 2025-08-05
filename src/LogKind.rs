@@ -48,7 +48,10 @@ pub fn Format(&self) -> &ColumnData {
 pub fn Unknown0(&self) -> &ColumnData {
 &self.columns[1]
 }
-pub fn Unknown1(&self) -> &ColumnData {
+pub fn Unknown2(&self) -> &ColumnData {
 &self.columns[2]
+}
+pub fn Unknown1(&self) -> &ColumnData {
+&self.columns[3]
 }
 }

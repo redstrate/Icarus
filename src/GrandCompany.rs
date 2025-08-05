@@ -69,7 +69,7 @@ pub fn Unknown6(&self) -> &ColumnData {
 pub fn Unknown7(&self) -> &ColumnData {
 &self.columns[8]
 }
-pub fn Unknown8(&self) -> &ColumnData {
+pub fn MonsterNote(&self) -> &ColumnData {
 &self.columns[9]
 }
 }
