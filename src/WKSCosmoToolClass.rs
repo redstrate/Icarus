@@ -1,6 +1,16 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct StagesElement<'a> {
+Unknown0: &'a ColumnData,
+Item: &'a ColumnData,
+Name: &'a ColumnData,
+}
+pub struct TypesElement<'a> {
+Icon: &'a ColumnData,
+Name: &'a ColumnData,
+CosmicName: &'a ColumnData,
+}
 pub struct WKSCosmoToolClassSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,16 +69,92 @@ pub struct WKSCosmoToolClassRow {
 columns: Vec<ColumnData>,
 }
 impl WKSCosmoToolClassRow {
-pub fn Stages(&self) -> [&ColumnData; 14] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],&self.columns[9],&self.columns[10],&self.columns[11],&self.columns[12],&self.columns[13],]
+pub fn Stages<'a>(&'a self) -> [StagesElement<'a>; 14] {
+[StagesElement {Unknown0: &self.columns[0],
+Item: &self.columns[1],
+Name: &self.columns[2],
+},
+StagesElement {Unknown0: &self.columns[3],
+Item: &self.columns[4],
+Name: &self.columns[5],
+},
+StagesElement {Unknown0: &self.columns[6],
+Item: &self.columns[7],
+Name: &self.columns[8],
+},
+StagesElement {Unknown0: &self.columns[9],
+Item: &self.columns[10],
+Name: &self.columns[11],
+},
+StagesElement {Unknown0: &self.columns[12],
+Item: &self.columns[13],
+Name: &self.columns[14],
+},
+StagesElement {Unknown0: &self.columns[15],
+Item: &self.columns[16],
+Name: &self.columns[17],
+},
+StagesElement {Unknown0: &self.columns[18],
+Item: &self.columns[19],
+Name: &self.columns[20],
+},
+StagesElement {Unknown0: &self.columns[21],
+Item: &self.columns[22],
+Name: &self.columns[23],
+},
+StagesElement {Unknown0: &self.columns[24],
+Item: &self.columns[25],
+Name: &self.columns[26],
+},
+StagesElement {Unknown0: &self.columns[27],
+Item: &self.columns[28],
+Name: &self.columns[29],
+},
+StagesElement {Unknown0: &self.columns[30],
+Item: &self.columns[31],
+Name: &self.columns[32],
+},
+StagesElement {Unknown0: &self.columns[33],
+Item: &self.columns[34],
+Name: &self.columns[35],
+},
+StagesElement {Unknown0: &self.columns[36],
+Item: &self.columns[37],
+Name: &self.columns[38],
+},
+StagesElement {Unknown0: &self.columns[39],
+Item: &self.columns[40],
+Name: &self.columns[41],
+},
+]
 }
-pub fn Types(&self) -> [&ColumnData; 5] {
-[&self.columns[14],&self.columns[15],&self.columns[16],&self.columns[17],&self.columns[18],]
+pub fn Types<'a>(&'a self) -> [TypesElement<'a>; 5] {
+[TypesElement {Icon: &self.columns[42],
+Name: &self.columns[43],
+CosmicName: &self.columns[44],
+},
+TypesElement {Icon: &self.columns[45],
+Name: &self.columns[46],
+CosmicName: &self.columns[47],
+},
+TypesElement {Icon: &self.columns[48],
+Name: &self.columns[49],
+CosmicName: &self.columns[50],
+},
+TypesElement {Icon: &self.columns[51],
+Name: &self.columns[52],
+CosmicName: &self.columns[53],
+},
+TypesElement {Icon: &self.columns[54],
+Name: &self.columns[55],
+CosmicName: &self.columns[56],
+},
+]
 }
 pub fn Name(&self) -> &ColumnData {
-&self.columns[19]
+&self.columns[57]
 }
 pub fn DataAmount(&self) -> &ColumnData {
-&self.columns[20]
+&self.columns[58]
 }
 }

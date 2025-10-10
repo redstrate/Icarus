@@ -1,6 +1,11 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct UnknownStructElement<'a> {
+Unknown1: &'a ColumnData,
+Unknown_70: &'a ColumnData,
+Unknown2: &'a ColumnData,
+}
 pub struct QuestEffectSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,16 +64,32 @@ pub struct QuestEffectRow {
 columns: Vec<ColumnData>,
 }
 impl QuestEffectRow {
-pub fn UnknownStruct(&self) -> [&ColumnData; 4] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],]
+pub fn UnknownStruct<'a>(&'a self) -> [UnknownStructElement<'a>; 4] {
+[UnknownStructElement {Unknown1: &self.columns[0],
+Unknown_70: &self.columns[1],
+Unknown2: &self.columns[2],
+},
+UnknownStructElement {Unknown1: &self.columns[3],
+Unknown_70: &self.columns[4],
+Unknown2: &self.columns[5],
+},
+UnknownStructElement {Unknown1: &self.columns[6],
+Unknown_70: &self.columns[7],
+Unknown2: &self.columns[8],
+},
+UnknownStructElement {Unknown1: &self.columns[9],
+Unknown_70: &self.columns[10],
+Unknown2: &self.columns[11],
+},
+]
 }
 pub fn Unknown8(&self) -> &ColumnData {
-&self.columns[4]
+&self.columns[12]
 }
 pub fn Unknown9(&self) -> &ColumnData {
-&self.columns[5]
+&self.columns[13]
 }
 pub fn Unknown_70(&self) -> &ColumnData {
-&self.columns[6]
+&self.columns[14]
 }
 }

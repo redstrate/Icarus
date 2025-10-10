@@ -1,6 +1,10 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct VillageAppearanceDataElement<'a> {
+UnknownParam: &'a ColumnData,
+SGB: &'a ColumnData,
+}
 pub struct MJIVillageAppearanceSGSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,7 +63,22 @@ pub struct MJIVillageAppearanceSGRow {
 columns: Vec<ColumnData>,
 }
 impl MJIVillageAppearanceSGRow {
-pub fn VillageAppearanceData(&self) -> [&ColumnData; 5] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],]
+pub fn VillageAppearanceData<'a>(&'a self) -> [VillageAppearanceDataElement<'a>; 5] {
+[VillageAppearanceDataElement {UnknownParam: &self.columns[0],
+SGB: &self.columns[1],
+},
+VillageAppearanceDataElement {UnknownParam: &self.columns[2],
+SGB: &self.columns[3],
+},
+VillageAppearanceDataElement {UnknownParam: &self.columns[4],
+SGB: &self.columns[5],
+},
+VillageAppearanceDataElement {UnknownParam: &self.columns[6],
+SGB: &self.columns[7],
+},
+VillageAppearanceDataElement {UnknownParam: &self.columns[8],
+SGB: &self.columns[9],
+},
+]
 }
 }

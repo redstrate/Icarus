@@ -1,6 +1,13 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct GFATEParamsElement<'a> {
+LGBPopRange: &'a ColumnData,
+Icon: &'a ColumnData,
+Unknown0: &'a ColumnData,
+Unknown1: &'a ColumnData,
+Unknown2: &'a ColumnData,
+}
 pub struct GFATESheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,43 +66,133 @@ pub struct GFATERow {
 columns: Vec<ColumnData>,
 }
 impl GFATERow {
-pub fn GFATEParams(&self) -> [&ColumnData; 15] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],&self.columns[9],&self.columns[10],&self.columns[11],&self.columns[12],&self.columns[13],&self.columns[14],]
+pub fn GFATEParams<'a>(&'a self) -> [GFATEParamsElement<'a>; 15] {
+[GFATEParamsElement {LGBPopRange: &self.columns[0],
+Icon: &self.columns[1],
+Unknown0: &self.columns[2],
+Unknown1: &self.columns[3],
+Unknown2: &self.columns[4],
+},
+GFATEParamsElement {LGBPopRange: &self.columns[5],
+Icon: &self.columns[6],
+Unknown0: &self.columns[7],
+Unknown1: &self.columns[8],
+Unknown2: &self.columns[9],
+},
+GFATEParamsElement {LGBPopRange: &self.columns[10],
+Icon: &self.columns[11],
+Unknown0: &self.columns[12],
+Unknown1: &self.columns[13],
+Unknown2: &self.columns[14],
+},
+GFATEParamsElement {LGBPopRange: &self.columns[15],
+Icon: &self.columns[16],
+Unknown0: &self.columns[17],
+Unknown1: &self.columns[18],
+Unknown2: &self.columns[19],
+},
+GFATEParamsElement {LGBPopRange: &self.columns[20],
+Icon: &self.columns[21],
+Unknown0: &self.columns[22],
+Unknown1: &self.columns[23],
+Unknown2: &self.columns[24],
+},
+GFATEParamsElement {LGBPopRange: &self.columns[25],
+Icon: &self.columns[26],
+Unknown0: &self.columns[27],
+Unknown1: &self.columns[28],
+Unknown2: &self.columns[29],
+},
+GFATEParamsElement {LGBPopRange: &self.columns[30],
+Icon: &self.columns[31],
+Unknown0: &self.columns[32],
+Unknown1: &self.columns[33],
+Unknown2: &self.columns[34],
+},
+GFATEParamsElement {LGBPopRange: &self.columns[35],
+Icon: &self.columns[36],
+Unknown0: &self.columns[37],
+Unknown1: &self.columns[38],
+Unknown2: &self.columns[39],
+},
+GFATEParamsElement {LGBPopRange: &self.columns[40],
+Icon: &self.columns[41],
+Unknown0: &self.columns[42],
+Unknown1: &self.columns[43],
+Unknown2: &self.columns[44],
+},
+GFATEParamsElement {LGBPopRange: &self.columns[45],
+Icon: &self.columns[46],
+Unknown0: &self.columns[47],
+Unknown1: &self.columns[48],
+Unknown2: &self.columns[49],
+},
+GFATEParamsElement {LGBPopRange: &self.columns[50],
+Icon: &self.columns[51],
+Unknown0: &self.columns[52],
+Unknown1: &self.columns[53],
+Unknown2: &self.columns[54],
+},
+GFATEParamsElement {LGBPopRange: &self.columns[55],
+Icon: &self.columns[56],
+Unknown0: &self.columns[57],
+Unknown1: &self.columns[58],
+Unknown2: &self.columns[59],
+},
+GFATEParamsElement {LGBPopRange: &self.columns[60],
+Icon: &self.columns[61],
+Unknown0: &self.columns[62],
+Unknown1: &self.columns[63],
+Unknown2: &self.columns[64],
+},
+GFATEParamsElement {LGBPopRange: &self.columns[65],
+Icon: &self.columns[66],
+Unknown0: &self.columns[67],
+Unknown1: &self.columns[68],
+Unknown2: &self.columns[69],
+},
+GFATEParamsElement {LGBPopRange: &self.columns[70],
+Icon: &self.columns[71],
+Unknown0: &self.columns[72],
+Unknown1: &self.columns[73],
+Unknown2: &self.columns[74],
+},
+]
 }
 pub fn Unknown0(&self) -> &ColumnData {
-&self.columns[15]
+&self.columns[75]
 }
 pub fn Unknown1(&self) -> &ColumnData {
-&self.columns[16]
+&self.columns[76]
 }
 pub fn Unknown2(&self) -> &ColumnData {
-&self.columns[17]
+&self.columns[77]
 }
 pub fn Unknown3(&self) -> &ColumnData {
-&self.columns[18]
+&self.columns[78]
 }
 pub fn Unknown4(&self) -> &ColumnData {
-&self.columns[19]
+&self.columns[79]
 }
 pub fn Unknown5(&self) -> &ColumnData {
-&self.columns[20]
+&self.columns[80]
 }
 pub fn Unknown6(&self) -> &ColumnData {
-&self.columns[21]
+&self.columns[81]
 }
 pub fn Unknown7(&self) -> &ColumnData {
-&self.columns[22]
+&self.columns[82]
 }
 pub fn Unknown8(&self) -> &ColumnData {
-&self.columns[23]
+&self.columns[83]
 }
 pub fn Unknown9(&self) -> &ColumnData {
-&self.columns[24]
+&self.columns[84]
 }
 pub fn Unknown10(&self) -> &ColumnData {
-&self.columns[25]
+&self.columns[85]
 }
 pub fn Unknown11(&self) -> &ColumnData {
-&self.columns[26]
+&self.columns[86]
 }
 }

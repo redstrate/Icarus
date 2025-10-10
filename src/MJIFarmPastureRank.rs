@@ -1,6 +1,17 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct RankDataElement<'a> {
+SGB: &'a ColumnData,
+Unknown0: &'a ColumnData,
+Unknown1: &'a ColumnData,
+Unknown2: &'a ColumnData,
+Unknown3: &'a ColumnData,
+Unknown4: &'a ColumnData,
+Unknown5: &'a ColumnData,
+Unknown6: &'a ColumnData,
+Unknown7: &'a ColumnData,
+}
 pub struct MJIFarmPastureRankSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,7 +70,47 @@ pub struct MJIFarmPastureRankRow {
 columns: Vec<ColumnData>,
 }
 impl MJIFarmPastureRankRow {
-pub fn RankData(&self) -> [&ColumnData; 4] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],]
+pub fn RankData<'a>(&'a self) -> [RankDataElement<'a>; 4] {
+[RankDataElement {SGB: &self.columns[0],
+Unknown0: &self.columns[1],
+Unknown1: &self.columns[2],
+Unknown2: &self.columns[3],
+Unknown3: &self.columns[4],
+Unknown4: &self.columns[5],
+Unknown5: &self.columns[6],
+Unknown6: &self.columns[7],
+Unknown7: &self.columns[8],
+},
+RankDataElement {SGB: &self.columns[9],
+Unknown0: &self.columns[10],
+Unknown1: &self.columns[11],
+Unknown2: &self.columns[12],
+Unknown3: &self.columns[13],
+Unknown4: &self.columns[14],
+Unknown5: &self.columns[15],
+Unknown6: &self.columns[16],
+Unknown7: &self.columns[17],
+},
+RankDataElement {SGB: &self.columns[18],
+Unknown0: &self.columns[19],
+Unknown1: &self.columns[20],
+Unknown2: &self.columns[21],
+Unknown3: &self.columns[22],
+Unknown4: &self.columns[23],
+Unknown5: &self.columns[24],
+Unknown6: &self.columns[25],
+Unknown7: &self.columns[26],
+},
+RankDataElement {SGB: &self.columns[27],
+Unknown0: &self.columns[28],
+Unknown1: &self.columns[29],
+Unknown2: &self.columns[30],
+Unknown3: &self.columns[31],
+Unknown4: &self.columns[32],
+Unknown5: &self.columns[33],
+Unknown6: &self.columns[34],
+Unknown7: &self.columns[35],
+},
+]
 }
 }

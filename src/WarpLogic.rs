@@ -1,6 +1,10 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct WarpParamsElement<'a> {
+Function: &'a ColumnData,
+Argument: &'a ColumnData,
+}
 pub struct WarpLogicSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,25 +63,55 @@ pub struct WarpLogicRow {
 columns: Vec<ColumnData>,
 }
 impl WarpLogicRow {
-pub fn WarpParams(&self) -> [&ColumnData; 10] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],&self.columns[9],]
+pub fn WarpParams<'a>(&'a self) -> [WarpParamsElement<'a>; 10] {
+[WarpParamsElement {Function: &self.columns[0],
+Argument: &self.columns[1],
+},
+WarpParamsElement {Function: &self.columns[2],
+Argument: &self.columns[3],
+},
+WarpParamsElement {Function: &self.columns[4],
+Argument: &self.columns[5],
+},
+WarpParamsElement {Function: &self.columns[6],
+Argument: &self.columns[7],
+},
+WarpParamsElement {Function: &self.columns[8],
+Argument: &self.columns[9],
+},
+WarpParamsElement {Function: &self.columns[10],
+Argument: &self.columns[11],
+},
+WarpParamsElement {Function: &self.columns[12],
+Argument: &self.columns[13],
+},
+WarpParamsElement {Function: &self.columns[14],
+Argument: &self.columns[15],
+},
+WarpParamsElement {Function: &self.columns[16],
+Argument: &self.columns[17],
+},
+WarpParamsElement {Function: &self.columns[18],
+Argument: &self.columns[19],
+},
+]
 }
 pub fn Question(&self) -> &ColumnData {
-&self.columns[10]
+&self.columns[20]
 }
 pub fn ResponseYes(&self) -> &ColumnData {
-&self.columns[11]
+&self.columns[21]
 }
 pub fn ResponseNo(&self) -> &ColumnData {
-&self.columns[12]
+&self.columns[22]
 }
 pub fn WarpName(&self) -> &ColumnData {
-&self.columns[13]
+&self.columns[23]
 }
 pub fn Unknown0(&self) -> &ColumnData {
-&self.columns[14]
+&self.columns[24]
 }
 pub fn CanSkipCutscene(&self) -> &ColumnData {
-&self.columns[15]
+&self.columns[25]
 }
 }

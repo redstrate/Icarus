@@ -1,6 +1,10 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct ObjectiveIconElement<'a> {
+LayoutId: &'a ColumnData,
+Icon: &'a ColumnData,
+}
 pub struct FateSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -95,94 +99,190 @@ pub fn Unknown11(&self) -> &ColumnData {
 pub fn Unknown12(&self) -> &ColumnData {
 &self.columns[15]
 }
-pub fn ObjectiveIcon(&self) -> [&ColumnData; 32] {
-[&self.columns[16],&self.columns[17],&self.columns[18],&self.columns[19],&self.columns[20],&self.columns[21],&self.columns[22],&self.columns[23],&self.columns[24],&self.columns[25],&self.columns[26],&self.columns[27],&self.columns[28],&self.columns[29],&self.columns[30],&self.columns[31],&self.columns[32],&self.columns[33],&self.columns[34],&self.columns[35],&self.columns[36],&self.columns[37],&self.columns[38],&self.columns[39],&self.columns[40],&self.columns[41],&self.columns[42],&self.columns[43],&self.columns[44],&self.columns[45],&self.columns[46],&self.columns[47],]
+pub fn ObjectiveIcon<'a>(&'a self) -> [ObjectiveIconElement<'a>; 32] {
+[ObjectiveIconElement {LayoutId: &self.columns[16],
+Icon: &self.columns[17],
+},
+ObjectiveIconElement {LayoutId: &self.columns[18],
+Icon: &self.columns[19],
+},
+ObjectiveIconElement {LayoutId: &self.columns[20],
+Icon: &self.columns[21],
+},
+ObjectiveIconElement {LayoutId: &self.columns[22],
+Icon: &self.columns[23],
+},
+ObjectiveIconElement {LayoutId: &self.columns[24],
+Icon: &self.columns[25],
+},
+ObjectiveIconElement {LayoutId: &self.columns[26],
+Icon: &self.columns[27],
+},
+ObjectiveIconElement {LayoutId: &self.columns[28],
+Icon: &self.columns[29],
+},
+ObjectiveIconElement {LayoutId: &self.columns[30],
+Icon: &self.columns[31],
+},
+ObjectiveIconElement {LayoutId: &self.columns[32],
+Icon: &self.columns[33],
+},
+ObjectiveIconElement {LayoutId: &self.columns[34],
+Icon: &self.columns[35],
+},
+ObjectiveIconElement {LayoutId: &self.columns[36],
+Icon: &self.columns[37],
+},
+ObjectiveIconElement {LayoutId: &self.columns[38],
+Icon: &self.columns[39],
+},
+ObjectiveIconElement {LayoutId: &self.columns[40],
+Icon: &self.columns[41],
+},
+ObjectiveIconElement {LayoutId: &self.columns[42],
+Icon: &self.columns[43],
+},
+ObjectiveIconElement {LayoutId: &self.columns[44],
+Icon: &self.columns[45],
+},
+ObjectiveIconElement {LayoutId: &self.columns[46],
+Icon: &self.columns[47],
+},
+ObjectiveIconElement {LayoutId: &self.columns[48],
+Icon: &self.columns[49],
+},
+ObjectiveIconElement {LayoutId: &self.columns[50],
+Icon: &self.columns[51],
+},
+ObjectiveIconElement {LayoutId: &self.columns[52],
+Icon: &self.columns[53],
+},
+ObjectiveIconElement {LayoutId: &self.columns[54],
+Icon: &self.columns[55],
+},
+ObjectiveIconElement {LayoutId: &self.columns[56],
+Icon: &self.columns[57],
+},
+ObjectiveIconElement {LayoutId: &self.columns[58],
+Icon: &self.columns[59],
+},
+ObjectiveIconElement {LayoutId: &self.columns[60],
+Icon: &self.columns[61],
+},
+ObjectiveIconElement {LayoutId: &self.columns[62],
+Icon: &self.columns[63],
+},
+ObjectiveIconElement {LayoutId: &self.columns[64],
+Icon: &self.columns[65],
+},
+ObjectiveIconElement {LayoutId: &self.columns[66],
+Icon: &self.columns[67],
+},
+ObjectiveIconElement {LayoutId: &self.columns[68],
+Icon: &self.columns[69],
+},
+ObjectiveIconElement {LayoutId: &self.columns[70],
+Icon: &self.columns[71],
+},
+ObjectiveIconElement {LayoutId: &self.columns[72],
+Icon: &self.columns[73],
+},
+ObjectiveIconElement {LayoutId: &self.columns[74],
+Icon: &self.columns[75],
+},
+ObjectiveIconElement {LayoutId: &self.columns[76],
+Icon: &self.columns[77],
+},
+ObjectiveIconElement {LayoutId: &self.columns[78],
+Icon: &self.columns[79],
+},
+]
 }
 pub fn Location(&self) -> &ColumnData {
-&self.columns[48]
+&self.columns[80]
 }
 pub fn EventItem(&self) -> &ColumnData {
-&self.columns[49]
+&self.columns[81]
 }
 pub fn Icon(&self) -> &ColumnData {
-&self.columns[50]
+&self.columns[82]
 }
 pub fn MapIcon(&self) -> &ColumnData {
-&self.columns[51]
+&self.columns[83]
 }
 pub fn InactiveMapIcon(&self) -> &ColumnData {
-&self.columns[52]
+&self.columns[84]
 }
 pub fn LGBGuardNPCLocation(&self) -> &ColumnData {
-&self.columns[53]
+&self.columns[85]
 }
 pub fn RequiredQuest(&self) -> &ColumnData {
-&self.columns[54]
+&self.columns[86]
 }
 pub fn FATEChain(&self) -> &ColumnData {
-&self.columns[55]
+&self.columns[87]
 }
 pub fn Unknown13(&self) -> &ColumnData {
-&self.columns[56]
+&self.columns[88]
 }
 pub fn FateRuleEx(&self) -> &ColumnData {
-&self.columns[57]
+&self.columns[89]
 }
 pub fn Music(&self) -> &ColumnData {
-&self.columns[58]
+&self.columns[90]
 }
 pub fn ScreenImageAccept(&self) -> &ColumnData {
-&self.columns[59]
+&self.columns[91]
 }
 pub fn ScreenImageComplete(&self) -> &ColumnData {
-&self.columns[60]
+&self.columns[92]
 }
 pub fn ScreenImageFailed(&self) -> &ColumnData {
-&self.columns[61]
+&self.columns[93]
 }
 pub fn GivenStatus(&self) -> &ColumnData {
-&self.columns[62]
+&self.columns[94]
 }
 pub fn Unknown4(&self) -> &ColumnData {
-&self.columns[63]
+&self.columns[95]
 }
 pub fn Unknown5(&self) -> &ColumnData {
-&self.columns[64]
+&self.columns[96]
 }
 pub fn EurekaFate(&self) -> &ColumnData {
-&self.columns[65]
+&self.columns[97]
 }
 pub fn Rule(&self) -> &ColumnData {
-&self.columns[66]
+&self.columns[98]
 }
 pub fn ClassJobLevel(&self) -> &ColumnData {
-&self.columns[67]
+&self.columns[99]
 }
 pub fn ClassJobLevelMax(&self) -> &ColumnData {
-&self.columns[68]
+&self.columns[100]
 }
 pub fn StatusValue(&self) -> [&ColumnData; 3] {
-[&self.columns[69],&self.columns[70],&self.columns[71],]
+[&self.columns[101],&self.columns[102],&self.columns[103],]
 }
 pub fn Unknown6(&self) -> &ColumnData {
-&self.columns[72]
+&self.columns[104]
 }
 pub fn Unknown7(&self) -> &ColumnData {
-&self.columns[73]
+&self.columns[105]
 }
 pub fn SpecialFate(&self) -> &ColumnData {
-&self.columns[74]
+&self.columns[106]
 }
 pub fn Unknown8(&self) -> &ColumnData {
-&self.columns[75]
+&self.columns[107]
 }
 pub fn AdventEvent(&self) -> &ColumnData {
-&self.columns[76]
+&self.columns[108]
 }
 pub fn MoonFaireEvent(&self) -> &ColumnData {
-&self.columns[77]
+&self.columns[109]
 }
 pub fn Unknown9(&self) -> &ColumnData {
-&self.columns[78]
+&self.columns[110]
 }
 }

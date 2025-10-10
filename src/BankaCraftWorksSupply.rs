@@ -1,6 +1,18 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct ItemElement<'a> {
+ItemId: &'a ColumnData,
+XPReward: &'a ColumnData,
+Collectability: &'a ColumnData,
+GilReward: &'a ColumnData,
+Level: &'a ColumnData,
+HighXPMultiplier: &'a ColumnData,
+HighGilMultiplier: &'a ColumnData,
+Unknown8: &'a ColumnData,
+ScripReward: &'a ColumnData,
+HighScripMultiplier: &'a ColumnData,
+}
 pub struct BankaCraftWorksSupplySheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,7 +71,51 @@ pub struct BankaCraftWorksSupplyRow {
 columns: Vec<ColumnData>,
 }
 impl BankaCraftWorksSupplyRow {
-pub fn Item(&self) -> [&ColumnData; 4] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],]
+pub fn Item<'a>(&'a self) -> [ItemElement<'a>; 4] {
+[ItemElement {ItemId: &self.columns[0],
+XPReward: &self.columns[1],
+Collectability: &self.columns[2],
+GilReward: &self.columns[3],
+Level: &self.columns[4],
+HighXPMultiplier: &self.columns[5],
+HighGilMultiplier: &self.columns[6],
+Unknown8: &self.columns[7],
+ScripReward: &self.columns[8],
+HighScripMultiplier: &self.columns[9],
+},
+ItemElement {ItemId: &self.columns[10],
+XPReward: &self.columns[11],
+Collectability: &self.columns[12],
+GilReward: &self.columns[13],
+Level: &self.columns[14],
+HighXPMultiplier: &self.columns[15],
+HighGilMultiplier: &self.columns[16],
+Unknown8: &self.columns[17],
+ScripReward: &self.columns[18],
+HighScripMultiplier: &self.columns[19],
+},
+ItemElement {ItemId: &self.columns[20],
+XPReward: &self.columns[21],
+Collectability: &self.columns[22],
+GilReward: &self.columns[23],
+Level: &self.columns[24],
+HighXPMultiplier: &self.columns[25],
+HighGilMultiplier: &self.columns[26],
+Unknown8: &self.columns[27],
+ScripReward: &self.columns[28],
+HighScripMultiplier: &self.columns[29],
+},
+ItemElement {ItemId: &self.columns[30],
+XPReward: &self.columns[31],
+Collectability: &self.columns[32],
+GilReward: &self.columns[33],
+Level: &self.columns[34],
+HighXPMultiplier: &self.columns[35],
+HighGilMultiplier: &self.columns[36],
+Unknown8: &self.columns[37],
+ScripReward: &self.columns[38],
+HighScripMultiplier: &self.columns[39],
+},
+]
 }
 }

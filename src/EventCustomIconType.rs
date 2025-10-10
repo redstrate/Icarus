@@ -1,6 +1,13 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct IconsElement<'a> {
+AnnounceQuest: &'a ColumnData,
+AnnounceQuestLocked: &'a ColumnData,
+MapAnnounceQuest1: &'a ColumnData,
+MapAnnounceQuestLocked: &'a ColumnData,
+MapAnnounceQuest2: &'a ColumnData,
+}
 pub struct EventCustomIconTypeSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,10 +66,70 @@ pub struct EventCustomIconTypeRow {
 columns: Vec<ColumnData>,
 }
 impl EventCustomIconTypeRow {
-pub fn Icons(&self) -> [&ColumnData; 10] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],&self.columns[9],]
+pub fn Icons<'a>(&'a self) -> [IconsElement<'a>; 10] {
+[IconsElement {AnnounceQuest: &self.columns[0],
+AnnounceQuestLocked: &self.columns[1],
+MapAnnounceQuest1: &self.columns[2],
+MapAnnounceQuestLocked: &self.columns[3],
+MapAnnounceQuest2: &self.columns[4],
+},
+IconsElement {AnnounceQuest: &self.columns[5],
+AnnounceQuestLocked: &self.columns[6],
+MapAnnounceQuest1: &self.columns[7],
+MapAnnounceQuestLocked: &self.columns[8],
+MapAnnounceQuest2: &self.columns[9],
+},
+IconsElement {AnnounceQuest: &self.columns[10],
+AnnounceQuestLocked: &self.columns[11],
+MapAnnounceQuest1: &self.columns[12],
+MapAnnounceQuestLocked: &self.columns[13],
+MapAnnounceQuest2: &self.columns[14],
+},
+IconsElement {AnnounceQuest: &self.columns[15],
+AnnounceQuestLocked: &self.columns[16],
+MapAnnounceQuest1: &self.columns[17],
+MapAnnounceQuestLocked: &self.columns[18],
+MapAnnounceQuest2: &self.columns[19],
+},
+IconsElement {AnnounceQuest: &self.columns[20],
+AnnounceQuestLocked: &self.columns[21],
+MapAnnounceQuest1: &self.columns[22],
+MapAnnounceQuestLocked: &self.columns[23],
+MapAnnounceQuest2: &self.columns[24],
+},
+IconsElement {AnnounceQuest: &self.columns[25],
+AnnounceQuestLocked: &self.columns[26],
+MapAnnounceQuest1: &self.columns[27],
+MapAnnounceQuestLocked: &self.columns[28],
+MapAnnounceQuest2: &self.columns[29],
+},
+IconsElement {AnnounceQuest: &self.columns[30],
+AnnounceQuestLocked: &self.columns[31],
+MapAnnounceQuest1: &self.columns[32],
+MapAnnounceQuestLocked: &self.columns[33],
+MapAnnounceQuest2: &self.columns[34],
+},
+IconsElement {AnnounceQuest: &self.columns[35],
+AnnounceQuestLocked: &self.columns[36],
+MapAnnounceQuest1: &self.columns[37],
+MapAnnounceQuestLocked: &self.columns[38],
+MapAnnounceQuest2: &self.columns[39],
+},
+IconsElement {AnnounceQuest: &self.columns[40],
+AnnounceQuestLocked: &self.columns[41],
+MapAnnounceQuest1: &self.columns[42],
+MapAnnounceQuestLocked: &self.columns[43],
+MapAnnounceQuest2: &self.columns[44],
+},
+IconsElement {AnnounceQuest: &self.columns[45],
+AnnounceQuestLocked: &self.columns[46],
+MapAnnounceQuest1: &self.columns[47],
+MapAnnounceQuestLocked: &self.columns[48],
+MapAnnounceQuest2: &self.columns[49],
+},
+]
 }
 pub fn Unknown0(&self) -> &ColumnData {
-&self.columns[10]
+&self.columns[50]
 }
 }

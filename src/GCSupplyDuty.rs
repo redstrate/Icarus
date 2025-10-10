@@ -1,6 +1,10 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct SupplyDataElement<'a> {
+Item: &'a ColumnData,
+ItemCount: &'a ColumnData,
+}
 pub struct GCSupplyDutySheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,7 +63,40 @@ pub struct GCSupplyDutyRow {
 columns: Vec<ColumnData>,
 }
 impl GCSupplyDutyRow {
-pub fn SupplyData(&self) -> [&ColumnData; 11] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],&self.columns[9],&self.columns[10],]
+pub fn SupplyData<'a>(&'a self) -> [SupplyDataElement<'a>; 11] {
+[SupplyDataElement {Item: &self.columns[0],
+ItemCount: &self.columns[1],
+},
+SupplyDataElement {Item: &self.columns[2],
+ItemCount: &self.columns[3],
+},
+SupplyDataElement {Item: &self.columns[4],
+ItemCount: &self.columns[5],
+},
+SupplyDataElement {Item: &self.columns[6],
+ItemCount: &self.columns[7],
+},
+SupplyDataElement {Item: &self.columns[8],
+ItemCount: &self.columns[9],
+},
+SupplyDataElement {Item: &self.columns[10],
+ItemCount: &self.columns[11],
+},
+SupplyDataElement {Item: &self.columns[12],
+ItemCount: &self.columns[13],
+},
+SupplyDataElement {Item: &self.columns[14],
+ItemCount: &self.columns[15],
+},
+SupplyDataElement {Item: &self.columns[16],
+ItemCount: &self.columns[17],
+},
+SupplyDataElement {Item: &self.columns[18],
+ItemCount: &self.columns[19],
+},
+SupplyDataElement {Item: &self.columns[20],
+ItemCount: &self.columns[21],
+},
+]
 }
 }

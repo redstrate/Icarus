@@ -1,6 +1,17 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct ExpeditionParamsElement<'a> {
+RewardItem: &'a ColumnData,
+RequiredPhysical: &'a ColumnData,
+RequiredMental: &'a ColumnData,
+RequiredTactical: &'a ColumnData,
+RewardQuantity: &'a ColumnData,
+PercentPhysicalMet: &'a ColumnData,
+PercentMentalMet: &'a ColumnData,
+PercentTacticalMet: &'a ColumnData,
+PercentAllMet: &'a ColumnData,
+}
 pub struct GcArmyExpeditionSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -65,31 +76,91 @@ pub fn Name(&self) -> &ColumnData {
 pub fn Description(&self) -> &ColumnData {
 &self.columns[1]
 }
-pub fn ExpeditionParams(&self) -> [&ColumnData; 6] {
-[&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],]
+pub fn ExpeditionParams<'a>(&'a self) -> [ExpeditionParamsElement<'a>; 6] {
+[ExpeditionParamsElement {RewardItem: &self.columns[2],
+RequiredPhysical: &self.columns[3],
+RequiredMental: &self.columns[4],
+RequiredTactical: &self.columns[5],
+RewardQuantity: &self.columns[6],
+PercentPhysicalMet: &self.columns[7],
+PercentMentalMet: &self.columns[8],
+PercentTacticalMet: &self.columns[9],
+PercentAllMet: &self.columns[10],
+},
+ExpeditionParamsElement {RewardItem: &self.columns[11],
+RequiredPhysical: &self.columns[12],
+RequiredMental: &self.columns[13],
+RequiredTactical: &self.columns[14],
+RewardQuantity: &self.columns[15],
+PercentPhysicalMet: &self.columns[16],
+PercentMentalMet: &self.columns[17],
+PercentTacticalMet: &self.columns[18],
+PercentAllMet: &self.columns[19],
+},
+ExpeditionParamsElement {RewardItem: &self.columns[20],
+RequiredPhysical: &self.columns[21],
+RequiredMental: &self.columns[22],
+RequiredTactical: &self.columns[23],
+RewardQuantity: &self.columns[24],
+PercentPhysicalMet: &self.columns[25],
+PercentMentalMet: &self.columns[26],
+PercentTacticalMet: &self.columns[27],
+PercentAllMet: &self.columns[28],
+},
+ExpeditionParamsElement {RewardItem: &self.columns[29],
+RequiredPhysical: &self.columns[30],
+RequiredMental: &self.columns[31],
+RequiredTactical: &self.columns[32],
+RewardQuantity: &self.columns[33],
+PercentPhysicalMet: &self.columns[34],
+PercentMentalMet: &self.columns[35],
+PercentTacticalMet: &self.columns[36],
+PercentAllMet: &self.columns[37],
+},
+ExpeditionParamsElement {RewardItem: &self.columns[38],
+RequiredPhysical: &self.columns[39],
+RequiredMental: &self.columns[40],
+RequiredTactical: &self.columns[41],
+RewardQuantity: &self.columns[42],
+PercentPhysicalMet: &self.columns[43],
+PercentMentalMet: &self.columns[44],
+PercentTacticalMet: &self.columns[45],
+PercentAllMet: &self.columns[46],
+},
+ExpeditionParamsElement {RewardItem: &self.columns[47],
+RequiredPhysical: &self.columns[48],
+RequiredMental: &self.columns[49],
+RequiredTactical: &self.columns[50],
+RewardQuantity: &self.columns[51],
+PercentPhysicalMet: &self.columns[52],
+PercentMentalMet: &self.columns[53],
+PercentTacticalMet: &self.columns[54],
+PercentAllMet: &self.columns[55],
+},
+]
 }
 pub fn RewardExperience(&self) -> &ColumnData {
-&self.columns[8]
+&self.columns[56]
 }
 pub fn RequiredSeals(&self) -> &ColumnData {
-&self.columns[9]
+&self.columns[57]
 }
 pub fn RequiredFlag(&self) -> &ColumnData {
-&self.columns[10]
+&self.columns[58]
 }
 pub fn UnlockFlag(&self) -> &ColumnData {
-&self.columns[11]
+&self.columns[59]
 }
 pub fn RequiredLevel(&self) -> &ColumnData {
-&self.columns[12]
+&self.columns[60]
 }
 pub fn PercentBase(&self) -> &ColumnData {
-&self.columns[13]
+&self.columns[61]
 }
 pub fn Unknown0(&self) -> &ColumnData {
-&self.columns[14]
+&self.columns[62]
 }
 pub fn GcArmyExpeditionType(&self) -> &ColumnData {
-&self.columns[15]
+&self.columns[63]
 }
 }

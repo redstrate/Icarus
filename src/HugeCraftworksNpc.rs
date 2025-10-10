@@ -1,6 +1,22 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct HugeCraftworksTurnInParamElement<'a> {
+RequestedItem: &'a ColumnData,
+Unknown0: &'a ColumnData,
+RequestedQuantity: &'a ColumnData,
+Unknown1: &'a ColumnData,
+Unknown2: &'a ColumnData,
+Unknown3: &'a ColumnData,
+Unknown4: &'a ColumnData,
+Unknown5: &'a ColumnData,
+Unknown6: &'a ColumnData,
+}
+pub struct HugeCraftworksRewardParamElement<'a> {
+RewardItem: &'a ColumnData,
+RewardQuantity: &'a ColumnData,
+RewardHQ: &'a ColumnData,
+}
 pub struct HugeCraftworksNpcSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,19 +75,103 @@ pub struct HugeCraftworksNpcRow {
 columns: Vec<ColumnData>,
 }
 impl HugeCraftworksNpcRow {
-pub fn HugeCraftworksTurnInParam(&self) -> [&ColumnData; 6] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],]
+pub fn HugeCraftworksTurnInParam<'a>(&'a self) -> [HugeCraftworksTurnInParamElement<'a>; 6] {
+[HugeCraftworksTurnInParamElement {RequestedItem: &self.columns[0],
+Unknown0: &self.columns[1],
+RequestedQuantity: &self.columns[2],
+Unknown1: &self.columns[3],
+Unknown2: &self.columns[4],
+Unknown3: &self.columns[5],
+Unknown4: &self.columns[6],
+Unknown5: &self.columns[7],
+Unknown6: &self.columns[8],
+},
+HugeCraftworksTurnInParamElement {RequestedItem: &self.columns[9],
+Unknown0: &self.columns[10],
+RequestedQuantity: &self.columns[11],
+Unknown1: &self.columns[12],
+Unknown2: &self.columns[13],
+Unknown3: &self.columns[14],
+Unknown4: &self.columns[15],
+Unknown5: &self.columns[16],
+Unknown6: &self.columns[17],
+},
+HugeCraftworksTurnInParamElement {RequestedItem: &self.columns[18],
+Unknown0: &self.columns[19],
+RequestedQuantity: &self.columns[20],
+Unknown1: &self.columns[21],
+Unknown2: &self.columns[22],
+Unknown3: &self.columns[23],
+Unknown4: &self.columns[24],
+Unknown5: &self.columns[25],
+Unknown6: &self.columns[26],
+},
+HugeCraftworksTurnInParamElement {RequestedItem: &self.columns[27],
+Unknown0: &self.columns[28],
+RequestedQuantity: &self.columns[29],
+Unknown1: &self.columns[30],
+Unknown2: &self.columns[31],
+Unknown3: &self.columns[32],
+Unknown4: &self.columns[33],
+Unknown5: &self.columns[34],
+Unknown6: &self.columns[35],
+},
+HugeCraftworksTurnInParamElement {RequestedItem: &self.columns[36],
+Unknown0: &self.columns[37],
+RequestedQuantity: &self.columns[38],
+Unknown1: &self.columns[39],
+Unknown2: &self.columns[40],
+Unknown3: &self.columns[41],
+Unknown4: &self.columns[42],
+Unknown5: &self.columns[43],
+Unknown6: &self.columns[44],
+},
+HugeCraftworksTurnInParamElement {RequestedItem: &self.columns[45],
+Unknown0: &self.columns[46],
+RequestedQuantity: &self.columns[47],
+Unknown1: &self.columns[48],
+Unknown2: &self.columns[49],
+Unknown3: &self.columns[50],
+Unknown4: &self.columns[51],
+Unknown5: &self.columns[52],
+Unknown6: &self.columns[53],
+},
+]
 }
-pub fn HugeCraftworksRewardParam(&self) -> [&ColumnData; 6] {
-[&self.columns[6],&self.columns[7],&self.columns[8],&self.columns[9],&self.columns[10],&self.columns[11],]
+pub fn HugeCraftworksRewardParam<'a>(&'a self) -> [HugeCraftworksRewardParamElement<'a>; 6] {
+[HugeCraftworksRewardParamElement {RewardItem: &self.columns[54],
+RewardQuantity: &self.columns[55],
+RewardHQ: &self.columns[56],
+},
+HugeCraftworksRewardParamElement {RewardItem: &self.columns[57],
+RewardQuantity: &self.columns[58],
+RewardHQ: &self.columns[59],
+},
+HugeCraftworksRewardParamElement {RewardItem: &self.columns[60],
+RewardQuantity: &self.columns[61],
+RewardHQ: &self.columns[62],
+},
+HugeCraftworksRewardParamElement {RewardItem: &self.columns[63],
+RewardQuantity: &self.columns[64],
+RewardHQ: &self.columns[65],
+},
+HugeCraftworksRewardParamElement {RewardItem: &self.columns[66],
+RewardQuantity: &self.columns[67],
+RewardHQ: &self.columns[68],
+},
+HugeCraftworksRewardParamElement {RewardItem: &self.columns[69],
+RewardQuantity: &self.columns[70],
+RewardHQ: &self.columns[71],
+},
+]
 }
 pub fn Transient(&self) -> &ColumnData {
-&self.columns[12]
+&self.columns[72]
 }
 pub fn EventNpc(&self) -> &ColumnData {
-&self.columns[13]
+&self.columns[73]
 }
 pub fn ClassJobCategory(&self) -> &ColumnData {
-&self.columns[14]
+&self.columns[74]
 }
 }

@@ -75,11 +75,11 @@ pub fn Unknown1(&self) -> &ColumnData {
 &self.columns[14]
 }
 /// 1 = Quest
-2 = Quest with specific Sequence
-3 = AetherCurrent
-4 = EurekaStoryProgress
-5 = DomaStoryProgress
-
+ /// 2 = Quest with specific Sequence
+ /// 3 = AetherCurrent
+ /// 4 = EurekaStoryProgress
+ /// 5 = DomaStoryProgress
+ /// 
 pub fn RequirementType(&self) -> [&ColumnData; 6] {
 [&self.columns[15],&self.columns[16],&self.columns[17],&self.columns[18],&self.columns[19],&self.columns[20],]
 }

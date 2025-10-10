@@ -1,6 +1,12 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct IndividualWeatherDataElement<'a> {
+Quest: &'a ColumnData,
+Unknown0: &'a ColumnData,
+Weather: &'a ColumnData,
+Unknown1: &'a ColumnData,
+}
 pub struct IndividualWeatherSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,7 +65,42 @@ pub struct IndividualWeatherRow {
 columns: Vec<ColumnData>,
 }
 impl IndividualWeatherRow {
-pub fn IndividualWeatherData(&self) -> [&ColumnData; 7] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],]
+pub fn IndividualWeatherData<'a>(&'a self) -> [IndividualWeatherDataElement<'a>; 7] {
+[IndividualWeatherDataElement {Quest: &self.columns[0],
+Unknown0: &self.columns[1],
+Weather: &self.columns[2],
+Unknown1: &self.columns[3],
+},
+IndividualWeatherDataElement {Quest: &self.columns[4],
+Unknown0: &self.columns[5],
+Weather: &self.columns[6],
+Unknown1: &self.columns[7],
+},
+IndividualWeatherDataElement {Quest: &self.columns[8],
+Unknown0: &self.columns[9],
+Weather: &self.columns[10],
+Unknown1: &self.columns[11],
+},
+IndividualWeatherDataElement {Quest: &self.columns[12],
+Unknown0: &self.columns[13],
+Weather: &self.columns[14],
+Unknown1: &self.columns[15],
+},
+IndividualWeatherDataElement {Quest: &self.columns[16],
+Unknown0: &self.columns[17],
+Weather: &self.columns[18],
+Unknown1: &self.columns[19],
+},
+IndividualWeatherDataElement {Quest: &self.columns[20],
+Unknown0: &self.columns[21],
+Weather: &self.columns[22],
+Unknown1: &self.columns[23],
+},
+IndividualWeatherDataElement {Quest: &self.columns[24],
+Unknown0: &self.columns[25],
+Weather: &self.columns[26],
+Unknown1: &self.columns[27],
+},
+]
 }
 }

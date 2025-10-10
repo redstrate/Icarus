@@ -1,6 +1,10 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct ScriptElement<'a> {
+ScriptInstruction: &'a ColumnData,
+ScriptArg: &'a ColumnData,
+}
 pub struct CustomTalkSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,64 +63,154 @@ pub struct CustomTalkRow {
 columns: Vec<ColumnData>,
 }
 impl CustomTalkRow {
-pub fn Script(&self) -> [&ColumnData; 30] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],&self.columns[9],&self.columns[10],&self.columns[11],&self.columns[12],&self.columns[13],&self.columns[14],&self.columns[15],&self.columns[16],&self.columns[17],&self.columns[18],&self.columns[19],&self.columns[20],&self.columns[21],&self.columns[22],&self.columns[23],&self.columns[24],&self.columns[25],&self.columns[26],&self.columns[27],&self.columns[28],&self.columns[29],]
+pub fn Script<'a>(&'a self) -> [ScriptElement<'a>; 30] {
+[ScriptElement {ScriptInstruction: &self.columns[0],
+ScriptArg: &self.columns[1],
+},
+ScriptElement {ScriptInstruction: &self.columns[2],
+ScriptArg: &self.columns[3],
+},
+ScriptElement {ScriptInstruction: &self.columns[4],
+ScriptArg: &self.columns[5],
+},
+ScriptElement {ScriptInstruction: &self.columns[6],
+ScriptArg: &self.columns[7],
+},
+ScriptElement {ScriptInstruction: &self.columns[8],
+ScriptArg: &self.columns[9],
+},
+ScriptElement {ScriptInstruction: &self.columns[10],
+ScriptArg: &self.columns[11],
+},
+ScriptElement {ScriptInstruction: &self.columns[12],
+ScriptArg: &self.columns[13],
+},
+ScriptElement {ScriptInstruction: &self.columns[14],
+ScriptArg: &self.columns[15],
+},
+ScriptElement {ScriptInstruction: &self.columns[16],
+ScriptArg: &self.columns[17],
+},
+ScriptElement {ScriptInstruction: &self.columns[18],
+ScriptArg: &self.columns[19],
+},
+ScriptElement {ScriptInstruction: &self.columns[20],
+ScriptArg: &self.columns[21],
+},
+ScriptElement {ScriptInstruction: &self.columns[22],
+ScriptArg: &self.columns[23],
+},
+ScriptElement {ScriptInstruction: &self.columns[24],
+ScriptArg: &self.columns[25],
+},
+ScriptElement {ScriptInstruction: &self.columns[26],
+ScriptArg: &self.columns[27],
+},
+ScriptElement {ScriptInstruction: &self.columns[28],
+ScriptArg: &self.columns[29],
+},
+ScriptElement {ScriptInstruction: &self.columns[30],
+ScriptArg: &self.columns[31],
+},
+ScriptElement {ScriptInstruction: &self.columns[32],
+ScriptArg: &self.columns[33],
+},
+ScriptElement {ScriptInstruction: &self.columns[34],
+ScriptArg: &self.columns[35],
+},
+ScriptElement {ScriptInstruction: &self.columns[36],
+ScriptArg: &self.columns[37],
+},
+ScriptElement {ScriptInstruction: &self.columns[38],
+ScriptArg: &self.columns[39],
+},
+ScriptElement {ScriptInstruction: &self.columns[40],
+ScriptArg: &self.columns[41],
+},
+ScriptElement {ScriptInstruction: &self.columns[42],
+ScriptArg: &self.columns[43],
+},
+ScriptElement {ScriptInstruction: &self.columns[44],
+ScriptArg: &self.columns[45],
+},
+ScriptElement {ScriptInstruction: &self.columns[46],
+ScriptArg: &self.columns[47],
+},
+ScriptElement {ScriptInstruction: &self.columns[48],
+ScriptArg: &self.columns[49],
+},
+ScriptElement {ScriptInstruction: &self.columns[50],
+ScriptArg: &self.columns[51],
+},
+ScriptElement {ScriptInstruction: &self.columns[52],
+ScriptArg: &self.columns[53],
+},
+ScriptElement {ScriptInstruction: &self.columns[54],
+ScriptArg: &self.columns[55],
+},
+ScriptElement {ScriptInstruction: &self.columns[56],
+ScriptArg: &self.columns[57],
+},
+ScriptElement {ScriptInstruction: &self.columns[58],
+ScriptArg: &self.columns[59],
+},
+]
 }
 pub fn MainOption(&self) -> &ColumnData {
-&self.columns[30]
+&self.columns[60]
 }
 pub fn SubOption(&self) -> &ColumnData {
-&self.columns[31]
+&self.columns[61]
 }
 pub fn Name(&self) -> &ColumnData {
-&self.columns[32]
+&self.columns[62]
 }
 pub fn IconActor(&self) -> &ColumnData {
-&self.columns[33]
+&self.columns[63]
 }
 pub fn IconMap(&self) -> &ColumnData {
-&self.columns[34]
+&self.columns[64]
 }
 pub fn SpecialLinks(&self) -> &ColumnData {
-&self.columns[35]
+&self.columns[65]
 }
 pub fn Unknown0(&self) -> &ColumnData {
-&self.columns[36]
+&self.columns[66]
 }
 pub fn Unknown1(&self) -> &ColumnData {
-&self.columns[37]
+&self.columns[67]
 }
 pub fn Unknown2(&self) -> &ColumnData {
-&self.columns[38]
+&self.columns[68]
 }
 pub fn Unknown3(&self) -> &ColumnData {
-&self.columns[39]
+&self.columns[69]
 }
 pub fn Unknown4(&self) -> &ColumnData {
-&self.columns[40]
+&self.columns[70]
 }
 pub fn Unknown5(&self) -> &ColumnData {
-&self.columns[41]
+&self.columns[71]
 }
 pub fn Unknown6(&self) -> &ColumnData {
-&self.columns[42]
+&self.columns[72]
 }
 pub fn Unknown7(&self) -> &ColumnData {
-&self.columns[43]
+&self.columns[73]
 }
 pub fn Unknown8(&self) -> &ColumnData {
-&self.columns[44]
+&self.columns[74]
 }
 pub fn Unknown9(&self) -> &ColumnData {
-&self.columns[45]
+&self.columns[75]
 }
 pub fn Unknown10(&self) -> &ColumnData {
-&self.columns[46]
+&self.columns[76]
 }
 pub fn Unknown11(&self) -> &ColumnData {
-&self.columns[47]
+&self.columns[77]
 }
 pub fn Unknown12(&self) -> &ColumnData {
-&self.columns[48]
+&self.columns[78]
 }
 }

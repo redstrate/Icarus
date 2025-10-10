@@ -1,6 +1,11 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct ItemDataElement<'a> {
+Item: &'a ColumnData,
+Cost: &'a ColumnData,
+FCRankRequired: &'a ColumnData,
+}
 pub struct FccShopSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -62,7 +67,47 @@ impl FccShopRow {
 pub fn Name(&self) -> &ColumnData {
 &self.columns[0]
 }
-pub fn ItemData(&self) -> [&ColumnData; 10] {
-[&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],&self.columns[9],&self.columns[10],]
+pub fn ItemData<'a>(&'a self) -> [ItemDataElement<'a>; 10] {
+[ItemDataElement {Item: &self.columns[1],
+Cost: &self.columns[2],
+FCRankRequired: &self.columns[3],
+},
+ItemDataElement {Item: &self.columns[4],
+Cost: &self.columns[5],
+FCRankRequired: &self.columns[6],
+},
+ItemDataElement {Item: &self.columns[7],
+Cost: &self.columns[8],
+FCRankRequired: &self.columns[9],
+},
+ItemDataElement {Item: &self.columns[10],
+Cost: &self.columns[11],
+FCRankRequired: &self.columns[12],
+},
+ItemDataElement {Item: &self.columns[13],
+Cost: &self.columns[14],
+FCRankRequired: &self.columns[15],
+},
+ItemDataElement {Item: &self.columns[16],
+Cost: &self.columns[17],
+FCRankRequired: &self.columns[18],
+},
+ItemDataElement {Item: &self.columns[19],
+Cost: &self.columns[20],
+FCRankRequired: &self.columns[21],
+},
+ItemDataElement {Item: &self.columns[22],
+Cost: &self.columns[23],
+FCRankRequired: &self.columns[24],
+},
+ItemDataElement {Item: &self.columns[25],
+Cost: &self.columns[26],
+FCRankRequired: &self.columns[27],
+},
+ItemDataElement {Item: &self.columns[28],
+Cost: &self.columns[29],
+FCRankRequired: &self.columns[30],
+},
+]
 }
 }

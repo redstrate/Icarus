@@ -1,6 +1,10 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct OpenContentDataElement<'a> {
+CandidateName: &'a ColumnData,
+Content: &'a ColumnData,
+}
 pub struct OpenContentSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,7 +63,55 @@ pub struct OpenContentRow {
 columns: Vec<ColumnData>,
 }
 impl OpenContentRow {
-pub fn OpenContentData(&self) -> [&ColumnData; 16] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],&self.columns[9],&self.columns[10],&self.columns[11],&self.columns[12],&self.columns[13],&self.columns[14],&self.columns[15],]
+pub fn OpenContentData<'a>(&'a self) -> [OpenContentDataElement<'a>; 16] {
+[OpenContentDataElement {CandidateName: &self.columns[0],
+Content: &self.columns[1],
+},
+OpenContentDataElement {CandidateName: &self.columns[2],
+Content: &self.columns[3],
+},
+OpenContentDataElement {CandidateName: &self.columns[4],
+Content: &self.columns[5],
+},
+OpenContentDataElement {CandidateName: &self.columns[6],
+Content: &self.columns[7],
+},
+OpenContentDataElement {CandidateName: &self.columns[8],
+Content: &self.columns[9],
+},
+OpenContentDataElement {CandidateName: &self.columns[10],
+Content: &self.columns[11],
+},
+OpenContentDataElement {CandidateName: &self.columns[12],
+Content: &self.columns[13],
+},
+OpenContentDataElement {CandidateName: &self.columns[14],
+Content: &self.columns[15],
+},
+OpenContentDataElement {CandidateName: &self.columns[16],
+Content: &self.columns[17],
+},
+OpenContentDataElement {CandidateName: &self.columns[18],
+Content: &self.columns[19],
+},
+OpenContentDataElement {CandidateName: &self.columns[20],
+Content: &self.columns[21],
+},
+OpenContentDataElement {CandidateName: &self.columns[22],
+Content: &self.columns[23],
+},
+OpenContentDataElement {CandidateName: &self.columns[24],
+Content: &self.columns[25],
+},
+OpenContentDataElement {CandidateName: &self.columns[26],
+Content: &self.columns[27],
+},
+OpenContentDataElement {CandidateName: &self.columns[28],
+Content: &self.columns[29],
+},
+OpenContentDataElement {CandidateName: &self.columns[30],
+Content: &self.columns[31],
+},
+]
 }
 }

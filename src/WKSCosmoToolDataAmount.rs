@@ -1,6 +1,10 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct StagesElement<'a> {
+RequiredAmount: &'a ColumnData,
+MaxAmount: &'a ColumnData,
+}
 pub struct WKSCosmoToolDataAmountSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,7 +63,49 @@ pub struct WKSCosmoToolDataAmountRow {
 columns: Vec<ColumnData>,
 }
 impl WKSCosmoToolDataAmountRow {
-pub fn Stages(&self) -> [&ColumnData; 14] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],&self.columns[9],&self.columns[10],&self.columns[11],&self.columns[12],&self.columns[13],]
+pub fn Stages<'a>(&'a self) -> [StagesElement<'a>; 14] {
+[StagesElement {RequiredAmount: &self.columns[0],
+MaxAmount: &self.columns[1],
+},
+StagesElement {RequiredAmount: &self.columns[2],
+MaxAmount: &self.columns[3],
+},
+StagesElement {RequiredAmount: &self.columns[4],
+MaxAmount: &self.columns[5],
+},
+StagesElement {RequiredAmount: &self.columns[6],
+MaxAmount: &self.columns[7],
+},
+StagesElement {RequiredAmount: &self.columns[8],
+MaxAmount: &self.columns[9],
+},
+StagesElement {RequiredAmount: &self.columns[10],
+MaxAmount: &self.columns[11],
+},
+StagesElement {RequiredAmount: &self.columns[12],
+MaxAmount: &self.columns[13],
+},
+StagesElement {RequiredAmount: &self.columns[14],
+MaxAmount: &self.columns[15],
+},
+StagesElement {RequiredAmount: &self.columns[16],
+MaxAmount: &self.columns[17],
+},
+StagesElement {RequiredAmount: &self.columns[18],
+MaxAmount: &self.columns[19],
+},
+StagesElement {RequiredAmount: &self.columns[20],
+MaxAmount: &self.columns[21],
+},
+StagesElement {RequiredAmount: &self.columns[22],
+MaxAmount: &self.columns[23],
+},
+StagesElement {RequiredAmount: &self.columns[24],
+MaxAmount: &self.columns[25],
+},
+StagesElement {RequiredAmount: &self.columns[26],
+MaxAmount: &self.columns[27],
+},
+]
 }
 }

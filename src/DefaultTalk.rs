@@ -1,6 +1,14 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct DefaultTalkParamsElement<'a> {
+ActionTimelinePose: &'a ColumnData,
+Unknown0: &'a ColumnData,
+Unknown1: &'a ColumnData,
+Unknown2: &'a ColumnData,
+Unknown3: &'a ColumnData,
+Unknown4: &'a ColumnData,
+}
 pub struct DefaultTalkSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,16 +67,37 @@ pub struct DefaultTalkRow {
 columns: Vec<ColumnData>,
 }
 impl DefaultTalkRow {
-pub fn DefaultTalkParams(&self) -> [&ColumnData; 3] {
-[&self.columns[0],&self.columns[1],&self.columns[2],]
+pub fn DefaultTalkParams<'a>(&'a self) -> [DefaultTalkParamsElement<'a>; 3] {
+[DefaultTalkParamsElement {ActionTimelinePose: &self.columns[0],
+Unknown0: &self.columns[1],
+Unknown1: &self.columns[2],
+Unknown2: &self.columns[3],
+Unknown3: &self.columns[4],
+Unknown4: &self.columns[5],
+},
+DefaultTalkParamsElement {ActionTimelinePose: &self.columns[6],
+Unknown0: &self.columns[7],
+Unknown1: &self.columns[8],
+Unknown2: &self.columns[9],
+Unknown3: &self.columns[10],
+Unknown4: &self.columns[11],
+},
+DefaultTalkParamsElement {ActionTimelinePose: &self.columns[12],
+Unknown0: &self.columns[13],
+Unknown1: &self.columns[14],
+Unknown2: &self.columns[15],
+Unknown3: &self.columns[16],
+Unknown4: &self.columns[17],
+},
+]
 }
 pub fn Text(&self) -> [&ColumnData; 3] {
-[&self.columns[3],&self.columns[4],&self.columns[5],]
+[&self.columns[18],&self.columns[19],&self.columns[20],]
 }
 pub fn Unknown0(&self) -> &ColumnData {
-&self.columns[6]
+&self.columns[21]
 }
 pub fn Unknown1(&self) -> &ColumnData {
-&self.columns[7]
+&self.columns[22]
 }
 }

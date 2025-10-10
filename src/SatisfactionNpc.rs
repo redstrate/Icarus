@@ -1,6 +1,18 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct SatisfactionNpcParamsElement<'a> {
+SupplyIndex: &'a ColumnData,
+Item: &'a ColumnData,
+SatisfactionRequired: &'a ColumnData,
+ItemCount: &'a ColumnData,
+IsHQ: &'a ColumnData,
+}
+pub struct RankParamsElement<'a> {
+ImageId: &'a ColumnData,
+Unknown1: &'a ColumnData,
+Quest: &'a ColumnData,
+}
 pub struct SatisfactionNpcSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,37 +71,97 @@ pub struct SatisfactionNpcRow {
 columns: Vec<ColumnData>,
 }
 impl SatisfactionNpcRow {
-pub fn SatisfactionNpcParams(&self) -> [&ColumnData; 6] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],]
+pub fn SatisfactionNpcParams<'a>(&'a self) -> [SatisfactionNpcParamsElement<'a>; 6] {
+[SatisfactionNpcParamsElement {SupplyIndex: &self.columns[0],
+Item: &self.columns[1],
+SatisfactionRequired: &self.columns[2],
+ItemCount: &self.columns[3],
+IsHQ: &self.columns[4],
+},
+SatisfactionNpcParamsElement {SupplyIndex: &self.columns[5],
+Item: &self.columns[6],
+SatisfactionRequired: &self.columns[7],
+ItemCount: &self.columns[8],
+IsHQ: &self.columns[9],
+},
+SatisfactionNpcParamsElement {SupplyIndex: &self.columns[10],
+Item: &self.columns[11],
+SatisfactionRequired: &self.columns[12],
+ItemCount: &self.columns[13],
+IsHQ: &self.columns[14],
+},
+SatisfactionNpcParamsElement {SupplyIndex: &self.columns[15],
+Item: &self.columns[16],
+SatisfactionRequired: &self.columns[17],
+ItemCount: &self.columns[18],
+IsHQ: &self.columns[19],
+},
+SatisfactionNpcParamsElement {SupplyIndex: &self.columns[20],
+Item: &self.columns[21],
+SatisfactionRequired: &self.columns[22],
+ItemCount: &self.columns[23],
+IsHQ: &self.columns[24],
+},
+SatisfactionNpcParamsElement {SupplyIndex: &self.columns[25],
+Item: &self.columns[26],
+SatisfactionRequired: &self.columns[27],
+ItemCount: &self.columns[28],
+IsHQ: &self.columns[29],
+},
+]
 }
-pub fn RankParams(&self) -> [&ColumnData; 6] {
-[&self.columns[6],&self.columns[7],&self.columns[8],&self.columns[9],&self.columns[10],&self.columns[11],]
+pub fn RankParams<'a>(&'a self) -> [RankParamsElement<'a>; 6] {
+[RankParamsElement {ImageId: &self.columns[30],
+Unknown1: &self.columns[31],
+Quest: &self.columns[32],
+},
+RankParamsElement {ImageId: &self.columns[33],
+Unknown1: &self.columns[34],
+Quest: &self.columns[35],
+},
+RankParamsElement {ImageId: &self.columns[36],
+Unknown1: &self.columns[37],
+Quest: &self.columns[38],
+},
+RankParamsElement {ImageId: &self.columns[39],
+Unknown1: &self.columns[40],
+Quest: &self.columns[41],
+},
+RankParamsElement {ImageId: &self.columns[42],
+Unknown1: &self.columns[43],
+Quest: &self.columns[44],
+},
+RankParamsElement {ImageId: &self.columns[45],
+Unknown1: &self.columns[46],
+Quest: &self.columns[47],
+},
+]
 }
 pub fn Unknown0(&self) -> &ColumnData {
-&self.columns[12]
+&self.columns[48]
 }
 pub fn Npc(&self) -> &ColumnData {
-&self.columns[13]
+&self.columns[49]
 }
 pub fn QuestRequired(&self) -> &ColumnData {
-&self.columns[14]
+&self.columns[50]
 }
 pub fn Icon(&self) -> &ColumnData {
-&self.columns[15]
+&self.columns[51]
 }
 pub fn LevelUnlock(&self) -> &ColumnData {
-&self.columns[16]
+&self.columns[52]
 }
 pub fn DeliveriesPerWeek(&self) -> &ColumnData {
-&self.columns[17]
+&self.columns[53]
 }
 pub fn GlamourIndex(&self) -> &ColumnData {
-&self.columns[18]
+&self.columns[54]
 }
 pub fn Unknown19(&self) -> &ColumnData {
-&self.columns[19]
+&self.columns[55]
 }
 pub fn Unknown20(&self) -> &ColumnData {
-&self.columns[20]
+&self.columns[56]
 }
 }

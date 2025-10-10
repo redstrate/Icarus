@@ -1,6 +1,12 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct SatisfactionSupplyRewardDataElement<'a> {
+RewardCurrency: &'a ColumnData,
+QuantityLow: &'a ColumnData,
+QuantityMid: &'a ColumnData,
+QuantityHigh: &'a ColumnData,
+}
 pub struct SatisfactionSupplyRewardSheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,32 +65,42 @@ pub struct SatisfactionSupplyRewardRow {
 columns: Vec<ColumnData>,
 }
 impl SatisfactionSupplyRewardRow {
-pub fn SatisfactionSupplyRewardData(&self) -> [&ColumnData; 2] {
-[&self.columns[0],&self.columns[1],]
+pub fn SatisfactionSupplyRewardData<'a>(&'a self) -> [SatisfactionSupplyRewardDataElement<'a>; 2] {
+[SatisfactionSupplyRewardDataElement {RewardCurrency: &self.columns[0],
+QuantityLow: &self.columns[1],
+QuantityMid: &self.columns[2],
+QuantityHigh: &self.columns[3],
+},
+SatisfactionSupplyRewardDataElement {RewardCurrency: &self.columns[4],
+QuantityLow: &self.columns[5],
+QuantityMid: &self.columns[6],
+QuantityHigh: &self.columns[7],
+},
+]
 }
 pub fn SatisfactionLow(&self) -> &ColumnData {
-&self.columns[2]
+&self.columns[8]
 }
 pub fn SatisfactionMid(&self) -> &ColumnData {
-&self.columns[3]
+&self.columns[9]
 }
 pub fn SatisfactionHigh(&self) -> &ColumnData {
-&self.columns[4]
+&self.columns[10]
 }
 pub fn GilLow(&self) -> &ColumnData {
-&self.columns[5]
+&self.columns[11]
 }
 pub fn GilMid(&self) -> &ColumnData {
-&self.columns[6]
+&self.columns[12]
 }
 pub fn GilHigh(&self) -> &ColumnData {
-&self.columns[7]
+&self.columns[13]
 }
 pub fn BonusMultiplier(&self) -> &ColumnData {
-&self.columns[8]
+&self.columns[14]
 }
 /// 0 == current cap
 pub fn MinLevelForSecondReward(&self) -> &ColumnData {
-&self.columns[9]
+&self.columns[15]
 }
 }

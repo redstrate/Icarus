@@ -1,6 +1,11 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct RelaysElement<'a> {
+EnterTerritory: &'a ColumnData,
+ExitTerritory: &'a ColumnData,
+Cost: &'a ColumnData,
+}
 pub struct TelepoRelaySheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,10 +64,46 @@ pub struct TelepoRelayRow {
 columns: Vec<ColumnData>,
 }
 impl TelepoRelayRow {
-pub fn Relays(&self) -> [&ColumnData; 9] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],&self.columns[8],]
+pub fn Relays<'a>(&'a self) -> [RelaysElement<'a>; 9] {
+[RelaysElement {EnterTerritory: &self.columns[0],
+ExitTerritory: &self.columns[1],
+Cost: &self.columns[2],
+},
+RelaysElement {EnterTerritory: &self.columns[3],
+ExitTerritory: &self.columns[4],
+Cost: &self.columns[5],
+},
+RelaysElement {EnterTerritory: &self.columns[6],
+ExitTerritory: &self.columns[7],
+Cost: &self.columns[8],
+},
+RelaysElement {EnterTerritory: &self.columns[9],
+ExitTerritory: &self.columns[10],
+Cost: &self.columns[11],
+},
+RelaysElement {EnterTerritory: &self.columns[12],
+ExitTerritory: &self.columns[13],
+Cost: &self.columns[14],
+},
+RelaysElement {EnterTerritory: &self.columns[15],
+ExitTerritory: &self.columns[16],
+Cost: &self.columns[17],
+},
+RelaysElement {EnterTerritory: &self.columns[18],
+ExitTerritory: &self.columns[19],
+Cost: &self.columns[20],
+},
+RelaysElement {EnterTerritory: &self.columns[21],
+ExitTerritory: &self.columns[22],
+Cost: &self.columns[23],
+},
+RelaysElement {EnterTerritory: &self.columns[24],
+ExitTerritory: &self.columns[25],
+Cost: &self.columns[26],
+},
+]
 }
 pub fn Unknown_70(&self) -> &ColumnData {
-&self.columns[9]
+&self.columns[27]
 }
 }

@@ -1,6 +1,19 @@
 #![allow(warnings)]
 /// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
 use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+pub struct ItemElement<'a> {
+ItemId: &'a ColumnData,
+XPReward: &'a ColumnData,
+CollectabilityMid: &'a ColumnData,
+CollectabilityHigh: &'a ColumnData,
+GilReward: &'a ColumnData,
+Level: &'a ColumnData,
+HighXPMultiplier: &'a ColumnData,
+HighGilMultiplier: &'a ColumnData,
+Unknown8: &'a ColumnData,
+ScripReward: &'a ColumnData,
+HighScripMultiplier: &'a ColumnData,
+}
 pub struct SharlayanCraftWorksSupplySheet {
 pages: Vec<EXD>,
 exh: EXH,
@@ -59,7 +72,55 @@ pub struct SharlayanCraftWorksSupplyRow {
 columns: Vec<ColumnData>,
 }
 impl SharlayanCraftWorksSupplyRow {
-pub fn Item(&self) -> [&ColumnData; 4] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],]
+pub fn Item<'a>(&'a self) -> [ItemElement<'a>; 4] {
+[ItemElement {ItemId: &self.columns[0],
+XPReward: &self.columns[1],
+CollectabilityMid: &self.columns[2],
+CollectabilityHigh: &self.columns[3],
+GilReward: &self.columns[4],
+Level: &self.columns[5],
+HighXPMultiplier: &self.columns[6],
+HighGilMultiplier: &self.columns[7],
+Unknown8: &self.columns[8],
+ScripReward: &self.columns[9],
+HighScripMultiplier: &self.columns[10],
+},
+ItemElement {ItemId: &self.columns[11],
+XPReward: &self.columns[12],
+CollectabilityMid: &self.columns[13],
+CollectabilityHigh: &self.columns[14],
+GilReward: &self.columns[15],
+Level: &self.columns[16],
+HighXPMultiplier: &self.columns[17],
+HighGilMultiplier: &self.columns[18],
+Unknown8: &self.columns[19],
+ScripReward: &self.columns[20],
+HighScripMultiplier: &self.columns[21],
+},
+ItemElement {ItemId: &self.columns[22],
+XPReward: &self.columns[23],
+CollectabilityMid: &self.columns[24],
+CollectabilityHigh: &self.columns[25],
+GilReward: &self.columns[26],
+Level: &self.columns[27],
+HighXPMultiplier: &self.columns[28],
+HighGilMultiplier: &self.columns[29],
+Unknown8: &self.columns[30],
+ScripReward: &self.columns[31],
+HighScripMultiplier: &self.columns[32],
+},
+ItemElement {ItemId: &self.columns[33],
+XPReward: &self.columns[34],
+CollectabilityMid: &self.columns[35],
+CollectabilityHigh: &self.columns[36],
+GilReward: &self.columns[37],
+Level: &self.columns[38],
+HighXPMultiplier: &self.columns[39],
+HighGilMultiplier: &self.columns[40],
+Unknown8: &self.columns[41],
+ScripReward: &self.columns[42],
+HighScripMultiplier: &self.columns[43],
+},
+]
 }
 }
