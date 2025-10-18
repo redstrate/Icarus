@@ -1,159 +1,330 @@
+//! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
-/// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
-use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+use physis::{
+    resource::{Resource, read_excel_sheet_header, read_excel_sheet},
+    exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow},
+    exh::{EXH, ExcelColumnDefinition},
+    common::Language,
+};
 pub struct CompanyLeveStructElement<'a> {
-BNpcName: &'a ColumnData,
-ToDoParam: &'a ColumnData,
-BaseID: &'a ColumnData,
-ItemsInvolved: &'a ColumnData,
-EnemyLevel: &'a ColumnData,
-ItemsInvolvedQty: &'a ColumnData,
-ItemDropRate: &'a ColumnData,
-NumOfAppearance: &'a ColumnData,
+    BNpcName: &'a ColumnData,
+    ToDoParam: [&'a ColumnData; 6],
+    BaseID: &'a ColumnData,
+    ItemsInvolved: &'a ColumnData,
+    EnemyLevel: &'a ColumnData,
+    ItemsInvolvedQty: &'a ColumnData,
+    ItemDropRate: &'a ColumnData,
+    NumOfAppearance: [&'a ColumnData; 8],
 }
 pub struct CompanyLeveSheet {
-pages: Vec<EXD>,
-exh: EXH,
-row_count: u32,
+    pages: Vec<EXD>,
+    exh: EXH,
+    row_count: u32,
 }
 impl CompanyLeveSheet {
-pub fn read_from<T: Resource>(resource: &mut T, language: Language) -> Option<Self> {
-let exh = read_excel_sheet_header(resource, "CompanyLeve")?;
-let mut pages = Vec::new();
-for (i, _) in exh.pages.iter().enumerate() {
-pages.push(read_excel_sheet(resource, "CompanyLeve", &exh, language, i)?);
-}let row_count = exh.header.row_count;
-Some(Self {
-exh,
-pages,
-row_count,
-})
-}
-fn read_row(&self, row: &ExcelSingleRow) -> Option<CompanyLeveRow> {
-let column_defs = &self.exh.column_definitions;
-let mut zipped: Vec<_> = row.columns.clone().into_iter().zip(column_defs).collect();
-zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition> ) = zipped.into_iter().unzip();
-Some(CompanyLeveRow { columns })
-}
-/// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-pub fn get_row(&self, row_id: u32) -> Option<CompanyLeveRow> {
-for page in &self.pages {
-let Some(row) = &page.get_row(row_id) else { continue; };
-let row = match row {
-ExcelRowKind::SingleRow(row) => row,
-ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-};
-return self.read_row(row);
-}
-None
-}
-/// Fetches the specified subrow from the sheet.
-pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<CompanyLeveRow> {
-for page in &self.pages {
-let Some(row) = &page.get_row(row_id) else { continue; };
-let row = match row {
-ExcelRowKind::SingleRow(row) => return None,
-ExcelRowKind::SubRows(subrows) => &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1,
-};
-return self.read_row(row);
-}
-None
-}
-/// Returns the number of rows in this sheet.
-pub fn row_count(&self) -> u32 {
-self.row_count
-}
+    /// Read the sheet from a `Resource`.
+    pub fn read_from<T: Resource>(resource: &mut T, language: Language) -> Option<Self> {
+        let exh = read_excel_sheet_header(resource, "CompanyLeve")?;
+        let mut pages = Vec::new();
+        for (i, _) in exh.pages.iter().enumerate() {
+            pages.push(read_excel_sheet(resource, "CompanyLeve", &exh, language, i)?);
+        }
+        let row_count = exh.header.row_count;
+        Some(Self { exh, pages, row_count })
+    }
+    fn read_row(&self, row: &ExcelSingleRow) -> Option<CompanyLeveRow> {
+        let column_defs = &self.exh.column_definitions;
+        let mut zipped: Vec<_> = row
+            .columns
+            .clone()
+            .into_iter()
+            .zip(column_defs)
+            .collect();
+        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+            .into_iter()
+            .unzip();
+        Some(CompanyLeveRow { columns })
+    }
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn get_row(&self, row_id: u32) -> Option<CompanyLeveRow> {
+        for page in &self.pages {
+            let Some(row) = &page.get_row(row_id) else {
+                continue;
+            };
+            let row = match row {
+                ExcelRowKind::SingleRow(row) => row,
+                ExcelRowKind::SubRows(rows) => &rows.first()?.1,
+            };
+            return self.read_row(row);
+        }
+        None
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<CompanyLeveRow> {
+        for page in &self.pages {
+            let Some(row) = &page.get_row(row_id) else {
+                continue;
+            };
+            let row = match row {
+                ExcelRowKind::SingleRow(row) => return None,
+                ExcelRowKind::SubRows(subrows) => {
+                    &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
+                }
+            };
+            return self.read_row(row);
+        }
+        None
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.row_count
+    }
 }
 pub struct CompanyLeveRow {
-columns: Vec<ColumnData>,
+    columns: Vec<ColumnData>,
 }
 impl CompanyLeveRow {
-pub fn RoutePointTime(&self) -> [&ColumnData; 8] {
-[&self.columns[0],&self.columns[1],&self.columns[2],&self.columns[3],&self.columns[4],&self.columns[5],&self.columns[6],&self.columns[7],]
-}
-pub fn CompanyLeveStruct<'a>(&'a self) -> [CompanyLeveStructElement<'a>; 8] {
-[CompanyLeveStructElement {BNpcName: &self.columns[8],
-ToDoParam: &self.columns[9],
-BaseID: &self.columns[10],
-ItemsInvolved: &self.columns[11],
-EnemyLevel: &self.columns[12],
-ItemsInvolvedQty: &self.columns[13],
-ItemDropRate: &self.columns[14],
-NumOfAppearance: &self.columns[15],
-},
-CompanyLeveStructElement {BNpcName: &self.columns[16],
-ToDoParam: &self.columns[17],
-BaseID: &self.columns[18],
-ItemsInvolved: &self.columns[19],
-EnemyLevel: &self.columns[20],
-ItemsInvolvedQty: &self.columns[21],
-ItemDropRate: &self.columns[22],
-NumOfAppearance: &self.columns[23],
-},
-CompanyLeveStructElement {BNpcName: &self.columns[24],
-ToDoParam: &self.columns[25],
-BaseID: &self.columns[26],
-ItemsInvolved: &self.columns[27],
-EnemyLevel: &self.columns[28],
-ItemsInvolvedQty: &self.columns[29],
-ItemDropRate: &self.columns[30],
-NumOfAppearance: &self.columns[31],
-},
-CompanyLeveStructElement {BNpcName: &self.columns[32],
-ToDoParam: &self.columns[33],
-BaseID: &self.columns[34],
-ItemsInvolved: &self.columns[35],
-EnemyLevel: &self.columns[36],
-ItemsInvolvedQty: &self.columns[37],
-ItemDropRate: &self.columns[38],
-NumOfAppearance: &self.columns[39],
-},
-CompanyLeveStructElement {BNpcName: &self.columns[40],
-ToDoParam: &self.columns[41],
-BaseID: &self.columns[42],
-ItemsInvolved: &self.columns[43],
-EnemyLevel: &self.columns[44],
-ItemsInvolvedQty: &self.columns[45],
-ItemDropRate: &self.columns[46],
-NumOfAppearance: &self.columns[47],
-},
-CompanyLeveStructElement {BNpcName: &self.columns[48],
-ToDoParam: &self.columns[49],
-BaseID: &self.columns[50],
-ItemsInvolved: &self.columns[51],
-EnemyLevel: &self.columns[52],
-ItemsInvolvedQty: &self.columns[53],
-ItemDropRate: &self.columns[54],
-NumOfAppearance: &self.columns[55],
-},
-CompanyLeveStructElement {BNpcName: &self.columns[56],
-ToDoParam: &self.columns[57],
-BaseID: &self.columns[58],
-ItemsInvolved: &self.columns[59],
-EnemyLevel: &self.columns[60],
-ItemsInvolvedQty: &self.columns[61],
-ItemDropRate: &self.columns[62],
-NumOfAppearance: &self.columns[63],
-},
-CompanyLeveStructElement {BNpcName: &self.columns[64],
-ToDoParam: &self.columns[65],
-BaseID: &self.columns[66],
-ItemsInvolved: &self.columns[67],
-EnemyLevel: &self.columns[68],
-ItemsInvolvedQty: &self.columns[69],
-ItemDropRate: &self.columns[70],
-NumOfAppearance: &self.columns[71],
-},
-]
-}
-pub fn ToDoSequence(&self) -> [&ColumnData; 8] {
-[&self.columns[72],&self.columns[73],&self.columns[74],&self.columns[75],&self.columns[76],&self.columns[77],&self.columns[78],&self.columns[79],]
-}
-pub fn Rule(&self) -> &ColumnData {
-&self.columns[80]
-}
-pub fn RuleParam(&self) -> &ColumnData {
-&self.columns[81]
-}
+    pub fn RoutePointTime<'a>(&'a self) -> [&'a ColumnData; 8] {
+        [
+            &self.columns[0],
+            &self.columns[1],
+            &self.columns[2],
+            &self.columns[3],
+            &self.columns[4],
+            &self.columns[5],
+            &self.columns[6],
+            &self.columns[7],
+        ]
+    }
+    pub fn CompanyLeveStruct<'a>(&'a self) -> [CompanyLeveStructElement<'a>; 8] {
+        [
+            CompanyLeveStructElement {
+                BNpcName: &self.columns[8],
+                ToDoParam: [
+                    &self.columns[9],
+                    &self.columns[10],
+                    &self.columns[11],
+                    &self.columns[12],
+                    &self.columns[13],
+                    &self.columns[14],
+                ],
+                BaseID: &self.columns[15],
+                ItemsInvolved: &self.columns[16],
+                EnemyLevel: &self.columns[17],
+                ItemsInvolvedQty: &self.columns[18],
+                ItemDropRate: &self.columns[19],
+                NumOfAppearance: [
+                    &self.columns[20],
+                    &self.columns[21],
+                    &self.columns[22],
+                    &self.columns[23],
+                    &self.columns[24],
+                    &self.columns[25],
+                    &self.columns[26],
+                    &self.columns[27],
+                ],
+            },
+            CompanyLeveStructElement {
+                BNpcName: &self.columns[28],
+                ToDoParam: [
+                    &self.columns[29],
+                    &self.columns[30],
+                    &self.columns[31],
+                    &self.columns[32],
+                    &self.columns[33],
+                    &self.columns[34],
+                ],
+                BaseID: &self.columns[35],
+                ItemsInvolved: &self.columns[36],
+                EnemyLevel: &self.columns[37],
+                ItemsInvolvedQty: &self.columns[38],
+                ItemDropRate: &self.columns[39],
+                NumOfAppearance: [
+                    &self.columns[40],
+                    &self.columns[41],
+                    &self.columns[42],
+                    &self.columns[43],
+                    &self.columns[44],
+                    &self.columns[45],
+                    &self.columns[46],
+                    &self.columns[47],
+                ],
+            },
+            CompanyLeveStructElement {
+                BNpcName: &self.columns[48],
+                ToDoParam: [
+                    &self.columns[49],
+                    &self.columns[50],
+                    &self.columns[51],
+                    &self.columns[52],
+                    &self.columns[53],
+                    &self.columns[54],
+                ],
+                BaseID: &self.columns[55],
+                ItemsInvolved: &self.columns[56],
+                EnemyLevel: &self.columns[57],
+                ItemsInvolvedQty: &self.columns[58],
+                ItemDropRate: &self.columns[59],
+                NumOfAppearance: [
+                    &self.columns[60],
+                    &self.columns[61],
+                    &self.columns[62],
+                    &self.columns[63],
+                    &self.columns[64],
+                    &self.columns[65],
+                    &self.columns[66],
+                    &self.columns[67],
+                ],
+            },
+            CompanyLeveStructElement {
+                BNpcName: &self.columns[68],
+                ToDoParam: [
+                    &self.columns[69],
+                    &self.columns[70],
+                    &self.columns[71],
+                    &self.columns[72],
+                    &self.columns[73],
+                    &self.columns[74],
+                ],
+                BaseID: &self.columns[75],
+                ItemsInvolved: &self.columns[76],
+                EnemyLevel: &self.columns[77],
+                ItemsInvolvedQty: &self.columns[78],
+                ItemDropRate: &self.columns[79],
+                NumOfAppearance: [
+                    &self.columns[80],
+                    &self.columns[81],
+                    &self.columns[82],
+                    &self.columns[83],
+                    &self.columns[84],
+                    &self.columns[85],
+                    &self.columns[86],
+                    &self.columns[87],
+                ],
+            },
+            CompanyLeveStructElement {
+                BNpcName: &self.columns[88],
+                ToDoParam: [
+                    &self.columns[89],
+                    &self.columns[90],
+                    &self.columns[91],
+                    &self.columns[92],
+                    &self.columns[93],
+                    &self.columns[94],
+                ],
+                BaseID: &self.columns[95],
+                ItemsInvolved: &self.columns[96],
+                EnemyLevel: &self.columns[97],
+                ItemsInvolvedQty: &self.columns[98],
+                ItemDropRate: &self.columns[99],
+                NumOfAppearance: [
+                    &self.columns[100],
+                    &self.columns[101],
+                    &self.columns[102],
+                    &self.columns[103],
+                    &self.columns[104],
+                    &self.columns[105],
+                    &self.columns[106],
+                    &self.columns[107],
+                ],
+            },
+            CompanyLeveStructElement {
+                BNpcName: &self.columns[108],
+                ToDoParam: [
+                    &self.columns[109],
+                    &self.columns[110],
+                    &self.columns[111],
+                    &self.columns[112],
+                    &self.columns[113],
+                    &self.columns[114],
+                ],
+                BaseID: &self.columns[115],
+                ItemsInvolved: &self.columns[116],
+                EnemyLevel: &self.columns[117],
+                ItemsInvolvedQty: &self.columns[118],
+                ItemDropRate: &self.columns[119],
+                NumOfAppearance: [
+                    &self.columns[120],
+                    &self.columns[121],
+                    &self.columns[122],
+                    &self.columns[123],
+                    &self.columns[124],
+                    &self.columns[125],
+                    &self.columns[126],
+                    &self.columns[127],
+                ],
+            },
+            CompanyLeveStructElement {
+                BNpcName: &self.columns[128],
+                ToDoParam: [
+                    &self.columns[129],
+                    &self.columns[130],
+                    &self.columns[131],
+                    &self.columns[132],
+                    &self.columns[133],
+                    &self.columns[134],
+                ],
+                BaseID: &self.columns[135],
+                ItemsInvolved: &self.columns[136],
+                EnemyLevel: &self.columns[137],
+                ItemsInvolvedQty: &self.columns[138],
+                ItemDropRate: &self.columns[139],
+                NumOfAppearance: [
+                    &self.columns[140],
+                    &self.columns[141],
+                    &self.columns[142],
+                    &self.columns[143],
+                    &self.columns[144],
+                    &self.columns[145],
+                    &self.columns[146],
+                    &self.columns[147],
+                ],
+            },
+            CompanyLeveStructElement {
+                BNpcName: &self.columns[148],
+                ToDoParam: [
+                    &self.columns[149],
+                    &self.columns[150],
+                    &self.columns[151],
+                    &self.columns[152],
+                    &self.columns[153],
+                    &self.columns[154],
+                ],
+                BaseID: &self.columns[155],
+                ItemsInvolved: &self.columns[156],
+                EnemyLevel: &self.columns[157],
+                ItemsInvolvedQty: &self.columns[158],
+                ItemDropRate: &self.columns[159],
+                NumOfAppearance: [
+                    &self.columns[160],
+                    &self.columns[161],
+                    &self.columns[162],
+                    &self.columns[163],
+                    &self.columns[164],
+                    &self.columns[165],
+                    &self.columns[166],
+                    &self.columns[167],
+                ],
+            },
+        ]
+    }
+    pub fn ToDoSequence<'a>(&'a self) -> [&'a ColumnData; 8] {
+        [
+            &self.columns[168],
+            &self.columns[169],
+            &self.columns[170],
+            &self.columns[171],
+            &self.columns[172],
+            &self.columns[173],
+            &self.columns[174],
+            &self.columns[175],
+        ]
+    }
+    pub fn Rule<'a>(&'a self) -> &'a ColumnData {
+        &self.columns[176]
+    }
+    pub fn RuleParam<'a>(&'a self) -> &'a ColumnData {
+        &self.columns[177]
+    }
 }

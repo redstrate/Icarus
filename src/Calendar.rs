@@ -1,165 +1,214 @@
+//! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
-/// This file is auto-generated! It is generated from schema from https://github.com/xivdev/EXDSchema.
-use physis::{resource::{Resource, read_excel_sheet_header, read_excel_sheet}, exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow}, exh::{EXH, ExcelColumnDefinition}, common::Language};
+use physis::{
+    resource::{Resource, read_excel_sheet_header, read_excel_sheet},
+    exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow},
+    exh::{EXH, ExcelColumnDefinition},
+    common::Language,
+};
 pub struct CalendarStructElement<'a> {
-Month: &'a ColumnData,
-Day: &'a ColumnData,
+    Month: &'a ColumnData,
+    Day: &'a ColumnData,
 }
 pub struct CalendarSheet {
-pages: Vec<EXD>,
-exh: EXH,
-row_count: u32,
+    pages: Vec<EXD>,
+    exh: EXH,
+    row_count: u32,
 }
 impl CalendarSheet {
-pub fn read_from<T: Resource>(resource: &mut T, language: Language) -> Option<Self> {
-let exh = read_excel_sheet_header(resource, "Calendar")?;
-let mut pages = Vec::new();
-for (i, _) in exh.pages.iter().enumerate() {
-pages.push(read_excel_sheet(resource, "Calendar", &exh, language, i)?);
-}let row_count = exh.header.row_count;
-Some(Self {
-exh,
-pages,
-row_count,
-})
-}
-fn read_row(&self, row: &ExcelSingleRow) -> Option<CalendarRow> {
-let column_defs = &self.exh.column_definitions;
-let mut zipped: Vec<_> = row.columns.clone().into_iter().zip(column_defs).collect();
-zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition> ) = zipped.into_iter().unzip();
-Some(CalendarRow { columns })
-}
-/// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-pub fn get_row(&self, row_id: u32) -> Option<CalendarRow> {
-for page in &self.pages {
-let Some(row) = &page.get_row(row_id) else { continue; };
-let row = match row {
-ExcelRowKind::SingleRow(row) => row,
-ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-};
-return self.read_row(row);
-}
-None
-}
-/// Fetches the specified subrow from the sheet.
-pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<CalendarRow> {
-for page in &self.pages {
-let Some(row) = &page.get_row(row_id) else { continue; };
-let row = match row {
-ExcelRowKind::SingleRow(row) => return None,
-ExcelRowKind::SubRows(subrows) => &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1,
-};
-return self.read_row(row);
-}
-None
-}
-/// Returns the number of rows in this sheet.
-pub fn row_count(&self) -> u32 {
-self.row_count
-}
+    /// Read the sheet from a `Resource`.
+    pub fn read_from<T: Resource>(resource: &mut T, language: Language) -> Option<Self> {
+        let exh = read_excel_sheet_header(resource, "Calendar")?;
+        let mut pages = Vec::new();
+        for (i, _) in exh.pages.iter().enumerate() {
+            pages.push(read_excel_sheet(resource, "Calendar", &exh, language, i)?);
+        }
+        let row_count = exh.header.row_count;
+        Some(Self { exh, pages, row_count })
+    }
+    fn read_row(&self, row: &ExcelSingleRow) -> Option<CalendarRow> {
+        let column_defs = &self.exh.column_definitions;
+        let mut zipped: Vec<_> = row
+            .columns
+            .clone()
+            .into_iter()
+            .zip(column_defs)
+            .collect();
+        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+            .into_iter()
+            .unzip();
+        Some(CalendarRow { columns })
+    }
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn get_row(&self, row_id: u32) -> Option<CalendarRow> {
+        for page in &self.pages {
+            let Some(row) = &page.get_row(row_id) else {
+                continue;
+            };
+            let row = match row {
+                ExcelRowKind::SingleRow(row) => row,
+                ExcelRowKind::SubRows(rows) => &rows.first()?.1,
+            };
+            return self.read_row(row);
+        }
+        None
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<CalendarRow> {
+        for page in &self.pages {
+            let Some(row) = &page.get_row(row_id) else {
+                continue;
+            };
+            let row = match row {
+                ExcelRowKind::SingleRow(row) => return None,
+                ExcelRowKind::SubRows(subrows) => {
+                    &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
+                }
+            };
+            return self.read_row(row);
+        }
+        None
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.row_count
+    }
 }
 pub struct CalendarRow {
-columns: Vec<ColumnData>,
+    columns: Vec<ColumnData>,
 }
 impl CalendarRow {
-pub fn CalendarStruct<'a>(&'a self) -> [CalendarStructElement<'a>; 32] {
-[CalendarStructElement {Month: &self.columns[0],
-Day: &self.columns[1],
-},
-CalendarStructElement {Month: &self.columns[2],
-Day: &self.columns[3],
-},
-CalendarStructElement {Month: &self.columns[4],
-Day: &self.columns[5],
-},
-CalendarStructElement {Month: &self.columns[6],
-Day: &self.columns[7],
-},
-CalendarStructElement {Month: &self.columns[8],
-Day: &self.columns[9],
-},
-CalendarStructElement {Month: &self.columns[10],
-Day: &self.columns[11],
-},
-CalendarStructElement {Month: &self.columns[12],
-Day: &self.columns[13],
-},
-CalendarStructElement {Month: &self.columns[14],
-Day: &self.columns[15],
-},
-CalendarStructElement {Month: &self.columns[16],
-Day: &self.columns[17],
-},
-CalendarStructElement {Month: &self.columns[18],
-Day: &self.columns[19],
-},
-CalendarStructElement {Month: &self.columns[20],
-Day: &self.columns[21],
-},
-CalendarStructElement {Month: &self.columns[22],
-Day: &self.columns[23],
-},
-CalendarStructElement {Month: &self.columns[24],
-Day: &self.columns[25],
-},
-CalendarStructElement {Month: &self.columns[26],
-Day: &self.columns[27],
-},
-CalendarStructElement {Month: &self.columns[28],
-Day: &self.columns[29],
-},
-CalendarStructElement {Month: &self.columns[30],
-Day: &self.columns[31],
-},
-CalendarStructElement {Month: &self.columns[32],
-Day: &self.columns[33],
-},
-CalendarStructElement {Month: &self.columns[34],
-Day: &self.columns[35],
-},
-CalendarStructElement {Month: &self.columns[36],
-Day: &self.columns[37],
-},
-CalendarStructElement {Month: &self.columns[38],
-Day: &self.columns[39],
-},
-CalendarStructElement {Month: &self.columns[40],
-Day: &self.columns[41],
-},
-CalendarStructElement {Month: &self.columns[42],
-Day: &self.columns[43],
-},
-CalendarStructElement {Month: &self.columns[44],
-Day: &self.columns[45],
-},
-CalendarStructElement {Month: &self.columns[46],
-Day: &self.columns[47],
-},
-CalendarStructElement {Month: &self.columns[48],
-Day: &self.columns[49],
-},
-CalendarStructElement {Month: &self.columns[50],
-Day: &self.columns[51],
-},
-CalendarStructElement {Month: &self.columns[52],
-Day: &self.columns[53],
-},
-CalendarStructElement {Month: &self.columns[54],
-Day: &self.columns[55],
-},
-CalendarStructElement {Month: &self.columns[56],
-Day: &self.columns[57],
-},
-CalendarStructElement {Month: &self.columns[58],
-Day: &self.columns[59],
-},
-CalendarStructElement {Month: &self.columns[60],
-Day: &self.columns[61],
-},
-CalendarStructElement {Month: &self.columns[62],
-Day: &self.columns[63],
-},
-]
-}
+    pub fn CalendarStruct<'a>(&'a self) -> [CalendarStructElement<'a>; 32] {
+        [
+            CalendarStructElement {
+                Month: &self.columns[0],
+                Day: &self.columns[1],
+            },
+            CalendarStructElement {
+                Month: &self.columns[2],
+                Day: &self.columns[3],
+            },
+            CalendarStructElement {
+                Month: &self.columns[4],
+                Day: &self.columns[5],
+            },
+            CalendarStructElement {
+                Month: &self.columns[6],
+                Day: &self.columns[7],
+            },
+            CalendarStructElement {
+                Month: &self.columns[8],
+                Day: &self.columns[9],
+            },
+            CalendarStructElement {
+                Month: &self.columns[10],
+                Day: &self.columns[11],
+            },
+            CalendarStructElement {
+                Month: &self.columns[12],
+                Day: &self.columns[13],
+            },
+            CalendarStructElement {
+                Month: &self.columns[14],
+                Day: &self.columns[15],
+            },
+            CalendarStructElement {
+                Month: &self.columns[16],
+                Day: &self.columns[17],
+            },
+            CalendarStructElement {
+                Month: &self.columns[18],
+                Day: &self.columns[19],
+            },
+            CalendarStructElement {
+                Month: &self.columns[20],
+                Day: &self.columns[21],
+            },
+            CalendarStructElement {
+                Month: &self.columns[22],
+                Day: &self.columns[23],
+            },
+            CalendarStructElement {
+                Month: &self.columns[24],
+                Day: &self.columns[25],
+            },
+            CalendarStructElement {
+                Month: &self.columns[26],
+                Day: &self.columns[27],
+            },
+            CalendarStructElement {
+                Month: &self.columns[28],
+                Day: &self.columns[29],
+            },
+            CalendarStructElement {
+                Month: &self.columns[30],
+                Day: &self.columns[31],
+            },
+            CalendarStructElement {
+                Month: &self.columns[32],
+                Day: &self.columns[33],
+            },
+            CalendarStructElement {
+                Month: &self.columns[34],
+                Day: &self.columns[35],
+            },
+            CalendarStructElement {
+                Month: &self.columns[36],
+                Day: &self.columns[37],
+            },
+            CalendarStructElement {
+                Month: &self.columns[38],
+                Day: &self.columns[39],
+            },
+            CalendarStructElement {
+                Month: &self.columns[40],
+                Day: &self.columns[41],
+            },
+            CalendarStructElement {
+                Month: &self.columns[42],
+                Day: &self.columns[43],
+            },
+            CalendarStructElement {
+                Month: &self.columns[44],
+                Day: &self.columns[45],
+            },
+            CalendarStructElement {
+                Month: &self.columns[46],
+                Day: &self.columns[47],
+            },
+            CalendarStructElement {
+                Month: &self.columns[48],
+                Day: &self.columns[49],
+            },
+            CalendarStructElement {
+                Month: &self.columns[50],
+                Day: &self.columns[51],
+            },
+            CalendarStructElement {
+                Month: &self.columns[52],
+                Day: &self.columns[53],
+            },
+            CalendarStructElement {
+                Month: &self.columns[54],
+                Day: &self.columns[55],
+            },
+            CalendarStructElement {
+                Month: &self.columns[56],
+                Day: &self.columns[57],
+            },
+            CalendarStructElement {
+                Month: &self.columns[58],
+                Day: &self.columns[59],
+            },
+            CalendarStructElement {
+                Month: &self.columns[60],
+                Day: &self.columns[61],
+            },
+            CalendarStructElement {
+                Month: &self.columns[62],
+                Day: &self.columns[63],
+            },
+        ]
+    }
 }
