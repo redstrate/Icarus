@@ -1,6 +1,6 @@
 # Icarus
 
-This is an auto-generated library for Rust, based on [EXDSchema](https://github.com/xivdev/EXDSchema/) and [Physis](https://github.com/redstrate/physis). The generator is located [here](https://github.com/redstrate/EXDGen).
+This is an auto-generated library for Rust, based on [EXDSchema](https://github.com/xivdev/EXDSchema/) and [Physis](https://github.com/redstrate/physis). The generator is located [here](https://codeberg.org/redstrate/EXDGen).
 
 **NOTE:** This is still a WIP, the full schema is not supported yet nor is the API finalized.
 
