@@ -1,0 +1,739 @@
+//! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
+#![allow(warnings)]
+use physis::{
+    resource::{Resource, read_excel_sheet_header, read_excel_sheet},
+    exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow},
+    exh::{EXH, ExcelColumnDefinition},
+    common::Language,
+};
+pub struct HWDGathererInspectionDataElement<'a> {
+    RequiredItem: &'a ColumnData,
+    FishParameter: &'a ColumnData,
+    ItemReceived: &'a ColumnData,
+    Reward: [&'a ColumnData; 2],
+    AmountRequired: &'a ColumnData,
+    Phase: &'a ColumnData,
+}
+pub struct HWDGathererInspectionSheet {
+    pages: Vec<EXD>,
+    exh: EXH,
+    row_count: u32,
+}
+impl HWDGathererInspectionSheet {
+    /// Read the sheet from a `Resource`.
+    pub fn read_from<T: Resource>(resource: &mut T, language: Language) -> Option<Self> {
+        let exh = read_excel_sheet_header(resource, "HWDGathererInspection")?;
+        let mut pages = Vec::new();
+        for (i, _) in exh.pages.iter().enumerate() {
+            pages
+                .push(
+                    read_excel_sheet(
+                        resource,
+                        "HWDGathererInspection",
+                        &exh,
+                        language,
+                        i,
+                    )?,
+                );
+        }
+        let row_count = exh.header.row_count;
+        Some(Self { exh, pages, row_count })
+    }
+    fn read_row(&self, row: &ExcelSingleRow) -> Option<HWDGathererInspectionRow> {
+        let column_defs = &self.exh.column_definitions;
+        let mut zipped: Vec<_> = row
+            .columns
+            .clone()
+            .into_iter()
+            .zip(column_defs)
+            .collect();
+        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+            .into_iter()
+            .unzip();
+        Some(HWDGathererInspectionRow {
+            columns,
+        })
+    }
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn get_row(&self, row_id: u32) -> Option<HWDGathererInspectionRow> {
+        for page in &self.pages {
+            let Some(row) = &page.get_row(row_id) else {
+                continue;
+            };
+            let row = match row {
+                ExcelRowKind::SingleRow(row) => row,
+                ExcelRowKind::SubRows(rows) => &rows.first()?.1,
+            };
+            return self.read_row(row);
+        }
+        None
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn get_subrow(
+        &self,
+        row_id: u32,
+        subrow_id: u16,
+    ) -> Option<HWDGathererInspectionRow> {
+        for page in &self.pages {
+            let Some(row) = &page.get_row(row_id) else {
+                continue;
+            };
+            let row = match row {
+                ExcelRowKind::SingleRow(row) => return None,
+                ExcelRowKind::SubRows(subrows) => {
+                    &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
+                }
+            };
+            return self.read_row(row);
+        }
+        None
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.row_count
+    }
+}
+pub struct HWDGathererInspectionRow {
+    columns: Vec<ColumnData>,
+}
+impl HWDGathererInspectionRow {
+    pub fn HWDGathererInspectionData<'a>(
+        &'a self,
+    ) -> [HWDGathererInspectionDataElement<'a>; 79] {
+        [
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[0],
+                FishParameter: &self.columns[1],
+                ItemReceived: &self.columns[2],
+                Reward: [&self.columns[3], &self.columns[4]],
+                AmountRequired: &self.columns[5],
+                Phase: &self.columns[6],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[7],
+                FishParameter: &self.columns[8],
+                ItemReceived: &self.columns[9],
+                Reward: [&self.columns[10], &self.columns[11]],
+                AmountRequired: &self.columns[12],
+                Phase: &self.columns[13],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[14],
+                FishParameter: &self.columns[15],
+                ItemReceived: &self.columns[16],
+                Reward: [&self.columns[17], &self.columns[18]],
+                AmountRequired: &self.columns[19],
+                Phase: &self.columns[20],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[21],
+                FishParameter: &self.columns[22],
+                ItemReceived: &self.columns[23],
+                Reward: [&self.columns[24], &self.columns[25]],
+                AmountRequired: &self.columns[26],
+                Phase: &self.columns[27],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[28],
+                FishParameter: &self.columns[29],
+                ItemReceived: &self.columns[30],
+                Reward: [&self.columns[31], &self.columns[32]],
+                AmountRequired: &self.columns[33],
+                Phase: &self.columns[34],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[35],
+                FishParameter: &self.columns[36],
+                ItemReceived: &self.columns[37],
+                Reward: [&self.columns[38], &self.columns[39]],
+                AmountRequired: &self.columns[40],
+                Phase: &self.columns[41],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[42],
+                FishParameter: &self.columns[43],
+                ItemReceived: &self.columns[44],
+                Reward: [&self.columns[45], &self.columns[46]],
+                AmountRequired: &self.columns[47],
+                Phase: &self.columns[48],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[49],
+                FishParameter: &self.columns[50],
+                ItemReceived: &self.columns[51],
+                Reward: [&self.columns[52], &self.columns[53]],
+                AmountRequired: &self.columns[54],
+                Phase: &self.columns[55],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[56],
+                FishParameter: &self.columns[57],
+                ItemReceived: &self.columns[58],
+                Reward: [&self.columns[59], &self.columns[60]],
+                AmountRequired: &self.columns[61],
+                Phase: &self.columns[62],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[63],
+                FishParameter: &self.columns[64],
+                ItemReceived: &self.columns[65],
+                Reward: [&self.columns[66], &self.columns[67]],
+                AmountRequired: &self.columns[68],
+                Phase: &self.columns[69],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[70],
+                FishParameter: &self.columns[71],
+                ItemReceived: &self.columns[72],
+                Reward: [&self.columns[73], &self.columns[74]],
+                AmountRequired: &self.columns[75],
+                Phase: &self.columns[76],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[77],
+                FishParameter: &self.columns[78],
+                ItemReceived: &self.columns[79],
+                Reward: [&self.columns[80], &self.columns[81]],
+                AmountRequired: &self.columns[82],
+                Phase: &self.columns[83],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[84],
+                FishParameter: &self.columns[85],
+                ItemReceived: &self.columns[86],
+                Reward: [&self.columns[87], &self.columns[88]],
+                AmountRequired: &self.columns[89],
+                Phase: &self.columns[90],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[91],
+                FishParameter: &self.columns[92],
+                ItemReceived: &self.columns[93],
+                Reward: [&self.columns[94], &self.columns[95]],
+                AmountRequired: &self.columns[96],
+                Phase: &self.columns[97],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[98],
+                FishParameter: &self.columns[99],
+                ItemReceived: &self.columns[100],
+                Reward: [&self.columns[101], &self.columns[102]],
+                AmountRequired: &self.columns[103],
+                Phase: &self.columns[104],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[105],
+                FishParameter: &self.columns[106],
+                ItemReceived: &self.columns[107],
+                Reward: [&self.columns[108], &self.columns[109]],
+                AmountRequired: &self.columns[110],
+                Phase: &self.columns[111],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[112],
+                FishParameter: &self.columns[113],
+                ItemReceived: &self.columns[114],
+                Reward: [&self.columns[115], &self.columns[116]],
+                AmountRequired: &self.columns[117],
+                Phase: &self.columns[118],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[119],
+                FishParameter: &self.columns[120],
+                ItemReceived: &self.columns[121],
+                Reward: [&self.columns[122], &self.columns[123]],
+                AmountRequired: &self.columns[124],
+                Phase: &self.columns[125],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[126],
+                FishParameter: &self.columns[127],
+                ItemReceived: &self.columns[128],
+                Reward: [&self.columns[129], &self.columns[130]],
+                AmountRequired: &self.columns[131],
+                Phase: &self.columns[132],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[133],
+                FishParameter: &self.columns[134],
+                ItemReceived: &self.columns[135],
+                Reward: [&self.columns[136], &self.columns[137]],
+                AmountRequired: &self.columns[138],
+                Phase: &self.columns[139],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[140],
+                FishParameter: &self.columns[141],
+                ItemReceived: &self.columns[142],
+                Reward: [&self.columns[143], &self.columns[144]],
+                AmountRequired: &self.columns[145],
+                Phase: &self.columns[146],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[147],
+                FishParameter: &self.columns[148],
+                ItemReceived: &self.columns[149],
+                Reward: [&self.columns[150], &self.columns[151]],
+                AmountRequired: &self.columns[152],
+                Phase: &self.columns[153],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[154],
+                FishParameter: &self.columns[155],
+                ItemReceived: &self.columns[156],
+                Reward: [&self.columns[157], &self.columns[158]],
+                AmountRequired: &self.columns[159],
+                Phase: &self.columns[160],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[161],
+                FishParameter: &self.columns[162],
+                ItemReceived: &self.columns[163],
+                Reward: [&self.columns[164], &self.columns[165]],
+                AmountRequired: &self.columns[166],
+                Phase: &self.columns[167],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[168],
+                FishParameter: &self.columns[169],
+                ItemReceived: &self.columns[170],
+                Reward: [&self.columns[171], &self.columns[172]],
+                AmountRequired: &self.columns[173],
+                Phase: &self.columns[174],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[175],
+                FishParameter: &self.columns[176],
+                ItemReceived: &self.columns[177],
+                Reward: [&self.columns[178], &self.columns[179]],
+                AmountRequired: &self.columns[180],
+                Phase: &self.columns[181],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[182],
+                FishParameter: &self.columns[183],
+                ItemReceived: &self.columns[184],
+                Reward: [&self.columns[185], &self.columns[186]],
+                AmountRequired: &self.columns[187],
+                Phase: &self.columns[188],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[189],
+                FishParameter: &self.columns[190],
+                ItemReceived: &self.columns[191],
+                Reward: [&self.columns[192], &self.columns[193]],
+                AmountRequired: &self.columns[194],
+                Phase: &self.columns[195],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[196],
+                FishParameter: &self.columns[197],
+                ItemReceived: &self.columns[198],
+                Reward: [&self.columns[199], &self.columns[200]],
+                AmountRequired: &self.columns[201],
+                Phase: &self.columns[202],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[203],
+                FishParameter: &self.columns[204],
+                ItemReceived: &self.columns[205],
+                Reward: [&self.columns[206], &self.columns[207]],
+                AmountRequired: &self.columns[208],
+                Phase: &self.columns[209],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[210],
+                FishParameter: &self.columns[211],
+                ItemReceived: &self.columns[212],
+                Reward: [&self.columns[213], &self.columns[214]],
+                AmountRequired: &self.columns[215],
+                Phase: &self.columns[216],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[217],
+                FishParameter: &self.columns[218],
+                ItemReceived: &self.columns[219],
+                Reward: [&self.columns[220], &self.columns[221]],
+                AmountRequired: &self.columns[222],
+                Phase: &self.columns[223],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[224],
+                FishParameter: &self.columns[225],
+                ItemReceived: &self.columns[226],
+                Reward: [&self.columns[227], &self.columns[228]],
+                AmountRequired: &self.columns[229],
+                Phase: &self.columns[230],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[231],
+                FishParameter: &self.columns[232],
+                ItemReceived: &self.columns[233],
+                Reward: [&self.columns[234], &self.columns[235]],
+                AmountRequired: &self.columns[236],
+                Phase: &self.columns[237],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[238],
+                FishParameter: &self.columns[239],
+                ItemReceived: &self.columns[240],
+                Reward: [&self.columns[241], &self.columns[242]],
+                AmountRequired: &self.columns[243],
+                Phase: &self.columns[244],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[245],
+                FishParameter: &self.columns[246],
+                ItemReceived: &self.columns[247],
+                Reward: [&self.columns[248], &self.columns[249]],
+                AmountRequired: &self.columns[250],
+                Phase: &self.columns[251],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[252],
+                FishParameter: &self.columns[253],
+                ItemReceived: &self.columns[254],
+                Reward: [&self.columns[255], &self.columns[256]],
+                AmountRequired: &self.columns[257],
+                Phase: &self.columns[258],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[259],
+                FishParameter: &self.columns[260],
+                ItemReceived: &self.columns[261],
+                Reward: [&self.columns[262], &self.columns[263]],
+                AmountRequired: &self.columns[264],
+                Phase: &self.columns[265],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[266],
+                FishParameter: &self.columns[267],
+                ItemReceived: &self.columns[268],
+                Reward: [&self.columns[269], &self.columns[270]],
+                AmountRequired: &self.columns[271],
+                Phase: &self.columns[272],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[273],
+                FishParameter: &self.columns[274],
+                ItemReceived: &self.columns[275],
+                Reward: [&self.columns[276], &self.columns[277]],
+                AmountRequired: &self.columns[278],
+                Phase: &self.columns[279],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[280],
+                FishParameter: &self.columns[281],
+                ItemReceived: &self.columns[282],
+                Reward: [&self.columns[283], &self.columns[284]],
+                AmountRequired: &self.columns[285],
+                Phase: &self.columns[286],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[287],
+                FishParameter: &self.columns[288],
+                ItemReceived: &self.columns[289],
+                Reward: [&self.columns[290], &self.columns[291]],
+                AmountRequired: &self.columns[292],
+                Phase: &self.columns[293],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[294],
+                FishParameter: &self.columns[295],
+                ItemReceived: &self.columns[296],
+                Reward: [&self.columns[297], &self.columns[298]],
+                AmountRequired: &self.columns[299],
+                Phase: &self.columns[300],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[301],
+                FishParameter: &self.columns[302],
+                ItemReceived: &self.columns[303],
+                Reward: [&self.columns[304], &self.columns[305]],
+                AmountRequired: &self.columns[306],
+                Phase: &self.columns[307],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[308],
+                FishParameter: &self.columns[309],
+                ItemReceived: &self.columns[310],
+                Reward: [&self.columns[311], &self.columns[312]],
+                AmountRequired: &self.columns[313],
+                Phase: &self.columns[314],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[315],
+                FishParameter: &self.columns[316],
+                ItemReceived: &self.columns[317],
+                Reward: [&self.columns[318], &self.columns[319]],
+                AmountRequired: &self.columns[320],
+                Phase: &self.columns[321],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[322],
+                FishParameter: &self.columns[323],
+                ItemReceived: &self.columns[324],
+                Reward: [&self.columns[325], &self.columns[326]],
+                AmountRequired: &self.columns[327],
+                Phase: &self.columns[328],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[329],
+                FishParameter: &self.columns[330],
+                ItemReceived: &self.columns[331],
+                Reward: [&self.columns[332], &self.columns[333]],
+                AmountRequired: &self.columns[334],
+                Phase: &self.columns[335],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[336],
+                FishParameter: &self.columns[337],
+                ItemReceived: &self.columns[338],
+                Reward: [&self.columns[339], &self.columns[340]],
+                AmountRequired: &self.columns[341],
+                Phase: &self.columns[342],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[343],
+                FishParameter: &self.columns[344],
+                ItemReceived: &self.columns[345],
+                Reward: [&self.columns[346], &self.columns[347]],
+                AmountRequired: &self.columns[348],
+                Phase: &self.columns[349],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[350],
+                FishParameter: &self.columns[351],
+                ItemReceived: &self.columns[352],
+                Reward: [&self.columns[353], &self.columns[354]],
+                AmountRequired: &self.columns[355],
+                Phase: &self.columns[356],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[357],
+                FishParameter: &self.columns[358],
+                ItemReceived: &self.columns[359],
+                Reward: [&self.columns[360], &self.columns[361]],
+                AmountRequired: &self.columns[362],
+                Phase: &self.columns[363],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[364],
+                FishParameter: &self.columns[365],
+                ItemReceived: &self.columns[366],
+                Reward: [&self.columns[367], &self.columns[368]],
+                AmountRequired: &self.columns[369],
+                Phase: &self.columns[370],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[371],
+                FishParameter: &self.columns[372],
+                ItemReceived: &self.columns[373],
+                Reward: [&self.columns[374], &self.columns[375]],
+                AmountRequired: &self.columns[376],
+                Phase: &self.columns[377],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[378],
+                FishParameter: &self.columns[379],
+                ItemReceived: &self.columns[380],
+                Reward: [&self.columns[381], &self.columns[382]],
+                AmountRequired: &self.columns[383],
+                Phase: &self.columns[384],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[385],
+                FishParameter: &self.columns[386],
+                ItemReceived: &self.columns[387],
+                Reward: [&self.columns[388], &self.columns[389]],
+                AmountRequired: &self.columns[390],
+                Phase: &self.columns[391],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[392],
+                FishParameter: &self.columns[393],
+                ItemReceived: &self.columns[394],
+                Reward: [&self.columns[395], &self.columns[396]],
+                AmountRequired: &self.columns[397],
+                Phase: &self.columns[398],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[399],
+                FishParameter: &self.columns[400],
+                ItemReceived: &self.columns[401],
+                Reward: [&self.columns[402], &self.columns[403]],
+                AmountRequired: &self.columns[404],
+                Phase: &self.columns[405],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[406],
+                FishParameter: &self.columns[407],
+                ItemReceived: &self.columns[408],
+                Reward: [&self.columns[409], &self.columns[410]],
+                AmountRequired: &self.columns[411],
+                Phase: &self.columns[412],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[413],
+                FishParameter: &self.columns[414],
+                ItemReceived: &self.columns[415],
+                Reward: [&self.columns[416], &self.columns[417]],
+                AmountRequired: &self.columns[418],
+                Phase: &self.columns[419],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[420],
+                FishParameter: &self.columns[421],
+                ItemReceived: &self.columns[422],
+                Reward: [&self.columns[423], &self.columns[424]],
+                AmountRequired: &self.columns[425],
+                Phase: &self.columns[426],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[427],
+                FishParameter: &self.columns[428],
+                ItemReceived: &self.columns[429],
+                Reward: [&self.columns[430], &self.columns[431]],
+                AmountRequired: &self.columns[432],
+                Phase: &self.columns[433],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[434],
+                FishParameter: &self.columns[435],
+                ItemReceived: &self.columns[436],
+                Reward: [&self.columns[437], &self.columns[438]],
+                AmountRequired: &self.columns[439],
+                Phase: &self.columns[440],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[441],
+                FishParameter: &self.columns[442],
+                ItemReceived: &self.columns[443],
+                Reward: [&self.columns[444], &self.columns[445]],
+                AmountRequired: &self.columns[446],
+                Phase: &self.columns[447],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[448],
+                FishParameter: &self.columns[449],
+                ItemReceived: &self.columns[450],
+                Reward: [&self.columns[451], &self.columns[452]],
+                AmountRequired: &self.columns[453],
+                Phase: &self.columns[454],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[455],
+                FishParameter: &self.columns[456],
+                ItemReceived: &self.columns[457],
+                Reward: [&self.columns[458], &self.columns[459]],
+                AmountRequired: &self.columns[460],
+                Phase: &self.columns[461],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[462],
+                FishParameter: &self.columns[463],
+                ItemReceived: &self.columns[464],
+                Reward: [&self.columns[465], &self.columns[466]],
+                AmountRequired: &self.columns[467],
+                Phase: &self.columns[468],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[469],
+                FishParameter: &self.columns[470],
+                ItemReceived: &self.columns[471],
+                Reward: [&self.columns[472], &self.columns[473]],
+                AmountRequired: &self.columns[474],
+                Phase: &self.columns[475],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[476],
+                FishParameter: &self.columns[477],
+                ItemReceived: &self.columns[478],
+                Reward: [&self.columns[479], &self.columns[480]],
+                AmountRequired: &self.columns[481],
+                Phase: &self.columns[482],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[483],
+                FishParameter: &self.columns[484],
+                ItemReceived: &self.columns[485],
+                Reward: [&self.columns[486], &self.columns[487]],
+                AmountRequired: &self.columns[488],
+                Phase: &self.columns[489],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[490],
+                FishParameter: &self.columns[491],
+                ItemReceived: &self.columns[492],
+                Reward: [&self.columns[493], &self.columns[494]],
+                AmountRequired: &self.columns[495],
+                Phase: &self.columns[496],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[497],
+                FishParameter: &self.columns[498],
+                ItemReceived: &self.columns[499],
+                Reward: [&self.columns[500], &self.columns[501]],
+                AmountRequired: &self.columns[502],
+                Phase: &self.columns[503],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[504],
+                FishParameter: &self.columns[505],
+                ItemReceived: &self.columns[506],
+                Reward: [&self.columns[507], &self.columns[508]],
+                AmountRequired: &self.columns[509],
+                Phase: &self.columns[510],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[511],
+                FishParameter: &self.columns[512],
+                ItemReceived: &self.columns[513],
+                Reward: [&self.columns[514], &self.columns[515]],
+                AmountRequired: &self.columns[516],
+                Phase: &self.columns[517],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[518],
+                FishParameter: &self.columns[519],
+                ItemReceived: &self.columns[520],
+                Reward: [&self.columns[521], &self.columns[522]],
+                AmountRequired: &self.columns[523],
+                Phase: &self.columns[524],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[525],
+                FishParameter: &self.columns[526],
+                ItemReceived: &self.columns[527],
+                Reward: [&self.columns[528], &self.columns[529]],
+                AmountRequired: &self.columns[530],
+                Phase: &self.columns[531],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[532],
+                FishParameter: &self.columns[533],
+                ItemReceived: &self.columns[534],
+                Reward: [&self.columns[535], &self.columns[536]],
+                AmountRequired: &self.columns[537],
+                Phase: &self.columns[538],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[539],
+                FishParameter: &self.columns[540],
+                ItemReceived: &self.columns[541],
+                Reward: [&self.columns[542], &self.columns[543]],
+                AmountRequired: &self.columns[544],
+                Phase: &self.columns[545],
+            },
+            HWDGathererInspectionDataElement {
+                RequiredItem: &self.columns[546],
+                FishParameter: &self.columns[547],
+                ItemReceived: &self.columns[548],
+                Reward: [&self.columns[549], &self.columns[550]],
+                AmountRequired: &self.columns[551],
+                Phase: &self.columns[552],
+            },
+        ]
+    }
+}
