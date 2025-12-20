@@ -7,8 +7,8 @@ use physis::{
     common::Language,
 };
 pub struct QuestRedoParamElement<'a> {
-    Quest: &'a ColumnData,
-    UnknownParam: &'a ColumnData,
+    pub Quest: &'a ColumnData,
+    pub UnknownParam: &'a ColumnData,
 }
 pub struct QuestRedoSheet {
     pages: Vec<EXD>,

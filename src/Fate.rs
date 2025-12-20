@@ -7,8 +7,8 @@ use physis::{
     common::Language,
 };
 pub struct ObjectiveIconElement<'a> {
-    LayoutId: &'a ColumnData,
-    Icon: &'a ColumnData,
+    pub LayoutId: &'a ColumnData,
+    pub Icon: &'a ColumnData,
 }
 pub struct FateSheet {
     pages: Vec<EXD>,

@@ -7,10 +7,10 @@ use physis::{
     common::Language,
 };
 pub struct SatisfactionSupplyRewardDataElement<'a> {
-    RewardCurrency: &'a ColumnData,
-    QuantityLow: &'a ColumnData,
-    QuantityMid: &'a ColumnData,
-    QuantityHigh: &'a ColumnData,
+    pub RewardCurrency: &'a ColumnData,
+    pub QuantityLow: &'a ColumnData,
+    pub QuantityMid: &'a ColumnData,
+    pub QuantityHigh: &'a ColumnData,
 }
 pub struct SatisfactionSupplyRewardSheet {
     pages: Vec<EXD>,

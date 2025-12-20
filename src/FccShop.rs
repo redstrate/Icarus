@@ -7,9 +7,9 @@ use physis::{
     common::Language,
 };
 pub struct ItemDataElement<'a> {
-    Item: &'a ColumnData,
-    Cost: &'a ColumnData,
-    FCRankRequired: &'a ColumnData,
+    pub Item: &'a ColumnData,
+    pub Cost: &'a ColumnData,
+    pub FCRankRequired: &'a ColumnData,
 }
 pub struct FccShopSheet {
     pages: Vec<EXD>,

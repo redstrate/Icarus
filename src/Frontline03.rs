@@ -7,13 +7,13 @@ use physis::{
     common::Language,
 };
 pub struct OvooDataElement<'a> {
-    EmptyIcon: &'a ColumnData,
-    MaelstromIcon: &'a ColumnData,
-    TwinAdderIcon: &'a ColumnData,
-    ImmortalFlamesIcon: &'a ColumnData,
-    Unknown0: &'a ColumnData,
-    Unknown1: &'a ColumnData,
-    Unknown2: &'a ColumnData,
+    pub EmptyIcon: &'a ColumnData,
+    pub MaelstromIcon: &'a ColumnData,
+    pub TwinAdderIcon: &'a ColumnData,
+    pub ImmortalFlamesIcon: &'a ColumnData,
+    pub Unknown0: &'a ColumnData,
+    pub Unknown1: &'a ColumnData,
+    pub Unknown2: &'a ColumnData,
 }
 pub struct Frontline03Sheet {
     pages: Vec<EXD>,

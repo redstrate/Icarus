@@ -7,12 +7,12 @@ use physis::{
     common::Language,
 };
 pub struct DefaultTalkParamsElement<'a> {
-    ActionTimelinePose: &'a ColumnData,
-    Unknown0: &'a ColumnData,
-    Unknown1: &'a ColumnData,
-    Unknown2: &'a ColumnData,
-    Unknown3: &'a ColumnData,
-    Unknown4: &'a ColumnData,
+    pub ActionTimelinePose: &'a ColumnData,
+    pub Unknown0: &'a ColumnData,
+    pub Unknown1: &'a ColumnData,
+    pub Unknown2: &'a ColumnData,
+    pub Unknown3: &'a ColumnData,
+    pub Unknown4: &'a ColumnData,
 }
 pub struct DefaultTalkSheet {
     pages: Vec<EXD>,

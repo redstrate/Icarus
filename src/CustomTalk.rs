@@ -7,8 +7,8 @@ use physis::{
     common::Language,
 };
 pub struct ScriptElement<'a> {
-    ScriptInstruction: &'a ColumnData,
-    ScriptArg: &'a ColumnData,
+    pub ScriptInstruction: &'a ColumnData,
+    pub ScriptArg: &'a ColumnData,
 }
 pub struct CustomTalkSheet {
     pages: Vec<EXD>,

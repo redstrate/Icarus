@@ -7,8 +7,8 @@ use physis::{
     common::Language,
 };
 pub struct StagesElement<'a> {
-    RequiredAmount: [&'a ColumnData; 6],
-    MaxAmount: [&'a ColumnData; 6],
+    pub RequiredAmount: [&'a ColumnData; 6],
+    pub MaxAmount: [&'a ColumnData; 6],
 }
 pub struct WKSCosmoToolDataAmountSheet {
     pages: Vec<EXD>,

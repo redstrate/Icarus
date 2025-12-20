@@ -7,16 +7,16 @@ use physis::{
     common::Language,
 };
 pub struct SatisfactionNpcParamsElement<'a> {
-    SupplyIndex: &'a ColumnData,
-    Item: [&'a ColumnData; 3],
-    SatisfactionRequired: &'a ColumnData,
-    ItemCount: [&'a ColumnData; 3],
-    IsHQ: [&'a ColumnData; 3],
+    pub SupplyIndex: &'a ColumnData,
+    pub Item: [&'a ColumnData; 3],
+    pub SatisfactionRequired: &'a ColumnData,
+    pub ItemCount: [&'a ColumnData; 3],
+    pub IsHQ: [&'a ColumnData; 3],
 }
 pub struct RankParamsElement<'a> {
-    ImageId: &'a ColumnData,
-    Unknown1: &'a ColumnData,
-    Quest: &'a ColumnData,
+    pub ImageId: &'a ColumnData,
+    pub Unknown1: &'a ColumnData,
+    pub Quest: &'a ColumnData,
 }
 pub struct SatisfactionNpcSheet {
     pages: Vec<EXD>,

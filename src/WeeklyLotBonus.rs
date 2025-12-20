@@ -7,9 +7,9 @@ use physis::{
     common::Language,
 };
 pub struct WeeklyLotBonusParamElement<'a> {
-    Unknown0: &'a ColumnData,
-    WeeklyLotBonusThreshold: &'a ColumnData,
-    Unknown1: &'a ColumnData,
+    pub Unknown0: &'a ColumnData,
+    pub WeeklyLotBonusThreshold: &'a ColumnData,
+    pub Unknown1: &'a ColumnData,
 }
 pub struct WeeklyLotBonusSheet {
     pages: Vec<EXD>,

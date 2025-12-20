@@ -7,20 +7,20 @@ use physis::{
     common::Language,
 };
 pub struct HugeCraftworksTurnInParamElement<'a> {
-    RequestedItem: &'a ColumnData,
-    Unknown0: &'a ColumnData,
-    RequestedQuantity: &'a ColumnData,
-    Unknown1: &'a ColumnData,
-    Unknown2: &'a ColumnData,
-    Unknown3: &'a ColumnData,
-    Unknown4: &'a ColumnData,
-    Unknown5: &'a ColumnData,
-    Unknown6: &'a ColumnData,
+    pub RequestedItem: &'a ColumnData,
+    pub Unknown0: &'a ColumnData,
+    pub RequestedQuantity: &'a ColumnData,
+    pub Unknown1: &'a ColumnData,
+    pub Unknown2: &'a ColumnData,
+    pub Unknown3: &'a ColumnData,
+    pub Unknown4: &'a ColumnData,
+    pub Unknown5: &'a ColumnData,
+    pub Unknown6: &'a ColumnData,
 }
 pub struct HugeCraftworksRewardParamElement<'a> {
-    RewardItem: [&'a ColumnData; 2],
-    RewardQuantity: [&'a ColumnData; 2],
-    RewardHQ: [&'a ColumnData; 2],
+    pub RewardItem: [&'a ColumnData; 2],
+    pub RewardQuantity: [&'a ColumnData; 2],
+    pub RewardHQ: [&'a ColumnData; 2],
 }
 pub struct HugeCraftworksNpcSheet {
     pages: Vec<EXD>,

@@ -7,11 +7,11 @@ use physis::{
     common::Language,
 };
 pub struct UnknownStructElement<'a> {
-    Unknown1: &'a ColumnData,
-    Unknown2: &'a ColumnData,
-    Unknown3: &'a ColumnData,
-    Unknown4: &'a ColumnData,
-    Unknown5: &'a ColumnData,
+    pub Unknown1: &'a ColumnData,
+    pub Unknown2: &'a ColumnData,
+    pub Unknown3: &'a ColumnData,
+    pub Unknown4: &'a ColumnData,
+    pub Unknown5: &'a ColumnData,
 }
 pub struct SequentialEventSheet {
     pages: Vec<EXD>,

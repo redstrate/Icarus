@@ -7,17 +7,17 @@ use physis::{
     common::Language,
 };
 pub struct ItemElement<'a> {
-    ItemId: &'a ColumnData,
-    XPReward: &'a ColumnData,
-    CollectabilityMid: &'a ColumnData,
-    CollectabilityHigh: &'a ColumnData,
-    GilReward: &'a ColumnData,
-    Level: &'a ColumnData,
-    HighXPMultiplier: &'a ColumnData,
-    HighGilMultiplier: &'a ColumnData,
-    Unknown8: &'a ColumnData,
-    ScripReward: &'a ColumnData,
-    HighScripMultiplier: &'a ColumnData,
+    pub ItemId: &'a ColumnData,
+    pub XPReward: &'a ColumnData,
+    pub CollectabilityMid: &'a ColumnData,
+    pub CollectabilityHigh: &'a ColumnData,
+    pub GilReward: &'a ColumnData,
+    pub Level: &'a ColumnData,
+    pub HighXPMultiplier: &'a ColumnData,
+    pub HighGilMultiplier: &'a ColumnData,
+    pub Unknown8: &'a ColumnData,
+    pub ScripReward: &'a ColumnData,
+    pub HighScripMultiplier: &'a ColumnData,
 }
 pub struct SharlayanCraftWorksSupplySheet {
     pages: Vec<EXD>,

@@ -7,12 +7,12 @@ use physis::{
     common::Language,
 };
 pub struct HWDGathererInspectionDataElement<'a> {
-    RequiredItem: &'a ColumnData,
-    FishParameter: &'a ColumnData,
-    ItemReceived: &'a ColumnData,
-    Reward: [&'a ColumnData; 2],
-    AmountRequired: &'a ColumnData,
-    Phase: &'a ColumnData,
+    pub RequiredItem: &'a ColumnData,
+    pub FishParameter: &'a ColumnData,
+    pub ItemReceived: &'a ColumnData,
+    pub Reward: [&'a ColumnData; 2],
+    pub AmountRequired: &'a ColumnData,
+    pub Phase: &'a ColumnData,
 }
 pub struct HWDGathererInspectionSheet {
     pages: Vec<EXD>,

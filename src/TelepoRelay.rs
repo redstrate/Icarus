@@ -7,9 +7,9 @@ use physis::{
     common::Language,
 };
 pub struct RelaysElement<'a> {
-    EnterTerritory: &'a ColumnData,
-    ExitTerritory: &'a ColumnData,
-    Cost: &'a ColumnData,
+    pub EnterTerritory: &'a ColumnData,
+    pub ExitTerritory: &'a ColumnData,
+    pub Cost: &'a ColumnData,
 }
 pub struct TelepoRelaySheet {
     pages: Vec<EXD>,

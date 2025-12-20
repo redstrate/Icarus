@@ -7,8 +7,8 @@ use physis::{
     common::Language,
 };
 pub struct SupplyDataElement<'a> {
-    Item: [&'a ColumnData; 3],
-    ItemCount: [&'a ColumnData; 3],
+    pub Item: [&'a ColumnData; 3],
+    pub ItemCount: [&'a ColumnData; 3],
 }
 pub struct GCSupplyDutySheet {
     pages: Vec<EXD>,

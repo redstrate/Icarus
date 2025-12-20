@@ -7,15 +7,15 @@ use physis::{
     common::Language,
 };
 pub struct ExpeditionParamsElement<'a> {
-    RewardItem: &'a ColumnData,
-    RequiredPhysical: &'a ColumnData,
-    RequiredMental: &'a ColumnData,
-    RequiredTactical: &'a ColumnData,
-    RewardQuantity: &'a ColumnData,
-    PercentPhysicalMet: &'a ColumnData,
-    PercentMentalMet: &'a ColumnData,
-    PercentTacticalMet: &'a ColumnData,
-    PercentAllMet: &'a ColumnData,
+    pub RewardItem: &'a ColumnData,
+    pub RequiredPhysical: &'a ColumnData,
+    pub RequiredMental: &'a ColumnData,
+    pub RequiredTactical: &'a ColumnData,
+    pub RewardQuantity: &'a ColumnData,
+    pub PercentPhysicalMet: &'a ColumnData,
+    pub PercentMentalMet: &'a ColumnData,
+    pub PercentTacticalMet: &'a ColumnData,
+    pub PercentAllMet: &'a ColumnData,
 }
 pub struct GcArmyExpeditionSheet {
     pages: Vec<EXD>,

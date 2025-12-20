@@ -7,11 +7,11 @@ use physis::{
     common::Language,
 };
 pub struct IconsElement<'a> {
-    AnnounceQuest: &'a ColumnData,
-    AnnounceQuestLocked: &'a ColumnData,
-    MapAnnounceQuest1: &'a ColumnData,
-    MapAnnounceQuestLocked: &'a ColumnData,
-    MapAnnounceQuest2: &'a ColumnData,
+    pub AnnounceQuest: &'a ColumnData,
+    pub AnnounceQuestLocked: &'a ColumnData,
+    pub MapAnnounceQuest1: &'a ColumnData,
+    pub MapAnnounceQuestLocked: &'a ColumnData,
+    pub MapAnnounceQuest2: &'a ColumnData,
 }
 pub struct EventCustomIconTypeSheet {
     pages: Vec<EXD>,

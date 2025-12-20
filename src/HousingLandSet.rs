@@ -7,11 +7,11 @@ use physis::{
     common::Language,
 };
 pub struct LandSetElement<'a> {
-    UnknownRange1: &'a ColumnData,
-    PlacardId: &'a ColumnData,
-    UnknownRange2: &'a ColumnData,
-    InitialPrice: &'a ColumnData,
-    PlotSize: &'a ColumnData,
+    pub UnknownRange1: &'a ColumnData,
+    pub PlacardId: &'a ColumnData,
+    pub UnknownRange2: &'a ColumnData,
+    pub InitialPrice: &'a ColumnData,
+    pub PlotSize: &'a ColumnData,
 }
 pub struct HousingLandSetSheet {
     pages: Vec<EXD>,

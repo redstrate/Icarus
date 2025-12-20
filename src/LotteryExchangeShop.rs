@@ -7,10 +7,10 @@ use physis::{
     common::Language,
 };
 pub struct LotteryExchangeParamsElement<'a> {
-    AmountAccepted: &'a ColumnData,
-    ItemAccepted: &'a ColumnData,
-    Unknown0: &'a ColumnData,
-    Unknown1: &'a ColumnData,
+    pub AmountAccepted: &'a ColumnData,
+    pub ItemAccepted: &'a ColumnData,
+    pub Unknown0: &'a ColumnData,
+    pub Unknown1: &'a ColumnData,
 }
 pub struct LotteryExchangeShopSheet {
     pages: Vec<EXD>,

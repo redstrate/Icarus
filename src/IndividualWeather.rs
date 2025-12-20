@@ -7,10 +7,10 @@ use physis::{
     common::Language,
 };
 pub struct IndividualWeatherDataElement<'a> {
-    Quest: &'a ColumnData,
-    Unknown0: &'a ColumnData,
-    Weather: &'a ColumnData,
-    Unknown1: &'a ColumnData,
+    pub Quest: &'a ColumnData,
+    pub Unknown0: &'a ColumnData,
+    pub Weather: &'a ColumnData,
+    pub Unknown1: &'a ColumnData,
 }
 pub struct IndividualWeatherSheet {
     pages: Vec<EXD>,

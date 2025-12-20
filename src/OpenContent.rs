@@ -7,8 +7,8 @@ use physis::{
     common::Language,
 };
 pub struct OpenContentDataElement<'a> {
-    CandidateName: &'a ColumnData,
-    Content: &'a ColumnData,
+    pub CandidateName: &'a ColumnData,
+    pub Content: &'a ColumnData,
 }
 pub struct OpenContentSheet {
     pages: Vec<EXD>,

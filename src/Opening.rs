@@ -7,8 +7,8 @@ use physis::{
     common::Language,
 };
 pub struct VariablesElement<'a> {
-    Name: &'a ColumnData,
-    Value: &'a ColumnData,
+    pub Name: &'a ColumnData,
+    pub Value: &'a ColumnData,
 }
 pub struct OpeningSheet {
     pages: Vec<EXD>,

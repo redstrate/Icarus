@@ -7,13 +7,13 @@ use physis::{
     common::Language,
 };
 pub struct EventParametersElement<'a> {
-    Gesture: &'a ColumnData,
-    LipSync: &'a ColumnData,
-    Facial: &'a ColumnData,
-    Shape: &'a ColumnData,
-    Turn: &'a ColumnData,
-    WidgetType: &'a ColumnData,
-    IsAutoShake: &'a ColumnData,
+    pub Gesture: &'a ColumnData,
+    pub LipSync: &'a ColumnData,
+    pub Facial: &'a ColumnData,
+    pub Shape: &'a ColumnData,
+    pub Turn: &'a ColumnData,
+    pub WidgetType: &'a ColumnData,
+    pub IsAutoShake: &'a ColumnData,
 }
 pub struct FateEventSheet {
     pages: Vec<EXD>,

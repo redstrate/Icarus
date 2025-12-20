@@ -7,8 +7,8 @@ use physis::{
     common::Language,
 };
 pub struct WarpParamsElement<'a> {
-    Function: &'a ColumnData,
-    Argument: &'a ColumnData,
+    pub Function: &'a ColumnData,
+    pub Argument: &'a ColumnData,
 }
 pub struct WarpLogicSheet {
     pages: Vec<EXD>,

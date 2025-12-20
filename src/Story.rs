@@ -7,22 +7,22 @@ use physis::{
     common::Language,
 };
 pub struct StoryParamsElement<'a> {
-    Instruction: &'a ColumnData,
-    Argument: &'a ColumnData,
+    pub Instruction: &'a ColumnData,
+    pub Argument: &'a ColumnData,
 }
 pub struct StoryDefineElement<'a> {
-    CompletedQuest: [&'a ColumnData; 3],
-    AcceptedQuest: [&'a ColumnData; 3],
-    LayerSet: [&'a ColumnData; 2],
-    Sequence: &'a ColumnData,
-    CompletedQuestOperator: &'a ColumnData,
-    AcceptedQuestOperator: &'a ColumnData,
-    AcceptedQuestSequence: [&'a ColumnData; 3],
+    pub CompletedQuest: [&'a ColumnData; 3],
+    pub AcceptedQuest: [&'a ColumnData; 3],
+    pub LayerSet: [&'a ColumnData; 2],
+    pub Sequence: &'a ColumnData,
+    pub CompletedQuestOperator: &'a ColumnData,
+    pub AcceptedQuestOperator: &'a ColumnData,
+    pub AcceptedQuestSequence: [&'a ColumnData; 3],
 }
 pub struct StoryListenerElement<'a> {
-    Listener: &'a ColumnData,
-    SequenceBegin: &'a ColumnData,
-    SequenceEnd: &'a ColumnData,
+    pub Listener: &'a ColumnData,
+    pub SequenceBegin: &'a ColumnData,
+    pub SequenceEnd: &'a ColumnData,
 }
 pub struct StorySheet {
     pages: Vec<EXD>,

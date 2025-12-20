@@ -7,8 +7,8 @@ use physis::{
     common::Language,
 };
 pub struct CalendarStructElement<'a> {
-    Month: &'a ColumnData,
-    Day: &'a ColumnData,
+    pub Month: &'a ColumnData,
+    pub Day: &'a ColumnData,
 }
 pub struct CalendarSheet {
     pages: Vec<EXD>,

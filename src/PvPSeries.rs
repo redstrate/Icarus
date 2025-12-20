@@ -7,9 +7,9 @@ use physis::{
     common::Language,
 };
 pub struct LevelRewardsElement<'a> {
-    LevelRewardItem: [&'a ColumnData; 2],
-    Unknown0: &'a ColumnData,
-    LevelRewardCount: [&'a ColumnData; 2],
+    pub LevelRewardItem: [&'a ColumnData; 2],
+    pub Unknown0: &'a ColumnData,
+    pub LevelRewardCount: [&'a ColumnData; 2],
 }
 pub struct PvPSeriesSheet {
     pages: Vec<EXD>,

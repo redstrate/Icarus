@@ -7,8 +7,8 @@ use physis::{
     common::Language,
 };
 pub struct VillageAppearanceDataElement<'a> {
-    UnknownParam: &'a ColumnData,
-    SGB: &'a ColumnData,
+    pub UnknownParam: &'a ColumnData,
+    pub SGB: &'a ColumnData,
 }
 pub struct MJIVillageAppearanceSGSheet {
     pages: Vec<EXD>,

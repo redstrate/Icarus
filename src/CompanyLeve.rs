@@ -7,14 +7,14 @@ use physis::{
     common::Language,
 };
 pub struct CompanyLeveStructElement<'a> {
-    BNpcName: &'a ColumnData,
-    ToDoParam: [&'a ColumnData; 6],
-    BaseID: &'a ColumnData,
-    ItemsInvolved: &'a ColumnData,
-    EnemyLevel: &'a ColumnData,
-    ItemsInvolvedQty: &'a ColumnData,
-    ItemDropRate: &'a ColumnData,
-    NumOfAppearance: [&'a ColumnData; 8],
+    pub BNpcName: &'a ColumnData,
+    pub ToDoParam: [&'a ColumnData; 6],
+    pub BaseID: &'a ColumnData,
+    pub ItemsInvolved: &'a ColumnData,
+    pub EnemyLevel: &'a ColumnData,
+    pub ItemsInvolvedQty: &'a ColumnData,
+    pub ItemDropRate: &'a ColumnData,
+    pub NumOfAppearance: [&'a ColumnData; 8],
 }
 pub struct CompanyLeveSheet {
     pages: Vec<EXD>,

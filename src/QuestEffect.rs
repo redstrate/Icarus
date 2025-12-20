@@ -7,9 +7,9 @@ use physis::{
     common::Language,
 };
 pub struct UnknownStructElement<'a> {
-    Unknown1: &'a ColumnData,
-    Unknown_70: &'a ColumnData,
-    Unknown2: &'a ColumnData,
+    pub Unknown1: &'a ColumnData,
+    pub Unknown_70: &'a ColumnData,
+    pub Unknown2: &'a ColumnData,
 }
 pub struct QuestEffectSheet {
     pages: Vec<EXD>,

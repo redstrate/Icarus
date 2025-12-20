@@ -7,14 +7,14 @@ use physis::{
     common::Language,
 };
 pub struct StagesElement<'a> {
-    Unknown0: &'a ColumnData,
-    Item: &'a ColumnData,
-    Name: &'a ColumnData,
+    pub Unknown0: &'a ColumnData,
+    pub Item: &'a ColumnData,
+    pub Name: &'a ColumnData,
 }
 pub struct TypesElement<'a> {
-    Icon: &'a ColumnData,
-    Name: &'a ColumnData,
-    CosmicName: &'a ColumnData,
+    pub Icon: &'a ColumnData,
+    pub Name: &'a ColumnData,
+    pub CosmicName: &'a ColumnData,
 }
 pub struct WKSCosmoToolClassSheet {
     pages: Vec<EXD>,

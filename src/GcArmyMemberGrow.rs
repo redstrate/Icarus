@@ -7,10 +7,10 @@ use physis::{
     common::Language,
 };
 pub struct MemberParamsElement<'a> {
-    EquipPreset: &'a ColumnData,
-    Physical: &'a ColumnData,
-    Mental: &'a ColumnData,
-    Tactical: &'a ColumnData,
+    pub EquipPreset: &'a ColumnData,
+    pub Physical: &'a ColumnData,
+    pub Mental: &'a ColumnData,
+    pub Tactical: &'a ColumnData,
 }
 pub struct GcArmyMemberGrowSheet {
     pages: Vec<EXD>,

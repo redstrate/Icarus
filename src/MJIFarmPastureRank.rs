@@ -7,15 +7,15 @@ use physis::{
     common::Language,
 };
 pub struct RankDataElement<'a> {
-    SGB: [&'a ColumnData; 4],
-    Unknown0: &'a ColumnData,
-    Unknown1: &'a ColumnData,
-    Unknown2: &'a ColumnData,
-    Unknown3: &'a ColumnData,
-    Unknown4: &'a ColumnData,
-    Unknown5: &'a ColumnData,
-    Unknown6: &'a ColumnData,
-    Unknown7: &'a ColumnData,
+    pub SGB: [&'a ColumnData; 4],
+    pub Unknown0: &'a ColumnData,
+    pub Unknown1: &'a ColumnData,
+    pub Unknown2: &'a ColumnData,
+    pub Unknown3: &'a ColumnData,
+    pub Unknown4: &'a ColumnData,
+    pub Unknown5: &'a ColumnData,
+    pub Unknown6: &'a ColumnData,
+    pub Unknown7: &'a ColumnData,
 }
 pub struct MJIFarmPastureRankSheet {
     pages: Vec<EXD>,

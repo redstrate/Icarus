@@ -7,8 +7,8 @@ use physis::{
     common::Language,
 };
 pub struct QuestBattleParamsElement<'a> {
-    ScriptInstruction: &'a ColumnData,
-    ScriptValue: &'a ColumnData,
+    pub ScriptInstruction: &'a ColumnData,
+    pub ScriptValue: &'a ColumnData,
 }
 pub struct QuestBattleSheet {
     pages: Vec<EXD>,

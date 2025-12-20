@@ -7,11 +7,11 @@ use physis::{
     common::Language,
 };
 pub struct GFATEParamsElement<'a> {
-    LGBPopRange: &'a ColumnData,
-    Icon: &'a ColumnData,
-    Unknown0: &'a ColumnData,
-    Unknown1: &'a ColumnData,
-    Unknown2: &'a ColumnData,
+    pub LGBPopRange: &'a ColumnData,
+    pub Icon: &'a ColumnData,
+    pub Unknown0: &'a ColumnData,
+    pub Unknown1: &'a ColumnData,
+    pub Unknown2: &'a ColumnData,
 }
 pub struct GFATESheet {
     pages: Vec<EXD>,
