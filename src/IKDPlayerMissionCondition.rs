@@ -1,38 +1,27 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
 use physis::{
-    resource::{Resource, read_excel_sheet_header, read_excel_sheet},
-    exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow},
-    exh::{EXH, ExcelColumnDefinition},
+    Error, resource::{Resource, ResourceResolver},
+    exd::EXD, exh::{EXH, ExcelColumnDefinition},
+    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
     common::Language,
 };
 pub struct IKDPlayerMissionConditionSheet {
-    pages: Vec<EXD>,
-    exh: EXH,
-    row_count: u32,
+    sheet: ExcelSheet,
 }
 impl IKDPlayerMissionConditionSheet {
-    /// Read the sheet from a `Resource`.
-    pub fn read_from<T: Resource>(resource: &mut T, language: Language) -> Option<Self> {
-        let exh = read_excel_sheet_header(resource, "IKDPlayerMissionCondition")?;
-        let mut pages = Vec::new();
-        for (i, _) in exh.pages.iter().enumerate() {
-            pages
-                .push(
-                    read_excel_sheet(
-                        resource,
-                        "IKDPlayerMissionCondition",
-                        &exh,
-                        language,
-                        i,
-                    )?,
-                );
-        }
-        let row_count = exh.header.row_count;
-        Some(Self { exh, pages, row_count })
+    /// Read the sheet from a `ResourceResolver`.
+    pub fn read_from(
+        resolver: &mut ResourceResolver,
+        language: Language,
+    ) -> Result<Self, Error> {
+        let exh = resolver.read_excel_sheet_header("IKDPlayerMissionCondition")?;
+        let sheet = resolver
+            .read_excel_sheet(exh, "IKDPlayerMissionCondition", language)?;
+        Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<IKDPlayerMissionConditionRow> {
-        let column_defs = &self.exh.column_definitions;
+        let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
             .clone()
@@ -49,17 +38,12 @@ impl IKDPlayerMissionConditionSheet {
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn get_row(&self, row_id: u32) -> Option<IKDPlayerMissionConditionRow> {
-        for page in &self.pages {
-            let Some(row) = &page.get_row(row_id) else {
-                continue;
-            };
-            let row = match row {
-                ExcelRowKind::SingleRow(row) => row,
-                ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-            };
-            return self.read_row(row);
-        }
-        None
+        let row = &self.sheet.get_row(row_id)?;
+        let row = match row {
+            ExcelRowKind::SingleRow(row) => row,
+            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
+        };
+        self.read_row(row)
     }
     /// Fetches the specified subrow from the sheet.
     pub fn get_subrow(
@@ -67,23 +51,18 @@ impl IKDPlayerMissionConditionSheet {
         row_id: u32,
         subrow_id: u16,
     ) -> Option<IKDPlayerMissionConditionRow> {
-        for page in &self.pages {
-            let Some(row) = &page.get_row(row_id) else {
-                continue;
-            };
-            let row = match row {
-                ExcelRowKind::SingleRow(row) => return None,
-                ExcelRowKind::SubRows(subrows) => {
-                    &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-                }
-            };
-            return self.read_row(row);
-        }
-        None
+        let row = &self.sheet.get_row(row_id)?;
+        let row = match row {
+            ExcelRowKind::SingleRow(row) => return None,
+            ExcelRowKind::SubRows(subrows) => {
+                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
+            }
+        };
+        self.read_row(row)
     }
     /// Returns the number of rows in this sheet.
     pub fn row_count(&self) -> u32 {
-        self.row_count
+        self.sheet.exh.header.row_count
     }
 }
 pub struct IKDPlayerMissionConditionRow {

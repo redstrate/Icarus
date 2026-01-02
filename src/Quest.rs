@@ -1,9 +1,9 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
 use physis::{
-    resource::{Resource, read_excel_sheet_header, read_excel_sheet},
-    exd::{EXD, ColumnData, ExcelRowKind, ExcelSingleRow},
-    exh::{EXH, ExcelColumnDefinition},
+    Error, resource::{Resource, ResourceResolver},
+    exd::EXD, exh::{EXH, ExcelColumnDefinition},
+    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
     common::Language,
 };
 pub struct QuestParamsElement<'a> {
@@ -37,23 +37,20 @@ pub struct TodoParamsElement<'a> {
     pub CountableNum: &'a ColumnData,
 }
 pub struct QuestSheet {
-    pages: Vec<EXD>,
-    exh: EXH,
-    row_count: u32,
+    sheet: ExcelSheet,
 }
 impl QuestSheet {
-    /// Read the sheet from a `Resource`.
-    pub fn read_from<T: Resource>(resource: &mut T, language: Language) -> Option<Self> {
-        let exh = read_excel_sheet_header(resource, "Quest")?;
-        let mut pages = Vec::new();
-        for (i, _) in exh.pages.iter().enumerate() {
-            pages.push(read_excel_sheet(resource, "Quest", &exh, language, i)?);
-        }
-        let row_count = exh.header.row_count;
-        Some(Self { exh, pages, row_count })
+    /// Read the sheet from a `ResourceResolver`.
+    pub fn read_from(
+        resolver: &mut ResourceResolver,
+        language: Language,
+    ) -> Result<Self, Error> {
+        let exh = resolver.read_excel_sheet_header("Quest")?;
+        let sheet = resolver.read_excel_sheet(exh, "Quest", language)?;
+        Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestRow> {
-        let column_defs = &self.exh.column_definitions;
+        let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
             .clone()
@@ -68,37 +65,27 @@ impl QuestSheet {
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn get_row(&self, row_id: u32) -> Option<QuestRow> {
-        for page in &self.pages {
-            let Some(row) = &page.get_row(row_id) else {
-                continue;
-            };
-            let row = match row {
-                ExcelRowKind::SingleRow(row) => row,
-                ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-            };
-            return self.read_row(row);
-        }
-        None
+        let row = &self.sheet.get_row(row_id)?;
+        let row = match row {
+            ExcelRowKind::SingleRow(row) => row,
+            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
+        };
+        self.read_row(row)
     }
     /// Fetches the specified subrow from the sheet.
     pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<QuestRow> {
-        for page in &self.pages {
-            let Some(row) = &page.get_row(row_id) else {
-                continue;
-            };
-            let row = match row {
-                ExcelRowKind::SingleRow(row) => return None,
-                ExcelRowKind::SubRows(subrows) => {
-                    &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-                }
-            };
-            return self.read_row(row);
-        }
-        None
+        let row = &self.sheet.get_row(row_id)?;
+        let row = match row {
+            ExcelRowKind::SingleRow(row) => return None,
+            ExcelRowKind::SubRows(subrows) => {
+                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
+            }
+        };
+        self.read_row(row)
     }
     /// Returns the number of rows in this sheet.
     pub fn row_count(&self) -> u32 {
-        self.row_count
+        self.sheet.exh.header.row_count
     }
 }
 pub struct QuestRow {
@@ -2143,67 +2130,67 @@ impl QuestRow {
     pub fn Header<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1607]
     }
-    pub fn BellStart<'a>(&'a self) -> &'a ColumnData {
+    pub fn Festival<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1608]
     }
-    pub fn BellEnd<'a>(&'a self) -> &'a ColumnData {
+    pub fn BellStart<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1609]
     }
-    pub fn BeastReputationValue<'a>(&'a self) -> &'a ColumnData {
+    pub fn BellEnd<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1610]
     }
-    pub fn ClientBehavior<'a>(&'a self) -> &'a ColumnData {
+    pub fn BeastReputationValue<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1611]
     }
-    pub fn QuestClassJobSupply<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClientBehavior<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1612]
     }
-    pub fn PlaceName<'a>(&'a self) -> &'a ColumnData {
+    pub fn QuestClassJobSupply<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1613]
     }
-    pub fn SortKey<'a>(&'a self) -> &'a ColumnData {
+    pub fn PlaceName<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1614]
     }
-    pub fn Expansion<'a>(&'a self) -> &'a ColumnData {
+    pub fn SortKey<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1615]
     }
-    pub fn ClassJobCategory0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Expansion<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1616]
     }
-    pub fn QuestLevelOffset<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClassJobCategory0<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1617]
     }
-    pub fn ClassJobCategory1<'a>(&'a self) -> &'a ColumnData {
+    pub fn QuestLevelOffset<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1618]
     }
-    pub fn PreviousQuestJoin<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClassJobCategory1<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1619]
     }
-    pub fn Unknown7<'a>(&'a self) -> &'a ColumnData {
+    pub fn PreviousQuestJoin<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1620]
     }
-    pub fn QuestLockJoin<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown7<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1621]
     }
-    pub fn Unknown8<'a>(&'a self) -> &'a ColumnData {
+    pub fn QuestLockJoin<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1622]
     }
-    pub fn Unknown9<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown8<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1623]
     }
-    pub fn ClassJobUnlock<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown9<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1624]
     }
-    pub fn GrandCompany<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClassJobUnlock<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1625]
     }
-    pub fn GrandCompanyRank<'a>(&'a self) -> &'a ColumnData {
+    pub fn GrandCompany<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1626]
     }
-    pub fn InstanceContentJoin<'a>(&'a self) -> &'a ColumnData {
+    pub fn GrandCompanyRank<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1627]
     }
-    pub fn Festival<'a>(&'a self) -> &'a ColumnData {
+    pub fn InstanceContentJoin<'a>(&'a self) -> &'a ColumnData {
         &self.columns[1628]
     }
     pub fn FestivalBegin<'a>(&'a self) -> &'a ColumnData {
