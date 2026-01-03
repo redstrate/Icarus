@@ -23,6 +23,7 @@ pub struct ItemElement<'a> {
     pub Order: &'a ColumnData,
     pub ReceiveHq: [&'a ColumnData; 2],
 }
+#[derive(Debug, Clone)]
 pub struct SpecialShopSheet {
     sheet: ExcelSheet,
 }

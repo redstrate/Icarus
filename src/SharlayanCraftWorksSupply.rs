@@ -19,6 +19,7 @@ pub struct ItemElement<'a> {
     pub ScripReward: &'a ColumnData,
     pub HighScripMultiplier: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct SharlayanCraftWorksSupplySheet {
     sheet: ExcelSheet,
 }

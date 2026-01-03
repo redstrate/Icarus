@@ -22,6 +22,7 @@ pub struct RideShootingParamsElement<'a> {
     pub Unknown9: &'a ColumnData,
     pub Unknown10: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct RideShootingSheet {
     sheet: ExcelSheet,
 }

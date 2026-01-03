@@ -10,6 +10,7 @@ pub struct WarpParamsElement<'a> {
     pub Function: &'a ColumnData,
     pub Argument: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct WarpLogicSheet {
     sheet: ExcelSheet,
 }

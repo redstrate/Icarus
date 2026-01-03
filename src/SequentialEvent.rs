@@ -13,6 +13,7 @@ pub struct UnknownStructElement<'a> {
     pub Unknown4: &'a ColumnData,
     pub Unknown5: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct SequentialEventSheet {
     sheet: ExcelSheet,
 }

@@ -10,6 +10,7 @@ pub struct OpenContentDataElement<'a> {
     pub CandidateName: &'a ColumnData,
     pub Content: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct OpenContentSheet {
     sheet: ExcelSheet,
 }

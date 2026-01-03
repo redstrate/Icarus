@@ -13,6 +13,7 @@ pub struct LandSetElement<'a> {
     pub InitialPrice: &'a ColumnData,
     pub PlotSize: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct HousingLandSetSheet {
     sheet: ExcelSheet,
 }

@@ -13,6 +13,7 @@ pub struct IconsElement<'a> {
     pub MapAnnounceQuestLocked: &'a ColumnData,
     pub MapAnnounceQuest2: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct EventCustomIconTypeSheet {
     sheet: ExcelSheet,
 }

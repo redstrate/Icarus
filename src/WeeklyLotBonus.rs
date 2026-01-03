@@ -11,6 +11,7 @@ pub struct WeeklyLotBonusParamElement<'a> {
     pub WeeklyLotBonusThreshold: &'a ColumnData,
     pub Unknown1: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct WeeklyLotBonusSheet {
     sheet: ExcelSheet,
 }

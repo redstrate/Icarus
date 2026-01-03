@@ -13,6 +13,7 @@ pub struct GFATEParamsElement<'a> {
     pub Unknown1: &'a ColumnData,
     pub Unknown2: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct GFATESheet {
     sheet: ExcelSheet,
 }

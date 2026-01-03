@@ -14,6 +14,7 @@ pub struct DefaultTalkParamsElement<'a> {
     pub Unknown3: &'a ColumnData,
     pub Unknown4: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct DefaultTalkSheet {
     sheet: ExcelSheet,
 }

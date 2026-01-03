@@ -17,6 +17,7 @@ pub struct ExpeditionParamsElement<'a> {
     pub PercentTacticalMet: &'a ColumnData,
     pub PercentAllMet: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct GcArmyExpeditionSheet {
     sheet: ExcelSheet,
 }

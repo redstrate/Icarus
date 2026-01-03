@@ -10,6 +10,7 @@ pub struct QuestRedoParamElement<'a> {
     pub Quest: &'a ColumnData,
     pub UnknownParam: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct QuestRedoSheet {
     sheet: ExcelSheet,
 }

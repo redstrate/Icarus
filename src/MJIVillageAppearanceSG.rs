@@ -10,6 +10,7 @@ pub struct VillageAppearanceDataElement<'a> {
     pub UnknownParam: &'a ColumnData,
     pub SGB: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct MJIVillageAppearanceSGSheet {
     sheet: ExcelSheet,
 }

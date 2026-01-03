@@ -18,6 +18,7 @@ pub struct RankParamsElement<'a> {
     pub Unknown1: &'a ColumnData,
     pub Quest: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct SatisfactionNpcSheet {
     sheet: ExcelSheet,
 }

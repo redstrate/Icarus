@@ -24,6 +24,7 @@ pub struct StoryListenerElement<'a> {
     pub SequenceBegin: &'a ColumnData,
     pub SequenceEnd: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct StorySheet {
     sheet: ExcelSheet,
 }

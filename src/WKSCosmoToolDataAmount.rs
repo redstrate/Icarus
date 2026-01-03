@@ -10,6 +10,7 @@ pub struct StagesElement<'a> {
     pub RequiredAmount: [&'a ColumnData; 6],
     pub MaxAmount: [&'a ColumnData; 6],
 }
+#[derive(Debug, Clone)]
 pub struct WKSCosmoToolDataAmountSheet {
     sheet: ExcelSheet,
 }

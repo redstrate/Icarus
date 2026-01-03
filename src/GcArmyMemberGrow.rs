@@ -12,6 +12,7 @@ pub struct MemberParamsElement<'a> {
     pub Mental: &'a ColumnData,
     pub Tactical: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct GcArmyMemberGrowSheet {
     sheet: ExcelSheet,
 }

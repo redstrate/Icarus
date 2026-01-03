@@ -11,6 +11,7 @@ pub struct ItemDataElement<'a> {
     pub Cost: &'a ColumnData,
     pub FCRankRequired: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct FccShopSheet {
     sheet: ExcelSheet,
 }

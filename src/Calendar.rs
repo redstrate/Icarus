@@ -10,6 +10,7 @@ pub struct CalendarStructElement<'a> {
     pub Month: &'a ColumnData,
     pub Day: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct CalendarSheet {
     sheet: ExcelSheet,
 }

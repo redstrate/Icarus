@@ -14,6 +14,7 @@ pub struct HWDGathererInspectionDataElement<'a> {
     pub AmountRequired: &'a ColumnData,
     pub Phase: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct HWDGathererInspectionSheet {
     sheet: ExcelSheet,
 }

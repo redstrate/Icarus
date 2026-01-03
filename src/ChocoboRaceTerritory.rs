@@ -6,6 +6,7 @@ use physis::{
     excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
     common::Language,
 };
+#[derive(Debug, Clone)]
 pub struct ChocoboRaceTerritorySheet {
     sheet: ExcelSheet,
 }

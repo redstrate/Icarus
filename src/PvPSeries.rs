@@ -11,6 +11,7 @@ pub struct LevelRewardsElement<'a> {
     pub Unknown0: &'a ColumnData,
     pub LevelRewardCount: [&'a ColumnData; 2],
 }
+#[derive(Debug, Clone)]
 pub struct PvPSeriesSheet {
     sheet: ExcelSheet,
 }

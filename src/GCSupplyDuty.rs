@@ -10,6 +10,7 @@ pub struct SupplyDataElement<'a> {
     pub Item: [&'a ColumnData; 3],
     pub ItemCount: [&'a ColumnData; 3],
 }
+#[derive(Debug, Clone)]
 pub struct GCSupplyDutySheet {
     sheet: ExcelSheet,
 }

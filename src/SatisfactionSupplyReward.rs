@@ -12,6 +12,7 @@ pub struct SatisfactionSupplyRewardDataElement<'a> {
     pub QuantityMid: &'a ColumnData,
     pub QuantityHigh: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct SatisfactionSupplyRewardSheet {
     sheet: ExcelSheet,
 }

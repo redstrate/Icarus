@@ -12,6 +12,7 @@ pub struct IndividualWeatherDataElement<'a> {
     pub Weather: &'a ColumnData,
     pub Unknown1: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct IndividualWeatherSheet {
     sheet: ExcelSheet,
 }

@@ -36,6 +36,7 @@ pub struct EquipmentElement<'a> {
     pub Weapon: &'a ColumnData,
     pub SubWeapon: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct CharaMakeTypeSheet {
     sheet: ExcelSheet,
 }

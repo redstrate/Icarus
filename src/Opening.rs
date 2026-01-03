@@ -10,6 +10,7 @@ pub struct VariablesElement<'a> {
     pub Name: &'a ColumnData,
     pub Value: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct OpeningSheet {
     sheet: ExcelSheet,
 }

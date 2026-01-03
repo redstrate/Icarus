@@ -16,6 +16,7 @@ pub struct CompanyLeveStructElement<'a> {
     pub ItemDropRate: &'a ColumnData,
     pub NumOfAppearance: [&'a ColumnData; 8],
 }
+#[derive(Debug, Clone)]
 pub struct CompanyLeveSheet {
     sheet: ExcelSheet,
 }

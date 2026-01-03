@@ -22,6 +22,7 @@ pub struct HWDCrafterSupplyParamsElement<'a> {
     pub Unknown0: &'a ColumnData,
     pub TermName: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct HWDCrafterSupplySheet {
     sheet: ExcelSheet,
 }

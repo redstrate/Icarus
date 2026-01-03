@@ -10,6 +10,7 @@ pub struct ScriptElement<'a> {
     pub ScriptInstruction: &'a ColumnData,
     pub ScriptArg: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct CustomTalkSheet {
     sheet: ExcelSheet,
 }

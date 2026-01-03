@@ -11,6 +11,7 @@ pub struct UnknownStructElement<'a> {
     pub Unknown_70: &'a ColumnData,
     pub Unknown2: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct QuestEffectSheet {
     sheet: ExcelSheet,
 }

@@ -27,6 +27,7 @@ pub struct FacialFeatureOptionElement<'a> {
     pub Option6: &'a ColumnData,
     pub Option7: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct HairMakeTypeSheet {
     sheet: ExcelSheet,
 }

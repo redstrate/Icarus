@@ -11,6 +11,7 @@ pub struct RelaysElement<'a> {
     pub ExitTerritory: &'a ColumnData,
     pub Cost: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct TelepoRelaySheet {
     sheet: ExcelSheet,
 }

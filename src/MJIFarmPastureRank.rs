@@ -17,6 +17,7 @@ pub struct RankDataElement<'a> {
     pub Unknown6: &'a ColumnData,
     pub Unknown7: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct MJIFarmPastureRankSheet {
     sheet: ExcelSheet,
 }

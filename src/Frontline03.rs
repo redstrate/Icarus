@@ -15,6 +15,7 @@ pub struct OvooDataElement<'a> {
     pub Unknown1: &'a ColumnData,
     pub Unknown2: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct Frontline03Sheet {
     sheet: ExcelSheet,
 }

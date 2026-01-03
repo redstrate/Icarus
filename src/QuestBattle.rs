@@ -10,6 +10,7 @@ pub struct QuestBattleParamsElement<'a> {
     pub ScriptInstruction: &'a ColumnData,
     pub ScriptValue: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct QuestBattleSheet {
     sheet: ExcelSheet,
 }

@@ -36,6 +36,7 @@ pub struct TodoParamsElement<'a> {
     pub ToDoQty: &'a ColumnData,
     pub CountableNum: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct QuestSheet {
     sheet: ExcelSheet,
 }

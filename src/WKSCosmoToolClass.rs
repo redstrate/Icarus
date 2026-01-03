@@ -16,6 +16,7 @@ pub struct TypesElement<'a> {
     pub Name: &'a ColumnData,
     pub CosmicName: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct WKSCosmoToolClassSheet {
     sheet: ExcelSheet,
 }

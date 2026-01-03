@@ -22,6 +22,7 @@ pub struct HugeCraftworksRewardParamElement<'a> {
     pub RewardQuantity: [&'a ColumnData; 2],
     pub RewardHQ: [&'a ColumnData; 2],
 }
+#[derive(Debug, Clone)]
 pub struct HugeCraftworksNpcSheet {
     sheet: ExcelSheet,
 }

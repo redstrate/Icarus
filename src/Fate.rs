@@ -10,6 +10,7 @@ pub struct ObjectiveIconElement<'a> {
     pub LayoutId: &'a ColumnData,
     pub Icon: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct FateSheet {
     sheet: ExcelSheet,
 }

@@ -12,6 +12,7 @@ pub struct LotteryExchangeParamsElement<'a> {
     pub Unknown0: &'a ColumnData,
     pub Unknown1: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct LotteryExchangeShopSheet {
     sheet: ExcelSheet,
 }

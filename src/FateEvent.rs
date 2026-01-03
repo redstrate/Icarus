@@ -15,6 +15,7 @@ pub struct EventParametersElement<'a> {
     pub WidgetType: &'a ColumnData,
     pub IsAutoShake: &'a ColumnData,
 }
+#[derive(Debug, Clone)]
 pub struct FateEventSheet {
     sheet: ExcelSheet,
 }

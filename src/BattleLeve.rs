@@ -17,6 +17,7 @@ pub struct LeveDataElement<'a> {
     pub ItemDropRate: &'a ColumnData,
     pub NumOfAppearance: [&'a ColumnData; 8],
 }
+#[derive(Debug, Clone)]
 pub struct BattleLeveSheet {
     sheet: ExcelSheet,
 }
