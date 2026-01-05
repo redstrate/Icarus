@@ -17,7 +17,7 @@ impl ItemSpecialBonusSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ItemSpecialBonus")?;
-        let sheet = resolver.read_excel_sheet(exh, "ItemSpecialBonus", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ItemSpecialBonus", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ItemSpecialBonusRow> {

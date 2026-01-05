@@ -17,7 +17,7 @@ impl RecommendContentsSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RecommendContents")?;
-        let sheet = resolver.read_excel_sheet(exh, "RecommendContents", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "RecommendContents", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RecommendContentsRow> {

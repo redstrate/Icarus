@@ -17,7 +17,7 @@ impl HWDDevLevelUISheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HWDDevLevelUI")?;
-        let sheet = resolver.read_excel_sheet(exh, "HWDDevLevelUI", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HWDDevLevelUI", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HWDDevLevelUIRow> {

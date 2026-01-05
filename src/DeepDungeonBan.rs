@@ -17,7 +17,7 @@ impl DeepDungeonBanSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DeepDungeonBan")?;
-        let sheet = resolver.read_excel_sheet(exh, "DeepDungeonBan", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "DeepDungeonBan", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DeepDungeonBanRow> {

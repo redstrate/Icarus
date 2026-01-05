@@ -18,7 +18,7 @@ impl GcArmyExpeditionTraitCondSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GcArmyExpeditionTraitCond")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "GcArmyExpeditionTraitCond", language)?;
+            .read_excel_sheet(&exh, "GcArmyExpeditionTraitCond", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GcArmyExpeditionTraitCondRow> {

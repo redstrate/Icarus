@@ -18,7 +18,7 @@ impl CSBonusContentIdentifierSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CSBonusContentIdentifier")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "CSBonusContentIdentifier", language)?;
+            .read_excel_sheet(&exh, "CSBonusContentIdentifier", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CSBonusContentIdentifierRow> {

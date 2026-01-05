@@ -17,7 +17,7 @@ impl VVDNotebookSeriesSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("VVDNotebookSeries")?;
-        let sheet = resolver.read_excel_sheet(exh, "VVDNotebookSeries", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "VVDNotebookSeries", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<VVDNotebookSeriesRow> {

@@ -17,7 +17,7 @@ impl HWDDevLevelWebTextSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HWDDevLevelWebText")?;
-        let sheet = resolver.read_excel_sheet(exh, "HWDDevLevelWebText", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HWDDevLevelWebText", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HWDDevLevelWebTextRow> {

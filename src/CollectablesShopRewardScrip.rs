@@ -18,7 +18,7 @@ impl CollectablesShopRewardScripSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CollectablesShopRewardScrip")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "CollectablesShopRewardScrip", language)?;
+            .read_excel_sheet(&exh, "CollectablesShopRewardScrip", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CollectablesShopRewardScripRow> {

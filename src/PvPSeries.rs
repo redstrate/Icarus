@@ -22,7 +22,7 @@ impl PvPSeriesSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PvPSeries")?;
-        let sheet = resolver.read_excel_sheet(exh, "PvPSeries", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PvPSeries", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PvPSeriesRow> {

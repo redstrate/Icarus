@@ -17,7 +17,7 @@ impl ModelSkeletonSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ModelSkeleton")?;
-        let sheet = resolver.read_excel_sheet(exh, "ModelSkeleton", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ModelSkeleton", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ModelSkeletonRow> {

@@ -18,7 +18,7 @@ impl FishingRecordTypeTransientSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FishingRecordTypeTransient")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "FishingRecordTypeTransient", language)?;
+            .read_excel_sheet(&exh, "FishingRecordTypeTransient", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FishingRecordTypeTransientRow> {

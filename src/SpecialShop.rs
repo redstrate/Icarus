@@ -34,7 +34,7 @@ impl SpecialShopSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SpecialShop")?;
-        let sheet = resolver.read_excel_sheet(exh, "SpecialShop", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "SpecialShop", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SpecialShopRow> {

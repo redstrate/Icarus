@@ -17,7 +17,7 @@ impl CompanyCraftTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CompanyCraftType")?;
-        let sheet = resolver.read_excel_sheet(exh, "CompanyCraftType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CompanyCraftType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CompanyCraftTypeRow> {

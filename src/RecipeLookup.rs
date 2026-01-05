@@ -17,7 +17,7 @@ impl RecipeLookupSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RecipeLookup")?;
-        let sheet = resolver.read_excel_sheet(exh, "RecipeLookup", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "RecipeLookup", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RecipeLookupRow> {

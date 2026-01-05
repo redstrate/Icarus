@@ -17,7 +17,7 @@ impl GathererCrafterToolSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GathererCrafterTool")?;
-        let sheet = resolver.read_excel_sheet(exh, "GathererCrafterTool", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GathererCrafterTool", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GathererCrafterToolRow> {

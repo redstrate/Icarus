@@ -17,7 +17,7 @@ impl FittingShopCategorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FittingShopCategory")?;
-        let sheet = resolver.read_excel_sheet(exh, "FittingShopCategory", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FittingShopCategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FittingShopCategoryRow> {

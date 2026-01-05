@@ -17,7 +17,7 @@ impl AnimaWeapon5ParamSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AnimaWeapon5Param")?;
-        let sheet = resolver.read_excel_sheet(exh, "AnimaWeapon5Param", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "AnimaWeapon5Param", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AnimaWeapon5ParamRow> {

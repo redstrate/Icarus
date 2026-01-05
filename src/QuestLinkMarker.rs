@@ -17,7 +17,7 @@ impl QuestLinkMarkerSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestLinkMarker")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestLinkMarker", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestLinkMarker", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestLinkMarkerRow> {

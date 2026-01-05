@@ -17,7 +17,7 @@ impl LockonSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Lockon")?;
-        let sheet = resolver.read_excel_sheet(exh, "Lockon", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Lockon", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<LockonRow> {

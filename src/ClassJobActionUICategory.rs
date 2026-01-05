@@ -18,7 +18,7 @@ impl ClassJobActionUICategorySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ClassJobActionUICategory")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "ClassJobActionUICategory", language)?;
+            .read_excel_sheet(&exh, "ClassJobActionUICategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ClassJobActionUICategoryRow> {

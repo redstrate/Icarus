@@ -27,7 +27,7 @@ impl CompanyLeveSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CompanyLeve")?;
-        let sheet = resolver.read_excel_sheet(exh, "CompanyLeve", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CompanyLeve", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CompanyLeveRow> {

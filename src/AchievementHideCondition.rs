@@ -18,7 +18,7 @@ impl AchievementHideConditionSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AchievementHideCondition")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "AchievementHideCondition", language)?;
+            .read_excel_sheet(&exh, "AchievementHideCondition", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AchievementHideConditionRow> {

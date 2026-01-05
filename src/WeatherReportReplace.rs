@@ -17,7 +17,7 @@ impl WeatherReportReplaceSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WeatherReportReplace")?;
-        let sheet = resolver.read_excel_sheet(exh, "WeatherReportReplace", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WeatherReportReplace", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WeatherReportReplaceRow> {

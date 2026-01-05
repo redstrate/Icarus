@@ -17,7 +17,7 @@ impl TownSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Town")?;
-        let sheet = resolver.read_excel_sheet(exh, "Town", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Town", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TownRow> {

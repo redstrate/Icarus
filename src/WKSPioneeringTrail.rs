@@ -17,7 +17,7 @@ impl WKSPioneeringTrailSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSPioneeringTrail")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSPioneeringTrail", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSPioneeringTrail", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSPioneeringTrailRow> {

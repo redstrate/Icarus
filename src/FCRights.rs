@@ -17,7 +17,7 @@ impl FCRightsSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FCRights")?;
-        let sheet = resolver.read_excel_sheet(exh, "FCRights", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FCRights", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FCRightsRow> {

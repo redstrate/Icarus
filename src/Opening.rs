@@ -21,7 +21,7 @@ impl OpeningSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Opening")?;
-        let sheet = resolver.read_excel_sheet(exh, "Opening", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Opening", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<OpeningRow> {

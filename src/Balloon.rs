@@ -17,7 +17,7 @@ impl BalloonSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Balloon")?;
-        let sheet = resolver.read_excel_sheet(exh, "Balloon", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Balloon", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BalloonRow> {

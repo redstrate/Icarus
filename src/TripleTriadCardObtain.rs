@@ -17,7 +17,7 @@ impl TripleTriadCardObtainSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TripleTriadCardObtain")?;
-        let sheet = resolver.read_excel_sheet(exh, "TripleTriadCardObtain", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TripleTriadCardObtain", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TripleTriadCardObtainRow> {

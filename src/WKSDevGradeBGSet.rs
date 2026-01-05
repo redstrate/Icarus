@@ -17,7 +17,7 @@ impl WKSDevGradeBGSetSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSDevGradeBGSet")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSDevGradeBGSet", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSDevGradeBGSet", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSDevGradeBGSetRow> {

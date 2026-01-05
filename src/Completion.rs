@@ -17,7 +17,7 @@ impl CompletionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Completion")?;
-        let sheet = resolver.read_excel_sheet(exh, "Completion", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Completion", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CompletionRow> {

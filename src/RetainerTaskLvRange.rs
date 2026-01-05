@@ -17,7 +17,7 @@ impl RetainerTaskLvRangeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RetainerTaskLvRange")?;
-        let sheet = resolver.read_excel_sheet(exh, "RetainerTaskLvRange", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "RetainerTaskLvRange", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RetainerTaskLvRangeRow> {

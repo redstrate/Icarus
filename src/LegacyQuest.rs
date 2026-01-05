@@ -17,7 +17,7 @@ impl LegacyQuestSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("LegacyQuest")?;
-        let sheet = resolver.read_excel_sheet(exh, "LegacyQuest", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "LegacyQuest", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<LegacyQuestRow> {

@@ -17,7 +17,7 @@ impl BeastTribeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BeastTribe")?;
-        let sheet = resolver.read_excel_sheet(exh, "BeastTribe", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BeastTribe", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BeastTribeRow> {

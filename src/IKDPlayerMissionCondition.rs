@@ -18,7 +18,7 @@ impl IKDPlayerMissionConditionSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("IKDPlayerMissionCondition")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "IKDPlayerMissionCondition", language)?;
+            .read_excel_sheet(&exh, "IKDPlayerMissionCondition", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<IKDPlayerMissionConditionRow> {

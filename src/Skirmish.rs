@@ -17,7 +17,7 @@ impl SkirmishSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Skirmish")?;
-        let sheet = resolver.read_excel_sheet(exh, "Skirmish", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Skirmish", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SkirmishRow> {

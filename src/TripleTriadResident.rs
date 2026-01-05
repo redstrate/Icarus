@@ -17,7 +17,7 @@ impl TripleTriadResidentSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TripleTriadResident")?;
-        let sheet = resolver.read_excel_sheet(exh, "TripleTriadResident", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TripleTriadResident", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TripleTriadResidentRow> {

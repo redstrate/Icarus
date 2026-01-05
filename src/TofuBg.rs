@@ -17,7 +17,7 @@ impl TofuBgSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TofuBg")?;
-        let sheet = resolver.read_excel_sheet(exh, "TofuBg", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TofuBg", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TofuBgRow> {

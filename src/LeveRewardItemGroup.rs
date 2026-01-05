@@ -17,7 +17,7 @@ impl LeveRewardItemGroupSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("LeveRewardItemGroup")?;
-        let sheet = resolver.read_excel_sheet(exh, "LeveRewardItemGroup", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "LeveRewardItemGroup", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<LeveRewardItemGroupRow> {

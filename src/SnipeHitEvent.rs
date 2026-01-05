@@ -17,7 +17,7 @@ impl SnipeHitEventSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SnipeHitEvent")?;
-        let sheet = resolver.read_excel_sheet(exh, "SnipeHitEvent", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "SnipeHitEvent", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SnipeHitEventRow> {

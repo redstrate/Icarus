@@ -17,7 +17,7 @@ impl ZoneTimelineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ZoneTimeline")?;
-        let sheet = resolver.read_excel_sheet(exh, "ZoneTimeline", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ZoneTimeline", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ZoneTimelineRow> {

@@ -17,7 +17,8 @@ impl GatheringPointTransientSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GatheringPointTransient")?;
-        let sheet = resolver.read_excel_sheet(exh, "GatheringPointTransient", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "GatheringPointTransient", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GatheringPointTransientRow> {

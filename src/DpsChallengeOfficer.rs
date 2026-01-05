@@ -17,7 +17,7 @@ impl DpsChallengeOfficerSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DpsChallengeOfficer")?;
-        let sheet = resolver.read_excel_sheet(exh, "DpsChallengeOfficer", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "DpsChallengeOfficer", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DpsChallengeOfficerRow> {

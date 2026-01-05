@@ -17,7 +17,7 @@ impl QuestChapterSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestChapter")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestChapter", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestChapter", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestChapterRow> {

@@ -17,7 +17,7 @@ impl CreditCastSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CreditCast")?;
-        let sheet = resolver.read_excel_sheet(exh, "CreditCast", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CreditCast", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CreditCastRow> {

@@ -18,7 +18,7 @@ impl HWDSharedGroupControlParamSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HWDSharedGroupControlParam")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "HWDSharedGroupControlParam", language)?;
+            .read_excel_sheet(&exh, "HWDSharedGroupControlParam", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HWDSharedGroupControlParamRow> {

@@ -17,7 +17,7 @@ impl HousingPileLimitSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HousingPileLimit")?;
-        let sheet = resolver.read_excel_sheet(exh, "HousingPileLimit", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HousingPileLimit", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HousingPileLimitRow> {

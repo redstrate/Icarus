@@ -17,7 +17,7 @@ impl MJIGatheringItemSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJIGatheringItem")?;
-        let sheet = resolver.read_excel_sheet(exh, "MJIGatheringItem", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MJIGatheringItem", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MJIGatheringItemRow> {

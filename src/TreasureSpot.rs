@@ -17,7 +17,7 @@ impl TreasureSpotSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TreasureSpot")?;
-        let sheet = resolver.read_excel_sheet(exh, "TreasureSpot", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TreasureSpot", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TreasureSpotRow> {

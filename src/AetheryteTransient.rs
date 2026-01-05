@@ -17,7 +17,7 @@ impl AetheryteTransientSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AetheryteTransient")?;
-        let sheet = resolver.read_excel_sheet(exh, "AetheryteTransient", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "AetheryteTransient", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AetheryteTransientRow> {

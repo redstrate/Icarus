@@ -17,7 +17,7 @@ impl BGMFadeTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BGMFadeType")?;
-        let sheet = resolver.read_excel_sheet(exh, "BGMFadeType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BGMFadeType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BGMFadeTypeRow> {

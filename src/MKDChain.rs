@@ -17,7 +17,7 @@ impl MKDChainSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MKDChain")?;
-        let sheet = resolver.read_excel_sheet(exh, "MKDChain", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MKDChain", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MKDChainRow> {

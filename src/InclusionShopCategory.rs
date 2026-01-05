@@ -17,7 +17,7 @@ impl InclusionShopCategorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("InclusionShopCategory")?;
-        let sheet = resolver.read_excel_sheet(exh, "InclusionShopCategory", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "InclusionShopCategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<InclusionShopCategoryRow> {

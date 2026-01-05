@@ -17,7 +17,8 @@ impl GameConditionValueArraySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GameConditionValueArray")?;
-        let sheet = resolver.read_excel_sheet(exh, "GameConditionValueArray", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "GameConditionValueArray", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GameConditionValueArrayRow> {

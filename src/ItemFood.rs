@@ -17,7 +17,7 @@ impl ItemFoodSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ItemFood")?;
-        let sheet = resolver.read_excel_sheet(exh, "ItemFood", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ItemFood", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ItemFoodRow> {

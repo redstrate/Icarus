@@ -17,7 +17,7 @@ impl MobHuntTargetSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MobHuntTarget")?;
-        let sheet = resolver.read_excel_sheet(exh, "MobHuntTarget", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MobHuntTarget", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MobHuntTargetRow> {

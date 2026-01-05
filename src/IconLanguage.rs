@@ -17,7 +17,7 @@ impl IconLanguageSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("IconLanguage")?;
-        let sheet = resolver.read_excel_sheet(exh, "IconLanguage", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "IconLanguage", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<IconLanguageRow> {

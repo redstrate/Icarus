@@ -17,7 +17,7 @@ impl SnipeTalkNameSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SnipeTalkName")?;
-        let sheet = resolver.read_excel_sheet(exh, "SnipeTalkName", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "SnipeTalkName", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SnipeTalkNameRow> {

@@ -17,7 +17,7 @@ impl TerritoryIntendedUseSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TerritoryIntendedUse")?;
-        let sheet = resolver.read_excel_sheet(exh, "TerritoryIntendedUse", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TerritoryIntendedUse", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TerritoryIntendedUseRow> {

@@ -17,7 +17,7 @@ impl PetMirageSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PetMirage")?;
-        let sheet = resolver.read_excel_sheet(exh, "PetMirage", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PetMirage", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PetMirageRow> {

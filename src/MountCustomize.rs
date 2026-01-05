@@ -17,7 +17,7 @@ impl MountCustomizeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MountCustomize")?;
-        let sheet = resolver.read_excel_sheet(exh, "MountCustomize", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MountCustomize", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MountCustomizeRow> {

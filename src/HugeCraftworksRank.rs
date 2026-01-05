@@ -17,7 +17,7 @@ impl HugeCraftworksRankSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HugeCraftworksRank")?;
-        let sheet = resolver.read_excel_sheet(exh, "HugeCraftworksRank", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HugeCraftworksRank", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HugeCraftworksRankRow> {

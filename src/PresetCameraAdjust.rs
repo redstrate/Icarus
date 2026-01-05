@@ -17,7 +17,7 @@ impl PresetCameraAdjustSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PresetCameraAdjust")?;
-        let sheet = resolver.read_excel_sheet(exh, "PresetCameraAdjust", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PresetCameraAdjust", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PresetCameraAdjustRow> {

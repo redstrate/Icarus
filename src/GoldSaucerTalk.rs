@@ -17,7 +17,7 @@ impl GoldSaucerTalkSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GoldSaucerTalk")?;
-        let sheet = resolver.read_excel_sheet(exh, "GoldSaucerTalk", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GoldSaucerTalk", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GoldSaucerTalkRow> {

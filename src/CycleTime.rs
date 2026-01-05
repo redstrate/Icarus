@@ -17,7 +17,7 @@ impl CycleTimeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CycleTime")?;
-        let sheet = resolver.read_excel_sheet(exh, "CycleTime", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CycleTime", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CycleTimeRow> {

@@ -17,7 +17,7 @@ impl PerformGuideScoreSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PerformGuideScore")?;
-        let sheet = resolver.read_excel_sheet(exh, "PerformGuideScore", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PerformGuideScore", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PerformGuideScoreRow> {

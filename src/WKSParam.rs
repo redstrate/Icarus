@@ -17,7 +17,7 @@ impl WKSParamSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSParam")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSParam", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSParam", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSParamRow> {

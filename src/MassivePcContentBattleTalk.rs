@@ -18,7 +18,7 @@ impl MassivePcContentBattleTalkSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MassivePcContentBattleTalk")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "MassivePcContentBattleTalk", language)?;
+            .read_excel_sheet(&exh, "MassivePcContentBattleTalk", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MassivePcContentBattleTalkRow> {

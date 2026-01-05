@@ -18,7 +18,7 @@ impl MJIDisposalShopUICategorySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJIDisposalShopUICategory")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "MJIDisposalShopUICategory", language)?;
+            .read_excel_sheet(&exh, "MJIDisposalShopUICategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MJIDisposalShopUICategoryRow> {

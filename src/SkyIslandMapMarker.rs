@@ -17,7 +17,7 @@ impl SkyIslandMapMarkerSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SkyIslandMapMarker")?;
-        let sheet = resolver.read_excel_sheet(exh, "SkyIslandMapMarker", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "SkyIslandMapMarker", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SkyIslandMapMarkerRow> {

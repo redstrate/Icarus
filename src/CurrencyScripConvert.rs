@@ -17,7 +17,7 @@ impl CurrencyScripConvertSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CurrencyScripConvert")?;
-        let sheet = resolver.read_excel_sheet(exh, "CurrencyScripConvert", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CurrencyScripConvert", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CurrencyScripConvertRow> {

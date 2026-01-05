@@ -17,7 +17,7 @@ impl MoveTimelineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MoveTimeline")?;
-        let sheet = resolver.read_excel_sheet(exh, "MoveTimeline", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MoveTimeline", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MoveTimelineRow> {

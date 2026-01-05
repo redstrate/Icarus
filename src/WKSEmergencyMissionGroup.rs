@@ -18,7 +18,7 @@ impl WKSEmergencyMissionGroupSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSEmergencyMissionGroup")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "WKSEmergencyMissionGroup", language)?;
+            .read_excel_sheet(&exh, "WKSEmergencyMissionGroup", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSEmergencyMissionGroupRow> {

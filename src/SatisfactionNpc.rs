@@ -29,7 +29,7 @@ impl SatisfactionNpcSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SatisfactionNpc")?;
-        let sheet = resolver.read_excel_sheet(exh, "SatisfactionNpc", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "SatisfactionNpc", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SatisfactionNpcRow> {

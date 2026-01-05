@@ -17,7 +17,7 @@ impl ItemSortCategorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ItemSortCategory")?;
-        let sheet = resolver.read_excel_sheet(exh, "ItemSortCategory", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ItemSortCategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ItemSortCategoryRow> {

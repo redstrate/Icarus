@@ -17,7 +17,7 @@ impl MinionStageSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MinionStage")?;
-        let sheet = resolver.read_excel_sheet(exh, "MinionStage", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MinionStage", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MinionStageRow> {

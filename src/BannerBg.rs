@@ -17,7 +17,7 @@ impl BannerBgSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BannerBg")?;
-        let sheet = resolver.read_excel_sheet(exh, "BannerBg", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BannerBg", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BannerBgRow> {

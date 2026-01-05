@@ -17,7 +17,7 @@ impl HWDInfoBoardArticleSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HWDInfoBoardArticle")?;
-        let sheet = resolver.read_excel_sheet(exh, "HWDInfoBoardArticle", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HWDInfoBoardArticle", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HWDInfoBoardArticleRow> {

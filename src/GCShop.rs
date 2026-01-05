@@ -17,7 +17,7 @@ impl GCShopSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GCShop")?;
-        let sheet = resolver.read_excel_sheet(exh, "GCShop", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GCShop", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GCShopRow> {

@@ -17,7 +17,7 @@ impl ConditionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Condition")?;
-        let sheet = resolver.read_excel_sheet(exh, "Condition", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Condition", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ConditionRow> {

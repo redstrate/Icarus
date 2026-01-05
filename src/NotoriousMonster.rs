@@ -17,7 +17,7 @@ impl NotoriousMonsterSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("NotoriousMonster")?;
-        let sheet = resolver.read_excel_sheet(exh, "NotoriousMonster", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "NotoriousMonster", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<NotoriousMonsterRow> {

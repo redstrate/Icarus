@@ -17,7 +17,7 @@ impl CompanyCraftSupplyItemSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CompanyCraftSupplyItem")?;
-        let sheet = resolver.read_excel_sheet(exh, "CompanyCraftSupplyItem", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CompanyCraftSupplyItem", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CompanyCraftSupplyItemRow> {

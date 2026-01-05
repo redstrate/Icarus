@@ -17,7 +17,7 @@ impl JobHudManualSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("JobHudManual")?;
-        let sheet = resolver.read_excel_sheet(exh, "JobHudManual", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "JobHudManual", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<JobHudManualRow> {

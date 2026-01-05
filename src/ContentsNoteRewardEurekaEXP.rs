@@ -18,7 +18,7 @@ impl ContentsNoteRewardEurekaEXPSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentsNoteRewardEurekaEXP")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "ContentsNoteRewardEurekaEXP", language)?;
+            .read_excel_sheet(&exh, "ContentsNoteRewardEurekaEXP", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentsNoteRewardEurekaEXPRow> {

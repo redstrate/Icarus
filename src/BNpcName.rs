@@ -17,7 +17,7 @@ impl BNpcNameSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BNpcName")?;
-        let sheet = resolver.read_excel_sheet(exh, "BNpcName", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BNpcName", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BNpcNameRow> {

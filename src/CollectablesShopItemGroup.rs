@@ -18,7 +18,7 @@ impl CollectablesShopItemGroupSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CollectablesShopItemGroup")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "CollectablesShopItemGroup", language)?;
+            .read_excel_sheet(&exh, "CollectablesShopItemGroup", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CollectablesShopItemGroupRow> {

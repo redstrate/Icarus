@@ -17,7 +17,7 @@ impl AddonSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Addon")?;
-        let sheet = resolver.read_excel_sheet(exh, "Addon", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Addon", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AddonRow> {

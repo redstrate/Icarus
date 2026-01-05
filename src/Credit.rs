@@ -17,7 +17,7 @@ impl CreditSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Credit")?;
-        let sheet = resolver.read_excel_sheet(exh, "Credit", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Credit", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CreditRow> {

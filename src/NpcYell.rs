@@ -17,7 +17,7 @@ impl NpcYellSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("NpcYell")?;
-        let sheet = resolver.read_excel_sheet(exh, "NpcYell", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "NpcYell", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<NpcYellRow> {

@@ -17,7 +17,7 @@ impl CSBonusTextDataSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CSBonusTextData")?;
-        let sheet = resolver.read_excel_sheet(exh, "CSBonusTextData", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CSBonusTextData", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CSBonusTextDataRow> {

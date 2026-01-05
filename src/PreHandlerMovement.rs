@@ -17,7 +17,7 @@ impl PreHandlerMovementSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PreHandlerMovement")?;
-        let sheet = resolver.read_excel_sheet(exh, "PreHandlerMovement", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PreHandlerMovement", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PreHandlerMovementRow> {

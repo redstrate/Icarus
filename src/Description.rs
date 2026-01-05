@@ -17,7 +17,7 @@ impl DescriptionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Description")?;
-        let sheet = resolver.read_excel_sheet(exh, "Description", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Description", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DescriptionRow> {

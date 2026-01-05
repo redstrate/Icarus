@@ -17,7 +17,7 @@ impl WeddingPlanSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WeddingPlan")?;
-        let sheet = resolver.read_excel_sheet(exh, "WeddingPlan", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WeddingPlan", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WeddingPlanRow> {

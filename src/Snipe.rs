@@ -26,7 +26,7 @@ impl SnipeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Snipe")?;
-        let sheet = resolver.read_excel_sheet(exh, "Snipe", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Snipe", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SnipeRow> {

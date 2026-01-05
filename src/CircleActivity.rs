@@ -17,7 +17,7 @@ impl CircleActivitySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CircleActivity")?;
-        let sheet = resolver.read_excel_sheet(exh, "CircleActivity", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CircleActivity", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CircleActivityRow> {

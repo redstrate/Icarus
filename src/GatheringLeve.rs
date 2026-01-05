@@ -17,7 +17,7 @@ impl GatheringLeveSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GatheringLeve")?;
-        let sheet = resolver.read_excel_sheet(exh, "GatheringLeve", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GatheringLeve", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GatheringLeveRow> {

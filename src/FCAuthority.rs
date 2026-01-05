@@ -17,7 +17,7 @@ impl FCAuthoritySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FCAuthority")?;
-        let sheet = resolver.read_excel_sheet(exh, "FCAuthority", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FCAuthority", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FCAuthorityRow> {

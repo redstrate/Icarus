@@ -17,7 +17,7 @@ impl DeepDungeonMap5XSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DeepDungeonMap5X")?;
-        let sheet = resolver.read_excel_sheet(exh, "DeepDungeonMap5X", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "DeepDungeonMap5X", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DeepDungeonMap5XRow> {

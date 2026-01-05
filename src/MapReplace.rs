@@ -17,7 +17,7 @@ impl MapReplaceSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MapReplace")?;
-        let sheet = resolver.read_excel_sheet(exh, "MapReplace", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MapReplace", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MapReplaceRow> {

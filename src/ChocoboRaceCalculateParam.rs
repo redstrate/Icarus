@@ -18,7 +18,7 @@ impl ChocoboRaceCalculateParamSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ChocoboRaceCalculateParam")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "ChocoboRaceCalculateParam", language)?;
+            .read_excel_sheet(&exh, "ChocoboRaceCalculateParam", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ChocoboRaceCalculateParamRow> {

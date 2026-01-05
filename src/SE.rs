@@ -17,7 +17,7 @@ impl SESheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SE")?;
-        let sheet = resolver.read_excel_sheet(exh, "SE", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "SE", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SERow> {

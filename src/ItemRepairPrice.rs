@@ -17,7 +17,7 @@ impl ItemRepairPriceSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ItemRepairPrice")?;
-        let sheet = resolver.read_excel_sheet(exh, "ItemRepairPrice", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ItemRepairPrice", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ItemRepairPriceRow> {

@@ -17,7 +17,7 @@ impl ContentRouletteSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentRoulette")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentRoulette", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentRoulette", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentRouletteRow> {

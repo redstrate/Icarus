@@ -17,7 +17,7 @@ impl TutorialTankSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TutorialTank")?;
-        let sheet = resolver.read_excel_sheet(exh, "TutorialTank", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TutorialTank", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TutorialTankRow> {

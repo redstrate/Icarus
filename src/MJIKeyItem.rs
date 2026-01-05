@@ -17,7 +17,7 @@ impl MJIKeyItemSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJIKeyItem")?;
-        let sheet = resolver.read_excel_sheet(exh, "MJIKeyItem", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MJIKeyItem", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MJIKeyItemRow> {

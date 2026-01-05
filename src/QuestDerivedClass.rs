@@ -17,7 +17,7 @@ impl QuestDerivedClassSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestDerivedClass")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestDerivedClass", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestDerivedClass", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestDerivedClassRow> {

@@ -17,7 +17,7 @@ impl AnimationLODSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AnimationLOD")?;
-        let sheet = resolver.read_excel_sheet(exh, "AnimationLOD", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "AnimationLOD", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AnimationLODRow> {

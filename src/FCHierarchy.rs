@@ -17,7 +17,7 @@ impl FCHierarchySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FCHierarchy")?;
-        let sheet = resolver.read_excel_sheet(exh, "FCHierarchy", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FCHierarchy", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FCHierarchyRow> {

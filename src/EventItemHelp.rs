@@ -17,7 +17,7 @@ impl EventItemHelpSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EventItemHelp")?;
-        let sheet = resolver.read_excel_sheet(exh, "EventItemHelp", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EventItemHelp", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EventItemHelpRow> {

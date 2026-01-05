@@ -17,7 +17,7 @@ impl GCScripShopCategorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GCScripShopCategory")?;
-        let sheet = resolver.read_excel_sheet(exh, "GCScripShopCategory", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GCScripShopCategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GCScripShopCategoryRow> {

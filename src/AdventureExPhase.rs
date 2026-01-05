@@ -17,7 +17,7 @@ impl AdventureExPhaseSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AdventureExPhase")?;
-        let sheet = resolver.read_excel_sheet(exh, "AdventureExPhase", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "AdventureExPhase", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AdventureExPhaseRow> {

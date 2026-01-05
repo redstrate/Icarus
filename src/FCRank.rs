@@ -17,7 +17,7 @@ impl FCRankSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FCRank")?;
-        let sheet = resolver.read_excel_sheet(exh, "FCRank", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FCRank", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FCRankRow> {

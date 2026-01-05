@@ -18,7 +18,7 @@ impl QuestAcceptAdditionConditionSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestAcceptAdditionCondition")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "QuestAcceptAdditionCondition", language)?;
+            .read_excel_sheet(&exh, "QuestAcceptAdditionCondition", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestAcceptAdditionConditionRow> {

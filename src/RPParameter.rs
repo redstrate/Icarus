@@ -17,7 +17,7 @@ impl RPParameterSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RPParameter")?;
-        let sheet = resolver.read_excel_sheet(exh, "RPParameter", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "RPParameter", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RPParameterRow> {

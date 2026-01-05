@@ -17,7 +17,7 @@ impl EventItemCastTimelineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EventItemCastTimeline")?;
-        let sheet = resolver.read_excel_sheet(exh, "EventItemCastTimeline", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EventItemCastTimeline", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EventItemCastTimelineRow> {

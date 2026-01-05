@@ -33,7 +33,7 @@ impl HugeCraftworksNpcSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HugeCraftworksNpc")?;
-        let sheet = resolver.read_excel_sheet(exh, "HugeCraftworksNpc", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HugeCraftworksNpc", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HugeCraftworksNpcRow> {

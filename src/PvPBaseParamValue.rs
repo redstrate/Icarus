@@ -17,7 +17,7 @@ impl PvPBaseParamValueSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PvPBaseParamValue")?;
-        let sheet = resolver.read_excel_sheet(exh, "PvPBaseParamValue", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PvPBaseParamValue", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PvPBaseParamValueRow> {

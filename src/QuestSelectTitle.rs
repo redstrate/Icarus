@@ -17,7 +17,7 @@ impl QuestSelectTitleSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestSelectTitle")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestSelectTitle", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestSelectTitle", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestSelectTitleRow> {

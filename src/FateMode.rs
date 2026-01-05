@@ -17,7 +17,7 @@ impl FateModeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FateMode")?;
-        let sheet = resolver.read_excel_sheet(exh, "FateMode", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FateMode", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FateModeRow> {

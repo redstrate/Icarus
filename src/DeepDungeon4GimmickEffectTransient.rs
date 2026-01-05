@@ -19,7 +19,7 @@ impl DeepDungeon4GimmickEffectTransientSheet {
         let exh = resolver
             .read_excel_sheet_header("DeepDungeon4GimmickEffectTransient")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "DeepDungeon4GimmickEffectTransient", language)?;
+            .read_excel_sheet(&exh, "DeepDungeon4GimmickEffectTransient", language)?;
         Ok(Self { sheet })
     }
     fn read_row(

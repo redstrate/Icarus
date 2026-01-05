@@ -17,7 +17,7 @@ impl CompanyCraftDraftSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CompanyCraftDraft")?;
-        let sheet = resolver.read_excel_sheet(exh, "CompanyCraftDraft", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CompanyCraftDraft", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CompanyCraftDraftRow> {

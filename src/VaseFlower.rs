@@ -17,7 +17,7 @@ impl VaseFlowerSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("VaseFlower")?;
-        let sheet = resolver.read_excel_sheet(exh, "VaseFlower", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "VaseFlower", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<VaseFlowerRow> {

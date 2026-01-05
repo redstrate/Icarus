@@ -17,7 +17,7 @@ impl DawnContentSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DawnContent")?;
-        let sheet = resolver.read_excel_sheet(exh, "DawnContent", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "DawnContent", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DawnContentRow> {

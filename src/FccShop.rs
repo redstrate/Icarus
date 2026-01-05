@@ -22,7 +22,7 @@ impl FccShopSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FccShop")?;
-        let sheet = resolver.read_excel_sheet(exh, "FccShop", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FccShop", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FccShopRow> {

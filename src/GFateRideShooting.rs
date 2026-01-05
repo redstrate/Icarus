@@ -17,7 +17,7 @@ impl GFateRideShootingSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GFateRideShooting")?;
-        let sheet = resolver.read_excel_sheet(exh, "GFateRideShooting", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GFateRideShooting", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GFateRideShootingRow> {

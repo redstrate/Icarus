@@ -17,7 +17,7 @@ impl FishingNoteInfoSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FishingNoteInfo")?;
-        let sheet = resolver.read_excel_sheet(exh, "FishingNoteInfo", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FishingNoteInfo", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FishingNoteInfoRow> {

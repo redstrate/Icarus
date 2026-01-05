@@ -17,7 +17,7 @@ impl ItemActionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ItemAction")?;
-        let sheet = resolver.read_excel_sheet(exh, "ItemAction", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ItemAction", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ItemActionRow> {

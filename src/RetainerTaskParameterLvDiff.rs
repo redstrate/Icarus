@@ -18,7 +18,7 @@ impl RetainerTaskParameterLvDiffSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RetainerTaskParameterLvDiff")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "RetainerTaskParameterLvDiff", language)?;
+            .read_excel_sheet(&exh, "RetainerTaskParameterLvDiff", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RetainerTaskParameterLvDiffRow> {

@@ -17,7 +17,7 @@ impl BNpcAnnounceIconSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BNpcAnnounceIcon")?;
-        let sheet = resolver.read_excel_sheet(exh, "BNpcAnnounceIcon", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BNpcAnnounceIcon", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BNpcAnnounceIconRow> {

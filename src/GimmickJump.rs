@@ -17,7 +17,7 @@ impl GimmickJumpSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GimmickJump")?;
-        let sheet = resolver.read_excel_sheet(exh, "GimmickJump", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GimmickJump", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GimmickJumpRow> {

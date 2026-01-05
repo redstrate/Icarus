@@ -17,7 +17,7 @@ impl UDS_StatsSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("UDS_Stats")?;
-        let sheet = resolver.read_excel_sheet(exh, "UDS_Stats", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "UDS_Stats", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<UDS_StatsRow> {

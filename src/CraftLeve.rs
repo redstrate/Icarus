@@ -17,7 +17,7 @@ impl CraftLeveSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CraftLeve")?;
-        let sheet = resolver.read_excel_sheet(exh, "CraftLeve", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CraftLeve", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CraftLeveRow> {

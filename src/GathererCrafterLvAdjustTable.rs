@@ -18,7 +18,7 @@ impl GathererCrafterLvAdjustTableSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GathererCrafterLvAdjustTable")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "GathererCrafterLvAdjustTable", language)?;
+            .read_excel_sheet(&exh, "GathererCrafterLvAdjustTable", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GathererCrafterLvAdjustTableRow> {

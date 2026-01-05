@@ -17,7 +17,7 @@ impl ManeuversSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Maneuvers")?;
-        let sheet = resolver.read_excel_sheet(exh, "Maneuvers", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Maneuvers", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ManeuversRow> {

@@ -17,7 +17,7 @@ impl CuttingGrassSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CuttingGrass")?;
-        let sheet = resolver.read_excel_sheet(exh, "CuttingGrass", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CuttingGrass", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CuttingGrassRow> {

@@ -17,7 +17,8 @@ impl AirshipExplorationPointSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AirshipExplorationPoint")?;
-        let sheet = resolver.read_excel_sheet(exh, "AirshipExplorationPoint", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "AirshipExplorationPoint", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AirshipExplorationPointRow> {

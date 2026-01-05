@@ -17,7 +17,7 @@ impl HousingMateAuthoritySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HousingMateAuthority")?;
-        let sheet = resolver.read_excel_sheet(exh, "HousingMateAuthority", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HousingMateAuthority", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HousingMateAuthorityRow> {

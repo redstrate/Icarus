@@ -17,7 +17,7 @@ impl SystemGraphicPresetSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SystemGraphicPreset")?;
-        let sheet = resolver.read_excel_sheet(exh, "SystemGraphicPreset", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "SystemGraphicPreset", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SystemGraphicPresetRow> {

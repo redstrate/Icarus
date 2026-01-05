@@ -18,7 +18,7 @@ impl EventSituationIconTooltipSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EventSituationIconTooltip")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "EventSituationIconTooltip", language)?;
+            .read_excel_sheet(&exh, "EventSituationIconTooltip", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EventSituationIconTooltipRow> {

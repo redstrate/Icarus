@@ -17,7 +17,7 @@ impl TopicSelectSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TopicSelect")?;
-        let sheet = resolver.read_excel_sheet(exh, "TopicSelect", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TopicSelect", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TopicSelectRow> {

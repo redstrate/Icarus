@@ -17,7 +17,7 @@ impl BannerFrameSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BannerFrame")?;
-        let sheet = resolver.read_excel_sheet(exh, "BannerFrame", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BannerFrame", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BannerFrameRow> {

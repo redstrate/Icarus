@@ -26,7 +26,7 @@ impl Frontline03Sheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Frontline03")?;
-        let sheet = resolver.read_excel_sheet(exh, "Frontline03", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Frontline03", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<Frontline03Row> {

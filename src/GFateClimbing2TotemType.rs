@@ -17,7 +17,8 @@ impl GFateClimbing2TotemTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GFateClimbing2TotemType")?;
-        let sheet = resolver.read_excel_sheet(exh, "GFateClimbing2TotemType", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "GFateClimbing2TotemType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GFateClimbing2TotemTypeRow> {

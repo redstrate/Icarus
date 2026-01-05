@@ -17,7 +17,7 @@ impl PublicContentCutsceneSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PublicContentCutscene")?;
-        let sheet = resolver.read_excel_sheet(exh, "PublicContentCutscene", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PublicContentCutscene", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PublicContentCutsceneRow> {

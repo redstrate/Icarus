@@ -17,7 +17,7 @@ impl JingleSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Jingle")?;
-        let sheet = resolver.read_excel_sheet(exh, "Jingle", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Jingle", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<JingleRow> {

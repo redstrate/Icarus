@@ -17,7 +17,7 @@ impl HousingPresetSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HousingPreset")?;
-        let sheet = resolver.read_excel_sheet(exh, "HousingPreset", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HousingPreset", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HousingPresetRow> {

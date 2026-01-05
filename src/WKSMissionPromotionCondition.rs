@@ -18,7 +18,7 @@ impl WKSMissionPromotionConditionSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSMissionPromotionCondition")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "WKSMissionPromotionCondition", language)?;
+            .read_excel_sheet(&exh, "WKSMissionPromotionCondition", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSMissionPromotionConditionRow> {

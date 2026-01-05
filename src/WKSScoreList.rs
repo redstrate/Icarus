@@ -17,7 +17,7 @@ impl WKSScoreListSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSScoreList")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSScoreList", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSScoreList", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSScoreListRow> {

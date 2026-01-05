@@ -18,7 +18,7 @@ impl MJIStockyardManagementTableSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJIStockyardManagementTable")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "MJIStockyardManagementTable", language)?;
+            .read_excel_sheet(&exh, "MJIStockyardManagementTable", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MJIStockyardManagementTableRow> {

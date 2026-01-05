@@ -17,7 +17,7 @@ impl GilShopInfoSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GilShopInfo")?;
-        let sheet = resolver.read_excel_sheet(exh, "GilShopInfo", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GilShopInfo", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GilShopInfoRow> {

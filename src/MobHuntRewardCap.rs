@@ -17,7 +17,7 @@ impl MobHuntRewardCapSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MobHuntRewardCap")?;
-        let sheet = resolver.read_excel_sheet(exh, "MobHuntRewardCap", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MobHuntRewardCap", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MobHuntRewardCapRow> {

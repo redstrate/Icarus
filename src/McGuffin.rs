@@ -17,7 +17,7 @@ impl McGuffinSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("McGuffin")?;
-        let sheet = resolver.read_excel_sheet(exh, "McGuffin", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "McGuffin", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<McGuffinRow> {

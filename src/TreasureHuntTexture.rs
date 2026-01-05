@@ -17,7 +17,7 @@ impl TreasureHuntTextureSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TreasureHuntTexture")?;
-        let sheet = resolver.read_excel_sheet(exh, "TreasureHuntTexture", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TreasureHuntTexture", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TreasureHuntTextureRow> {

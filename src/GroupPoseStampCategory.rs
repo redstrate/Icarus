@@ -17,7 +17,7 @@ impl GroupPoseStampCategorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GroupPoseStampCategory")?;
-        let sheet = resolver.read_excel_sheet(exh, "GroupPoseStampCategory", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GroupPoseStampCategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GroupPoseStampCategoryRow> {

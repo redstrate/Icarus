@@ -17,7 +17,7 @@ impl DeepDungeonMagicStoneSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DeepDungeonMagicStone")?;
-        let sheet = resolver.read_excel_sheet(exh, "DeepDungeonMagicStone", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "DeepDungeonMagicStone", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DeepDungeonMagicStoneRow> {

@@ -17,7 +17,7 @@ impl GcArmyProgressSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GcArmyProgress")?;
-        let sheet = resolver.read_excel_sheet(exh, "GcArmyProgress", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GcArmyProgress", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GcArmyProgressRow> {

@@ -17,7 +17,7 @@ impl SnipeCollisionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SnipeCollision")?;
-        let sheet = resolver.read_excel_sheet(exh, "SnipeCollision", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "SnipeCollision", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SnipeCollisionRow> {

@@ -17,7 +17,7 @@ impl PvPSelectActionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PvPSelectAction")?;
-        let sheet = resolver.read_excel_sheet(exh, "PvPSelectAction", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PvPSelectAction", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PvPSelectActionRow> {

@@ -17,7 +17,7 @@ impl MountFlyingConditionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MountFlyingCondition")?;
-        let sheet = resolver.read_excel_sheet(exh, "MountFlyingCondition", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MountFlyingCondition", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MountFlyingConditionRow> {

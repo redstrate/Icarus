@@ -17,7 +17,7 @@ impl PublicContentTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PublicContentType")?;
-        let sheet = resolver.read_excel_sheet(exh, "PublicContentType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PublicContentType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PublicContentTypeRow> {

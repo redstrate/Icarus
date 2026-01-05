@@ -17,7 +17,7 @@ impl MultipleHelpStringSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MultipleHelpString")?;
-        let sheet = resolver.read_excel_sheet(exh, "MultipleHelpString", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MultipleHelpString", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MultipleHelpStringRow> {

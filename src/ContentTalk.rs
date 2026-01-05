@@ -17,7 +17,7 @@ impl ContentTalkSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentTalk")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentTalk", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentTalk", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentTalkRow> {

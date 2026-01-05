@@ -17,7 +17,7 @@ impl StorySystemDefineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("StorySystemDefine")?;
-        let sheet = resolver.read_excel_sheet(exh, "StorySystemDefine", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "StorySystemDefine", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<StorySystemDefineRow> {

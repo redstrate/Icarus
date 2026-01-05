@@ -17,7 +17,7 @@ impl MountSpeedSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MountSpeed")?;
-        let sheet = resolver.read_excel_sheet(exh, "MountSpeed", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MountSpeed", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MountSpeedRow> {

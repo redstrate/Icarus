@@ -17,7 +17,7 @@ impl RideShootingTextDataSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RideShootingTextData")?;
-        let sheet = resolver.read_excel_sheet(exh, "RideShootingTextData", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "RideShootingTextData", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RideShootingTextDataRow> {

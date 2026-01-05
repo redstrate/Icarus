@@ -17,7 +17,7 @@ impl CarrySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Carry")?;
-        let sheet = resolver.read_excel_sheet(exh, "Carry", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Carry", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CarryRow> {

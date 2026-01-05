@@ -18,7 +18,7 @@ impl RideShootingTargetSchedulerSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RideShootingTargetScheduler")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "RideShootingTargetScheduler", language)?;
+            .read_excel_sheet(&exh, "RideShootingTargetScheduler", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RideShootingTargetSchedulerRow> {

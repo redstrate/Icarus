@@ -17,7 +17,7 @@ impl LeveAssignmentTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("LeveAssignmentType")?;
-        let sheet = resolver.read_excel_sheet(exh, "LeveAssignmentType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "LeveAssignmentType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<LeveAssignmentTypeRow> {

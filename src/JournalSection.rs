@@ -17,7 +17,7 @@ impl JournalSectionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("JournalSection")?;
-        let sheet = resolver.read_excel_sheet(exh, "JournalSection", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "JournalSection", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<JournalSectionRow> {

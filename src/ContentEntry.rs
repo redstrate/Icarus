@@ -17,7 +17,7 @@ impl ContentEntrySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentEntry")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentEntry", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentEntry", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentEntryRow> {

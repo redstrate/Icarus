@@ -17,7 +17,7 @@ impl HowToSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HowTo")?;
-        let sheet = resolver.read_excel_sheet(exh, "HowTo", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HowTo", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HowToRow> {

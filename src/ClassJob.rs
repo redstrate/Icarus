@@ -17,7 +17,7 @@ impl ClassJobSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ClassJob")?;
-        let sheet = resolver.read_excel_sheet(exh, "ClassJob", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ClassJob", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ClassJobRow> {

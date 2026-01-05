@@ -17,7 +17,7 @@ impl DailySupplyItemSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DailySupplyItem")?;
-        let sheet = resolver.read_excel_sheet(exh, "DailySupplyItem", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "DailySupplyItem", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DailySupplyItemRow> {

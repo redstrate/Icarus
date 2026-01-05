@@ -17,7 +17,7 @@ impl BankaCraftWorksSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BankaCraftWorks")?;
-        let sheet = resolver.read_excel_sheet(exh, "BankaCraftWorks", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BankaCraftWorks", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BankaCraftWorksRow> {

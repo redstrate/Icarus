@@ -17,7 +17,7 @@ impl ColosseumMatchRankSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ColosseumMatchRank")?;
-        let sheet = resolver.read_excel_sheet(exh, "ColosseumMatchRank", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ColosseumMatchRank", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ColosseumMatchRankRow> {

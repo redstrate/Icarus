@@ -28,7 +28,7 @@ impl BattleLeveSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BattleLeve")?;
-        let sheet = resolver.read_excel_sheet(exh, "BattleLeve", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BattleLeve", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BattleLeveRow> {

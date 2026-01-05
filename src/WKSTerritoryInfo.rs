@@ -17,7 +17,7 @@ impl WKSTerritoryInfoSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSTerritoryInfo")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSTerritoryInfo", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSTerritoryInfo", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSTerritoryInfoRow> {

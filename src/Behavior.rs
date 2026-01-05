@@ -17,7 +17,7 @@ impl BehaviorSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Behavior")?;
-        let sheet = resolver.read_excel_sheet(exh, "Behavior", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Behavior", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BehaviorRow> {

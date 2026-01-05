@@ -17,7 +17,7 @@ impl AddonParamSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AddonParam")?;
-        let sheet = resolver.read_excel_sheet(exh, "AddonParam", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "AddonParam", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AddonParamRow> {

@@ -17,7 +17,7 @@ impl EventSetDefineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EventSetDefine")?;
-        let sheet = resolver.read_excel_sheet(exh, "EventSetDefine", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EventSetDefine", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EventSetDefineRow> {

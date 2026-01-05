@@ -17,7 +17,7 @@ impl GatheringExpSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GatheringExp")?;
-        let sheet = resolver.read_excel_sheet(exh, "GatheringExp", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GatheringExp", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GatheringExpRow> {

@@ -17,7 +17,7 @@ impl EmjAddonSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EmjAddon")?;
-        let sheet = resolver.read_excel_sheet(exh, "EmjAddon", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EmjAddon", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EmjAddonRow> {

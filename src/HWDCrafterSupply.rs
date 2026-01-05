@@ -33,7 +33,7 @@ impl HWDCrafterSupplySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HWDCrafterSupply")?;
-        let sheet = resolver.read_excel_sheet(exh, "HWDCrafterSupply", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HWDCrafterSupply", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HWDCrafterSupplyRow> {

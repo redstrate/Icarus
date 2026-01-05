@@ -17,7 +17,7 @@ impl ActionTimelineReplaceSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ActionTimelineReplace")?;
-        let sheet = resolver.read_excel_sheet(exh, "ActionTimelineReplace", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ActionTimelineReplace", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ActionTimelineReplaceRow> {

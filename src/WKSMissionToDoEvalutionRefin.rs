@@ -18,7 +18,7 @@ impl WKSMissionToDoEvalutionRefinSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSMissionToDoEvalutionRefin")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "WKSMissionToDoEvalutionRefin", language)?;
+            .read_excel_sheet(&exh, "WKSMissionToDoEvalutionRefin", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSMissionToDoEvalutionRefinRow> {

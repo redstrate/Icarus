@@ -17,7 +17,7 @@ impl WKSEmergencyProblemSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSEmergencyProblem")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSEmergencyProblem", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSEmergencyProblem", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSEmergencyProblemRow> {

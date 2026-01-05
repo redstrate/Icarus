@@ -17,7 +17,7 @@ impl QuestDefineClientSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestDefineClient")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestDefineClient", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestDefineClient", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestDefineClientRow> {

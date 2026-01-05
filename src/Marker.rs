@@ -17,7 +17,7 @@ impl MarkerSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Marker")?;
-        let sheet = resolver.read_excel_sheet(exh, "Marker", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Marker", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MarkerRow> {

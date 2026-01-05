@@ -17,7 +17,7 @@ impl TofuObjectSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TofuObject")?;
-        let sheet = resolver.read_excel_sheet(exh, "TofuObject", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TofuObject", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TofuObjectRow> {

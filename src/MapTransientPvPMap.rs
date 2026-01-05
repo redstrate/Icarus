@@ -17,7 +17,7 @@ impl MapTransientPvPMapSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MapTransientPvPMap")?;
-        let sheet = resolver.read_excel_sheet(exh, "MapTransientPvPMap", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MapTransientPvPMap", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MapTransientPvPMapRow> {

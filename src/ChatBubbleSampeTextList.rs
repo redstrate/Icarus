@@ -17,7 +17,8 @@ impl ChatBubbleSampeTextListSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ChatBubbleSampeTextList")?;
-        let sheet = resolver.read_excel_sheet(exh, "ChatBubbleSampeTextList", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "ChatBubbleSampeTextList", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ChatBubbleSampeTextListRow> {

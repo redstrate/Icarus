@@ -17,7 +17,7 @@ impl TextCommandSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TextCommand")?;
-        let sheet = resolver.read_excel_sheet(exh, "TextCommand", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TextCommand", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TextCommandRow> {

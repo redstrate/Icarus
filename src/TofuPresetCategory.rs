@@ -17,7 +17,7 @@ impl TofuPresetCategorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TofuPresetCategory")?;
-        let sheet = resolver.read_excel_sheet(exh, "TofuPresetCategory", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TofuPresetCategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TofuPresetCategoryRow> {

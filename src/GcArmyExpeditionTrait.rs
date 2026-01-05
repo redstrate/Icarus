@@ -17,7 +17,7 @@ impl GcArmyExpeditionTraitSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GcArmyExpeditionTrait")?;
-        let sheet = resolver.read_excel_sheet(exh, "GcArmyExpeditionTrait", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GcArmyExpeditionTrait", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GcArmyExpeditionTraitRow> {

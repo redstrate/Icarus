@@ -17,7 +17,7 @@ impl QuestAroundPlayerHideSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestAroundPlayerHide")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestAroundPlayerHide", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestAroundPlayerHide", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestAroundPlayerHideRow> {

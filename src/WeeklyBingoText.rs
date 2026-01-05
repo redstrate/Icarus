@@ -17,7 +17,7 @@ impl WeeklyBingoTextSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WeeklyBingoText")?;
-        let sheet = resolver.read_excel_sheet(exh, "WeeklyBingoText", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WeeklyBingoText", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WeeklyBingoTextRow> {

@@ -17,7 +17,7 @@ impl HouseRetainerPoseSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HouseRetainerPose")?;
-        let sheet = resolver.read_excel_sheet(exh, "HouseRetainerPose", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HouseRetainerPose", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HouseRetainerPoseRow> {

@@ -17,7 +17,7 @@ impl BuddySkillSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BuddySkill")?;
-        let sheet = resolver.read_excel_sheet(exh, "BuddySkill", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BuddySkill", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BuddySkillRow> {

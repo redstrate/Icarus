@@ -17,7 +17,7 @@ impl FishingBaitParameterSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FishingBaitParameter")?;
-        let sheet = resolver.read_excel_sheet(exh, "FishingBaitParameter", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FishingBaitParameter", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FishingBaitParameterRow> {

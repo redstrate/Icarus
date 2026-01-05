@@ -17,7 +17,7 @@ impl TraitRecastSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TraitRecast")?;
-        let sheet = resolver.read_excel_sheet(exh, "TraitRecast", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TraitRecast", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TraitRecastRow> {

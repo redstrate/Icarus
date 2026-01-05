@@ -17,7 +17,7 @@ impl WarpConditionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WarpCondition")?;
-        let sheet = resolver.read_excel_sheet(exh, "WarpCondition", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WarpCondition", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WarpConditionRow> {

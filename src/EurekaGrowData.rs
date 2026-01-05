@@ -17,7 +17,7 @@ impl EurekaGrowDataSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EurekaGrowData")?;
-        let sheet = resolver.read_excel_sheet(exh, "EurekaGrowData", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EurekaGrowData", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EurekaGrowDataRow> {

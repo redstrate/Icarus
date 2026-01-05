@@ -17,7 +17,7 @@ impl MJINekomimiRequestSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJINekomimiRequest")?;
-        let sheet = resolver.read_excel_sheet(exh, "MJINekomimiRequest", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MJINekomimiRequest", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MJINekomimiRequestRow> {

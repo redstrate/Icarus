@@ -18,7 +18,7 @@ impl DynamicEventSingleBattleSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DynamicEventSingleBattle")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "DynamicEventSingleBattle", language)?;
+            .read_excel_sheet(&exh, "DynamicEventSingleBattle", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DynamicEventSingleBattleRow> {

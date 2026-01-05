@@ -17,7 +17,7 @@ impl UDS_PropertySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("UDS_Property")?;
-        let sheet = resolver.read_excel_sheet(exh, "UDS_Property", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "UDS_Property", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<UDS_PropertyRow> {

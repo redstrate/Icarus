@@ -17,7 +17,7 @@ impl WKSMissionLotteryCondSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSMissionLotteryCond")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSMissionLotteryCond", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSMissionLotteryCond", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSMissionLotteryCondRow> {

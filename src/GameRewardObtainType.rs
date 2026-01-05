@@ -17,7 +17,7 @@ impl GameRewardObtainTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GameRewardObtainType")?;
-        let sheet = resolver.read_excel_sheet(exh, "GameRewardObtainType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GameRewardObtainType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GameRewardObtainTypeRow> {

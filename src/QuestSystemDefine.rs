@@ -17,7 +17,7 @@ impl QuestSystemDefineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestSystemDefine")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestSystemDefine", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestSystemDefine", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestSystemDefineRow> {

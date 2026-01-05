@@ -17,7 +17,7 @@ impl StanceChangeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("StanceChange")?;
-        let sheet = resolver.read_excel_sheet(exh, "StanceChange", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "StanceChange", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<StanceChangeRow> {

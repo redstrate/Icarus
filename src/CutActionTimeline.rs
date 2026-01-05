@@ -17,7 +17,7 @@ impl CutActionTimelineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CutActionTimeline")?;
-        let sheet = resolver.read_excel_sheet(exh, "CutActionTimeline", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CutActionTimeline", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CutActionTimelineRow> {

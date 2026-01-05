@@ -17,7 +17,7 @@ impl ChatBubbleTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ChatBubbleType")?;
-        let sheet = resolver.read_excel_sheet(exh, "ChatBubbleType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ChatBubbleType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ChatBubbleTypeRow> {

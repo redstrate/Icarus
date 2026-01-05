@@ -17,7 +17,7 @@ impl ActivityFeedButtonsSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ActivityFeedButtons")?;
-        let sheet = resolver.read_excel_sheet(exh, "ActivityFeedButtons", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ActivityFeedButtons", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ActivityFeedButtonsRow> {

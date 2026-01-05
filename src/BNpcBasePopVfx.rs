@@ -17,7 +17,7 @@ impl BNpcBasePopVfxSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BNpcBasePopVfx")?;
-        let sheet = resolver.read_excel_sheet(exh, "BNpcBasePopVfx", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BNpcBasePopVfx", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BNpcBasePopVfxRow> {

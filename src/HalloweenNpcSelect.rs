@@ -17,7 +17,7 @@ impl HalloweenNpcSelectSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HalloweenNpcSelect")?;
-        let sheet = resolver.read_excel_sheet(exh, "HalloweenNpcSelect", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HalloweenNpcSelect", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HalloweenNpcSelectRow> {

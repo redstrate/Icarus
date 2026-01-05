@@ -17,7 +17,8 @@ impl QuestAdditionalToolIconSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestAdditionalToolIcon")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestAdditionalToolIcon", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "QuestAdditionalToolIcon", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestAdditionalToolIconRow> {

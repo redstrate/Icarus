@@ -21,7 +21,7 @@ impl GCSupplyDutySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GCSupplyDuty")?;
-        let sheet = resolver.read_excel_sheet(exh, "GCSupplyDuty", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GCSupplyDuty", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GCSupplyDutyRow> {

@@ -17,7 +17,7 @@ impl MYCWarResultNotebookSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MYCWarResultNotebook")?;
-        let sheet = resolver.read_excel_sheet(exh, "MYCWarResultNotebook", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MYCWarResultNotebook", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MYCWarResultNotebookRow> {

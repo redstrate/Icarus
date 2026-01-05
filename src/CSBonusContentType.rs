@@ -17,7 +17,7 @@ impl CSBonusContentTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CSBonusContentType")?;
-        let sheet = resolver.read_excel_sheet(exh, "CSBonusContentType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CSBonusContentType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CSBonusContentTypeRow> {

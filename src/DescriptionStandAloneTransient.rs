@@ -18,7 +18,7 @@ impl DescriptionStandAloneTransientSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DescriptionStandAloneTransient")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "DescriptionStandAloneTransient", language)?;
+            .read_excel_sheet(&exh, "DescriptionStandAloneTransient", language)?;
         Ok(Self { sheet })
     }
     fn read_row(

@@ -18,7 +18,7 @@ impl AnimaWeapon5SpiritTalkTypeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AnimaWeapon5SpiritTalkType")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "AnimaWeapon5SpiritTalkType", language)?;
+            .read_excel_sheet(&exh, "AnimaWeapon5SpiritTalkType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AnimaWeapon5SpiritTalkTypeRow> {

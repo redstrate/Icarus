@@ -17,7 +17,7 @@ impl TraitTransientSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TraitTransient")?;
-        let sheet = resolver.read_excel_sheet(exh, "TraitTransient", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TraitTransient", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TraitTransientRow> {

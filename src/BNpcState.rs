@@ -17,7 +17,7 @@ impl BNpcStateSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BNpcState")?;
-        let sheet = resolver.read_excel_sheet(exh, "BNpcState", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BNpcState", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BNpcStateRow> {

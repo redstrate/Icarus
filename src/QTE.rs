@@ -17,7 +17,7 @@ impl QTESheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QTE")?;
-        let sheet = resolver.read_excel_sheet(exh, "QTE", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QTE", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QTERow> {

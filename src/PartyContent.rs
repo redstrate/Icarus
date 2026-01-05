@@ -17,7 +17,7 @@ impl PartyContentSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PartyContent")?;
-        let sheet = resolver.read_excel_sheet(exh, "PartyContent", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PartyContent", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PartyContentRow> {

@@ -18,7 +18,7 @@ impl AnimaWeapon5PatternGroupSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AnimaWeapon5PatternGroup")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "AnimaWeapon5PatternGroup", language)?;
+            .read_excel_sheet(&exh, "AnimaWeapon5PatternGroup", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AnimaWeapon5PatternGroupRow> {

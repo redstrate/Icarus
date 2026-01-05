@@ -17,7 +17,7 @@ impl ContentsNoteSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentsNote")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentsNote", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentsNote", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentsNoteRow> {

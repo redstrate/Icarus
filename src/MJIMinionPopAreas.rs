@@ -17,7 +17,7 @@ impl MJIMinionPopAreasSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJIMinionPopAreas")?;
-        let sheet = resolver.read_excel_sheet(exh, "MJIMinionPopAreas", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MJIMinionPopAreas", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MJIMinionPopAreasRow> {

@@ -17,7 +17,7 @@ impl OrnamentCustomizeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("OrnamentCustomize")?;
-        let sheet = resolver.read_excel_sheet(exh, "OrnamentCustomize", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "OrnamentCustomize", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<OrnamentCustomizeRow> {

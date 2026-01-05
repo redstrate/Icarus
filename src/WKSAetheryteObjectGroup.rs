@@ -17,7 +17,8 @@ impl WKSAetheryteObjectGroupSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSAetheryteObjectGroup")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSAetheryteObjectGroup", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "WKSAetheryteObjectGroup", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSAetheryteObjectGroupRow> {

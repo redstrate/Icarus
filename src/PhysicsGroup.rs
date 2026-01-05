@@ -17,7 +17,7 @@ impl PhysicsGroupSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PhysicsGroup")?;
-        let sheet = resolver.read_excel_sheet(exh, "PhysicsGroup", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PhysicsGroup", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PhysicsGroupRow> {

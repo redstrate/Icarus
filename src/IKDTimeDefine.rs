@@ -17,7 +17,7 @@ impl IKDTimeDefineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("IKDTimeDefine")?;
-        let sheet = resolver.read_excel_sheet(exh, "IKDTimeDefine", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "IKDTimeDefine", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<IKDTimeDefineRow> {

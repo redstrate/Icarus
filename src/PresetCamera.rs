@@ -17,7 +17,7 @@ impl PresetCameraSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PresetCamera")?;
-        let sheet = resolver.read_excel_sheet(exh, "PresetCamera", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PresetCamera", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PresetCameraRow> {

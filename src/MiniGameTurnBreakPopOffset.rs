@@ -18,7 +18,7 @@ impl MiniGameTurnBreakPopOffsetSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MiniGameTurnBreakPopOffset")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "MiniGameTurnBreakPopOffset", language)?;
+            .read_excel_sheet(&exh, "MiniGameTurnBreakPopOffset", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MiniGameTurnBreakPopOffsetRow> {

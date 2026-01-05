@@ -17,7 +17,7 @@ impl FishingSpotSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FishingSpot")?;
-        let sheet = resolver.read_excel_sheet(exh, "FishingSpot", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FishingSpot", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FishingSpotRow> {

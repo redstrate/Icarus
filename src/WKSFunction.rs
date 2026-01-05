@@ -17,7 +17,7 @@ impl WKSFunctionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSFunction")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSFunction", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSFunction", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSFunctionRow> {

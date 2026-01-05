@@ -17,7 +17,7 @@ impl MountSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Mount")?;
-        let sheet = resolver.read_excel_sheet(exh, "Mount", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Mount", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MountRow> {

@@ -17,7 +17,7 @@ impl AetheryteSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Aetheryte")?;
-        let sheet = resolver.read_excel_sheet(exh, "Aetheryte", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Aetheryte", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AetheryteRow> {

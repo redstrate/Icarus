@@ -17,7 +17,7 @@ impl ExportedSGSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ExportedSG")?;
-        let sheet = resolver.read_excel_sheet(exh, "ExportedSG", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ExportedSG", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ExportedSGRow> {

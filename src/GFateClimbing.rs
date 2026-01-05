@@ -17,7 +17,7 @@ impl GFateClimbingSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GFateClimbing")?;
-        let sheet = resolver.read_excel_sheet(exh, "GFateClimbing", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GFateClimbing", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GFateClimbingRow> {

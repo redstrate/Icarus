@@ -17,7 +17,8 @@ impl DawnContentParticipableSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DawnContentParticipable")?;
-        let sheet = resolver.read_excel_sheet(exh, "DawnContentParticipable", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "DawnContentParticipable", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DawnContentParticipableRow> {

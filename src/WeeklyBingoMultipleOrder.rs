@@ -18,7 +18,7 @@ impl WeeklyBingoMultipleOrderSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WeeklyBingoMultipleOrder")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "WeeklyBingoMultipleOrder", language)?;
+            .read_excel_sheet(&exh, "WeeklyBingoMultipleOrder", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WeeklyBingoMultipleOrderRow> {

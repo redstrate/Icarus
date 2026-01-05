@@ -17,7 +17,7 @@ impl TutorialSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Tutorial")?;
-        let sheet = resolver.read_excel_sheet(exh, "Tutorial", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Tutorial", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TutorialRow> {

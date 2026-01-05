@@ -17,7 +17,7 @@ impl AOZReportRewardSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AOZReportReward")?;
-        let sheet = resolver.read_excel_sheet(exh, "AOZReportReward", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "AOZReportReward", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AOZReportRewardRow> {

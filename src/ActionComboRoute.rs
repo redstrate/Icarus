@@ -17,7 +17,7 @@ impl ActionComboRouteSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ActionComboRoute")?;
-        let sheet = resolver.read_excel_sheet(exh, "ActionComboRoute", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ActionComboRoute", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ActionComboRouteRow> {

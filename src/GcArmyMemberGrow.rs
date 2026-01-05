@@ -23,7 +23,7 @@ impl GcArmyMemberGrowSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GcArmyMemberGrow")?;
-        let sheet = resolver.read_excel_sheet(exh, "GcArmyMemberGrow", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GcArmyMemberGrow", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GcArmyMemberGrowRow> {

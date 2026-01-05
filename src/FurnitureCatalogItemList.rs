@@ -18,7 +18,7 @@ impl FurnitureCatalogItemListSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FurnitureCatalogItemList")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "FurnitureCatalogItemList", language)?;
+            .read_excel_sheet(&exh, "FurnitureCatalogItemList", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FurnitureCatalogItemListRow> {

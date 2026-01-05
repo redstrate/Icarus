@@ -18,7 +18,7 @@ impl ExHotbarCrossbarIndexTypeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ExHotbarCrossbarIndexType")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "ExHotbarCrossbarIndexType", language)?;
+            .read_excel_sheet(&exh, "ExHotbarCrossbarIndexType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ExHotbarCrossbarIndexTypeRow> {

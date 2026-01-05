@@ -18,7 +18,7 @@ impl SatisfactionBonusGuaranteeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SatisfactionBonusGuarantee")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "SatisfactionBonusGuarantee", language)?;
+            .read_excel_sheet(&exh, "SatisfactionBonusGuarantee", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SatisfactionBonusGuaranteeRow> {

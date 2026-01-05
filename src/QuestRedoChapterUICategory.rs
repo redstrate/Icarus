@@ -18,7 +18,7 @@ impl QuestRedoChapterUICategorySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestRedoChapterUICategory")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "QuestRedoChapterUICategory", language)?;
+            .read_excel_sheet(&exh, "QuestRedoChapterUICategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestRedoChapterUICategoryRow> {

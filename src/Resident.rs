@@ -17,7 +17,7 @@ impl ResidentSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Resident")?;
-        let sheet = resolver.read_excel_sheet(exh, "Resident", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Resident", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ResidentRow> {

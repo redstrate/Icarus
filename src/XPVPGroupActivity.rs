@@ -17,7 +17,7 @@ impl XPVPGroupActivitySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("XPVPGroupActivity")?;
-        let sheet = resolver.read_excel_sheet(exh, "XPVPGroupActivity", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "XPVPGroupActivity", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<XPVPGroupActivityRow> {

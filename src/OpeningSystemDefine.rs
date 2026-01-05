@@ -17,7 +17,7 @@ impl OpeningSystemDefineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("OpeningSystemDefine")?;
-        let sheet = resolver.read_excel_sheet(exh, "OpeningSystemDefine", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "OpeningSystemDefine", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<OpeningSystemDefineRow> {

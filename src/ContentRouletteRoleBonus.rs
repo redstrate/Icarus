@@ -18,7 +18,7 @@ impl ContentRouletteRoleBonusSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentRouletteRoleBonus")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "ContentRouletteRoleBonus", language)?;
+            .read_excel_sheet(&exh, "ContentRouletteRoleBonus", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentRouletteRoleBonusRow> {

@@ -17,7 +17,7 @@ impl ContentGaugeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentGauge")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentGauge", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentGauge", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentGaugeRow> {

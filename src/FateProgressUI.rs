@@ -17,7 +17,7 @@ impl FateProgressUISheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FateProgressUI")?;
-        let sheet = resolver.read_excel_sheet(exh, "FateProgressUI", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FateProgressUI", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FateProgressUIRow> {

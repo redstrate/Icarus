@@ -17,7 +17,7 @@ impl HWDDevLayerControlSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HWDDevLayerControl")?;
-        let sheet = resolver.read_excel_sheet(exh, "HWDDevLayerControl", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HWDDevLayerControl", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HWDDevLayerControlRow> {

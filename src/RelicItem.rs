@@ -17,7 +17,7 @@ impl RelicItemSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RelicItem")?;
-        let sheet = resolver.read_excel_sheet(exh, "RelicItem", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "RelicItem", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RelicItemRow> {

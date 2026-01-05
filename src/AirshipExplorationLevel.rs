@@ -17,7 +17,8 @@ impl AirshipExplorationLevelSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AirshipExplorationLevel")?;
-        let sheet = resolver.read_excel_sheet(exh, "AirshipExplorationLevel", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "AirshipExplorationLevel", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AirshipExplorationLevelRow> {

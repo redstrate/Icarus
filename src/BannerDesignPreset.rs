@@ -17,7 +17,7 @@ impl BannerDesignPresetSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BannerDesignPreset")?;
-        let sheet = resolver.read_excel_sheet(exh, "BannerDesignPreset", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BannerDesignPreset", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BannerDesignPresetRow> {

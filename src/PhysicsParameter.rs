@@ -17,7 +17,7 @@ impl PhysicsParameterSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PhysicsParameter")?;
-        let sheet = resolver.read_excel_sheet(exh, "PhysicsParameter", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PhysicsParameter", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PhysicsParameterRow> {

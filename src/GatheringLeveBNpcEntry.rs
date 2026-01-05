@@ -17,7 +17,7 @@ impl GatheringLeveBNpcEntrySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GatheringLeveBNpcEntry")?;
-        let sheet = resolver.read_excel_sheet(exh, "GatheringLeveBNpcEntry", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GatheringLeveBNpcEntry", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GatheringLeveBNpcEntryRow> {

@@ -17,7 +17,7 @@ impl PhysicsWindSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PhysicsWind")?;
-        let sheet = resolver.read_excel_sheet(exh, "PhysicsWind", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PhysicsWind", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PhysicsWindRow> {

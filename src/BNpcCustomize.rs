@@ -17,7 +17,7 @@ impl BNpcCustomizeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BNpcCustomize")?;
-        let sheet = resolver.read_excel_sheet(exh, "BNpcCustomize", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BNpcCustomize", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BNpcCustomizeRow> {

@@ -18,7 +18,7 @@ impl NotoriousMonsterTerritorySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("NotoriousMonsterTerritory")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "NotoriousMonsterTerritory", language)?;
+            .read_excel_sheet(&exh, "NotoriousMonsterTerritory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<NotoriousMonsterTerritoryRow> {

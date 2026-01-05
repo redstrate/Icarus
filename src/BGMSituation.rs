@@ -17,7 +17,7 @@ impl BGMSituationSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BGMSituation")?;
-        let sheet = resolver.read_excel_sheet(exh, "BGMSituation", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BGMSituation", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BGMSituationRow> {

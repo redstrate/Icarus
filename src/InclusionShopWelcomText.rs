@@ -17,7 +17,8 @@ impl InclusionShopWelcomTextSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("InclusionShopWelcomText")?;
-        let sheet = resolver.read_excel_sheet(exh, "InclusionShopWelcomText", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "InclusionShopWelcomText", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<InclusionShopWelcomTextRow> {

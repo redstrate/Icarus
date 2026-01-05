@@ -17,7 +17,7 @@ impl QuestEffectDefineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestEffectDefine")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestEffectDefine", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestEffectDefine", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestEffectDefineRow> {

@@ -17,7 +17,7 @@ impl OrnamentActionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("OrnamentAction")?;
-        let sheet = resolver.read_excel_sheet(exh, "OrnamentAction", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "OrnamentAction", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<OrnamentActionRow> {

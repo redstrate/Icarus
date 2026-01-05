@@ -18,7 +18,7 @@ impl EurekaLogosMixerProbabilitySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EurekaLogosMixerProbability")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "EurekaLogosMixerProbability", language)?;
+            .read_excel_sheet(&exh, "EurekaLogosMixerProbability", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EurekaLogosMixerProbabilityRow> {

@@ -17,7 +17,7 @@ impl WorldSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("World")?;
-        let sheet = resolver.read_excel_sheet(exh, "World", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "World", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WorldRow> {

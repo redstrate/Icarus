@@ -17,7 +17,7 @@ impl GatheringPointBaseSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GatheringPointBase")?;
-        let sheet = resolver.read_excel_sheet(exh, "GatheringPointBase", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GatheringPointBase", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GatheringPointBaseRow> {

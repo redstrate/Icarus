@@ -17,7 +17,7 @@ impl WorldDCGroupTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WorldDCGroupType")?;
-        let sheet = resolver.read_excel_sheet(exh, "WorldDCGroupType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WorldDCGroupType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WorldDCGroupTypeRow> {

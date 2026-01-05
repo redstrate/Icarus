@@ -25,7 +25,7 @@ impl HWDGathererInspectionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HWDGathererInspection")?;
-        let sheet = resolver.read_excel_sheet(exh, "HWDGathererInspection", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HWDGathererInspection", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HWDGathererInspectionRow> {

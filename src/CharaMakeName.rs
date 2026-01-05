@@ -17,7 +17,7 @@ impl CharaMakeNameSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CharaMakeName")?;
-        let sheet = resolver.read_excel_sheet(exh, "CharaMakeName", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CharaMakeName", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CharaMakeNameRow> {

@@ -17,7 +17,7 @@ impl CutsceneEventMotionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CutsceneEventMotion")?;
-        let sheet = resolver.read_excel_sheet(exh, "CutsceneEventMotion", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CutsceneEventMotion", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CutsceneEventMotionRow> {

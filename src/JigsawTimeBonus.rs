@@ -17,7 +17,7 @@ impl JigsawTimeBonusSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("JigsawTimeBonus")?;
-        let sheet = resolver.read_excel_sheet(exh, "JigsawTimeBonus", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "JigsawTimeBonus", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<JigsawTimeBonusRow> {

@@ -17,7 +17,7 @@ impl ScenarioTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ScenarioType")?;
-        let sheet = resolver.read_excel_sheet(exh, "ScenarioType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ScenarioType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ScenarioTypeRow> {

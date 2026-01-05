@@ -27,7 +27,7 @@ impl WKSCosmoToolClassSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSCosmoToolClass")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSCosmoToolClass", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSCosmoToolClass", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSCosmoToolClassRow> {

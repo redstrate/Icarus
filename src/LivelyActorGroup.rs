@@ -17,7 +17,7 @@ impl LivelyActorGroupSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("LivelyActorGroup")?;
-        let sheet = resolver.read_excel_sheet(exh, "LivelyActorGroup", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "LivelyActorGroup", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<LivelyActorGroupRow> {

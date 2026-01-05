@@ -17,7 +17,7 @@ impl VVDDataSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("VVDData")?;
-        let sheet = resolver.read_excel_sheet(exh, "VVDData", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "VVDData", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<VVDDataRow> {

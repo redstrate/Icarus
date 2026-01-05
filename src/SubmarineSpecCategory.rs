@@ -17,7 +17,7 @@ impl SubmarineSpecCategorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SubmarineSpecCategory")?;
-        let sheet = resolver.read_excel_sheet(exh, "SubmarineSpecCategory", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "SubmarineSpecCategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SubmarineSpecCategoryRow> {

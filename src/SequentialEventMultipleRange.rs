@@ -18,7 +18,7 @@ impl SequentialEventMultipleRangeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SequentialEventMultipleRange")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "SequentialEventMultipleRange", language)?;
+            .read_excel_sheet(&exh, "SequentialEventMultipleRange", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SequentialEventMultipleRangeRow> {

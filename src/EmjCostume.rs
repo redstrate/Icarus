@@ -17,7 +17,7 @@ impl EmjCostumeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EmjCostume")?;
-        let sheet = resolver.read_excel_sheet(exh, "EmjCostume", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EmjCostume", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EmjCostumeRow> {

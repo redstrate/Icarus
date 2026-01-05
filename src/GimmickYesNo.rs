@@ -17,7 +17,7 @@ impl GimmickYesNoSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GimmickYesNo")?;
-        let sheet = resolver.read_excel_sheet(exh, "GimmickYesNo", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GimmickYesNo", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GimmickYesNoRow> {

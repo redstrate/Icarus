@@ -17,7 +17,7 @@ impl GatheringItemPointSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GatheringItemPoint")?;
-        let sheet = resolver.read_excel_sheet(exh, "GatheringItemPoint", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GatheringItemPoint", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GatheringItemPointRow> {

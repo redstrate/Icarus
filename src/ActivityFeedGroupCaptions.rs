@@ -18,7 +18,7 @@ impl ActivityFeedGroupCaptionsSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ActivityFeedGroupCaptions")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "ActivityFeedGroupCaptions", language)?;
+            .read_excel_sheet(&exh, "ActivityFeedGroupCaptions", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ActivityFeedGroupCaptionsRow> {

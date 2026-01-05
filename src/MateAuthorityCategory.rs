@@ -17,7 +17,7 @@ impl MateAuthorityCategorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MateAuthorityCategory")?;
-        let sheet = resolver.read_excel_sheet(exh, "MateAuthorityCategory", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MateAuthorityCategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MateAuthorityCategoryRow> {

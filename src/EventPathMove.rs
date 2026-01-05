@@ -17,7 +17,7 @@ impl EventPathMoveSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EventPathMove")?;
-        let sheet = resolver.read_excel_sheet(exh, "EventPathMove", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EventPathMove", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EventPathMoveRow> {

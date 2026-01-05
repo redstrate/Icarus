@@ -17,7 +17,7 @@ impl WKSAetheryteSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSAetheryte")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSAetheryte", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSAetheryte", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSAetheryteRow> {

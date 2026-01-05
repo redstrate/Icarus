@@ -17,7 +17,7 @@ impl CharaCardBaseSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CharaCardBase")?;
-        let sheet = resolver.read_excel_sheet(exh, "CharaCardBase", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CharaCardBase", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CharaCardBaseRow> {

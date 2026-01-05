@@ -21,7 +21,7 @@ impl QuestBattleSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestBattle")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestBattle", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestBattle", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestBattleRow> {

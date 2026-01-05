@@ -17,7 +17,7 @@ impl AdvancedVibrationSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AdvancedVibration")?;
-        let sheet = resolver.read_excel_sheet(exh, "AdvancedVibration", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "AdvancedVibration", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AdvancedVibrationRow> {

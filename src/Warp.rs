@@ -17,7 +17,7 @@ impl WarpSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Warp")?;
-        let sheet = resolver.read_excel_sheet(exh, "Warp", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Warp", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WarpRow> {

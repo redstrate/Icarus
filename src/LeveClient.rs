@@ -17,7 +17,7 @@ impl LeveClientSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("LeveClient")?;
-        let sheet = resolver.read_excel_sheet(exh, "LeveClient", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "LeveClient", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<LeveClientRow> {

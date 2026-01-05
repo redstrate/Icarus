@@ -17,7 +17,7 @@ impl WKSEmergencyInfoTextSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSEmergencyInfoText")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSEmergencyInfoText", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSEmergencyInfoText", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSEmergencyInfoTextRow> {

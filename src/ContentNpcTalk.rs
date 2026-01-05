@@ -17,7 +17,7 @@ impl ContentNpcTalkSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentNpcTalk")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentNpcTalk", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentNpcTalk", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentNpcTalkRow> {

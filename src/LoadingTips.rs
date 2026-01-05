@@ -17,7 +17,7 @@ impl LoadingTipsSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("LoadingTips")?;
-        let sheet = resolver.read_excel_sheet(exh, "LoadingTips", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "LoadingTips", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<LoadingTipsRow> {

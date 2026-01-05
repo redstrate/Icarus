@@ -17,7 +17,7 @@ impl LogKindSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("LogKind")?;
-        let sheet = resolver.read_excel_sheet(exh, "LogKind", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "LogKind", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<LogKindRow> {

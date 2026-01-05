@@ -17,7 +17,7 @@ impl BacklightColorSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BacklightColor")?;
-        let sheet = resolver.read_excel_sheet(exh, "BacklightColor", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BacklightColor", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BacklightColorRow> {

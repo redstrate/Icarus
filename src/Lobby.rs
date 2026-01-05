@@ -17,7 +17,7 @@ impl LobbySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Lobby")?;
-        let sheet = resolver.read_excel_sheet(exh, "Lobby", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Lobby", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<LobbyRow> {

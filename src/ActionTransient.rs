@@ -17,7 +17,7 @@ impl ActionTransientSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ActionTransient")?;
-        let sheet = resolver.read_excel_sheet(exh, "ActionTransient", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ActionTransient", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ActionTransientRow> {

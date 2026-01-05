@@ -17,7 +17,7 @@ impl MJILandmarkPlaceSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJILandmarkPlace")?;
-        let sheet = resolver.read_excel_sheet(exh, "MJILandmarkPlace", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MJILandmarkPlace", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MJILandmarkPlaceRow> {

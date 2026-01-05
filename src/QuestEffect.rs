@@ -22,7 +22,7 @@ impl QuestEffectSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestEffect")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestEffect", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestEffect", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestEffectRow> {

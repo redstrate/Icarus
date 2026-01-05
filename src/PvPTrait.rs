@@ -17,7 +17,7 @@ impl PvPTraitSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PvPTrait")?;
-        let sheet = resolver.read_excel_sheet(exh, "PvPTrait", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PvPTrait", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PvPTraitRow> {

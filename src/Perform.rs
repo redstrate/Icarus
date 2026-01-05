@@ -17,7 +17,7 @@ impl PerformSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Perform")?;
-        let sheet = resolver.read_excel_sheet(exh, "Perform", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Perform", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PerformRow> {

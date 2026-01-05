@@ -17,7 +17,7 @@ impl EmjVoiceNpcSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EmjVoiceNpc")?;
-        let sheet = resolver.read_excel_sheet(exh, "EmjVoiceNpc", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EmjVoiceNpc", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EmjVoiceNpcRow> {

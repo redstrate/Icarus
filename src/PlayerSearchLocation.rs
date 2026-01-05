@@ -17,7 +17,7 @@ impl PlayerSearchLocationSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PlayerSearchLocation")?;
-        let sheet = resolver.read_excel_sheet(exh, "PlayerSearchLocation", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PlayerSearchLocation", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PlayerSearchLocationRow> {

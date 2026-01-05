@@ -17,7 +17,7 @@ impl RetainerTaskRandomSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RetainerTaskRandom")?;
-        let sheet = resolver.read_excel_sheet(exh, "RetainerTaskRandom", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "RetainerTaskRandom", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RetainerTaskRandomRow> {

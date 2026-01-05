@@ -17,7 +17,7 @@ impl RelicNoteSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RelicNote")?;
-        let sheet = resolver.read_excel_sheet(exh, "RelicNote", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "RelicNote", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RelicNoteRow> {

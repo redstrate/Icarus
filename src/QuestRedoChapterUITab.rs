@@ -17,7 +17,7 @@ impl QuestRedoChapterUITabSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestRedoChapterUITab")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestRedoChapterUITab", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestRedoChapterUITab", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestRedoChapterUITabRow> {

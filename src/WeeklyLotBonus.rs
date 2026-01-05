@@ -22,7 +22,7 @@ impl WeeklyLotBonusSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WeeklyLotBonus")?;
-        let sheet = resolver.read_excel_sheet(exh, "WeeklyLotBonus", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WeeklyLotBonus", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WeeklyLotBonusRow> {

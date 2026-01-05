@@ -18,7 +18,7 @@ impl QuestSceneAbortConditionFlagSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestSceneAbortConditionFlag")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "QuestSceneAbortConditionFlag", language)?;
+            .read_excel_sheet(&exh, "QuestSceneAbortConditionFlag", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestSceneAbortConditionFlagRow> {

@@ -17,7 +17,7 @@ impl GFateStelthSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GFateStelth")?;
-        let sheet = resolver.read_excel_sheet(exh, "GFateStelth", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GFateStelth", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GFateStelthRow> {

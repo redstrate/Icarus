@@ -17,7 +17,7 @@ impl MYCTemporaryItemSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MYCTemporaryItem")?;
-        let sheet = resolver.read_excel_sheet(exh, "MYCTemporaryItem", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MYCTemporaryItem", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MYCTemporaryItemRow> {

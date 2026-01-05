@@ -17,7 +17,7 @@ impl TransformationSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Transformation")?;
-        let sheet = resolver.read_excel_sheet(exh, "Transformation", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Transformation", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TransformationRow> {

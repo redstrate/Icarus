@@ -17,7 +17,7 @@ impl PointMenuChoiceSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PointMenuChoice")?;
-        let sheet = resolver.read_excel_sheet(exh, "PointMenuChoice", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PointMenuChoice", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PointMenuChoiceRow> {

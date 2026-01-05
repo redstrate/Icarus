@@ -17,7 +17,8 @@ impl CharaCardDesignCategorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CharaCardDesignCategory")?;
-        let sheet = resolver.read_excel_sheet(exh, "CharaCardDesignCategory", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "CharaCardDesignCategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CharaCardDesignCategoryRow> {

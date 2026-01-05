@@ -17,7 +17,7 @@ impl MJIRecipeMaterialSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJIRecipeMaterial")?;
-        let sheet = resolver.read_excel_sheet(exh, "MJIRecipeMaterial", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MJIRecipeMaterial", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MJIRecipeMaterialRow> {

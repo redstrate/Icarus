@@ -17,7 +17,7 @@ impl ContentAttributeRectSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentAttributeRect")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentAttributeRect", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentAttributeRect", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentAttributeRectRow> {

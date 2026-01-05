@@ -33,7 +33,7 @@ impl RideShootingSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RideShooting")?;
-        let sheet = resolver.read_excel_sheet(exh, "RideShooting", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "RideShooting", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RideShootingRow> {

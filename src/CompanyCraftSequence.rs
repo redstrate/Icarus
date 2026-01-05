@@ -17,7 +17,7 @@ impl CompanyCraftSequenceSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CompanyCraftSequence")?;
-        let sheet = resolver.read_excel_sheet(exh, "CompanyCraftSequence", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CompanyCraftSequence", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CompanyCraftSequenceRow> {

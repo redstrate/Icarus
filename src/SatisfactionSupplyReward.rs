@@ -24,7 +24,7 @@ impl SatisfactionSupplyRewardSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SatisfactionSupplyReward")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "SatisfactionSupplyReward", language)?;
+            .read_excel_sheet(&exh, "SatisfactionSupplyReward", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SatisfactionSupplyRewardRow> {

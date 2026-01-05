@@ -17,7 +17,7 @@ impl AttractSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Attract")?;
-        let sheet = resolver.read_excel_sheet(exh, "Attract", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Attract", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AttractRow> {

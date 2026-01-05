@@ -18,7 +18,7 @@ impl ActionComboRouteTransientSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ActionComboRouteTransient")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "ActionComboRouteTransient", language)?;
+            .read_excel_sheet(&exh, "ActionComboRouteTransient", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ActionComboRouteTransientRow> {

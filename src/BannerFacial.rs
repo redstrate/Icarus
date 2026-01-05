@@ -17,7 +17,7 @@ impl BannerFacialSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BannerFacial")?;
-        let sheet = resolver.read_excel_sheet(exh, "BannerFacial", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BannerFacial", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BannerFacialRow> {

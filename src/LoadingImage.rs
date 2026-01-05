@@ -17,7 +17,7 @@ impl LoadingImageSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("LoadingImage")?;
-        let sheet = resolver.read_excel_sheet(exh, "LoadingImage", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "LoadingImage", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<LoadingImageRow> {

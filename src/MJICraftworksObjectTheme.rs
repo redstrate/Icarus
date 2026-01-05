@@ -18,7 +18,7 @@ impl MJICraftworksObjectThemeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJICraftworksObjectTheme")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "MJICraftworksObjectTheme", language)?;
+            .read_excel_sheet(&exh, "MJICraftworksObjectTheme", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MJICraftworksObjectThemeRow> {

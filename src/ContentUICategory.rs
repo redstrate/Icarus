@@ -17,7 +17,7 @@ impl ContentUICategorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentUICategory")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentUICategory", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentUICategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentUICategoryRow> {

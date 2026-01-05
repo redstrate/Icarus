@@ -18,7 +18,7 @@ impl GatheringRarePopTimeTableSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GatheringRarePopTimeTable")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "GatheringRarePopTimeTable", language)?;
+            .read_excel_sheet(&exh, "GatheringRarePopTimeTable", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GatheringRarePopTimeTableRow> {

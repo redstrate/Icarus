@@ -17,7 +17,7 @@ impl TreasureHuntRankSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TreasureHuntRank")?;
-        let sheet = resolver.read_excel_sheet(exh, "TreasureHuntRank", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TreasureHuntRank", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TreasureHuntRankRow> {

@@ -17,7 +17,7 @@ impl MapSymbolSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MapSymbol")?;
-        let sheet = resolver.read_excel_sheet(exh, "MapSymbol", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MapSymbol", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MapSymbolRow> {

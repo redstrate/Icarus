@@ -17,7 +17,7 @@ impl AchievementTargetSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AchievementTarget")?;
-        let sheet = resolver.read_excel_sheet(exh, "AchievementTarget", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "AchievementTarget", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AchievementTargetRow> {

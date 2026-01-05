@@ -17,7 +17,7 @@ impl ModelCharaSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ModelChara")?;
-        let sheet = resolver.read_excel_sheet(exh, "ModelChara", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ModelChara", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ModelCharaRow> {

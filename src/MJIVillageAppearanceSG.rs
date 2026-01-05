@@ -21,7 +21,7 @@ impl MJIVillageAppearanceSGSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJIVillageAppearanceSG")?;
-        let sheet = resolver.read_excel_sheet(exh, "MJIVillageAppearanceSG", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MJIVillageAppearanceSG", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MJIVillageAppearanceSGRow> {

@@ -17,7 +17,7 @@ impl LevelSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Level")?;
-        let sheet = resolver.read_excel_sheet(exh, "Level", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Level", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<LevelRow> {

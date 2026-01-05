@@ -17,7 +17,7 @@ impl MateriaParamSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MateriaParam")?;
-        let sheet = resolver.read_excel_sheet(exh, "MateriaParam", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MateriaParam", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MateriaParamRow> {

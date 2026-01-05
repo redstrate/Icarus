@@ -17,7 +17,7 @@ impl MapMarkerRegionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MapMarkerRegion")?;
-        let sheet = resolver.read_excel_sheet(exh, "MapMarkerRegion", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MapMarkerRegion", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MapMarkerRegionRow> {

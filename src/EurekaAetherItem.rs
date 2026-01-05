@@ -17,7 +17,7 @@ impl EurekaAetherItemSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EurekaAetherItem")?;
-        let sheet = resolver.read_excel_sheet(exh, "EurekaAetherItem", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EurekaAetherItem", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EurekaAetherItemRow> {

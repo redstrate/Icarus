@@ -17,7 +17,7 @@ impl CompanyLeveRuleSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CompanyLeveRule")?;
-        let sheet = resolver.read_excel_sheet(exh, "CompanyLeveRule", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CompanyLeveRule", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CompanyLeveRuleRow> {

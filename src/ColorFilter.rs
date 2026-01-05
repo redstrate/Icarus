@@ -17,7 +17,7 @@ impl ColorFilterSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ColorFilter")?;
-        let sheet = resolver.read_excel_sheet(exh, "ColorFilter", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ColorFilter", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ColorFilterRow> {

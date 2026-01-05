@@ -17,7 +17,7 @@ impl MovieSubtitle500Sheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MovieSubtitle500")?;
-        let sheet = resolver.read_excel_sheet(exh, "MovieSubtitle500", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MovieSubtitle500", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MovieSubtitle500Row> {

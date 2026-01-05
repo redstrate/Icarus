@@ -17,7 +17,7 @@ impl WKSTreasureSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSTreasure")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSTreasure", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSTreasure", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSTreasureRow> {

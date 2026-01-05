@@ -17,7 +17,7 @@ impl ContentRandomSelectSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentRandomSelect")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentRandomSelect", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentRandomSelect", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentRandomSelectRow> {

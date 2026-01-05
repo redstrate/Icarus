@@ -21,7 +21,7 @@ impl WKSCosmoToolDataAmountSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSCosmoToolDataAmount")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSCosmoToolDataAmount", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSCosmoToolDataAmount", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSCosmoToolDataAmountRow> {

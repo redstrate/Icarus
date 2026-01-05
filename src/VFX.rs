@@ -17,7 +17,7 @@ impl VFXSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("VFX")?;
-        let sheet = resolver.read_excel_sheet(exh, "VFX", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "VFX", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<VFXRow> {

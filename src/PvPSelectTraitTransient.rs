@@ -17,7 +17,8 @@ impl PvPSelectTraitTransientSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PvPSelectTraitTransient")?;
-        let sheet = resolver.read_excel_sheet(exh, "PvPSelectTraitTransient", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "PvPSelectTraitTransient", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PvPSelectTraitTransientRow> {

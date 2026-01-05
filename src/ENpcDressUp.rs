@@ -17,7 +17,7 @@ impl ENpcDressUpSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ENpcDressUp")?;
-        let sheet = resolver.read_excel_sheet(exh, "ENpcDressUp", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ENpcDressUp", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ENpcDressUpRow> {

@@ -17,7 +17,7 @@ impl ChocoboRaceStatusSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ChocoboRaceStatus")?;
-        let sheet = resolver.read_excel_sheet(exh, "ChocoboRaceStatus", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ChocoboRaceStatus", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ChocoboRaceStatusRow> {

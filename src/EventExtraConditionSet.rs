@@ -17,7 +17,7 @@ impl EventExtraConditionSetSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EventExtraConditionSet")?;
-        let sheet = resolver.read_excel_sheet(exh, "EventExtraConditionSet", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EventExtraConditionSet", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EventExtraConditionSetRow> {

@@ -18,7 +18,7 @@ impl QuestRedoValidCustomTalkSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestRedoValidCustomTalk")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "QuestRedoValidCustomTalk", language)?;
+            .read_excel_sheet(&exh, "QuestRedoValidCustomTalk", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestRedoValidCustomTalkRow> {

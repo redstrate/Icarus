@@ -17,7 +17,7 @@ impl GroupPoseCharaStatusSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GroupPoseCharaStatus")?;
-        let sheet = resolver.read_excel_sheet(exh, "GroupPoseCharaStatus", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GroupPoseCharaStatus", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GroupPoseCharaStatusRow> {

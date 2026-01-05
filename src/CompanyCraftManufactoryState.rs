@@ -18,7 +18,7 @@ impl CompanyCraftManufactoryStateSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CompanyCraftManufactoryState")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "CompanyCraftManufactoryState", language)?;
+            .read_excel_sheet(&exh, "CompanyCraftManufactoryState", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CompanyCraftManufactoryStateRow> {

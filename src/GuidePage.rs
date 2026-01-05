@@ -17,7 +17,7 @@ impl GuidePageSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GuidePage")?;
-        let sheet = resolver.read_excel_sheet(exh, "GuidePage", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GuidePage", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GuidePageRow> {

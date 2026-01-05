@@ -17,7 +17,7 @@ impl TofuPresetObjectSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TofuPresetObject")?;
-        let sheet = resolver.read_excel_sheet(exh, "TofuPresetObject", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TofuPresetObject", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TofuPresetObjectRow> {

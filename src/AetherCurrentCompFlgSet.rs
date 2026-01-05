@@ -17,7 +17,8 @@ impl AetherCurrentCompFlgSetSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AetherCurrentCompFlgSet")?;
-        let sheet = resolver.read_excel_sheet(exh, "AetherCurrentCompFlgSet", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "AetherCurrentCompFlgSet", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AetherCurrentCompFlgSetRow> {

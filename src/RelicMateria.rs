@@ -17,7 +17,7 @@ impl RelicMateriaSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RelicMateria")?;
-        let sheet = resolver.read_excel_sheet(exh, "RelicMateria", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "RelicMateria", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RelicMateriaRow> {

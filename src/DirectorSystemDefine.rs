@@ -17,7 +17,7 @@ impl DirectorSystemDefineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DirectorSystemDefine")?;
-        let sheet = resolver.read_excel_sheet(exh, "DirectorSystemDefine", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "DirectorSystemDefine", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DirectorSystemDefineRow> {

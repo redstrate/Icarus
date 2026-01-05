@@ -17,7 +17,7 @@ impl GlassesSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Glasses")?;
-        let sheet = resolver.read_excel_sheet(exh, "Glasses", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Glasses", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GlassesRow> {

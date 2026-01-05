@@ -17,7 +17,7 @@ impl CompanyActionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CompanyAction")?;
-        let sheet = resolver.read_excel_sheet(exh, "CompanyAction", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CompanyAction", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CompanyActionRow> {

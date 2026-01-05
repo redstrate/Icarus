@@ -17,7 +17,7 @@ impl FateTokenTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FateTokenType")?;
-        let sheet = resolver.read_excel_sheet(exh, "FateTokenType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FateTokenType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FateTokenTypeRow> {

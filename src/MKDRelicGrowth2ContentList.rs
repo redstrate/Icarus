@@ -18,7 +18,7 @@ impl MKDRelicGrowth2ContentListSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MKDRelicGrowth2ContentList")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "MKDRelicGrowth2ContentList", language)?;
+            .read_excel_sheet(&exh, "MKDRelicGrowth2ContentList", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MKDRelicGrowth2ContentListRow> {

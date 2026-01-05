@@ -17,7 +17,8 @@ impl WeeklyLotBonusThresholdSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WeeklyLotBonusThreshold")?;
-        let sheet = resolver.read_excel_sheet(exh, "WeeklyLotBonusThreshold", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "WeeklyLotBonusThreshold", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WeeklyLotBonusThresholdRow> {

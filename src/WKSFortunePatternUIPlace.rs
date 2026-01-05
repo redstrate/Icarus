@@ -18,7 +18,7 @@ impl WKSFortunePatternUIPlaceSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSFortunePatternUIPlace")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "WKSFortunePatternUIPlace", language)?;
+            .read_excel_sheet(&exh, "WKSFortunePatternUIPlace", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSFortunePatternUIPlaceRow> {

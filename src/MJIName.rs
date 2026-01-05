@@ -17,7 +17,7 @@ impl MJINameSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJIName")?;
-        let sheet = resolver.read_excel_sheet(exh, "MJIName", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MJIName", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MJINameRow> {

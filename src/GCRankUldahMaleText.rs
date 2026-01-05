@@ -17,7 +17,7 @@ impl GCRankUldahMaleTextSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GCRankUldahMaleText")?;
-        let sheet = resolver.read_excel_sheet(exh, "GCRankUldahMaleText", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GCRankUldahMaleText", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GCRankUldahMaleTextRow> {

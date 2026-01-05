@@ -17,7 +17,7 @@ impl EquipRaceCategorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EquipRaceCategory")?;
-        let sheet = resolver.read_excel_sheet(exh, "EquipRaceCategory", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EquipRaceCategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EquipRaceCategoryRow> {

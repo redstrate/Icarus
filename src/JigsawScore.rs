@@ -17,7 +17,7 @@ impl JigsawScoreSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("JigsawScore")?;
-        let sheet = resolver.read_excel_sheet(exh, "JigsawScore", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "JigsawScore", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<JigsawScoreRow> {

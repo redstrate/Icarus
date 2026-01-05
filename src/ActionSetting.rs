@@ -17,7 +17,7 @@ impl ActionSettingSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ActionSetting")?;
-        let sheet = resolver.read_excel_sheet(exh, "ActionSetting", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ActionSetting", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ActionSettingRow> {

@@ -17,7 +17,7 @@ impl ContentGaugeColorSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentGaugeColor")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentGaugeColor", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentGaugeColor", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentGaugeColorRow> {

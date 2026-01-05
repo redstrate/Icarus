@@ -17,7 +17,7 @@ impl GCRankLimsaFemaleTextSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GCRankLimsaFemaleText")?;
-        let sheet = resolver.read_excel_sheet(exh, "GCRankLimsaFemaleText", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GCRankLimsaFemaleText", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GCRankLimsaFemaleTextRow> {

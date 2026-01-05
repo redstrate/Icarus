@@ -17,7 +17,7 @@ impl InstanceContentGuideSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("InstanceContentGuide")?;
-        let sheet = resolver.read_excel_sheet(exh, "InstanceContentGuide", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "InstanceContentGuide", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<InstanceContentGuideRow> {

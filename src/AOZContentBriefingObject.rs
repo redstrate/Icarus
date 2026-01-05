@@ -18,7 +18,7 @@ impl AOZContentBriefingObjectSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AOZContentBriefingObject")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "AOZContentBriefingObject", language)?;
+            .read_excel_sheet(&exh, "AOZContentBriefingObject", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AOZContentBriefingObjectRow> {

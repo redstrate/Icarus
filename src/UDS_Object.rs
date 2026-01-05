@@ -17,7 +17,7 @@ impl UDS_ObjectSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("UDS_Object")?;
-        let sheet = resolver.read_excel_sheet(exh, "UDS_Object", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "UDS_Object", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<UDS_ObjectRow> {

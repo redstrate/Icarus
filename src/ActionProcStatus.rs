@@ -17,7 +17,7 @@ impl ActionProcStatusSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ActionProcStatus")?;
-        let sheet = resolver.read_excel_sheet(exh, "ActionProcStatus", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ActionProcStatus", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ActionProcStatusRow> {

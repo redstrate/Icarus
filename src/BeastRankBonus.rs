@@ -17,7 +17,7 @@ impl BeastRankBonusSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BeastRankBonus")?;
-        let sheet = resolver.read_excel_sheet(exh, "BeastRankBonus", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BeastRankBonus", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BeastRankBonusRow> {

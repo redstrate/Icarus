@@ -17,7 +17,7 @@ impl RecastNavimeshSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RecastNavimesh")?;
-        let sheet = resolver.read_excel_sheet(exh, "RecastNavimesh", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "RecastNavimesh", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RecastNavimeshRow> {

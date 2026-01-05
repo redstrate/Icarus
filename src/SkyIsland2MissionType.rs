@@ -17,7 +17,7 @@ impl SkyIsland2MissionTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SkyIsland2MissionType")?;
-        let sheet = resolver.read_excel_sheet(exh, "SkyIsland2MissionType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "SkyIsland2MissionType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SkyIsland2MissionTypeRow> {

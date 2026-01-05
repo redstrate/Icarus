@@ -18,7 +18,7 @@ impl MateriaJoinRateGatherCraftSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MateriaJoinRateGatherCraft")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "MateriaJoinRateGatherCraft", language)?;
+            .read_excel_sheet(&exh, "MateriaJoinRateGatherCraft", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MateriaJoinRateGatherCraftRow> {

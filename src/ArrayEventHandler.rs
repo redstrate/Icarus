@@ -17,7 +17,7 @@ impl ArrayEventHandlerSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ArrayEventHandler")?;
-        let sheet = resolver.read_excel_sheet(exh, "ArrayEventHandler", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ArrayEventHandler", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ArrayEventHandlerRow> {

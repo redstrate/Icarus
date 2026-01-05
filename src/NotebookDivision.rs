@@ -17,7 +17,7 @@ impl NotebookDivisionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("NotebookDivision")?;
-        let sheet = resolver.read_excel_sheet(exh, "NotebookDivision", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "NotebookDivision", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<NotebookDivisionRow> {

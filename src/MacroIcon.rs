@@ -17,7 +17,7 @@ impl MacroIconSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MacroIcon")?;
-        let sheet = resolver.read_excel_sheet(exh, "MacroIcon", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MacroIcon", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MacroIconRow> {

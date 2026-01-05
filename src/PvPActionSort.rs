@@ -17,7 +17,7 @@ impl PvPActionSortSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PvPActionSort")?;
-        let sheet = resolver.read_excel_sheet(exh, "PvPActionSort", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PvPActionSort", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PvPActionSortRow> {

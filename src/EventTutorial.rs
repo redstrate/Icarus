@@ -17,7 +17,7 @@ impl EventTutorialSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EventTutorial")?;
-        let sheet = resolver.read_excel_sheet(exh, "EventTutorial", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EventTutorial", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EventTutorialRow> {

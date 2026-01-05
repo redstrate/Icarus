@@ -17,7 +17,7 @@ impl CompanionTransientSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CompanionTransient")?;
-        let sheet = resolver.read_excel_sheet(exh, "CompanionTransient", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CompanionTransient", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CompanionTransientRow> {

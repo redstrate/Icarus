@@ -18,7 +18,7 @@ impl DeepDungeon4GimmickEffectSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DeepDungeon4GimmickEffect")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "DeepDungeon4GimmickEffect", language)?;
+            .read_excel_sheet(&exh, "DeepDungeon4GimmickEffect", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DeepDungeon4GimmickEffectRow> {

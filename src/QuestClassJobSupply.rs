@@ -17,7 +17,7 @@ impl QuestClassJobSupplySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestClassJobSupply")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestClassJobSupply", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestClassJobSupply", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestClassJobSupplyRow> {

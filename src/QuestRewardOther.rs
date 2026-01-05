@@ -17,7 +17,7 @@ impl QuestRewardOtherSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestRewardOther")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestRewardOther", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestRewardOther", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestRewardOtherRow> {

@@ -17,7 +17,7 @@ impl StatusLoopVFXSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("StatusLoopVFX")?;
-        let sheet = resolver.read_excel_sheet(exh, "StatusLoopVFX", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "StatusLoopVFX", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<StatusLoopVFXRow> {

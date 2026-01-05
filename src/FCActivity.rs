@@ -17,7 +17,7 @@ impl FCActivitySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FCActivity")?;
-        let sheet = resolver.read_excel_sheet(exh, "FCActivity", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FCActivity", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FCActivityRow> {

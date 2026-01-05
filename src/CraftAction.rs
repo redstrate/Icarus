@@ -17,7 +17,7 @@ impl CraftActionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CraftAction")?;
-        let sheet = resolver.read_excel_sheet(exh, "CraftAction", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CraftAction", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CraftActionRow> {

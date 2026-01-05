@@ -17,7 +17,7 @@ impl TerritoryAetheryteListSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TerritoryAetheryteList")?;
-        let sheet = resolver.read_excel_sheet(exh, "TerritoryAetheryteList", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TerritoryAetheryteList", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TerritoryAetheryteListRow> {

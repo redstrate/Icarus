@@ -18,7 +18,7 @@ impl DeepDungeonFloorEffectUISheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DeepDungeonFloorEffectUI")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "DeepDungeonFloorEffectUI", language)?;
+            .read_excel_sheet(&exh, "DeepDungeonFloorEffectUI", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DeepDungeonFloorEffectUIRow> {

@@ -17,7 +17,7 @@ impl BgcArmyActionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BgcArmyAction")?;
-        let sheet = resolver.read_excel_sheet(exh, "BgcArmyAction", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BgcArmyAction", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BgcArmyActionRow> {

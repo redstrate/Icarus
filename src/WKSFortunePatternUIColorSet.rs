@@ -18,7 +18,7 @@ impl WKSFortunePatternUIColorSetSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSFortunePatternUIColorSet")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "WKSFortunePatternUIColorSet", language)?;
+            .read_excel_sheet(&exh, "WKSFortunePatternUIColorSet", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSFortunePatternUIColorSetRow> {

@@ -17,7 +17,7 @@ impl GrandCompanySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GrandCompany")?;
-        let sheet = resolver.read_excel_sheet(exh, "GrandCompany", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GrandCompany", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GrandCompanyRow> {

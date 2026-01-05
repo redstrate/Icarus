@@ -17,7 +17,8 @@ impl GuildleveAssignmentTalkSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GuildleveAssignmentTalk")?;
-        let sheet = resolver.read_excel_sheet(exh, "GuildleveAssignmentTalk", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "GuildleveAssignmentTalk", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GuildleveAssignmentTalkRow> {

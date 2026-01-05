@@ -17,7 +17,7 @@ impl SpearfishingRecordPageSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SpearfishingRecordPage")?;
-        let sheet = resolver.read_excel_sheet(exh, "SpearfishingRecordPage", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "SpearfishingRecordPage", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SpearfishingRecordPageRow> {

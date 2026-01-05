@@ -17,7 +17,7 @@ impl GatheringNotebookItemSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GatheringNotebookItem")?;
-        let sheet = resolver.read_excel_sheet(exh, "GatheringNotebookItem", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GatheringNotebookItem", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GatheringNotebookItemRow> {

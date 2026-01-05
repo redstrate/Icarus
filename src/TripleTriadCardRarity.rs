@@ -17,7 +17,7 @@ impl TripleTriadCardRaritySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TripleTriadCardRarity")?;
-        let sheet = resolver.read_excel_sheet(exh, "TripleTriadCardRarity", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TripleTriadCardRarity", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TripleTriadCardRarityRow> {

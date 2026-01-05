@@ -17,7 +17,7 @@ impl MapSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Map")?;
-        let sheet = resolver.read_excel_sheet(exh, "Map", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Map", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MapRow> {

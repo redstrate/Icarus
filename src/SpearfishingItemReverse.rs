@@ -17,7 +17,8 @@ impl SpearfishingItemReverseSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SpearfishingItemReverse")?;
-        let sheet = resolver.read_excel_sheet(exh, "SpearfishingItemReverse", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "SpearfishingItemReverse", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SpearfishingItemReverseRow> {

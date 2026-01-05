@@ -17,7 +17,7 @@ impl HousingUnitedExteriorSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HousingUnitedExterior")?;
-        let sheet = resolver.read_excel_sheet(exh, "HousingUnitedExterior", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HousingUnitedExterior", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HousingUnitedExteriorRow> {

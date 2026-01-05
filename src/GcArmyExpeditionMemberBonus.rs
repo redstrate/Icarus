@@ -18,7 +18,7 @@ impl GcArmyExpeditionMemberBonusSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GcArmyExpeditionMemberBonus")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "GcArmyExpeditionMemberBonus", language)?;
+            .read_excel_sheet(&exh, "GcArmyExpeditionMemberBonus", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GcArmyExpeditionMemberBonusRow> {

@@ -17,7 +17,7 @@ impl ReplaceActionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ReplaceAction")?;
-        let sheet = resolver.read_excel_sheet(exh, "ReplaceAction", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ReplaceAction", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ReplaceActionRow> {

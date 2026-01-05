@@ -17,7 +17,7 @@ impl RideShootingTargetTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RideShootingTargetType")?;
-        let sheet = resolver.read_excel_sheet(exh, "RideShootingTargetType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "RideShootingTargetType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RideShootingTargetTypeRow> {

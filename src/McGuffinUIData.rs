@@ -17,7 +17,7 @@ impl McGuffinUIDataSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("McGuffinUIData")?;
-        let sheet = resolver.read_excel_sheet(exh, "McGuffinUIData", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "McGuffinUIData", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<McGuffinUIDataRow> {

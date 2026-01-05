@@ -18,7 +18,7 @@ impl PvPInitialSelectActionTraitSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PvPInitialSelectActionTrait")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "PvPInitialSelectActionTrait", language)?;
+            .read_excel_sheet(&exh, "PvPInitialSelectActionTrait", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PvPInitialSelectActionTraitRow> {

@@ -17,7 +17,7 @@ impl ContentTodoSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentTodo")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentTodo", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentTodo", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentTodoRow> {

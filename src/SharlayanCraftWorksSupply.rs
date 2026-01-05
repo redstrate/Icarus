@@ -31,7 +31,7 @@ impl SharlayanCraftWorksSupplySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SharlayanCraftWorksSupply")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "SharlayanCraftWorksSupply", language)?;
+            .read_excel_sheet(&exh, "SharlayanCraftWorksSupply", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SharlayanCraftWorksSupplyRow> {

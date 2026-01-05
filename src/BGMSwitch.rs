@@ -17,7 +17,7 @@ impl BGMSwitchSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BGMSwitch")?;
-        let sheet = resolver.read_excel_sheet(exh, "BGMSwitch", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BGMSwitch", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BGMSwitchRow> {

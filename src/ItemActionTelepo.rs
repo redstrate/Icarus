@@ -17,7 +17,7 @@ impl ItemActionTelepoSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ItemActionTelepo")?;
-        let sheet = resolver.read_excel_sheet(exh, "ItemActionTelepo", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ItemActionTelepo", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ItemActionTelepoRow> {

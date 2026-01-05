@@ -17,7 +17,7 @@ impl TripleTriadTournamentSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TripleTriadTournament")?;
-        let sheet = resolver.read_excel_sheet(exh, "TripleTriadTournament", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TripleTriadTournament", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TripleTriadTournamentRow> {

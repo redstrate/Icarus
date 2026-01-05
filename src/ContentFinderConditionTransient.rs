@@ -18,7 +18,7 @@ impl ContentFinderConditionTransientSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentFinderConditionTransient")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "ContentFinderConditionTransient", language)?;
+            .read_excel_sheet(&exh, "ContentFinderConditionTransient", language)?;
         Ok(Self { sheet })
     }
     fn read_row(

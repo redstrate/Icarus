@@ -17,7 +17,7 @@ impl WKSWarpSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSWarp")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSWarp", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSWarp", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSWarpRow> {

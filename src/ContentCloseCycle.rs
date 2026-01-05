@@ -17,7 +17,7 @@ impl ContentCloseCycleSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentCloseCycle")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentCloseCycle", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentCloseCycle", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentCloseCycleRow> {

@@ -17,7 +17,7 @@ impl RetainerTaskSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RetainerTask")?;
-        let sheet = resolver.read_excel_sheet(exh, "RetainerTask", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "RetainerTask", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RetainerTaskRow> {

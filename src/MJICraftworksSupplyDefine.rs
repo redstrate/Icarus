@@ -18,7 +18,7 @@ impl MJICraftworksSupplyDefineSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJICraftworksSupplyDefine")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "MJICraftworksSupplyDefine", language)?;
+            .read_excel_sheet(&exh, "MJICraftworksSupplyDefine", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MJICraftworksSupplyDefineRow> {

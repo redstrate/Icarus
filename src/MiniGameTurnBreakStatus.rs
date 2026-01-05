@@ -17,7 +17,8 @@ impl MiniGameTurnBreakStatusSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MiniGameTurnBreakStatus")?;
-        let sheet = resolver.read_excel_sheet(exh, "MiniGameTurnBreakStatus", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "MiniGameTurnBreakStatus", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MiniGameTurnBreakStatusRow> {

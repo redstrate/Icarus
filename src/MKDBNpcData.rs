@@ -17,7 +17,7 @@ impl MKDBNpcDataSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MKDBNpcData")?;
-        let sheet = resolver.read_excel_sheet(exh, "MKDBNpcData", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MKDBNpcData", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MKDBNpcDataRow> {

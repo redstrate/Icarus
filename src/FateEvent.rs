@@ -26,7 +26,7 @@ impl FateEventSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FateEvent")?;
-        let sheet = resolver.read_excel_sheet(exh, "FateEvent", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FateEvent", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FateEventRow> {

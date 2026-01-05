@@ -25,7 +25,7 @@ impl DefaultTalkSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DefaultTalk")?;
-        let sheet = resolver.read_excel_sheet(exh, "DefaultTalk", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "DefaultTalk", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DefaultTalkRow> {

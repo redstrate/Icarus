@@ -17,7 +17,7 @@ impl JobHudManualPrioritySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("JobHudManualPriority")?;
-        let sheet = resolver.read_excel_sheet(exh, "JobHudManualPriority", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "JobHudManualPriority", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<JobHudManualPriorityRow> {

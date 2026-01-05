@@ -17,7 +17,7 @@ impl AkatsukiNoteStringSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AkatsukiNoteString")?;
-        let sheet = resolver.read_excel_sheet(exh, "AkatsukiNoteString", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "AkatsukiNoteString", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AkatsukiNoteStringRow> {

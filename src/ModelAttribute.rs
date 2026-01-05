@@ -17,7 +17,7 @@ impl ModelAttributeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ModelAttribute")?;
-        let sheet = resolver.read_excel_sheet(exh, "ModelAttribute", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ModelAttribute", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ModelAttributeRow> {

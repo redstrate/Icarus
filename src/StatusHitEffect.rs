@@ -17,7 +17,7 @@ impl StatusHitEffectSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("StatusHitEffect")?;
-        let sheet = resolver.read_excel_sheet(exh, "StatusHitEffect", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "StatusHitEffect", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<StatusHitEffectRow> {

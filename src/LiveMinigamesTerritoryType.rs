@@ -18,7 +18,7 @@ impl LiveMinigamesTerritoryTypeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("LiveMinigamesTerritoryType")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "LiveMinigamesTerritoryType", language)?;
+            .read_excel_sheet(&exh, "LiveMinigamesTerritoryType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<LiveMinigamesTerritoryTypeRow> {

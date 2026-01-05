@@ -17,7 +17,7 @@ impl EObjNameSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EObjName")?;
-        let sheet = resolver.read_excel_sheet(exh, "EObjName", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EObjName", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EObjNameRow> {

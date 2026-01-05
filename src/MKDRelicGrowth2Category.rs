@@ -17,7 +17,8 @@ impl MKDRelicGrowth2CategorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MKDRelicGrowth2Category")?;
-        let sheet = resolver.read_excel_sheet(exh, "MKDRelicGrowth2Category", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "MKDRelicGrowth2Category", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MKDRelicGrowth2CategoryRow> {

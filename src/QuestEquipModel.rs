@@ -17,7 +17,7 @@ impl QuestEquipModelSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestEquipModel")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestEquipModel", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestEquipModel", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestEquipModelRow> {

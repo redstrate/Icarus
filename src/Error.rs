@@ -17,7 +17,7 @@ impl ErrorSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Error")?;
-        let sheet = resolver.read_excel_sheet(exh, "Error", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Error", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ErrorRow> {

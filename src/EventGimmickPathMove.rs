@@ -17,7 +17,7 @@ impl EventGimmickPathMoveSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EventGimmickPathMove")?;
-        let sheet = resolver.read_excel_sheet(exh, "EventGimmickPathMove", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EventGimmickPathMove", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EventGimmickPathMoveRow> {

@@ -17,7 +17,7 @@ impl QuestRepeatFlagSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestRepeatFlag")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestRepeatFlag", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestRepeatFlag", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestRepeatFlagRow> {

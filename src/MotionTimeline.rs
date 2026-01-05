@@ -17,7 +17,7 @@ impl MotionTimelineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MotionTimeline")?;
-        let sheet = resolver.read_excel_sheet(exh, "MotionTimeline", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MotionTimeline", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MotionTimelineRow> {

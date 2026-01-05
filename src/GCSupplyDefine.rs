@@ -17,7 +17,7 @@ impl GCSupplyDefineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GCSupplyDefine")?;
-        let sheet = resolver.read_excel_sheet(exh, "GCSupplyDefine", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GCSupplyDefine", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GCSupplyDefineRow> {

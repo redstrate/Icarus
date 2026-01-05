@@ -17,7 +17,7 @@ impl WKSMechaEventRewardUISheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSMechaEventRewardUI")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSMechaEventRewardUI", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSMechaEventRewardUI", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSMechaEventRewardUIRow> {

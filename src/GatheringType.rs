@@ -17,7 +17,7 @@ impl GatheringTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GatheringType")?;
-        let sheet = resolver.read_excel_sheet(exh, "GatheringType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GatheringType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GatheringTypeRow> {

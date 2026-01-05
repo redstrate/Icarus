@@ -21,7 +21,7 @@ impl WarpLogicSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WarpLogic")?;
-        let sheet = resolver.read_excel_sheet(exh, "WarpLogic", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WarpLogic", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WarpLogicRow> {

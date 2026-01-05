@@ -17,7 +17,7 @@ impl WKSMechaFieldSearcherSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSMechaFieldSearcher")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSMechaFieldSearcher", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSMechaFieldSearcher", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSMechaFieldSearcherRow> {

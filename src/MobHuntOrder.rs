@@ -17,7 +17,7 @@ impl MobHuntOrderSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MobHuntOrder")?;
-        let sheet = resolver.read_excel_sheet(exh, "MobHuntOrder", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MobHuntOrder", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MobHuntOrderRow> {

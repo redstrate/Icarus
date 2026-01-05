@@ -17,7 +17,7 @@ impl DisposalShopSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DisposalShop")?;
-        let sheet = resolver.read_excel_sheet(exh, "DisposalShop", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "DisposalShop", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DisposalShopRow> {

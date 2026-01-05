@@ -18,7 +18,7 @@ impl EurekaSphereElementAdjustSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EurekaSphereElementAdjust")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "EurekaSphereElementAdjust", language)?;
+            .read_excel_sheet(&exh, "EurekaSphereElementAdjust", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EurekaSphereElementAdjustRow> {

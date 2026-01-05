@@ -17,7 +17,7 @@ impl ModelStateSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ModelState")?;
-        let sheet = resolver.read_excel_sheet(exh, "ModelState", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ModelState", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ModelStateRow> {

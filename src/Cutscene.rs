@@ -17,7 +17,7 @@ impl CutsceneSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Cutscene")?;
-        let sheet = resolver.read_excel_sheet(exh, "Cutscene", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Cutscene", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CutsceneRow> {

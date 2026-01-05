@@ -17,7 +17,7 @@ impl YardCatalogItemListSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("YardCatalogItemList")?;
-        let sheet = resolver.read_excel_sheet(exh, "YardCatalogItemList", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "YardCatalogItemList", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<YardCatalogItemListRow> {

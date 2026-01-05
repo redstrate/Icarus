@@ -17,7 +17,7 @@ impl ContentEffectiveTimeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentEffectiveTime")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentEffectiveTime", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentEffectiveTime", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentEffectiveTimeRow> {

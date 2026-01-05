@@ -18,7 +18,7 @@ impl GatheringItemLevelConvertTableSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GatheringItemLevelConvertTable")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "GatheringItemLevelConvertTable", language)?;
+            .read_excel_sheet(&exh, "GatheringItemLevelConvertTable", language)?;
         Ok(Self { sheet })
     }
     fn read_row(

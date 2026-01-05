@@ -17,7 +17,7 @@ impl ScenarioTreeTipsSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ScenarioTreeTips")?;
-        let sheet = resolver.read_excel_sheet(exh, "ScenarioTreeTips", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ScenarioTreeTips", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ScenarioTreeTipsRow> {

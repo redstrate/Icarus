@@ -24,7 +24,7 @@ impl GFATESheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GFATE")?;
-        let sheet = resolver.read_excel_sheet(exh, "GFATE", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GFATE", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GFATERow> {

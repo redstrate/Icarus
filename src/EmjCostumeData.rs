@@ -17,7 +17,7 @@ impl EmjCostumeDataSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EmjCostumeData")?;
-        let sheet = resolver.read_excel_sheet(exh, "EmjCostumeData", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EmjCostumeData", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EmjCostumeDataRow> {

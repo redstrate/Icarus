@@ -17,7 +17,7 @@ impl PlantPotFlowerSeedSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PlantPotFlowerSeed")?;
-        let sheet = resolver.read_excel_sheet(exh, "PlantPotFlowerSeed", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PlantPotFlowerSeed", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PlantPotFlowerSeedRow> {

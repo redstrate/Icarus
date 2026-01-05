@@ -17,7 +17,7 @@ impl ENpcBaseSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ENpcBase")?;
-        let sheet = resolver.read_excel_sheet(exh, "ENpcBase", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ENpcBase", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ENpcBaseRow> {

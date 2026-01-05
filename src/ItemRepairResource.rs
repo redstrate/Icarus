@@ -17,7 +17,7 @@ impl ItemRepairResourceSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ItemRepairResource")?;
-        let sheet = resolver.read_excel_sheet(exh, "ItemRepairResource", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ItemRepairResource", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ItemRepairResourceRow> {

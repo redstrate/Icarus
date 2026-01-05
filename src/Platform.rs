@@ -17,7 +17,7 @@ impl PlatformSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Platform")?;
-        let sheet = resolver.read_excel_sheet(exh, "Platform", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Platform", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PlatformRow> {

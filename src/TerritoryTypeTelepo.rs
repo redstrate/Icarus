@@ -17,7 +17,7 @@ impl TerritoryTypeTelepoSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TerritoryTypeTelepo")?;
-        let sheet = resolver.read_excel_sheet(exh, "TerritoryTypeTelepo", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TerritoryTypeTelepo", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TerritoryTypeTelepoRow> {

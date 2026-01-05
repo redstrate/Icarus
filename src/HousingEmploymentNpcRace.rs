@@ -18,7 +18,7 @@ impl HousingEmploymentNpcRaceSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HousingEmploymentNpcRace")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "HousingEmploymentNpcRace", language)?;
+            .read_excel_sheet(&exh, "HousingEmploymentNpcRace", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HousingEmploymentNpcRaceRow> {

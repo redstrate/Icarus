@@ -17,7 +17,7 @@ impl DpsChallengeTransientSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DpsChallengeTransient")?;
-        let sheet = resolver.read_excel_sheet(exh, "DpsChallengeTransient", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "DpsChallengeTransient", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DpsChallengeTransientRow> {

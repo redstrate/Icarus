@@ -17,7 +17,7 @@ impl LFGExtensionContentSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("LFGExtensionContent")?;
-        let sheet = resolver.read_excel_sheet(exh, "LFGExtensionContent", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "LFGExtensionContent", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<LFGExtensionContentRow> {

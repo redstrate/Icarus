@@ -17,7 +17,7 @@ impl TerritoryCandidatesSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TerritoryCandidates")?;
-        let sheet = resolver.read_excel_sheet(exh, "TerritoryCandidates", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TerritoryCandidates", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TerritoryCandidatesRow> {

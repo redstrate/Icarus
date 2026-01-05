@@ -17,7 +17,7 @@ impl SecretRecipeBookSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SecretRecipeBook")?;
-        let sheet = resolver.read_excel_sheet(exh, "SecretRecipeBook", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "SecretRecipeBook", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SecretRecipeBookRow> {

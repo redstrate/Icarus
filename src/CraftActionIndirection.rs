@@ -17,7 +17,7 @@ impl CraftActionIndirectionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CraftActionIndirection")?;
-        let sheet = resolver.read_excel_sheet(exh, "CraftActionIndirection", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CraftActionIndirection", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CraftActionIndirectionRow> {

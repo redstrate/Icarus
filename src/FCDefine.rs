@@ -17,7 +17,7 @@ impl FCDefineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FCDefine")?;
-        let sheet = resolver.read_excel_sheet(exh, "FCDefine", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "FCDefine", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FCDefineRow> {

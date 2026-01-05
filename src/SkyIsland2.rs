@@ -17,7 +17,7 @@ impl SkyIsland2Sheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SkyIsland2")?;
-        let sheet = resolver.read_excel_sheet(exh, "SkyIsland2", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "SkyIsland2", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SkyIsland2Row> {

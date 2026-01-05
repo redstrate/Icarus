@@ -18,7 +18,7 @@ impl MYCTemporaryItemUICategorySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MYCTemporaryItemUICategory")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "MYCTemporaryItemUICategory", language)?;
+            .read_excel_sheet(&exh, "MYCTemporaryItemUICategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MYCTemporaryItemUICategoryRow> {

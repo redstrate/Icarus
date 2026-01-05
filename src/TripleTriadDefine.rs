@@ -17,7 +17,7 @@ impl TripleTriadDefineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TripleTriadDefine")?;
-        let sheet = resolver.read_excel_sheet(exh, "TripleTriadDefine", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TripleTriadDefine", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TripleTriadDefineRow> {

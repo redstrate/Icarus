@@ -17,7 +17,7 @@ impl BenchmarkCutSceneTableSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BenchmarkCutSceneTable")?;
-        let sheet = resolver.read_excel_sheet(exh, "BenchmarkCutSceneTable", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BenchmarkCutSceneTable", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BenchmarkCutSceneTableRow> {

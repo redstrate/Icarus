@@ -17,7 +17,7 @@ impl TriggerEffectSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TriggerEffect")?;
-        let sheet = resolver.read_excel_sheet(exh, "TriggerEffect", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TriggerEffect", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TriggerEffectRow> {

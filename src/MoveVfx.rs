@@ -17,7 +17,7 @@ impl MoveVfxSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MoveVfx")?;
-        let sheet = resolver.read_excel_sheet(exh, "MoveVfx", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MoveVfx", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MoveVfxRow> {

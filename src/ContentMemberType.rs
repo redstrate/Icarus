@@ -17,7 +17,7 @@ impl ContentMemberTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentMemberType")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentMemberType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentMemberType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentMemberTypeRow> {

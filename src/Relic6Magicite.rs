@@ -17,7 +17,7 @@ impl Relic6MagiciteSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Relic6Magicite")?;
-        let sheet = resolver.read_excel_sheet(exh, "Relic6Magicite", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Relic6Magicite", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<Relic6MagiciteRow> {

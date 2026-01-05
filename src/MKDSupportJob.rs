@@ -17,7 +17,7 @@ impl MKDSupportJobSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MKDSupportJob")?;
-        let sheet = resolver.read_excel_sheet(exh, "MKDSupportJob", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MKDSupportJob", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MKDSupportJobRow> {

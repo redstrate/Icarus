@@ -17,7 +17,7 @@ impl EmjCharaViewCameraSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EmjCharaViewCamera")?;
-        let sheet = resolver.read_excel_sheet(exh, "EmjCharaViewCamera", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "EmjCharaViewCamera", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<EmjCharaViewCameraRow> {

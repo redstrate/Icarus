@@ -17,7 +17,7 @@ impl DynamicEventUITypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DynamicEventUIType")?;
-        let sheet = resolver.read_excel_sheet(exh, "DynamicEventUIType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "DynamicEventUIType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DynamicEventUITypeRow> {

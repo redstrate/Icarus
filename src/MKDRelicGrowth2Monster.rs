@@ -17,7 +17,7 @@ impl MKDRelicGrowth2MonsterSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MKDRelicGrowth2Monster")?;
-        let sheet = resolver.read_excel_sheet(exh, "MKDRelicGrowth2Monster", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MKDRelicGrowth2Monster", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MKDRelicGrowth2MonsterRow> {

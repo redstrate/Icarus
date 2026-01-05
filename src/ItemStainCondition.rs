@@ -17,7 +17,7 @@ impl ItemStainConditionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ItemStainCondition")?;
-        let sheet = resolver.read_excel_sheet(exh, "ItemStainCondition", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ItemStainCondition", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ItemStainConditionRow> {

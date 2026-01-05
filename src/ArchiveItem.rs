@@ -17,7 +17,7 @@ impl ArchiveItemSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ArchiveItem")?;
-        let sheet = resolver.read_excel_sheet(exh, "ArchiveItem", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ArchiveItem", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ArchiveItemRow> {

@@ -17,7 +17,7 @@ impl GCScripShopItemSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GCScripShopItem")?;
-        let sheet = resolver.read_excel_sheet(exh, "GCScripShopItem", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GCScripShopItem", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GCScripShopItemRow> {

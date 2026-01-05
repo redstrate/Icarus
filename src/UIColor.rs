@@ -17,7 +17,7 @@ impl UIColorSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("UIColor")?;
-        let sheet = resolver.read_excel_sheet(exh, "UIColor", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "UIColor", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<UIColorRow> {

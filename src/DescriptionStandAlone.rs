@@ -17,7 +17,7 @@ impl DescriptionStandAloneSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DescriptionStandAlone")?;
-        let sheet = resolver.read_excel_sheet(exh, "DescriptionStandAlone", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "DescriptionStandAlone", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DescriptionStandAloneRow> {

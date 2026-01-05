@@ -17,7 +17,8 @@ impl DeepDungeonHardModeItemSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DeepDungeonHardModeItem")?;
-        let sheet = resolver.read_excel_sheet(exh, "DeepDungeonHardModeItem", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "DeepDungeonHardModeItem", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DeepDungeonHardModeItemRow> {

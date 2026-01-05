@@ -17,7 +17,7 @@ impl BannerTimelineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BannerTimeline")?;
-        let sheet = resolver.read_excel_sheet(exh, "BannerTimeline", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BannerTimeline", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BannerTimelineRow> {

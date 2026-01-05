@@ -17,7 +17,7 @@ impl GimmickTalkSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GimmickTalk")?;
-        let sheet = resolver.read_excel_sheet(exh, "GimmickTalk", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GimmickTalk", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GimmickTalkRow> {

@@ -29,7 +29,7 @@ impl BankaCraftWorksSupplySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BankaCraftWorksSupply")?;
-        let sheet = resolver.read_excel_sheet(exh, "BankaCraftWorksSupply", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BankaCraftWorksSupply", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BankaCraftWorksSupplyRow> {

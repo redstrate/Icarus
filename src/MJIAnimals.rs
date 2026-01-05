@@ -17,7 +17,7 @@ impl MJIAnimalsSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJIAnimals")?;
-        let sheet = resolver.read_excel_sheet(exh, "MJIAnimals", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MJIAnimals", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MJIAnimalsRow> {

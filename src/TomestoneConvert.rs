@@ -17,7 +17,7 @@ impl TomestoneConvertSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TomestoneConvert")?;
-        let sheet = resolver.read_excel_sheet(exh, "TomestoneConvert", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TomestoneConvert", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TomestoneConvertRow> {

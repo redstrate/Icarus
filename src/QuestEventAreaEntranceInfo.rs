@@ -18,7 +18,7 @@ impl QuestEventAreaEntranceInfoSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestEventAreaEntranceInfo")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "QuestEventAreaEntranceInfo", language)?;
+            .read_excel_sheet(&exh, "QuestEventAreaEntranceInfo", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestEventAreaEntranceInfoRow> {

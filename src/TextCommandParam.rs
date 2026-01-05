@@ -17,7 +17,7 @@ impl TextCommandParamSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TextCommandParam")?;
-        let sheet = resolver.read_excel_sheet(exh, "TextCommandParam", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TextCommandParam", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TextCommandParamRow> {

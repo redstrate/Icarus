@@ -17,7 +17,8 @@ impl GroupPoseStampFontColorSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GroupPoseStampFontColor")?;
-        let sheet = resolver.read_excel_sheet(exh, "GroupPoseStampFontColor", language)?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "GroupPoseStampFontColor", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GroupPoseStampFontColorRow> {

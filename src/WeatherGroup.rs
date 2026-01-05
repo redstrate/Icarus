@@ -17,7 +17,7 @@ impl WeatherGroupSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WeatherGroup")?;
-        let sheet = resolver.read_excel_sheet(exh, "WeatherGroup", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WeatherGroup", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WeatherGroupRow> {

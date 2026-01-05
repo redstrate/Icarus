@@ -17,7 +17,7 @@ impl CSBonusMissionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CSBonusMission")?;
-        let sheet = resolver.read_excel_sheet(exh, "CSBonusMission", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CSBonusMission", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CSBonusMissionRow> {

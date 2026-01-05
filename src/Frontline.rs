@@ -17,7 +17,7 @@ impl FrontlineSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Frontline")?;
-        let sheet = resolver.read_excel_sheet(exh, "Frontline", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "Frontline", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<FrontlineRow> {

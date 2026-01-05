@@ -17,7 +17,7 @@ impl CharaCardPlayStyleSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CharaCardPlayStyle")?;
-        let sheet = resolver.read_excel_sheet(exh, "CharaCardPlayStyle", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CharaCardPlayStyle", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CharaCardPlayStyleRow> {

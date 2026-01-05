@@ -17,7 +17,7 @@ impl GeneralActionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GeneralAction")?;
-        let sheet = resolver.read_excel_sheet(exh, "GeneralAction", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GeneralAction", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GeneralActionRow> {

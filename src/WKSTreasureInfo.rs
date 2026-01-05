@@ -17,7 +17,7 @@ impl WKSTreasureInfoSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSTreasureInfo")?;
-        let sheet = resolver.read_excel_sheet(exh, "WKSTreasureInfo", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WKSTreasureInfo", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSTreasureInfoRow> {

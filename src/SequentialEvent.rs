@@ -24,7 +24,7 @@ impl SequentialEventSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SequentialEvent")?;
-        let sheet = resolver.read_excel_sheet(exh, "SequentialEvent", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "SequentialEvent", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<SequentialEventRow> {

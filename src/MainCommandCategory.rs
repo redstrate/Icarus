@@ -17,7 +17,7 @@ impl MainCommandCategorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MainCommandCategory")?;
-        let sheet = resolver.read_excel_sheet(exh, "MainCommandCategory", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MainCommandCategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MainCommandCategoryRow> {

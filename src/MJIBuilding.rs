@@ -17,7 +17,7 @@ impl MJIBuildingSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJIBuilding")?;
-        let sheet = resolver.read_excel_sheet(exh, "MJIBuilding", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MJIBuilding", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MJIBuildingRow> {

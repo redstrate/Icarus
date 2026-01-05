@@ -17,7 +17,7 @@ impl WebGuidanceSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WebGuidance")?;
-        let sheet = resolver.read_excel_sheet(exh, "WebGuidance", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WebGuidance", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WebGuidanceRow> {

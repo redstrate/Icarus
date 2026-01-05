@@ -17,7 +17,7 @@ impl HousingIndoorTerritorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HousingIndoorTerritory")?;
-        let sheet = resolver.read_excel_sheet(exh, "HousingIndoorTerritory", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "HousingIndoorTerritory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<HousingIndoorTerritoryRow> {

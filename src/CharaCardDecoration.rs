@@ -17,7 +17,7 @@ impl CharaCardDecorationSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CharaCardDecoration")?;
-        let sheet = resolver.read_excel_sheet(exh, "CharaCardDecoration", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CharaCardDecoration", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CharaCardDecorationRow> {

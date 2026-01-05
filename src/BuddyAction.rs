@@ -17,7 +17,7 @@ impl BuddyActionSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BuddyAction")?;
-        let sheet = resolver.read_excel_sheet(exh, "BuddyAction", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "BuddyAction", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<BuddyActionRow> {

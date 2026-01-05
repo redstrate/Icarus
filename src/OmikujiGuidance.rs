@@ -17,7 +17,7 @@ impl OmikujiGuidanceSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("OmikujiGuidance")?;
-        let sheet = resolver.read_excel_sheet(exh, "OmikujiGuidance", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "OmikujiGuidance", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<OmikujiGuidanceRow> {

@@ -17,7 +17,7 @@ impl WebURLSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WebURL")?;
-        let sheet = resolver.read_excel_sheet(exh, "WebURL", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "WebURL", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WebURLRow> {

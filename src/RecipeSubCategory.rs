@@ -17,7 +17,7 @@ impl RecipeSubCategorySheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RecipeSubCategory")?;
-        let sheet = resolver.read_excel_sheet(exh, "RecipeSubCategory", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "RecipeSubCategory", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<RecipeSubCategoryRow> {

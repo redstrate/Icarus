@@ -21,7 +21,7 @@ impl CustomTalkSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CustomTalk")?;
-        let sheet = resolver.read_excel_sheet(exh, "CustomTalk", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CustomTalk", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CustomTalkRow> {

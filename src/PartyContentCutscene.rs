@@ -17,7 +17,7 @@ impl PartyContentCutsceneSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PartyContentCutscene")?;
-        let sheet = resolver.read_excel_sheet(exh, "PartyContentCutscene", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PartyContentCutscene", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PartyContentCutsceneRow> {

@@ -17,7 +17,7 @@ impl DeepDungeonRoomSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DeepDungeonRoom")?;
-        let sheet = resolver.read_excel_sheet(exh, "DeepDungeonRoom", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "DeepDungeonRoom", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DeepDungeonRoomRow> {

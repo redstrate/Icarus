@@ -17,7 +17,7 @@ impl LeveStringSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("LeveString")?;
-        let sheet = resolver.read_excel_sheet(exh, "LeveString", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "LeveString", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<LeveStringRow> {

@@ -17,7 +17,7 @@ impl MiniGameRASheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MiniGameRA")?;
-        let sheet = resolver.read_excel_sheet(exh, "MiniGameRA", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MiniGameRA", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MiniGameRARow> {

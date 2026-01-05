@@ -17,7 +17,7 @@ impl ContentTypeSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentType")?;
-        let sheet = resolver.read_excel_sheet(exh, "ContentType", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ContentType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentTypeRow> {

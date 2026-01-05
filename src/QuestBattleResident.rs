@@ -17,7 +17,7 @@ impl QuestBattleResidentSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestBattleResident")?;
-        let sheet = resolver.read_excel_sheet(exh, "QuestBattleResident", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "QuestBattleResident", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestBattleResidentRow> {

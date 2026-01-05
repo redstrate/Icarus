@@ -17,7 +17,7 @@ impl ReactionEventObjectSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ReactionEventObject")?;
-        let sheet = resolver.read_excel_sheet(exh, "ReactionEventObject", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ReactionEventObject", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ReactionEventObjectRow> {

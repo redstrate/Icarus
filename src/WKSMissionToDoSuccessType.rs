@@ -18,7 +18,7 @@ impl WKSMissionToDoSuccessTypeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSMissionToDoSuccessType")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "WKSMissionToDoSuccessType", language)?;
+            .read_excel_sheet(&exh, "WKSMissionToDoSuccessType", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<WKSMissionToDoSuccessTypeRow> {

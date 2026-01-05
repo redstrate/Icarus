@@ -18,7 +18,7 @@ impl MotionTimelineBlendTableSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MotionTimelineBlendTable")?;
         let sheet = resolver
-            .read_excel_sheet(exh, "MotionTimelineBlendTable", language)?;
+            .read_excel_sheet(&exh, "MotionTimelineBlendTable", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MotionTimelineBlendTableRow> {

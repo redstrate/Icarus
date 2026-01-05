@@ -17,7 +17,7 @@ impl MovieStaffListSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MovieStaffList")?;
-        let sheet = resolver.read_excel_sheet(exh, "MovieStaffList", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MovieStaffList", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MovieStaffListRow> {

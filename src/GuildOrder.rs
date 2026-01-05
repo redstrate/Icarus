@@ -17,7 +17,7 @@ impl GuildOrderSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GuildOrder")?;
-        let sheet = resolver.read_excel_sheet(exh, "GuildOrder", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "GuildOrder", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<GuildOrderRow> {

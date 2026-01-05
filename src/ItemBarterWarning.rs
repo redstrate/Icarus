@@ -17,7 +17,7 @@ impl ItemBarterWarningSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ItemBarterWarning")?;
-        let sheet = resolver.read_excel_sheet(exh, "ItemBarterWarning", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ItemBarterWarning", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ItemBarterWarningRow> {

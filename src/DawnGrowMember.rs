@@ -17,7 +17,7 @@ impl DawnGrowMemberSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DawnGrowMember")?;
-        let sheet = resolver.read_excel_sheet(exh, "DawnGrowMember", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "DawnGrowMember", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<DawnGrowMemberRow> {

@@ -17,7 +17,7 @@ impl ParamGrowSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ParamGrow")?;
-        let sheet = resolver.read_excel_sheet(exh, "ParamGrow", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ParamGrow", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ParamGrowRow> {

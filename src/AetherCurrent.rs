@@ -17,7 +17,7 @@ impl AetherCurrentSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AetherCurrent")?;
-        let sheet = resolver.read_excel_sheet(exh, "AetherCurrent", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "AetherCurrent", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<AetherCurrentRow> {

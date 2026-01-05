@@ -17,7 +17,7 @@ impl TofuEditParamSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TofuEditParam")?;
-        let sheet = resolver.read_excel_sheet(exh, "TofuEditParam", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "TofuEditParam", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<TofuEditParamRow> {

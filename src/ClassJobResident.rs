@@ -17,7 +17,7 @@ impl ClassJobResidentSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ClassJobResident")?;
-        let sheet = resolver.read_excel_sheet(exh, "ClassJobResident", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "ClassJobResident", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<ClassJobResidentRow> {

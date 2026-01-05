@@ -17,7 +17,7 @@ impl CompanionMoveSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CompanionMove")?;
-        let sheet = resolver.read_excel_sheet(exh, "CompanionMove", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "CompanionMove", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<CompanionMoveRow> {

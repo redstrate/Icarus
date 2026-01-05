@@ -17,7 +17,7 @@ impl MiniGameTurnBreakStageSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MiniGameTurnBreakStage")?;
-        let sheet = resolver.read_excel_sheet(exh, "MiniGameTurnBreakStage", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "MiniGameTurnBreakStage", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<MiniGameTurnBreakStageRow> {

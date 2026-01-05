@@ -17,7 +17,7 @@ impl PerformGroupSheet {
         language: Language,
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PerformGroup")?;
-        let sheet = resolver.read_excel_sheet(exh, "PerformGroup", language)?;
+        let sheet = resolver.read_excel_sheet(&exh, "PerformGroup", language)?;
         Ok(Self { sheet })
     }
     fn read_row(&self, row: &ExcelSingleRow) -> Option<PerformGroupRow> {
