@@ -1,14 +1,15 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 #[derive(Debug, Clone)]
 pub struct PresetCameraSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl PresetCameraSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,24 @@ impl PresetCameraSheet {
         let sheet = resolver.read_excel_sheet(&exh, "PresetCamera", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<PresetCameraRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<PresetCameraRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<PresetCameraRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for PresetCameraSheet {
+    type Row = PresetCameraRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -29,95 +47,82 @@ impl PresetCameraSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(PresetCameraRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<PresetCameraRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<PresetCameraRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a PresetCameraSheet {
+    type Item = (u32, Vec<(u16, PresetCameraRow)>);
+    type IntoIter = StructuredSheetIterator<'a, PresetCameraSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, PresetCameraSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct PresetCameraRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl PresetCameraRow {
-    pub fn PosX<'a>(&'a self) -> &'a ColumnData {
+    pub fn PosX<'a>(&'a self) -> &'a Field {
         &self.columns[0]
     }
-    pub fn PosY<'a>(&'a self) -> &'a ColumnData {
+    pub fn PosY<'a>(&'a self) -> &'a Field {
         &self.columns[1]
     }
-    pub fn PosZ<'a>(&'a self) -> &'a ColumnData {
+    pub fn PosZ<'a>(&'a self) -> &'a Field {
         &self.columns[2]
     }
-    pub fn Elezen<'a>(&'a self) -> &'a ColumnData {
+    pub fn Elezen<'a>(&'a self) -> &'a Field {
         &self.columns[3]
     }
-    pub fn Lalafell<'a>(&'a self) -> &'a ColumnData {
+    pub fn Lalafell<'a>(&'a self) -> &'a Field {
         &self.columns[4]
     }
-    pub fn Miqote<'a>(&'a self) -> &'a ColumnData {
+    pub fn Miqote<'a>(&'a self) -> &'a Field {
         &self.columns[5]
     }
-    pub fn Roe<'a>(&'a self) -> &'a ColumnData {
+    pub fn Roe<'a>(&'a self) -> &'a Field {
         &self.columns[6]
     }
-    pub fn Hrothgar<'a>(&'a self) -> &'a ColumnData {
+    pub fn Hrothgar<'a>(&'a self) -> &'a Field {
         &self.columns[7]
     }
-    pub fn Viera<'a>(&'a self) -> &'a ColumnData {
+    pub fn Viera<'a>(&'a self) -> &'a Field {
         &self.columns[8]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown0<'a>(&'a self) -> &'a Field {
         &self.columns[9]
     }
-    pub fn Hyur_F<'a>(&'a self) -> &'a ColumnData {
+    pub fn Hyur_F<'a>(&'a self) -> &'a Field {
         &self.columns[10]
     }
-    pub fn Elezen_F<'a>(&'a self) -> &'a ColumnData {
+    pub fn Elezen_F<'a>(&'a self) -> &'a Field {
         &self.columns[11]
     }
-    pub fn Lalafell_F<'a>(&'a self) -> &'a ColumnData {
+    pub fn Lalafell_F<'a>(&'a self) -> &'a Field {
         &self.columns[12]
     }
-    pub fn Miqote_F<'a>(&'a self) -> &'a ColumnData {
+    pub fn Miqote_F<'a>(&'a self) -> &'a Field {
         &self.columns[13]
     }
-    pub fn Roe_F<'a>(&'a self) -> &'a ColumnData {
+    pub fn Roe_F<'a>(&'a self) -> &'a Field {
         &self.columns[14]
     }
-    pub fn Hrothgar_F<'a>(&'a self) -> &'a ColumnData {
+    pub fn Hrothgar_F<'a>(&'a self) -> &'a Field {
         &self.columns[15]
     }
-    pub fn Viera_F<'a>(&'a self) -> &'a ColumnData {
+    pub fn Viera_F<'a>(&'a self) -> &'a Field {
         &self.columns[16]
     }
-    pub fn Unknown_70<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown_70<'a>(&'a self) -> &'a Field {
         &self.columns[17]
     }
-    pub fn EID<'a>(&'a self) -> &'a ColumnData {
+    pub fn EID<'a>(&'a self) -> &'a Field {
         &self.columns[18]
     }
 }

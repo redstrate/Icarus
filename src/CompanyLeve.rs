@@ -1,24 +1,25 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 pub struct CompanyLeveStructElement<'a> {
-    pub BNpcName: &'a ColumnData,
-    pub ToDoParam: [&'a ColumnData; 6],
-    pub BaseID: &'a ColumnData,
-    pub ItemsInvolved: &'a ColumnData,
-    pub EnemyLevel: &'a ColumnData,
-    pub ItemsInvolvedQty: &'a ColumnData,
-    pub ItemDropRate: &'a ColumnData,
-    pub NumOfAppearance: [&'a ColumnData; 8],
+    pub BNpcName: &'a Field,
+    pub ToDoParam: [&'a Field; 6],
+    pub BaseID: &'a Field,
+    pub ItemsInvolved: &'a Field,
+    pub EnemyLevel: &'a Field,
+    pub ItemsInvolvedQty: &'a Field,
+    pub ItemDropRate: &'a Field,
+    pub NumOfAppearance: [&'a Field; 8],
 }
 #[derive(Debug, Clone)]
 pub struct CompanyLeveSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl CompanyLeveSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -30,7 +31,24 @@ impl CompanyLeveSheet {
         let sheet = resolver.read_excel_sheet(&exh, "CompanyLeve", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<CompanyLeveRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<CompanyLeveRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<CompanyLeveRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for CompanyLeveSheet {
+    type Row = CompanyLeveRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -39,41 +57,28 @@ impl CompanyLeveSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(CompanyLeveRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<CompanyLeveRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<CompanyLeveRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a CompanyLeveSheet {
+    type Item = (u32, Vec<(u16, CompanyLeveRow)>);
+    type IntoIter = StructuredSheetIterator<'a, CompanyLeveSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, CompanyLeveSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct CompanyLeveRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl CompanyLeveRow {
-    pub fn RoutePointTime<'a>(&'a self) -> [&'a ColumnData; 8] {
+    pub fn RoutePointTime<'a>(&'a self) -> [&'a Field; 8] {
         [
             &self.columns[0],
             &self.columns[1],
@@ -297,7 +302,7 @@ impl CompanyLeveRow {
             },
         ]
     }
-    pub fn ToDoSequence<'a>(&'a self) -> [&'a ColumnData; 8] {
+    pub fn ToDoSequence<'a>(&'a self) -> [&'a Field; 8] {
         [
             &self.columns[168],
             &self.columns[169],
@@ -309,10 +314,10 @@ impl CompanyLeveRow {
             &self.columns[175],
         ]
     }
-    pub fn Rule<'a>(&'a self) -> &'a ColumnData {
+    pub fn Rule<'a>(&'a self) -> &'a Field {
         &self.columns[176]
     }
-    pub fn RuleParam<'a>(&'a self) -> &'a ColumnData {
+    pub fn RuleParam<'a>(&'a self) -> &'a Field {
         &self.columns[177]
     }
 }

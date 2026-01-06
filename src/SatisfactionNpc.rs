@@ -1,26 +1,27 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 pub struct SatisfactionNpcParamsElement<'a> {
-    pub SupplyIndex: &'a ColumnData,
-    pub Item: [&'a ColumnData; 3],
-    pub SatisfactionRequired: &'a ColumnData,
-    pub ItemCount: [&'a ColumnData; 3],
-    pub IsHQ: [&'a ColumnData; 3],
+    pub SupplyIndex: &'a Field,
+    pub Item: [&'a Field; 3],
+    pub SatisfactionRequired: &'a Field,
+    pub ItemCount: [&'a Field; 3],
+    pub IsHQ: [&'a Field; 3],
 }
 pub struct RankParamsElement<'a> {
-    pub ImageId: &'a ColumnData,
-    pub Unknown1: &'a ColumnData,
-    pub Quest: &'a ColumnData,
+    pub ImageId: &'a Field,
+    pub Unknown1: &'a Field,
+    pub Quest: &'a Field,
 }
 #[derive(Debug, Clone)]
 pub struct SatisfactionNpcSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl SatisfactionNpcSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -32,7 +33,24 @@ impl SatisfactionNpcSheet {
         let sheet = resolver.read_excel_sheet(&exh, "SatisfactionNpc", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<SatisfactionNpcRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<SatisfactionNpcRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<SatisfactionNpcRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for SatisfactionNpcSheet {
+    type Row = SatisfactionNpcRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -41,38 +59,25 @@ impl SatisfactionNpcSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(SatisfactionNpcRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<SatisfactionNpcRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<SatisfactionNpcRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a SatisfactionNpcSheet {
+    type Item = (u32, Vec<(u16, SatisfactionNpcRow)>);
+    type IntoIter = StructuredSheetIterator<'a, SatisfactionNpcSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, SatisfactionNpcSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct SatisfactionNpcRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl SatisfactionNpcRow {
     pub fn SatisfactionNpcParams<'a>(&'a self) -> [SatisfactionNpcParamsElement<'a>; 6] {
@@ -155,31 +160,31 @@ impl SatisfactionNpcRow {
             },
         ]
     }
-    pub fn Level<'a>(&'a self) -> &'a ColumnData {
+    pub fn Level<'a>(&'a self) -> &'a Field {
         &self.columns[84]
     }
-    pub fn Npc<'a>(&'a self) -> &'a ColumnData {
+    pub fn Npc<'a>(&'a self) -> &'a Field {
         &self.columns[85]
     }
-    pub fn QuestRequired<'a>(&'a self) -> &'a ColumnData {
+    pub fn QuestRequired<'a>(&'a self) -> &'a Field {
         &self.columns[86]
     }
-    pub fn Icon<'a>(&'a self) -> &'a ColumnData {
+    pub fn Icon<'a>(&'a self) -> &'a Field {
         &self.columns[87]
     }
-    pub fn LevelUnlock<'a>(&'a self) -> &'a ColumnData {
+    pub fn LevelUnlock<'a>(&'a self) -> &'a Field {
         &self.columns[88]
     }
-    pub fn DeliveriesPerWeek<'a>(&'a self) -> &'a ColumnData {
+    pub fn DeliveriesPerWeek<'a>(&'a self) -> &'a Field {
         &self.columns[89]
     }
-    pub fn GlamourIndex<'a>(&'a self) -> &'a ColumnData {
+    pub fn GlamourIndex<'a>(&'a self) -> &'a Field {
         &self.columns[90]
     }
-    pub fn Unknown19<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown19<'a>(&'a self) -> &'a Field {
         &self.columns[91]
     }
-    pub fn Unknown20<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown20<'a>(&'a self) -> &'a Field {
         &self.columns[92]
     }
 }

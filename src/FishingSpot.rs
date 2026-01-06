@@ -1,14 +1,15 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 #[derive(Debug, Clone)]
 pub struct FishingSpotSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl FishingSpotSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,24 @@ impl FishingSpotSheet {
         let sheet = resolver.read_excel_sheet(&exh, "FishingSpot", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<FishingSpotRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<FishingSpotRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<FishingSpotRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for FishingSpotSheet {
+    type Row = FishingSpotRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -29,50 +47,37 @@ impl FishingSpotSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(FishingSpotRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<FishingSpotRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<FishingSpotRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a FishingSpotSheet {
+    type Item = (u32, Vec<(u16, FishingSpotRow)>);
+    type IntoIter = StructuredSheetIterator<'a, FishingSpotSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, FishingSpotSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct FishingSpotRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl FishingSpotRow {
-    pub fn BigFishOnReach<'a>(&'a self) -> &'a ColumnData {
+    pub fn BigFishOnReach<'a>(&'a self) -> &'a Field {
         &self.columns[0]
     }
-    pub fn BigFishOnEnd<'a>(&'a self) -> &'a ColumnData {
+    pub fn BigFishOnEnd<'a>(&'a self) -> &'a Field {
         &self.columns[1]
     }
-    pub fn BigFishOnRefresh<'a>(&'a self) -> &'a ColumnData {
+    pub fn BigFishOnRefresh<'a>(&'a self) -> &'a Field {
         &self.columns[2]
     }
-    pub fn Item<'a>(&'a self) -> [&'a ColumnData; 10] {
+    pub fn Item<'a>(&'a self) -> [&'a Field; 10] {
         [
             &self.columns[3],
             &self.columns[4],
@@ -86,40 +91,40 @@ impl FishingSpotRow {
             &self.columns[12],
         ]
     }
-    pub fn TerritoryType<'a>(&'a self) -> &'a ColumnData {
+    pub fn TerritoryType<'a>(&'a self) -> &'a Field {
         &self.columns[13]
     }
-    pub fn PlaceNameMain<'a>(&'a self) -> &'a ColumnData {
+    pub fn PlaceNameMain<'a>(&'a self) -> &'a Field {
         &self.columns[14]
     }
-    pub fn PlaceNameSub<'a>(&'a self) -> &'a ColumnData {
+    pub fn PlaceNameSub<'a>(&'a self) -> &'a Field {
         &self.columns[15]
     }
-    pub fn Radius<'a>(&'a self) -> &'a ColumnData {
+    pub fn Radius<'a>(&'a self) -> &'a Field {
         &self.columns[16]
     }
-    pub fn PlaceName<'a>(&'a self) -> &'a ColumnData {
+    pub fn PlaceName<'a>(&'a self) -> &'a Field {
         &self.columns[17]
     }
-    pub fn Order<'a>(&'a self) -> &'a ColumnData {
+    pub fn Order<'a>(&'a self) -> &'a Field {
         &self.columns[18]
     }
-    pub fn X<'a>(&'a self) -> &'a ColumnData {
+    pub fn X<'a>(&'a self) -> &'a Field {
         &self.columns[19]
     }
-    pub fn Z<'a>(&'a self) -> &'a ColumnData {
+    pub fn Z<'a>(&'a self) -> &'a Field {
         &self.columns[20]
     }
-    pub fn GatheringLevel<'a>(&'a self) -> &'a ColumnData {
+    pub fn GatheringLevel<'a>(&'a self) -> &'a Field {
         &self.columns[21]
     }
-    pub fn FishingSpotCategory<'a>(&'a self) -> &'a ColumnData {
+    pub fn FishingSpotCategory<'a>(&'a self) -> &'a Field {
         &self.columns[22]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown0<'a>(&'a self) -> &'a Field {
         &self.columns[23]
     }
-    pub fn Rare<'a>(&'a self) -> &'a ColumnData {
+    pub fn Rare<'a>(&'a self) -> &'a Field {
         &self.columns[24]
     }
 }

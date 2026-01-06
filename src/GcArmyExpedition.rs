@@ -1,25 +1,26 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 pub struct ExpeditionParamsElement<'a> {
-    pub RewardItem: &'a ColumnData,
-    pub RequiredPhysical: &'a ColumnData,
-    pub RequiredMental: &'a ColumnData,
-    pub RequiredTactical: &'a ColumnData,
-    pub RewardQuantity: &'a ColumnData,
-    pub PercentPhysicalMet: &'a ColumnData,
-    pub PercentMentalMet: &'a ColumnData,
-    pub PercentTacticalMet: &'a ColumnData,
-    pub PercentAllMet: &'a ColumnData,
+    pub RewardItem: &'a Field,
+    pub RequiredPhysical: &'a Field,
+    pub RequiredMental: &'a Field,
+    pub RequiredTactical: &'a Field,
+    pub RewardQuantity: &'a Field,
+    pub PercentPhysicalMet: &'a Field,
+    pub PercentMentalMet: &'a Field,
+    pub PercentTacticalMet: &'a Field,
+    pub PercentAllMet: &'a Field,
 }
 #[derive(Debug, Clone)]
 pub struct GcArmyExpeditionSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl GcArmyExpeditionSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -31,7 +32,24 @@ impl GcArmyExpeditionSheet {
         let sheet = resolver.read_excel_sheet(&exh, "GcArmyExpedition", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<GcArmyExpeditionRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<GcArmyExpeditionRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<GcArmyExpeditionRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for GcArmyExpeditionSheet {
+    type Row = GcArmyExpeditionRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -40,48 +58,31 @@ impl GcArmyExpeditionSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(GcArmyExpeditionRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<GcArmyExpeditionRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(
-        &self,
-        row_id: u32,
-        subrow_id: u16,
-    ) -> Option<GcArmyExpeditionRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a GcArmyExpeditionSheet {
+    type Item = (u32, Vec<(u16, GcArmyExpeditionRow)>);
+    type IntoIter = StructuredSheetIterator<'a, GcArmyExpeditionSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, GcArmyExpeditionSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct GcArmyExpeditionRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl GcArmyExpeditionRow {
-    pub fn Name<'a>(&'a self) -> &'a ColumnData {
+    pub fn Name<'a>(&'a self) -> &'a Field {
         &self.columns[0]
     }
-    pub fn Description<'a>(&'a self) -> &'a ColumnData {
+    pub fn Description<'a>(&'a self) -> &'a Field {
         &self.columns[1]
     }
     pub fn ExpeditionParams<'a>(&'a self) -> [ExpeditionParamsElement<'a>; 6] {
@@ -154,28 +155,28 @@ impl GcArmyExpeditionRow {
             },
         ]
     }
-    pub fn RewardExperience<'a>(&'a self) -> &'a ColumnData {
+    pub fn RewardExperience<'a>(&'a self) -> &'a Field {
         &self.columns[56]
     }
-    pub fn RequiredSeals<'a>(&'a self) -> &'a ColumnData {
+    pub fn RequiredSeals<'a>(&'a self) -> &'a Field {
         &self.columns[57]
     }
-    pub fn RequiredFlag<'a>(&'a self) -> &'a ColumnData {
+    pub fn RequiredFlag<'a>(&'a self) -> &'a Field {
         &self.columns[58]
     }
-    pub fn UnlockFlag<'a>(&'a self) -> &'a ColumnData {
+    pub fn UnlockFlag<'a>(&'a self) -> &'a Field {
         &self.columns[59]
     }
-    pub fn RequiredLevel<'a>(&'a self) -> &'a ColumnData {
+    pub fn RequiredLevel<'a>(&'a self) -> &'a Field {
         &self.columns[60]
     }
-    pub fn PercentBase<'a>(&'a self) -> &'a ColumnData {
+    pub fn PercentBase<'a>(&'a self) -> &'a Field {
         &self.columns[61]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown0<'a>(&'a self) -> &'a Field {
         &self.columns[62]
     }
-    pub fn GcArmyExpeditionType<'a>(&'a self) -> &'a ColumnData {
+    pub fn GcArmyExpeditionType<'a>(&'a self) -> &'a Field {
         &self.columns[63]
     }
 }

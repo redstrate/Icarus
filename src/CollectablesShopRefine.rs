@@ -1,14 +1,15 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 #[derive(Debug, Clone)]
 pub struct CollectablesShopRefineSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl CollectablesShopRefineSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,28 @@ impl CollectablesShopRefineSheet {
         let sheet = resolver.read_excel_sheet(&exh, "CollectablesShopRefine", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<CollectablesShopRefineRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<CollectablesShopRefineRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(
+        &self,
+        row_id: u32,
+        subrow_id: u16,
+    ) -> Option<CollectablesShopRefineRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for CollectablesShopRefineSheet {
+    type Row = CollectablesShopRefineRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -29,53 +51,34 @@ impl CollectablesShopRefineSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(CollectablesShopRefineRow {
-            columns,
-        })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<CollectablesShopRefineRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(
-        &self,
-        row_id: u32,
-        subrow_id: u16,
-    ) -> Option<CollectablesShopRefineRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a CollectablesShopRefineSheet {
+    type Item = (u32, Vec<(u16, CollectablesShopRefineRow)>);
+    type IntoIter = StructuredSheetIterator<'a, CollectablesShopRefineSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, CollectablesShopRefineSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct CollectablesShopRefineRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl CollectablesShopRefineRow {
-    pub fn LowCollectability<'a>(&'a self) -> &'a ColumnData {
+    pub fn LowCollectability<'a>(&'a self) -> &'a Field {
         &self.columns[0]
     }
-    pub fn MidCollectability<'a>(&'a self) -> &'a ColumnData {
+    pub fn MidCollectability<'a>(&'a self) -> &'a Field {
         &self.columns[1]
     }
-    pub fn HighCollectability<'a>(&'a self) -> &'a ColumnData {
+    pub fn HighCollectability<'a>(&'a self) -> &'a Field {
         &self.columns[2]
     }
 }

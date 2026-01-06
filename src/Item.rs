@@ -1,14 +1,15 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 #[derive(Debug, Clone)]
 pub struct ItemSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl ItemSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,24 @@ impl ItemSheet {
         let sheet = resolver.read_excel_sheet(&exh, "Item", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<ItemRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<ItemRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<ItemRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for ItemSheet {
+    type Row = ItemRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -29,98 +47,85 @@ impl ItemSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(ItemRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<ItemRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<ItemRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a ItemSheet {
+    type Item = (u32, Vec<(u16, ItemRow)>);
+    type IntoIter = StructuredSheetIterator<'a, ItemSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, ItemSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct ItemRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl ItemRow {
-    pub fn Singular<'a>(&'a self) -> &'a ColumnData {
+    pub fn Singular<'a>(&'a self) -> &'a Field {
         &self.columns[0]
     }
-    pub fn Plural<'a>(&'a self) -> &'a ColumnData {
+    pub fn Plural<'a>(&'a self) -> &'a Field {
         &self.columns[1]
     }
-    pub fn Description<'a>(&'a self) -> &'a ColumnData {
+    pub fn Description<'a>(&'a self) -> &'a Field {
         &self.columns[2]
     }
-    pub fn Name<'a>(&'a self) -> &'a ColumnData {
+    pub fn Name<'a>(&'a self) -> &'a Field {
         &self.columns[3]
     }
-    pub fn Adjective<'a>(&'a self) -> &'a ColumnData {
+    pub fn Adjective<'a>(&'a self) -> &'a Field {
         &self.columns[4]
     }
-    pub fn PossessivePronoun<'a>(&'a self) -> &'a ColumnData {
+    pub fn PossessivePronoun<'a>(&'a self) -> &'a Field {
         &self.columns[5]
     }
-    pub fn StartsWithVowel<'a>(&'a self) -> &'a ColumnData {
+    pub fn StartsWithVowel<'a>(&'a self) -> &'a Field {
         &self.columns[6]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown0<'a>(&'a self) -> &'a Field {
         &self.columns[7]
     }
-    pub fn Pronoun<'a>(&'a self) -> &'a ColumnData {
+    pub fn Pronoun<'a>(&'a self) -> &'a Field {
         &self.columns[8]
     }
-    pub fn Article<'a>(&'a self) -> &'a ColumnData {
+    pub fn Article<'a>(&'a self) -> &'a Field {
         &self.columns[9]
     }
-    pub fn ModelMain<'a>(&'a self) -> &'a ColumnData {
+    pub fn ModelMain<'a>(&'a self) -> &'a Field {
         &self.columns[10]
     }
-    pub fn ModelSub<'a>(&'a self) -> &'a ColumnData {
+    pub fn ModelSub<'a>(&'a self) -> &'a Field {
         &self.columns[11]
     }
-    pub fn DamagePhys<'a>(&'a self) -> &'a ColumnData {
+    pub fn DamagePhys<'a>(&'a self) -> &'a Field {
         &self.columns[12]
     }
-    pub fn DamageMag<'a>(&'a self) -> &'a ColumnData {
+    pub fn DamageMag<'a>(&'a self) -> &'a Field {
         &self.columns[13]
     }
-    pub fn Delayms<'a>(&'a self) -> &'a ColumnData {
+    pub fn Delayms<'a>(&'a self) -> &'a Field {
         &self.columns[14]
     }
-    pub fn BlockRate<'a>(&'a self) -> &'a ColumnData {
+    pub fn BlockRate<'a>(&'a self) -> &'a Field {
         &self.columns[15]
     }
-    pub fn Block<'a>(&'a self) -> &'a ColumnData {
+    pub fn Block<'a>(&'a self) -> &'a Field {
         &self.columns[16]
     }
-    pub fn DefensePhys<'a>(&'a self) -> &'a ColumnData {
+    pub fn DefensePhys<'a>(&'a self) -> &'a Field {
         &self.columns[17]
     }
-    pub fn DefenseMag<'a>(&'a self) -> &'a ColumnData {
+    pub fn DefenseMag<'a>(&'a self) -> &'a Field {
         &self.columns[18]
     }
-    pub fn BaseParamValue<'a>(&'a self) -> [&'a ColumnData; 6] {
+    pub fn BaseParamValue<'a>(&'a self) -> [&'a Field; 6] {
         [
             &self.columns[19],
             &self.columns[20],
@@ -130,7 +135,7 @@ impl ItemRow {
             &self.columns[24],
         ]
     }
-    pub fn BaseParamValueSpecial<'a>(&'a self) -> [&'a ColumnData; 6] {
+    pub fn BaseParamValueSpecial<'a>(&'a self) -> [&'a Field; 6] {
         [
             &self.columns[25],
             &self.columns[26],
@@ -140,37 +145,37 @@ impl ItemRow {
             &self.columns[30],
         ]
     }
-    pub fn LevelEquip<'a>(&'a self) -> &'a ColumnData {
+    pub fn LevelEquip<'a>(&'a self) -> &'a Field {
         &self.columns[31]
     }
-    pub fn RequiredPvpRank<'a>(&'a self) -> &'a ColumnData {
+    pub fn RequiredPvpRank<'a>(&'a self) -> &'a Field {
         &self.columns[32]
     }
-    pub fn EquipRestriction<'a>(&'a self) -> &'a ColumnData {
+    pub fn EquipRestriction<'a>(&'a self) -> &'a Field {
         &self.columns[33]
     }
-    pub fn ClassJobCategory<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClassJobCategory<'a>(&'a self) -> &'a Field {
         &self.columns[34]
     }
-    pub fn GrandCompany<'a>(&'a self) -> &'a ColumnData {
+    pub fn GrandCompany<'a>(&'a self) -> &'a Field {
         &self.columns[35]
     }
-    pub fn ItemSeries<'a>(&'a self) -> &'a ColumnData {
+    pub fn ItemSeries<'a>(&'a self) -> &'a Field {
         &self.columns[36]
     }
-    pub fn BaseParamModifier<'a>(&'a self) -> &'a ColumnData {
+    pub fn BaseParamModifier<'a>(&'a self) -> &'a Field {
         &self.columns[37]
     }
-    pub fn ClassJobUse<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClassJobUse<'a>(&'a self) -> &'a Field {
         &self.columns[38]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown2<'a>(&'a self) -> &'a Field {
         &self.columns[39]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown3<'a>(&'a self) -> &'a Field {
         &self.columns[40]
     }
-    pub fn BaseParam<'a>(&'a self) -> [&'a ColumnData; 6] {
+    pub fn BaseParam<'a>(&'a self) -> [&'a Field; 6] {
         [
             &self.columns[41],
             &self.columns[42],
@@ -180,13 +185,13 @@ impl ItemRow {
             &self.columns[46],
         ]
     }
-    pub fn ItemSpecialBonus<'a>(&'a self) -> &'a ColumnData {
+    pub fn ItemSpecialBonus<'a>(&'a self) -> &'a Field {
         &self.columns[47]
     }
-    pub fn ItemSpecialBonusParam<'a>(&'a self) -> &'a ColumnData {
+    pub fn ItemSpecialBonusParam<'a>(&'a self) -> &'a Field {
         &self.columns[48]
     }
-    pub fn BaseParamSpecial<'a>(&'a self) -> [&'a ColumnData; 6] {
+    pub fn BaseParamSpecial<'a>(&'a self) -> [&'a Field; 6] {
         [
             &self.columns[49],
             &self.columns[50],
@@ -196,64 +201,64 @@ impl ItemRow {
             &self.columns[54],
         ]
     }
-    pub fn MaterializeType<'a>(&'a self) -> &'a ColumnData {
+    pub fn MaterializeType<'a>(&'a self) -> &'a Field {
         &self.columns[55]
     }
-    pub fn MateriaSlotCount<'a>(&'a self) -> &'a ColumnData {
+    pub fn MateriaSlotCount<'a>(&'a self) -> &'a Field {
         &self.columns[56]
     }
-    pub fn SubStatCategory<'a>(&'a self) -> &'a ColumnData {
+    pub fn SubStatCategory<'a>(&'a self) -> &'a Field {
         &self.columns[57]
     }
-    pub fn IsAdvancedMeldingPermitted<'a>(&'a self) -> &'a ColumnData {
+    pub fn IsAdvancedMeldingPermitted<'a>(&'a self) -> &'a Field {
         &self.columns[58]
     }
-    pub fn IsPvP<'a>(&'a self) -> &'a ColumnData {
+    pub fn IsPvP<'a>(&'a self) -> &'a Field {
         &self.columns[59]
     }
-    pub fn IsGlamorous<'a>(&'a self) -> &'a ColumnData {
+    pub fn IsGlamorous<'a>(&'a self) -> &'a Field {
         &self.columns[60]
     }
-    pub fn AdditionalData<'a>(&'a self) -> &'a ColumnData {
+    pub fn AdditionalData<'a>(&'a self) -> &'a Field {
         &self.columns[61]
     }
-    pub fn StackSize<'a>(&'a self) -> &'a ColumnData {
+    pub fn StackSize<'a>(&'a self) -> &'a Field {
         &self.columns[62]
     }
-    pub fn PriceMid<'a>(&'a self) -> &'a ColumnData {
+    pub fn PriceMid<'a>(&'a self) -> &'a Field {
         &self.columns[63]
     }
-    pub fn PriceLow<'a>(&'a self) -> &'a ColumnData {
+    pub fn PriceLow<'a>(&'a self) -> &'a Field {
         &self.columns[64]
     }
-    pub fn ItemRepair<'a>(&'a self) -> &'a ColumnData {
+    pub fn ItemRepair<'a>(&'a self) -> &'a Field {
         &self.columns[65]
     }
-    pub fn ItemGlamour<'a>(&'a self) -> &'a ColumnData {
+    pub fn ItemGlamour<'a>(&'a self) -> &'a Field {
         &self.columns[66]
     }
-    pub fn Icon<'a>(&'a self) -> &'a ColumnData {
+    pub fn Icon<'a>(&'a self) -> &'a Field {
         &self.columns[67]
     }
-    pub fn LevelItem<'a>(&'a self) -> &'a ColumnData {
+    pub fn LevelItem<'a>(&'a self) -> &'a Field {
         &self.columns[68]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown4<'a>(&'a self) -> &'a Field {
         &self.columns[69]
     }
-    pub fn ItemAction<'a>(&'a self) -> &'a ColumnData {
+    pub fn ItemAction<'a>(&'a self) -> &'a Field {
         &self.columns[70]
     }
-    pub fn Cooldowns<'a>(&'a self) -> &'a ColumnData {
+    pub fn Cooldowns<'a>(&'a self) -> &'a Field {
         &self.columns[71]
     }
-    pub fn Desynth<'a>(&'a self) -> &'a ColumnData {
+    pub fn Desynth<'a>(&'a self) -> &'a Field {
         &self.columns[72]
     }
-    pub fn AetherialReduce<'a>(&'a self) -> &'a ColumnData {
+    pub fn AetherialReduce<'a>(&'a self) -> &'a Field {
         &self.columns[73]
     }
-    pub fn Rarity<'a>(&'a self) -> &'a ColumnData {
+    pub fn Rarity<'a>(&'a self) -> &'a Field {
         &self.columns[74]
     }
     /// 1 = Physical Weapon
@@ -314,52 +319,52 @@ impl ItemRow {
     /// 56 = Cosmic Exploration Lunar Credit
     /// 57 = Occult Crescent Sanguine Cipher
     ///
-    pub fn FilterGroup<'a>(&'a self) -> &'a ColumnData {
+    pub fn FilterGroup<'a>(&'a self) -> &'a Field {
         &self.columns[75]
     }
-    pub fn ItemUICategory<'a>(&'a self) -> &'a ColumnData {
+    pub fn ItemUICategory<'a>(&'a self) -> &'a Field {
         &self.columns[76]
     }
-    pub fn ItemSearchCategory<'a>(&'a self) -> &'a ColumnData {
+    pub fn ItemSearchCategory<'a>(&'a self) -> &'a Field {
         &self.columns[77]
     }
-    pub fn EquipSlotCategory<'a>(&'a self) -> &'a ColumnData {
+    pub fn EquipSlotCategory<'a>(&'a self) -> &'a Field {
         &self.columns[78]
     }
-    pub fn ItemSortCategory<'a>(&'a self) -> &'a ColumnData {
+    pub fn ItemSortCategory<'a>(&'a self) -> &'a Field {
         &self.columns[79]
     }
-    pub fn DyeCount<'a>(&'a self) -> &'a ColumnData {
+    pub fn DyeCount<'a>(&'a self) -> &'a Field {
         &self.columns[80]
     }
-    pub fn CastTimeSeconds<'a>(&'a self) -> &'a ColumnData {
+    pub fn CastTimeSeconds<'a>(&'a self) -> &'a Field {
         &self.columns[81]
     }
-    pub fn ClassJobRepair<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClassJobRepair<'a>(&'a self) -> &'a Field {
         &self.columns[82]
     }
-    pub fn IsUnique<'a>(&'a self) -> &'a ColumnData {
+    pub fn IsUnique<'a>(&'a self) -> &'a Field {
         &self.columns[83]
     }
-    pub fn IsUntradable<'a>(&'a self) -> &'a ColumnData {
+    pub fn IsUntradable<'a>(&'a self) -> &'a Field {
         &self.columns[84]
     }
-    pub fn IsIndisposable<'a>(&'a self) -> &'a ColumnData {
+    pub fn IsIndisposable<'a>(&'a self) -> &'a Field {
         &self.columns[85]
     }
-    pub fn Lot<'a>(&'a self) -> &'a ColumnData {
+    pub fn Lot<'a>(&'a self) -> &'a Field {
         &self.columns[86]
     }
-    pub fn CanBeHq<'a>(&'a self) -> &'a ColumnData {
+    pub fn CanBeHq<'a>(&'a self) -> &'a Field {
         &self.columns[87]
     }
-    pub fn IsCrestWorthy<'a>(&'a self) -> &'a ColumnData {
+    pub fn IsCrestWorthy<'a>(&'a self) -> &'a Field {
         &self.columns[88]
     }
-    pub fn IsCollectable<'a>(&'a self) -> &'a ColumnData {
+    pub fn IsCollectable<'a>(&'a self) -> &'a Field {
         &self.columns[89]
     }
-    pub fn AlwaysCollectable<'a>(&'a self) -> &'a ColumnData {
+    pub fn AlwaysCollectable<'a>(&'a self) -> &'a Field {
         &self.columns[90]
     }
 }

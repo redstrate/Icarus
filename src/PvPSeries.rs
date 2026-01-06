@@ -1,19 +1,20 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 pub struct LevelRewardsElement<'a> {
-    pub LevelRewardItem: [&'a ColumnData; 2],
-    pub Unknown0: &'a ColumnData,
-    pub LevelRewardCount: [&'a ColumnData; 2],
+    pub LevelRewardItem: [&'a Field; 2],
+    pub Unknown0: &'a Field,
+    pub LevelRewardCount: [&'a Field; 2],
 }
 #[derive(Debug, Clone)]
 pub struct PvPSeriesSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl PvPSeriesSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -25,7 +26,24 @@ impl PvPSeriesSheet {
         let sheet = resolver.read_excel_sheet(&exh, "PvPSeries", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<PvPSeriesRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<PvPSeriesRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<PvPSeriesRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for PvPSeriesSheet {
+    type Row = PvPSeriesRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -34,38 +52,25 @@ impl PvPSeriesSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(PvPSeriesRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<PvPSeriesRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<PvPSeriesRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a PvPSeriesSheet {
+    type Item = (u32, Vec<(u16, PvPSeriesRow)>);
+    type IntoIter = StructuredSheetIterator<'a, PvPSeriesSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, PvPSeriesSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct PvPSeriesRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl PvPSeriesRow {
     pub fn LevelRewards<'a>(&'a self) -> [LevelRewardsElement<'a>; 32] {
@@ -232,7 +237,7 @@ impl PvPSeriesRow {
             },
         ]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown0<'a>(&'a self) -> &'a Field {
         &self.columns[160]
     }
 }

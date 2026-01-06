@@ -1,14 +1,15 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 #[derive(Debug, Clone)]
 pub struct CompanionSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl CompanionSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,24 @@ impl CompanionSheet {
         let sheet = resolver.read_excel_sheet(&exh, "Companion", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<CompanionRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<CompanionRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<CompanionRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for CompanionSheet {
+    type Row = CompanionRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -29,158 +47,145 @@ impl CompanionSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(CompanionRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<CompanionRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<CompanionRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a CompanionSheet {
+    type Item = (u32, Vec<(u16, CompanionRow)>);
+    type IntoIter = StructuredSheetIterator<'a, CompanionSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, CompanionSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct CompanionRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl CompanionRow {
-    pub fn Singular<'a>(&'a self) -> &'a ColumnData {
+    pub fn Singular<'a>(&'a self) -> &'a Field {
         &self.columns[0]
     }
-    pub fn Plural<'a>(&'a self) -> &'a ColumnData {
+    pub fn Plural<'a>(&'a self) -> &'a Field {
         &self.columns[1]
     }
-    pub fn Adjective<'a>(&'a self) -> &'a ColumnData {
+    pub fn Adjective<'a>(&'a self) -> &'a Field {
         &self.columns[2]
     }
-    pub fn PossessivePronoun<'a>(&'a self) -> &'a ColumnData {
+    pub fn PossessivePronoun<'a>(&'a self) -> &'a Field {
         &self.columns[3]
     }
-    pub fn StartsWithVowel<'a>(&'a self) -> &'a ColumnData {
+    pub fn StartsWithVowel<'a>(&'a self) -> &'a Field {
         &self.columns[4]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown0<'a>(&'a self) -> &'a Field {
         &self.columns[5]
     }
-    pub fn Pronoun<'a>(&'a self) -> &'a ColumnData {
+    pub fn Pronoun<'a>(&'a self) -> &'a Field {
         &self.columns[6]
     }
-    pub fn Article<'a>(&'a self) -> &'a ColumnData {
+    pub fn Article<'a>(&'a self) -> &'a Field {
         &self.columns[7]
     }
-    pub fn Model<'a>(&'a self) -> &'a ColumnData {
+    pub fn Model<'a>(&'a self) -> &'a Field {
         &self.columns[8]
     }
-    pub fn Priority<'a>(&'a self) -> &'a ColumnData {
+    pub fn Priority<'a>(&'a self) -> &'a Field {
         &self.columns[9]
     }
-    pub fn Enemy<'a>(&'a self) -> &'a ColumnData {
+    pub fn Enemy<'a>(&'a self) -> &'a Field {
         &self.columns[10]
     }
-    pub fn Icon<'a>(&'a self) -> &'a ColumnData {
+    pub fn Icon<'a>(&'a self) -> &'a Field {
         &self.columns[11]
     }
-    pub fn Order<'a>(&'a self) -> &'a ColumnData {
+    pub fn Order<'a>(&'a self) -> &'a Field {
         &self.columns[12]
     }
-    pub fn HP<'a>(&'a self) -> &'a ColumnData {
+    pub fn HP<'a>(&'a self) -> &'a Field {
         &self.columns[13]
     }
-    pub fn SkillAngle<'a>(&'a self) -> &'a ColumnData {
+    pub fn SkillAngle<'a>(&'a self) -> &'a Field {
         &self.columns[14]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown1<'a>(&'a self) -> &'a Field {
         &self.columns[15]
     }
-    pub fn Scale<'a>(&'a self) -> &'a ColumnData {
+    pub fn Scale<'a>(&'a self) -> &'a Field {
         &self.columns[16]
     }
-    pub fn InactiveIdle0<'a>(&'a self) -> &'a ColumnData {
+    pub fn InactiveIdle0<'a>(&'a self) -> &'a Field {
         &self.columns[17]
     }
-    pub fn InactiveIdle1<'a>(&'a self) -> &'a ColumnData {
+    pub fn InactiveIdle1<'a>(&'a self) -> &'a Field {
         &self.columns[18]
     }
-    pub fn InactiveBattle<'a>(&'a self) -> &'a ColumnData {
+    pub fn InactiveBattle<'a>(&'a self) -> &'a Field {
         &self.columns[19]
     }
-    pub fn InactiveWandering<'a>(&'a self) -> &'a ColumnData {
+    pub fn InactiveWandering<'a>(&'a self) -> &'a Field {
         &self.columns[20]
     }
-    pub fn Behavior<'a>(&'a self) -> &'a ColumnData {
+    pub fn Behavior<'a>(&'a self) -> &'a Field {
         &self.columns[21]
     }
-    pub fn Special<'a>(&'a self) -> &'a ColumnData {
+    pub fn Special<'a>(&'a self) -> &'a Field {
         &self.columns[22]
     }
-    pub fn Unknown10<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown10<'a>(&'a self) -> &'a Field {
         &self.columns[23]
     }
-    pub fn Unknown11<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown11<'a>(&'a self) -> &'a Field {
         &self.columns[24]
     }
-    pub fn WanderingWait<'a>(&'a self) -> &'a ColumnData {
+    pub fn WanderingWait<'a>(&'a self) -> &'a Field {
         &self.columns[25]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown2<'a>(&'a self) -> &'a Field {
         &self.columns[26]
     }
-    pub fn Cost<'a>(&'a self) -> &'a ColumnData {
+    pub fn Cost<'a>(&'a self) -> &'a Field {
         &self.columns[27]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown3<'a>(&'a self) -> &'a Field {
         &self.columns[28]
     }
-    pub fn SkillCost<'a>(&'a self) -> &'a ColumnData {
+    pub fn SkillCost<'a>(&'a self) -> &'a Field {
         &self.columns[29]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown4<'a>(&'a self) -> &'a Field {
         &self.columns[30]
     }
-    pub fn MinionRace<'a>(&'a self) -> &'a ColumnData {
+    pub fn MinionRace<'a>(&'a self) -> &'a Field {
         &self.columns[31]
     }
-    pub fn Unknown5<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown5<'a>(&'a self) -> &'a Field {
         &self.columns[32]
     }
-    pub fn Unknown6<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown6<'a>(&'a self) -> &'a Field {
         &self.columns[33]
     }
-    pub fn Unknown7<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown7<'a>(&'a self) -> &'a Field {
         &self.columns[34]
     }
-    pub fn Unknown8<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown8<'a>(&'a self) -> &'a Field {
         &self.columns[35]
     }
-    pub fn Unknown9<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown9<'a>(&'a self) -> &'a Field {
         &self.columns[36]
     }
-    pub fn Battle<'a>(&'a self) -> &'a ColumnData {
+    pub fn Battle<'a>(&'a self) -> &'a Field {
         &self.columns[37]
     }
-    pub fn Roulette<'a>(&'a self) -> &'a ColumnData {
+    pub fn Roulette<'a>(&'a self) -> &'a Field {
         &self.columns[38]
     }
-    pub fn IdleAnimation<'a>(&'a self) -> &'a ColumnData {
+    pub fn IdleAnimation<'a>(&'a self) -> &'a Field {
         &self.columns[39]
     }
 }

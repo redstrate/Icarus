@@ -1,14 +1,15 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 #[derive(Debug, Clone)]
 pub struct MKDSupportJobSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl MKDSupportJobSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,24 @@ impl MKDSupportJobSheet {
         let sheet = resolver.read_excel_sheet(&exh, "MKDSupportJob", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<MKDSupportJobRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<MKDSupportJobRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<MKDSupportJobRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for MKDSupportJobSheet {
+    type Row = MKDSupportJobRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -29,56 +47,43 @@ impl MKDSupportJobSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(MKDSupportJobRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<MKDSupportJobRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<MKDSupportJobRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a MKDSupportJobSheet {
+    type Item = (u32, Vec<(u16, MKDSupportJobRow)>);
+    type IntoIter = StructuredSheetIterator<'a, MKDSupportJobSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, MKDSupportJobSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct MKDSupportJobRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl MKDSupportJobRow {
-    pub fn Name<'a>(&'a self) -> &'a ColumnData {
+    pub fn Name<'a>(&'a self) -> &'a Field {
         &self.columns[0]
     }
-    pub fn NameShort<'a>(&'a self) -> &'a ColumnData {
+    pub fn NameShort<'a>(&'a self) -> &'a Field {
         &self.columns[1]
     }
-    pub fn NameFemale<'a>(&'a self) -> &'a ColumnData {
+    pub fn NameFemale<'a>(&'a self) -> &'a Field {
         &self.columns[2]
     }
-    pub fn Description<'a>(&'a self) -> &'a ColumnData {
+    pub fn Description<'a>(&'a self) -> &'a Field {
         &self.columns[3]
     }
-    pub fn NameEnglish<'a>(&'a self) -> &'a ColumnData {
+    pub fn NameEnglish<'a>(&'a self) -> &'a Field {
         &self.columns[4]
     }
-    pub fn Action<'a>(&'a self) -> [&'a ColumnData; 5] {
+    pub fn Action<'a>(&'a self) -> [&'a Field; 5] {
         [
             &self.columns[5],
             &self.columns[6],
@@ -87,13 +92,13 @@ impl MKDSupportJobRow {
             &self.columns[9],
         ]
     }
-    pub fn LevelMax<'a>(&'a self) -> &'a ColumnData {
+    pub fn LevelMax<'a>(&'a self) -> &'a Field {
         &self.columns[10]
     }
-    pub fn JobIndex<'a>(&'a self) -> &'a ColumnData {
+    pub fn JobIndex<'a>(&'a self) -> &'a Field {
         &self.columns[11]
     }
-    pub fn LevelUnlock<'a>(&'a self) -> [&'a ColumnData; 5] {
+    pub fn LevelUnlock<'a>(&'a self) -> [&'a Field; 5] {
         [
             &self.columns[12],
             &self.columns[13],

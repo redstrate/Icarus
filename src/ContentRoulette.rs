@@ -1,14 +1,15 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 #[derive(Debug, Clone)]
 pub struct ContentRouletteSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl ContentRouletteSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,24 @@ impl ContentRouletteSheet {
         let sheet = resolver.read_excel_sheet(&exh, "ContentRoulette", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<ContentRouletteRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<ContentRouletteRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<ContentRouletteRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for ContentRouletteSheet {
+    type Row = ContentRouletteRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -29,192 +47,179 @@ impl ContentRouletteSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(ContentRouletteRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<ContentRouletteRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<ContentRouletteRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a ContentRouletteSheet {
+    type Item = (u32, Vec<(u16, ContentRouletteRow)>);
+    type IntoIter = StructuredSheetIterator<'a, ContentRouletteSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, ContentRouletteSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct ContentRouletteRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl ContentRouletteRow {
-    pub fn Name<'a>(&'a self) -> &'a ColumnData {
+    pub fn Name<'a>(&'a self) -> &'a Field {
         &self.columns[0]
     }
-    pub fn Category<'a>(&'a self) -> &'a ColumnData {
+    pub fn Category<'a>(&'a self) -> &'a Field {
         &self.columns[1]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown0<'a>(&'a self) -> &'a Field {
         &self.columns[2]
     }
-    pub fn Description<'a>(&'a self) -> &'a ColumnData {
+    pub fn Description<'a>(&'a self) -> &'a Field {
         &self.columns[3]
     }
-    pub fn DutyType<'a>(&'a self) -> &'a ColumnData {
+    pub fn DutyType<'a>(&'a self) -> &'a Field {
         &self.columns[4]
     }
     /// This would show Addon#102618, but the row is empty.
-    pub fn Unknown1<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown1<'a>(&'a self) -> &'a Field {
         &self.columns[5]
     }
-    pub fn Image<'a>(&'a self) -> &'a ColumnData {
+    pub fn Image<'a>(&'a self) -> &'a Field {
         &self.columns[6]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown2<'a>(&'a self) -> &'a Field {
         &self.columns[7]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown3<'a>(&'a self) -> &'a Field {
         &self.columns[8]
     }
-    pub fn Unknown6<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown6<'a>(&'a self) -> &'a Field {
         &self.columns[9]
     }
-    pub fn ItemLevelRequired<'a>(&'a self) -> &'a ColumnData {
+    pub fn ItemLevelRequired<'a>(&'a self) -> &'a Field {
         &self.columns[10]
     }
-    pub fn ItemLevelSync<'a>(&'a self) -> &'a ColumnData {
+    pub fn ItemLevelSync<'a>(&'a self) -> &'a Field {
         &self.columns[11]
     }
-    pub fn RewardTomeA<'a>(&'a self) -> &'a ColumnData {
+    pub fn RewardTomeA<'a>(&'a self) -> &'a Field {
         &self.columns[12]
     }
-    pub fn RewardTomeB<'a>(&'a self) -> &'a ColumnData {
+    pub fn RewardTomeB<'a>(&'a self) -> &'a Field {
         &self.columns[13]
     }
-    pub fn RewardTomeC<'a>(&'a self) -> &'a ColumnData {
+    pub fn RewardTomeC<'a>(&'a self) -> &'a Field {
         &self.columns[14]
     }
-    pub fn Unknown5<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown5<'a>(&'a self) -> &'a Field {
         &self.columns[15]
     }
-    pub fn InstanceContent<'a>(&'a self) -> &'a ColumnData {
+    pub fn InstanceContent<'a>(&'a self) -> &'a Field {
         &self.columns[16]
     }
-    pub fn RequiredExVersion<'a>(&'a self) -> &'a ColumnData {
+    pub fn RequiredExVersion<'a>(&'a self) -> &'a Field {
         &self.columns[17]
     }
-    pub fn OpenRule<'a>(&'a self) -> &'a ColumnData {
+    pub fn OpenRule<'a>(&'a self) -> &'a Field {
         &self.columns[18]
     }
-    pub fn RequiredLevel<'a>(&'a self) -> &'a ColumnData {
+    pub fn RequiredLevel<'a>(&'a self) -> &'a Field {
         &self.columns[19]
     }
-    pub fn SyncedFromLevel<'a>(&'a self) -> &'a ColumnData {
+    pub fn SyncedFromLevel<'a>(&'a self) -> &'a Field {
         &self.columns[20]
     }
-    pub fn ContentRouletteRoleBonus<'a>(&'a self) -> &'a ColumnData {
+    pub fn ContentRouletteRoleBonus<'a>(&'a self) -> &'a Field {
         &self.columns[21]
     }
-    pub fn SortKey<'a>(&'a self) -> &'a ColumnData {
+    pub fn SortKey<'a>(&'a self) -> &'a Field {
         &self.columns[22]
     }
-    pub fn ClassJobCategory<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClassJobCategory<'a>(&'a self) -> &'a Field {
         &self.columns[23]
     }
-    pub fn ContentMemberType<'a>(&'a self) -> &'a ColumnData {
+    pub fn ContentMemberType<'a>(&'a self) -> &'a Field {
         &self.columns[24]
     }
-    pub fn Unknown9<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown9<'a>(&'a self) -> &'a Field {
         &self.columns[25]
     }
-    pub fn QueueMaxPlayers<'a>(&'a self) -> &'a ColumnData {
+    pub fn QueueMaxPlayers<'a>(&'a self) -> &'a Field {
         &self.columns[26]
     }
-    pub fn ContentType<'a>(&'a self) -> &'a ColumnData {
+    pub fn ContentType<'a>(&'a self) -> &'a Field {
         &self.columns[27]
     }
-    pub fn Unknown12<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown12<'a>(&'a self) -> &'a Field {
         &self.columns[28]
     }
     /// In minutes.
-    pub fn TimeLimit<'a>(&'a self) -> &'a ColumnData {
+    pub fn TimeLimit<'a>(&'a self) -> &'a Field {
         &self.columns[29]
     }
     /// In minutes. If 0, only TimeLimit is displayed.
-    pub fn TimeLimitMax<'a>(&'a self) -> &'a ColumnData {
+    pub fn TimeLimitMax<'a>(&'a self) -> &'a Field {
         &self.columns[30]
     }
-    pub fn LootModeType<'a>(&'a self) -> &'a ColumnData {
+    pub fn LootModeType<'a>(&'a self) -> &'a Field {
         &self.columns[31]
     }
-    pub fn Unknown15<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown15<'a>(&'a self) -> &'a Field {
         &self.columns[32]
     }
     /// Index in PlayerState.PenaltyTimestamps
-    pub fn PenaltyTimestampArrayIndex<'a>(&'a self) -> &'a ColumnData {
+    pub fn PenaltyTimestampArrayIndex<'a>(&'a self) -> &'a Field {
         &self.columns[33]
     }
     /// Index in PlayerState.ContentRouletteCompletion
-    pub fn CompletionArrayIndex<'a>(&'a self) -> &'a ColumnData {
+    pub fn CompletionArrayIndex<'a>(&'a self) -> &'a Field {
         &self.columns[34]
     }
-    pub fn IsGoldSaucer<'a>(&'a self) -> &'a ColumnData {
+    pub fn IsGoldSaucer<'a>(&'a self) -> &'a Field {
         &self.columns[35]
     }
-    pub fn IsInDutyFinder<'a>(&'a self) -> &'a ColumnData {
+    pub fn IsInDutyFinder<'a>(&'a self) -> &'a Field {
         &self.columns[36]
     }
-    pub fn IsPvP<'a>(&'a self) -> &'a ColumnData {
+    pub fn IsPvP<'a>(&'a self) -> &'a Field {
         &self.columns[37]
     }
     /// Displays Addon#2828.
-    pub fn AppliesHighestAverageDutyItemLevel<'a>(&'a self) -> &'a ColumnData {
+    pub fn AppliesHighestAverageDutyItemLevel<'a>(&'a self) -> &'a Field {
         &self.columns[38]
     }
-    pub fn Unknown18<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown18<'a>(&'a self) -> &'a Field {
         &self.columns[39]
     }
-    pub fn AllowConsumableItems<'a>(&'a self) -> &'a ColumnData {
+    pub fn AllowConsumableItems<'a>(&'a self) -> &'a Field {
         &self.columns[40]
     }
-    pub fn AllowPhoenixDown<'a>(&'a self) -> &'a ColumnData {
+    pub fn AllowPhoenixDown<'a>(&'a self) -> &'a Field {
         &self.columns[41]
     }
-    pub fn AllowReplacement<'a>(&'a self) -> &'a ColumnData {
+    pub fn AllowReplacement<'a>(&'a self) -> &'a Field {
         &self.columns[42]
     }
-    pub fn RatedMatch<'a>(&'a self) -> &'a ColumnData {
+    pub fn RatedMatch<'a>(&'a self) -> &'a Field {
         &self.columns[43]
     }
-    pub fn Rated<'a>(&'a self) -> &'a ColumnData {
+    pub fn Rated<'a>(&'a self) -> &'a Field {
         &self.columns[44]
     }
     /// This would show Addon#10833, but the row does not exist.
-    pub fn Unknown22<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown22<'a>(&'a self) -> &'a Field {
         &self.columns[45]
     }
-    pub fn Unknown23<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown23<'a>(&'a self) -> &'a Field {
         &self.columns[46]
     }
-    pub fn Unknown24<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown24<'a>(&'a self) -> &'a Field {
         &self.columns[47]
     }
-    pub fn IsRegistrationAllowedFromAnyDataCenter<'a>(&'a self) -> &'a ColumnData {
+    pub fn IsRegistrationAllowedFromAnyDataCenter<'a>(&'a self) -> &'a Field {
         &self.columns[48]
     }
 }

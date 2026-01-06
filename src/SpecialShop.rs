@@ -1,31 +1,32 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 pub struct ItemElement<'a> {
-    pub ReceiveCount: [&'a ColumnData; 2],
-    pub CurrencyCost: [&'a ColumnData; 3],
-    pub Item: [&'a ColumnData; 2],
-    pub Category: [&'a ColumnData; 2],
-    pub ItemCost: [&'a ColumnData; 3],
-    pub Quest: &'a ColumnData,
-    pub Unknown0: [&'a ColumnData; 4],
-    pub AchievementUnlock: &'a ColumnData,
-    pub Unknown2: &'a ColumnData,
-    pub CollectabilityCost: [&'a ColumnData; 3],
-    pub PatchNumber: &'a ColumnData,
-    pub HqCost: [&'a ColumnData; 3],
-    pub Unknown1: [&'a ColumnData; 5],
-    pub Order: &'a ColumnData,
-    pub ReceiveHq: [&'a ColumnData; 2],
+    pub ReceiveCount: [&'a Field; 2],
+    pub CurrencyCost: [&'a Field; 3],
+    pub Item: [&'a Field; 2],
+    pub Category: [&'a Field; 2],
+    pub ItemCost: [&'a Field; 3],
+    pub Quest: &'a Field,
+    pub Unknown0: [&'a Field; 4],
+    pub AchievementUnlock: &'a Field,
+    pub Unknown2: &'a Field,
+    pub CollectabilityCost: [&'a Field; 3],
+    pub PatchNumber: &'a Field,
+    pub HqCost: [&'a Field; 3],
+    pub Unknown1: [&'a Field; 5],
+    pub Order: &'a Field,
+    pub ReceiveHq: [&'a Field; 2],
 }
 #[derive(Debug, Clone)]
 pub struct SpecialShopSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl SpecialShopSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -37,7 +38,24 @@ impl SpecialShopSheet {
         let sheet = resolver.read_excel_sheet(&exh, "SpecialShop", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<SpecialShopRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<SpecialShopRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<SpecialShopRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for SpecialShopSheet {
+    type Row = SpecialShopRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -46,41 +64,28 @@ impl SpecialShopSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(SpecialShopRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<SpecialShopRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<SpecialShopRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a SpecialShopSheet {
+    type Item = (u32, Vec<(u16, SpecialShopRow)>);
+    type IntoIter = StructuredSheetIterator<'a, SpecialShopSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, SpecialShopSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct SpecialShopRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl SpecialShopRow {
-    pub fn Name<'a>(&'a self) -> &'a ColumnData {
+    pub fn Name<'a>(&'a self) -> &'a Field {
         &self.columns[0]
     }
     pub fn Item<'a>(&'a self) -> [ItemElement<'a>; 60] {
@@ -2355,38 +2360,38 @@ impl SpecialShopRow {
             },
         ]
     }
-    pub fn Quest<'a>(&'a self) -> &'a ColumnData {
+    pub fn Quest<'a>(&'a self) -> &'a Field {
         &self.columns[2041]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown0<'a>(&'a self) -> &'a Field {
         &self.columns[2042]
     }
-    pub fn RequiredContentFinderCondition<'a>(&'a self) -> &'a ColumnData {
+    pub fn RequiredContentFinderCondition<'a>(&'a self) -> &'a Field {
         &self.columns[2043]
     }
-    pub fn CompleteText<'a>(&'a self) -> &'a ColumnData {
+    pub fn CompleteText<'a>(&'a self) -> &'a Field {
         &self.columns[2044]
     }
-    pub fn NotCompleteText<'a>(&'a self) -> &'a ColumnData {
+    pub fn NotCompleteText<'a>(&'a self) -> &'a Field {
         &self.columns[2045]
     }
-    pub fn RequiredFestival<'a>(&'a self) -> &'a ColumnData {
+    pub fn RequiredFestival<'a>(&'a self) -> &'a Field {
         &self.columns[2046]
     }
-    pub fn RequiredFestivalPhase<'a>(&'a self) -> &'a ColumnData {
+    pub fn RequiredFestivalPhase<'a>(&'a self) -> &'a Field {
         &self.columns[2047]
     }
-    pub fn UseCurrencyType<'a>(&'a self) -> &'a ColumnData {
+    pub fn UseCurrencyType<'a>(&'a self) -> &'a Field {
         &self.columns[2048]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown3<'a>(&'a self) -> &'a Field {
         &self.columns[2049]
     }
     /// If this is true, then the CFC needs to be completed; If this is false, then the CFC just needs to be unlocked
-    pub fn RequiredContentFinderConditionComplete<'a>(&'a self) -> &'a ColumnData {
+    pub fn RequiredContentFinderConditionComplete<'a>(&'a self) -> &'a Field {
         &self.columns[2050]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown4<'a>(&'a self) -> &'a Field {
         &self.columns[2051]
     }
 }

@@ -1,44 +1,45 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 pub struct QuestParamsElement<'a> {
-    pub ScriptInstruction: &'a ColumnData,
-    pub ScriptArg: &'a ColumnData,
+    pub ScriptInstruction: &'a Field,
+    pub ScriptArg: &'a Field,
 }
 pub struct QuestListenerParamsElement<'a> {
-    pub Listener: &'a ColumnData,
-    pub ConditionValue: &'a ColumnData,
-    pub Behavior: &'a ColumnData,
-    pub ActorSpawnSeq: &'a ColumnData,
-    pub ActorDespawnSeq: &'a ColumnData,
-    pub Unknown0: &'a ColumnData,
-    pub Unknown1: &'a ColumnData,
-    pub QuestUInt8A: &'a ColumnData,
-    pub ConditionType: &'a ColumnData,
-    pub ConditionOperator: &'a ColumnData,
-    pub VisibleBool: &'a ColumnData,
-    pub ConditionBool: &'a ColumnData,
-    pub ItemBool: &'a ColumnData,
-    pub AnnounceBool: &'a ColumnData,
-    pub BehaviorBool: &'a ColumnData,
-    pub AcceptBool: &'a ColumnData,
-    pub QualifiedBool: &'a ColumnData,
-    pub CanTargetBool: &'a ColumnData,
+    pub Listener: &'a Field,
+    pub ConditionValue: &'a Field,
+    pub Behavior: &'a Field,
+    pub ActorSpawnSeq: &'a Field,
+    pub ActorDespawnSeq: &'a Field,
+    pub Unknown0: &'a Field,
+    pub Unknown1: &'a Field,
+    pub QuestUInt8A: &'a Field,
+    pub ConditionType: &'a Field,
+    pub ConditionOperator: &'a Field,
+    pub VisibleBool: &'a Field,
+    pub ConditionBool: &'a Field,
+    pub ItemBool: &'a Field,
+    pub AnnounceBool: &'a Field,
+    pub BehaviorBool: &'a Field,
+    pub AcceptBool: &'a Field,
+    pub QualifiedBool: &'a Field,
+    pub CanTargetBool: &'a Field,
 }
 pub struct TodoParamsElement<'a> {
-    pub ToDoLocation: [&'a ColumnData; 8],
-    pub ToDoCompleteSeq: &'a ColumnData,
-    pub ToDoQty: &'a ColumnData,
-    pub CountableNum: &'a ColumnData,
+    pub ToDoLocation: [&'a Field; 8],
+    pub ToDoCompleteSeq: &'a Field,
+    pub ToDoQty: &'a Field,
+    pub CountableNum: &'a Field,
 }
 #[derive(Debug, Clone)]
 pub struct QuestSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl QuestSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -50,7 +51,24 @@ impl QuestSheet {
         let sheet = resolver.read_excel_sheet(&exh, "Quest", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<QuestRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<QuestRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<QuestRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for QuestSheet {
+    type Row = QuestRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -59,41 +77,28 @@ impl QuestSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(QuestRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<QuestRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<QuestRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a QuestSheet {
+    type Item = (u32, Vec<(u16, QuestRow)>);
+    type IntoIter = StructuredSheetIterator<'a, QuestSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, QuestSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct QuestRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl QuestRow {
-    pub fn Name<'a>(&'a self) -> &'a ColumnData {
+    pub fn Name<'a>(&'a self) -> &'a Field {
         &self.columns[0]
     }
     pub fn QuestParams<'a>(&'a self) -> [QuestParamsElement<'a>; 50] {
@@ -1948,16 +1953,16 @@ impl QuestRow {
             },
         ]
     }
-    pub fn GilReward<'a>(&'a self) -> &'a ColumnData {
+    pub fn GilReward<'a>(&'a self) -> &'a Field {
         &self.columns[1517]
     }
-    pub fn CurrencyReward<'a>(&'a self) -> &'a ColumnData {
+    pub fn CurrencyReward<'a>(&'a self) -> &'a Field {
         &self.columns[1518]
     }
-    pub fn CurrencyRewardCount<'a>(&'a self) -> &'a ColumnData {
+    pub fn CurrencyRewardCount<'a>(&'a self) -> &'a Field {
         &self.columns[1519]
     }
-    pub fn Reward<'a>(&'a self) -> [&'a ColumnData; 7] {
+    pub fn Reward<'a>(&'a self) -> [&'a Field; 7] {
         [
             &self.columns[1520],
             &self.columns[1521],
@@ -1968,7 +1973,7 @@ impl QuestRow {
             &self.columns[1526],
         ]
     }
-    pub fn OptionalItemReward<'a>(&'a self) -> [&'a ColumnData; 5] {
+    pub fn OptionalItemReward<'a>(&'a self) -> [&'a Field; 5] {
         [
             &self.columns[1527],
             &self.columns[1528],
@@ -1977,34 +1982,34 @@ impl QuestRow {
             &self.columns[1531],
         ]
     }
-    pub fn InstanceContentUnlock<'a>(&'a self) -> &'a ColumnData {
+    pub fn InstanceContentUnlock<'a>(&'a self) -> &'a Field {
         &self.columns[1532]
     }
-    pub fn ExpFactor<'a>(&'a self) -> &'a ColumnData {
+    pub fn ExpFactor<'a>(&'a self) -> &'a Field {
         &self.columns[1533]
     }
-    pub fn EmoteReward<'a>(&'a self) -> &'a ColumnData {
+    pub fn EmoteReward<'a>(&'a self) -> &'a Field {
         &self.columns[1534]
     }
-    pub fn ActionReward<'a>(&'a self) -> &'a ColumnData {
+    pub fn ActionReward<'a>(&'a self) -> &'a Field {
         &self.columns[1535]
     }
-    pub fn SystemReward<'a>(&'a self) -> [&'a ColumnData; 2] {
+    pub fn SystemReward<'a>(&'a self) -> [&'a Field; 2] {
         [&self.columns[1536], &self.columns[1537]]
     }
-    pub fn GCTypeReward<'a>(&'a self) -> &'a ColumnData {
+    pub fn GCTypeReward<'a>(&'a self) -> &'a Field {
         &self.columns[1538]
     }
-    pub fn ItemCatalyst<'a>(&'a self) -> [&'a ColumnData; 3] {
+    pub fn ItemCatalyst<'a>(&'a self) -> [&'a Field; 3] {
         [&self.columns[1539], &self.columns[1540], &self.columns[1541]]
     }
-    pub fn ItemCountCatalyst<'a>(&'a self) -> [&'a ColumnData; 3] {
+    pub fn ItemCountCatalyst<'a>(&'a self) -> [&'a Field; 3] {
         [&self.columns[1542], &self.columns[1543], &self.columns[1544]]
     }
-    pub fn ItemRewardType<'a>(&'a self) -> &'a ColumnData {
+    pub fn ItemRewardType<'a>(&'a self) -> &'a Field {
         &self.columns[1545]
     }
-    pub fn ItemCountReward<'a>(&'a self) -> [&'a ColumnData; 7] {
+    pub fn ItemCountReward<'a>(&'a self) -> [&'a Field; 7] {
         [
             &self.columns[1546],
             &self.columns[1547],
@@ -2015,7 +2020,7 @@ impl QuestRow {
             &self.columns[1552],
         ]
     }
-    pub fn RewardStain<'a>(&'a self) -> [&'a ColumnData; 7] {
+    pub fn RewardStain<'a>(&'a self) -> [&'a Field; 7] {
         [
             &self.columns[1553],
             &self.columns[1554],
@@ -2026,7 +2031,7 @@ impl QuestRow {
             &self.columns[1559],
         ]
     }
-    pub fn OptionalItemCountReward<'a>(&'a self) -> [&'a ColumnData; 5] {
+    pub fn OptionalItemCountReward<'a>(&'a self) -> [&'a Field; 5] {
         [
             &self.columns[1560],
             &self.columns[1561],
@@ -2035,7 +2040,7 @@ impl QuestRow {
             &self.columns[1564],
         ]
     }
-    pub fn OptionalItemStainReward<'a>(&'a self) -> [&'a ColumnData; 5] {
+    pub fn OptionalItemStainReward<'a>(&'a self) -> [&'a Field; 5] {
         [
             &self.columns[1565],
             &self.columns[1566],
@@ -2044,46 +2049,46 @@ impl QuestRow {
             &self.columns[1569],
         ]
     }
-    pub fn GeneralActionReward<'a>(&'a self) -> [&'a ColumnData; 2] {
+    pub fn GeneralActionReward<'a>(&'a self) -> [&'a Field; 2] {
         [&self.columns[1570], &self.columns[1571]]
     }
-    pub fn OtherReward<'a>(&'a self) -> &'a ColumnData {
+    pub fn OtherReward<'a>(&'a self) -> &'a Field {
         &self.columns[1572]
     }
-    pub fn Tomestone<'a>(&'a self) -> &'a ColumnData {
+    pub fn Tomestone<'a>(&'a self) -> &'a Field {
         &self.columns[1573]
     }
-    pub fn TomestoneReward<'a>(&'a self) -> &'a ColumnData {
+    pub fn TomestoneReward<'a>(&'a self) -> &'a Field {
         &self.columns[1574]
     }
-    pub fn TomestoneCountReward<'a>(&'a self) -> &'a ColumnData {
+    pub fn TomestoneCountReward<'a>(&'a self) -> &'a Field {
         &self.columns[1575]
     }
-    pub fn ReputationReward<'a>(&'a self) -> &'a ColumnData {
+    pub fn ReputationReward<'a>(&'a self) -> &'a Field {
         &self.columns[1576]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown0<'a>(&'a self) -> &'a Field {
         &self.columns[1577]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown1<'a>(&'a self) -> &'a Field {
         &self.columns[1578]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown2<'a>(&'a self) -> &'a Field {
         &self.columns[1579]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown3<'a>(&'a self) -> &'a Field {
         &self.columns[1580]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown4<'a>(&'a self) -> &'a Field {
         &self.columns[1581]
     }
-    pub fn Unknown5<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown5<'a>(&'a self) -> &'a Field {
         &self.columns[1582]
     }
-    pub fn Unknown6<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown6<'a>(&'a self) -> &'a Field {
         &self.columns[1583]
     }
-    pub fn OptionalItemIsHQReward<'a>(&'a self) -> [&'a ColumnData; 5] {
+    pub fn OptionalItemIsHQReward<'a>(&'a self) -> [&'a Field; 5] {
         [
             &self.columns[1584],
             &self.columns[1585],
@@ -2092,179 +2097,179 @@ impl QuestRow {
             &self.columns[1588],
         ]
     }
-    pub fn Id<'a>(&'a self) -> &'a ColumnData {
+    pub fn Id<'a>(&'a self) -> &'a Field {
         &self.columns[1589]
     }
-    pub fn PreviousQuest<'a>(&'a self) -> [&'a ColumnData; 3] {
+    pub fn PreviousQuest<'a>(&'a self) -> [&'a Field; 3] {
         [&self.columns[1590], &self.columns[1591], &self.columns[1592]]
     }
-    pub fn QuestLock<'a>(&'a self) -> [&'a ColumnData; 2] {
+    pub fn QuestLock<'a>(&'a self) -> [&'a Field; 2] {
         [&self.columns[1593], &self.columns[1594]]
     }
-    pub fn InstanceContent<'a>(&'a self) -> [&'a ColumnData; 3] {
+    pub fn InstanceContent<'a>(&'a self) -> [&'a Field; 3] {
         [&self.columns[1595], &self.columns[1596], &self.columns[1597]]
     }
-    pub fn IssuerStart<'a>(&'a self) -> &'a ColumnData {
+    pub fn IssuerStart<'a>(&'a self) -> &'a Field {
         &self.columns[1598]
     }
-    pub fn IssuerLocation<'a>(&'a self) -> &'a ColumnData {
+    pub fn IssuerLocation<'a>(&'a self) -> &'a Field {
         &self.columns[1599]
     }
-    pub fn TargetEnd<'a>(&'a self) -> &'a ColumnData {
+    pub fn TargetEnd<'a>(&'a self) -> &'a Field {
         &self.columns[1600]
     }
-    pub fn JournalGenre<'a>(&'a self) -> &'a ColumnData {
+    pub fn JournalGenre<'a>(&'a self) -> &'a Field {
         &self.columns[1601]
     }
-    pub fn Icon<'a>(&'a self) -> &'a ColumnData {
+    pub fn Icon<'a>(&'a self) -> &'a Field {
         &self.columns[1602]
     }
-    pub fn IconSpecial<'a>(&'a self) -> &'a ColumnData {
+    pub fn IconSpecial<'a>(&'a self) -> &'a Field {
         &self.columns[1603]
     }
-    pub fn MountRequired<'a>(&'a self) -> &'a ColumnData {
+    pub fn MountRequired<'a>(&'a self) -> &'a Field {
         &self.columns[1604]
     }
-    pub fn ClassJobLevel<'a>(&'a self) -> [&'a ColumnData; 2] {
+    pub fn ClassJobLevel<'a>(&'a self) -> [&'a Field; 2] {
         [&self.columns[1605], &self.columns[1606]]
     }
-    pub fn Header<'a>(&'a self) -> &'a ColumnData {
+    pub fn Header<'a>(&'a self) -> &'a Field {
         &self.columns[1607]
     }
-    pub fn Festival<'a>(&'a self) -> &'a ColumnData {
+    pub fn Festival<'a>(&'a self) -> &'a Field {
         &self.columns[1608]
     }
-    pub fn BellStart<'a>(&'a self) -> &'a ColumnData {
+    pub fn BellStart<'a>(&'a self) -> &'a Field {
         &self.columns[1609]
     }
-    pub fn BellEnd<'a>(&'a self) -> &'a ColumnData {
+    pub fn BellEnd<'a>(&'a self) -> &'a Field {
         &self.columns[1610]
     }
-    pub fn BeastReputationValue<'a>(&'a self) -> &'a ColumnData {
+    pub fn BeastReputationValue<'a>(&'a self) -> &'a Field {
         &self.columns[1611]
     }
-    pub fn ClientBehavior<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClientBehavior<'a>(&'a self) -> &'a Field {
         &self.columns[1612]
     }
-    pub fn QuestClassJobSupply<'a>(&'a self) -> &'a ColumnData {
+    pub fn QuestClassJobSupply<'a>(&'a self) -> &'a Field {
         &self.columns[1613]
     }
-    pub fn PlaceName<'a>(&'a self) -> &'a ColumnData {
+    pub fn PlaceName<'a>(&'a self) -> &'a Field {
         &self.columns[1614]
     }
-    pub fn SortKey<'a>(&'a self) -> &'a ColumnData {
+    pub fn SortKey<'a>(&'a self) -> &'a Field {
         &self.columns[1615]
     }
-    pub fn Expansion<'a>(&'a self) -> &'a ColumnData {
+    pub fn Expansion<'a>(&'a self) -> &'a Field {
         &self.columns[1616]
     }
-    pub fn ClassJobCategory0<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClassJobCategory0<'a>(&'a self) -> &'a Field {
         &self.columns[1617]
     }
-    pub fn QuestLevelOffset<'a>(&'a self) -> &'a ColumnData {
+    pub fn QuestLevelOffset<'a>(&'a self) -> &'a Field {
         &self.columns[1618]
     }
-    pub fn ClassJobCategory1<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClassJobCategory1<'a>(&'a self) -> &'a Field {
         &self.columns[1619]
     }
-    pub fn PreviousQuestJoin<'a>(&'a self) -> &'a ColumnData {
+    pub fn PreviousQuestJoin<'a>(&'a self) -> &'a Field {
         &self.columns[1620]
     }
-    pub fn Unknown7<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown7<'a>(&'a self) -> &'a Field {
         &self.columns[1621]
     }
-    pub fn QuestLockJoin<'a>(&'a self) -> &'a ColumnData {
+    pub fn QuestLockJoin<'a>(&'a self) -> &'a Field {
         &self.columns[1622]
     }
-    pub fn Unknown8<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown8<'a>(&'a self) -> &'a Field {
         &self.columns[1623]
     }
-    pub fn Unknown9<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown9<'a>(&'a self) -> &'a Field {
         &self.columns[1624]
     }
-    pub fn ClassJobUnlock<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClassJobUnlock<'a>(&'a self) -> &'a Field {
         &self.columns[1625]
     }
-    pub fn GrandCompany<'a>(&'a self) -> &'a ColumnData {
+    pub fn GrandCompany<'a>(&'a self) -> &'a Field {
         &self.columns[1626]
     }
-    pub fn GrandCompanyRank<'a>(&'a self) -> &'a ColumnData {
+    pub fn GrandCompanyRank<'a>(&'a self) -> &'a Field {
         &self.columns[1627]
     }
-    pub fn InstanceContentJoin<'a>(&'a self) -> &'a ColumnData {
+    pub fn InstanceContentJoin<'a>(&'a self) -> &'a Field {
         &self.columns[1628]
     }
-    pub fn FestivalBegin<'a>(&'a self) -> &'a ColumnData {
+    pub fn FestivalBegin<'a>(&'a self) -> &'a Field {
         &self.columns[1629]
     }
-    pub fn FestivalEnd<'a>(&'a self) -> &'a ColumnData {
+    pub fn FestivalEnd<'a>(&'a self) -> &'a Field {
         &self.columns[1630]
     }
-    pub fn BeastTribe<'a>(&'a self) -> &'a ColumnData {
+    pub fn BeastTribe<'a>(&'a self) -> &'a Field {
         &self.columns[1631]
     }
-    pub fn BeastReputationRank<'a>(&'a self) -> &'a ColumnData {
+    pub fn BeastReputationRank<'a>(&'a self) -> &'a Field {
         &self.columns[1632]
     }
-    pub fn SatisfactionNpc<'a>(&'a self) -> &'a ColumnData {
+    pub fn SatisfactionNpc<'a>(&'a self) -> &'a Field {
         &self.columns[1633]
     }
-    pub fn SatisfactionLevel<'a>(&'a self) -> &'a ColumnData {
+    pub fn SatisfactionLevel<'a>(&'a self) -> &'a Field {
         &self.columns[1634]
     }
-    pub fn DeliveryQuest<'a>(&'a self) -> &'a ColumnData {
+    pub fn DeliveryQuest<'a>(&'a self) -> &'a Field {
         &self.columns[1635]
     }
-    pub fn RepeatIntervalType<'a>(&'a self) -> &'a ColumnData {
+    pub fn RepeatIntervalType<'a>(&'a self) -> &'a Field {
         &self.columns[1636]
     }
-    pub fn QuestRepeatFlag<'a>(&'a self) -> &'a ColumnData {
+    pub fn QuestRepeatFlag<'a>(&'a self) -> &'a Field {
         &self.columns[1637]
     }
-    pub fn Type<'a>(&'a self) -> &'a ColumnData {
+    pub fn Type<'a>(&'a self) -> &'a Field {
         &self.columns[1638]
     }
-    pub fn Unknown_70<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown_70<'a>(&'a self) -> &'a Field {
         &self.columns[1639]
     }
-    pub fn LevelMax<'a>(&'a self) -> &'a ColumnData {
+    pub fn LevelMax<'a>(&'a self) -> &'a Field {
         &self.columns[1640]
     }
-    pub fn ClassJobRequired<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClassJobRequired<'a>(&'a self) -> &'a Field {
         &self.columns[1641]
     }
-    pub fn QuestRewardOtherDisplay<'a>(&'a self) -> &'a ColumnData {
+    pub fn QuestRewardOtherDisplay<'a>(&'a self) -> &'a Field {
         &self.columns[1642]
     }
-    pub fn Unknown10<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown10<'a>(&'a self) -> &'a Field {
         &self.columns[1643]
     }
-    pub fn EventIconType<'a>(&'a self) -> &'a ColumnData {
+    pub fn EventIconType<'a>(&'a self) -> &'a Field {
         &self.columns[1644]
     }
     /// 1/2 - normal daily beast tribe quests, 3 - 'exclusive' (if player's rank is not greater than max rank requirement of quests offered by npc, exactly one of the available quests will be from this pool)
-    pub fn DailyQuestPool<'a>(&'a self) -> &'a ColumnData {
+    pub fn DailyQuestPool<'a>(&'a self) -> &'a Field {
         &self.columns[1645]
     }
-    pub fn IsHouseRequired<'a>(&'a self) -> &'a ColumnData {
+    pub fn IsHouseRequired<'a>(&'a self) -> &'a Field {
         &self.columns[1646]
     }
-    pub fn IsRepeatable<'a>(&'a self) -> &'a ColumnData {
+    pub fn IsRepeatable<'a>(&'a self) -> &'a Field {
         &self.columns[1647]
     }
-    pub fn CanCancel<'a>(&'a self) -> &'a ColumnData {
+    pub fn CanCancel<'a>(&'a self) -> &'a Field {
         &self.columns[1648]
     }
-    pub fn Introduction<'a>(&'a self) -> &'a ColumnData {
+    pub fn Introduction<'a>(&'a self) -> &'a Field {
         &self.columns[1649]
     }
-    pub fn HideOfferIcon<'a>(&'a self) -> &'a ColumnData {
+    pub fn HideOfferIcon<'a>(&'a self) -> &'a Field {
         &self.columns[1650]
     }
-    pub fn Unknown12<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown12<'a>(&'a self) -> &'a Field {
         &self.columns[1651]
     }
-    pub fn Unknown13<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown13<'a>(&'a self) -> &'a Field {
         &self.columns[1652]
     }
 }

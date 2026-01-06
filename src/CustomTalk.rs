@@ -1,18 +1,19 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 pub struct ScriptElement<'a> {
-    pub ScriptInstruction: &'a ColumnData,
-    pub ScriptArg: &'a ColumnData,
+    pub ScriptInstruction: &'a Field,
+    pub ScriptArg: &'a Field,
 }
 #[derive(Debug, Clone)]
 pub struct CustomTalkSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl CustomTalkSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -24,7 +25,24 @@ impl CustomTalkSheet {
         let sheet = resolver.read_excel_sheet(&exh, "CustomTalk", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<CustomTalkRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<CustomTalkRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<CustomTalkRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for CustomTalkSheet {
+    type Row = CustomTalkRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -33,38 +51,25 @@ impl CustomTalkSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(CustomTalkRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<CustomTalkRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<CustomTalkRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a CustomTalkSheet {
+    type Item = (u32, Vec<(u16, CustomTalkRow)>);
+    type IntoIter = StructuredSheetIterator<'a, CustomTalkSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, CustomTalkSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct CustomTalkRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl CustomTalkRow {
     pub fn Script<'a>(&'a self) -> [ScriptElement<'a>; 30] {
@@ -191,61 +196,61 @@ impl CustomTalkRow {
             },
         ]
     }
-    pub fn MainOption<'a>(&'a self) -> &'a ColumnData {
+    pub fn MainOption<'a>(&'a self) -> &'a Field {
         &self.columns[60]
     }
-    pub fn SubOption<'a>(&'a self) -> &'a ColumnData {
+    pub fn SubOption<'a>(&'a self) -> &'a Field {
         &self.columns[61]
     }
-    pub fn Name<'a>(&'a self) -> &'a ColumnData {
+    pub fn Name<'a>(&'a self) -> &'a Field {
         &self.columns[62]
     }
-    pub fn IconActor<'a>(&'a self) -> &'a ColumnData {
+    pub fn IconActor<'a>(&'a self) -> &'a Field {
         &self.columns[63]
     }
-    pub fn IconMap<'a>(&'a self) -> &'a ColumnData {
+    pub fn IconMap<'a>(&'a self) -> &'a Field {
         &self.columns[64]
     }
-    pub fn SpecialLinks<'a>(&'a self) -> &'a ColumnData {
+    pub fn SpecialLinks<'a>(&'a self) -> &'a Field {
         &self.columns[65]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown0<'a>(&'a self) -> &'a Field {
         &self.columns[66]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown1<'a>(&'a self) -> &'a Field {
         &self.columns[67]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown2<'a>(&'a self) -> &'a Field {
         &self.columns[68]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown3<'a>(&'a self) -> &'a Field {
         &self.columns[69]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown4<'a>(&'a self) -> &'a Field {
         &self.columns[70]
     }
-    pub fn Unknown5<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown5<'a>(&'a self) -> &'a Field {
         &self.columns[71]
     }
-    pub fn Unknown6<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown6<'a>(&'a self) -> &'a Field {
         &self.columns[72]
     }
-    pub fn Unknown7<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown7<'a>(&'a self) -> &'a Field {
         &self.columns[73]
     }
-    pub fn Unknown8<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown8<'a>(&'a self) -> &'a Field {
         &self.columns[74]
     }
-    pub fn Unknown9<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown9<'a>(&'a self) -> &'a Field {
         &self.columns[75]
     }
-    pub fn Unknown10<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown10<'a>(&'a self) -> &'a Field {
         &self.columns[76]
     }
-    pub fn Unknown11<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown11<'a>(&'a self) -> &'a Field {
         &self.columns[77]
     }
-    pub fn Unknown12<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown12<'a>(&'a self) -> &'a Field {
         &self.columns[78]
     }
 }

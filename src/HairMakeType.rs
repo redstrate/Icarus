@@ -1,35 +1,36 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 pub struct CharaMakeStructElement<'a> {
-    pub Menu: &'a ColumnData,
-    pub SubMenuMask: &'a ColumnData,
-    pub Customize: &'a ColumnData,
-    pub SubMenuParam: [&'a ColumnData; 100],
-    pub Unknown0: [&'a ColumnData; 6],
-    pub InitVal: &'a ColumnData,
-    pub SubMenuType: &'a ColumnData,
-    pub SubMenuNum: &'a ColumnData,
-    pub LookAt: &'a ColumnData,
-    pub SubMenuGraphic: [&'a ColumnData; 10],
+    pub Menu: &'a Field,
+    pub SubMenuMask: &'a Field,
+    pub Customize: &'a Field,
+    pub SubMenuParam: [&'a Field; 100],
+    pub Unknown0: [&'a Field; 6],
+    pub InitVal: &'a Field,
+    pub SubMenuType: &'a Field,
+    pub SubMenuNum: &'a Field,
+    pub LookAt: &'a Field,
+    pub SubMenuGraphic: [&'a Field; 10],
 }
 pub struct FacialFeatureOptionElement<'a> {
-    pub Option1: &'a ColumnData,
-    pub Option2: &'a ColumnData,
-    pub Option3: &'a ColumnData,
-    pub Option4: &'a ColumnData,
-    pub Option5: &'a ColumnData,
-    pub Option6: &'a ColumnData,
-    pub Option7: &'a ColumnData,
+    pub Option1: &'a Field,
+    pub Option2: &'a Field,
+    pub Option3: &'a Field,
+    pub Option4: &'a Field,
+    pub Option5: &'a Field,
+    pub Option6: &'a Field,
+    pub Option7: &'a Field,
 }
 #[derive(Debug, Clone)]
 pub struct HairMakeTypeSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl HairMakeTypeSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -41,7 +42,24 @@ impl HairMakeTypeSheet {
         let sheet = resolver.read_excel_sheet(&exh, "HairMakeType", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<HairMakeTypeRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<HairMakeTypeRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<HairMakeTypeRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for HairMakeTypeSheet {
+    type Row = HairMakeTypeRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -50,38 +68,25 @@ impl HairMakeTypeSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(HairMakeTypeRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<HairMakeTypeRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<HairMakeTypeRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a HairMakeTypeSheet {
+    type Item = (u32, Vec<(u16, HairMakeTypeRow)>);
+    type IntoIter = StructuredSheetIterator<'a, HairMakeTypeSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, HairMakeTypeSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct HairMakeTypeRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl HairMakeTypeRow {
     pub fn CharaMakeStruct<'a>(&'a self) -> [CharaMakeStructElement<'a>; 9] {
@@ -1343,13 +1348,13 @@ impl HairMakeTypeRow {
             },
         ]
     }
-    pub fn Race<'a>(&'a self) -> &'a ColumnData {
+    pub fn Race<'a>(&'a self) -> &'a Field {
         &self.columns[1163]
     }
-    pub fn Tribe<'a>(&'a self) -> &'a ColumnData {
+    pub fn Tribe<'a>(&'a self) -> &'a Field {
         &self.columns[1164]
     }
-    pub fn Gender<'a>(&'a self) -> &'a ColumnData {
+    pub fn Gender<'a>(&'a self) -> &'a Field {
         &self.columns[1165]
     }
 }

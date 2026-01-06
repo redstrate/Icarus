@@ -1,23 +1,24 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 pub struct SnipeDataElement<'a> {
-    pub DataEventNPC: &'a ColumnData,
-    pub Unknown0: &'a ColumnData,
-    pub Unknown1: &'a ColumnData,
-    pub Unknown2: &'a ColumnData,
-    pub Unknown3: &'a ColumnData,
-    pub Unknown4: &'a ColumnData,
-    pub Unknown5: &'a ColumnData,
+    pub DataEventNPC: &'a Field,
+    pub Unknown0: &'a Field,
+    pub Unknown1: &'a Field,
+    pub Unknown2: &'a Field,
+    pub Unknown3: &'a Field,
+    pub Unknown4: &'a Field,
+    pub Unknown5: &'a Field,
 }
 #[derive(Debug, Clone)]
 pub struct SnipeSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl SnipeSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -29,7 +30,24 @@ impl SnipeSheet {
         let sheet = resolver.read_excel_sheet(&exh, "Snipe", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<SnipeRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<SnipeRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<SnipeRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for SnipeSheet {
+    type Row = SnipeRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -38,38 +56,25 @@ impl SnipeSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(SnipeRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<SnipeRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<SnipeRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a SnipeSheet {
+    type Item = (u32, Vec<(u16, SnipeRow)>);
+    type IntoIter = StructuredSheetIterator<'a, SnipeSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, SnipeSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct SnipeRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl SnipeRow {
     pub fn SnipeData<'a>(&'a self) -> [SnipeDataElement<'a>; 8] {
@@ -148,7 +153,7 @@ impl SnipeRow {
             },
         ]
     }
-    pub fn EventNPC<'a>(&'a self) -> [&'a ColumnData; 8] {
+    pub fn EventNPC<'a>(&'a self) -> [&'a Field; 8] {
         [
             &self.columns[56],
             &self.columns[57],
@@ -160,133 +165,133 @@ impl SnipeRow {
             &self.columns[63],
         ]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown0<'a>(&'a self) -> &'a Field {
         &self.columns[64]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown1<'a>(&'a self) -> &'a Field {
         &self.columns[65]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown2<'a>(&'a self) -> &'a Field {
         &self.columns[66]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown3<'a>(&'a self) -> &'a Field {
         &self.columns[67]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown4<'a>(&'a self) -> &'a Field {
         &self.columns[68]
     }
-    pub fn Unknown5<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown5<'a>(&'a self) -> &'a Field {
         &self.columns[69]
     }
-    pub fn Unknown6<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown6<'a>(&'a self) -> &'a Field {
         &self.columns[70]
     }
-    pub fn Unknown7<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown7<'a>(&'a self) -> &'a Field {
         &self.columns[71]
     }
-    pub fn Unknown8<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown8<'a>(&'a self) -> &'a Field {
         &self.columns[72]
     }
-    pub fn Unknown9<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown9<'a>(&'a self) -> &'a Field {
         &self.columns[73]
     }
-    pub fn Unknown10<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown10<'a>(&'a self) -> &'a Field {
         &self.columns[74]
     }
-    pub fn Unknown11<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown11<'a>(&'a self) -> &'a Field {
         &self.columns[75]
     }
-    pub fn Objective0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Objective0<'a>(&'a self) -> &'a Field {
         &self.columns[76]
     }
-    pub fn Hint0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Hint0<'a>(&'a self) -> &'a Field {
         &self.columns[77]
     }
-    pub fn Objective1<'a>(&'a self) -> &'a ColumnData {
+    pub fn Objective1<'a>(&'a self) -> &'a Field {
         &self.columns[78]
     }
-    pub fn Hint1<'a>(&'a self) -> &'a ColumnData {
+    pub fn Hint1<'a>(&'a self) -> &'a Field {
         &self.columns[79]
     }
-    pub fn Unknown12<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown12<'a>(&'a self) -> &'a Field {
         &self.columns[80]
     }
-    pub fn Unknown13<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown13<'a>(&'a self) -> &'a Field {
         &self.columns[81]
     }
-    pub fn Unknown14<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown14<'a>(&'a self) -> &'a Field {
         &self.columns[82]
     }
-    pub fn Unknown15<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown15<'a>(&'a self) -> &'a Field {
         &self.columns[83]
     }
-    pub fn Unknown16<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown16<'a>(&'a self) -> &'a Field {
         &self.columns[84]
     }
-    pub fn Unknown17<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown17<'a>(&'a self) -> &'a Field {
         &self.columns[85]
     }
-    pub fn Unknown18<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown18<'a>(&'a self) -> &'a Field {
         &self.columns[86]
     }
-    pub fn ActionText<'a>(&'a self) -> &'a ColumnData {
+    pub fn ActionText<'a>(&'a self) -> &'a Field {
         &self.columns[87]
     }
-    pub fn Unknown19<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown19<'a>(&'a self) -> &'a Field {
         &self.columns[88]
     }
-    pub fn Unknown20<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown20<'a>(&'a self) -> &'a Field {
         &self.columns[89]
     }
-    pub fn VFXFire<'a>(&'a self) -> &'a ColumnData {
+    pub fn VFXFire<'a>(&'a self) -> &'a Field {
         &self.columns[90]
     }
-    pub fn VFXHit<'a>(&'a self) -> &'a ColumnData {
+    pub fn VFXHit<'a>(&'a self) -> &'a Field {
         &self.columns[91]
     }
-    pub fn VFXMiss<'a>(&'a self) -> &'a ColumnData {
+    pub fn VFXMiss<'a>(&'a self) -> &'a Field {
         &self.columns[92]
     }
-    pub fn VFXAdditional<'a>(&'a self) -> &'a ColumnData {
+    pub fn VFXAdditional<'a>(&'a self) -> &'a Field {
         &self.columns[93]
     }
-    pub fn LGBTargetMarker<'a>(&'a self) -> &'a ColumnData {
+    pub fn LGBTargetMarker<'a>(&'a self) -> &'a Field {
         &self.columns[94]
     }
-    pub fn Unknown21<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown21<'a>(&'a self) -> &'a Field {
         &self.columns[95]
     }
-    pub fn Unknown22<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown22<'a>(&'a self) -> &'a Field {
         &self.columns[96]
     }
-    pub fn Unknown23<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown23<'a>(&'a self) -> &'a Field {
         &self.columns[97]
     }
-    pub fn Unknown24<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown24<'a>(&'a self) -> &'a Field {
         &self.columns[98]
     }
-    pub fn Unknown25<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown25<'a>(&'a self) -> &'a Field {
         &self.columns[99]
     }
-    pub fn Unknown26<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown26<'a>(&'a self) -> &'a Field {
         &self.columns[100]
     }
-    pub fn Unknown27<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown27<'a>(&'a self) -> &'a Field {
         &self.columns[101]
     }
-    pub fn Unknown28<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown28<'a>(&'a self) -> &'a Field {
         &self.columns[102]
     }
-    pub fn Unknown29<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown29<'a>(&'a self) -> &'a Field {
         &self.columns[103]
     }
-    pub fn Unknown30<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown30<'a>(&'a self) -> &'a Field {
         &self.columns[104]
     }
-    pub fn Unknown31<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown31<'a>(&'a self) -> &'a Field {
         &self.columns[105]
     }
-    pub fn Unknown32<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown32<'a>(&'a self) -> &'a Field {
         &self.columns[106]
     }
 }

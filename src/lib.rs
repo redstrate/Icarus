@@ -1,4 +1,8 @@
 #![allow(warnings)]
+mod traits;
+use traits::StructuredSheet;
+mod iterators;
+use iterators::StructuredSheetIterator;
 #[cfg(feature = "AOZArrangement")]
 pub mod AOZArrangement;
 #[cfg(feature = "AOZBoss")]

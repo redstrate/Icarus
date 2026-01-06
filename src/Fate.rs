@@ -1,18 +1,19 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 pub struct ObjectiveIconElement<'a> {
-    pub LayoutId: &'a ColumnData,
-    pub Icon: &'a ColumnData,
+    pub LayoutId: &'a Field,
+    pub Icon: &'a Field,
 }
 #[derive(Debug, Clone)]
 pub struct FateSheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl FateSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -24,7 +25,24 @@ impl FateSheet {
         let sheet = resolver.read_excel_sheet(&exh, "Fate", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<FateRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<FateRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<FateRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for FateSheet {
+    type Row = FateRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -33,74 +51,61 @@ impl FateSheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(FateRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<FateRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(&self, row_id: u32, subrow_id: u16) -> Option<FateRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a FateSheet {
+    type Item = (u32, Vec<(u16, FateRow)>);
+    type IntoIter = StructuredSheetIterator<'a, FateSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, FateSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct FateRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl FateRow {
-    pub fn Name<'a>(&'a self) -> &'a ColumnData {
+    pub fn Name<'a>(&'a self) -> &'a Field {
         &self.columns[0]
     }
-    pub fn Description<'a>(&'a self) -> &'a ColumnData {
+    pub fn Description<'a>(&'a self) -> &'a Field {
         &self.columns[1]
     }
-    pub fn Objective<'a>(&'a self) -> &'a ColumnData {
+    pub fn Objective<'a>(&'a self) -> &'a Field {
         &self.columns[2]
     }
-    pub fn StatusText<'a>(&'a self) -> [&'a ColumnData; 3] {
+    pub fn StatusText<'a>(&'a self) -> [&'a Field; 3] {
         [&self.columns[3], &self.columns[4], &self.columns[5]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown0<'a>(&'a self) -> &'a Field {
         &self.columns[6]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown1<'a>(&'a self) -> &'a Field {
         &self.columns[7]
     }
-    pub fn ReqEventItem<'a>(&'a self) -> &'a ColumnData {
+    pub fn ReqEventItem<'a>(&'a self) -> &'a Field {
         &self.columns[8]
     }
-    pub fn TurnInEventItem<'a>(&'a self) -> &'a ColumnData {
+    pub fn TurnInEventItem<'a>(&'a self) -> &'a Field {
         &self.columns[9]
     }
-    pub fn Unknown2<'a>(&'a self) -> [&'a ColumnData; 3] {
+    pub fn Unknown2<'a>(&'a self) -> [&'a Field; 3] {
         [&self.columns[10], &self.columns[11], &self.columns[12]]
     }
-    pub fn Unknown10<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown10<'a>(&'a self) -> &'a Field {
         &self.columns[13]
     }
-    pub fn Unknown11<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown11<'a>(&'a self) -> &'a Field {
         &self.columns[14]
     }
-    pub fn Unknown12<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown12<'a>(&'a self) -> &'a Field {
         &self.columns[15]
     }
     pub fn ObjectiveIcon<'a>(&'a self) -> [ObjectiveIconElement<'a>; 32] {
@@ -235,91 +240,91 @@ impl FateRow {
             },
         ]
     }
-    pub fn Location<'a>(&'a self) -> &'a ColumnData {
+    pub fn Location<'a>(&'a self) -> &'a Field {
         &self.columns[80]
     }
-    pub fn EventItem<'a>(&'a self) -> &'a ColumnData {
+    pub fn EventItem<'a>(&'a self) -> &'a Field {
         &self.columns[81]
     }
-    pub fn Icon<'a>(&'a self) -> &'a ColumnData {
+    pub fn Icon<'a>(&'a self) -> &'a Field {
         &self.columns[82]
     }
-    pub fn MapIcon<'a>(&'a self) -> &'a ColumnData {
+    pub fn MapIcon<'a>(&'a self) -> &'a Field {
         &self.columns[83]
     }
-    pub fn InactiveMapIcon<'a>(&'a self) -> &'a ColumnData {
+    pub fn InactiveMapIcon<'a>(&'a self) -> &'a Field {
         &self.columns[84]
     }
-    pub fn LGBGuardNPCLocation<'a>(&'a self) -> &'a ColumnData {
+    pub fn LGBGuardNPCLocation<'a>(&'a self) -> &'a Field {
         &self.columns[85]
     }
-    pub fn RequiredQuest<'a>(&'a self) -> &'a ColumnData {
+    pub fn RequiredQuest<'a>(&'a self) -> &'a Field {
         &self.columns[86]
     }
-    pub fn FATEChain<'a>(&'a self) -> &'a ColumnData {
+    pub fn FATEChain<'a>(&'a self) -> &'a Field {
         &self.columns[87]
     }
-    pub fn Unknown13<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown13<'a>(&'a self) -> &'a Field {
         &self.columns[88]
     }
-    pub fn FateRuleEx<'a>(&'a self) -> &'a ColumnData {
+    pub fn FateRuleEx<'a>(&'a self) -> &'a Field {
         &self.columns[89]
     }
-    pub fn Music<'a>(&'a self) -> &'a ColumnData {
+    pub fn Music<'a>(&'a self) -> &'a Field {
         &self.columns[90]
     }
-    pub fn ScreenImageAccept<'a>(&'a self) -> &'a ColumnData {
+    pub fn ScreenImageAccept<'a>(&'a self) -> &'a Field {
         &self.columns[91]
     }
-    pub fn ScreenImageComplete<'a>(&'a self) -> &'a ColumnData {
+    pub fn ScreenImageComplete<'a>(&'a self) -> &'a Field {
         &self.columns[92]
     }
-    pub fn ScreenImageFailed<'a>(&'a self) -> &'a ColumnData {
+    pub fn ScreenImageFailed<'a>(&'a self) -> &'a Field {
         &self.columns[93]
     }
-    pub fn GivenStatus<'a>(&'a self) -> &'a ColumnData {
+    pub fn GivenStatus<'a>(&'a self) -> &'a Field {
         &self.columns[94]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown4<'a>(&'a self) -> &'a Field {
         &self.columns[95]
     }
-    pub fn Unknown5<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown5<'a>(&'a self) -> &'a Field {
         &self.columns[96]
     }
-    pub fn EurekaFate<'a>(&'a self) -> &'a ColumnData {
+    pub fn EurekaFate<'a>(&'a self) -> &'a Field {
         &self.columns[97]
     }
-    pub fn Rule<'a>(&'a self) -> &'a ColumnData {
+    pub fn Rule<'a>(&'a self) -> &'a Field {
         &self.columns[98]
     }
-    pub fn ClassJobLevel<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClassJobLevel<'a>(&'a self) -> &'a Field {
         &self.columns[99]
     }
-    pub fn ClassJobLevelMax<'a>(&'a self) -> &'a ColumnData {
+    pub fn ClassJobLevelMax<'a>(&'a self) -> &'a Field {
         &self.columns[100]
     }
-    pub fn StatusValue<'a>(&'a self) -> [&'a ColumnData; 3] {
+    pub fn StatusValue<'a>(&'a self) -> [&'a Field; 3] {
         [&self.columns[101], &self.columns[102], &self.columns[103]]
     }
-    pub fn Unknown6<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown6<'a>(&'a self) -> &'a Field {
         &self.columns[104]
     }
-    pub fn Unknown7<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown7<'a>(&'a self) -> &'a Field {
         &self.columns[105]
     }
-    pub fn SpecialFate<'a>(&'a self) -> &'a ColumnData {
+    pub fn SpecialFate<'a>(&'a self) -> &'a Field {
         &self.columns[106]
     }
-    pub fn Unknown8<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown8<'a>(&'a self) -> &'a Field {
         &self.columns[107]
     }
-    pub fn AdventEvent<'a>(&'a self) -> &'a ColumnData {
+    pub fn AdventEvent<'a>(&'a self) -> &'a Field {
         &self.columns[108]
     }
-    pub fn MoonFaireEvent<'a>(&'a self) -> &'a ColumnData {
+    pub fn MoonFaireEvent<'a>(&'a self) -> &'a Field {
         &self.columns[109]
     }
-    pub fn Unknown9<'a>(&'a self) -> &'a ColumnData {
+    pub fn Unknown9<'a>(&'a self) -> &'a Field {
         &self.columns[110]
     }
 }

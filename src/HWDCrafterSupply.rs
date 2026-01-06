@@ -1,30 +1,31 @@
 //! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
 #![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
 use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
-    excel::{ExcelSheet, ColumnData, ExcelRowKind, ExcelSingleRow},
+    excel::{Sheet, Field, Row},
     common::Language,
 };
 pub struct HWDCrafterSupplyParamsElement<'a> {
-    pub ItemTradeIn: &'a ColumnData,
-    pub BaseCollectableRating: &'a ColumnData,
-    pub MidCollectableRating: &'a ColumnData,
-    pub HighCollectableRating: &'a ColumnData,
-    pub BaseCollectableReward: &'a ColumnData,
-    pub MidCollectableReward: &'a ColumnData,
-    pub HighCollectableReward: &'a ColumnData,
-    pub BaseCollectableRewardPostPhase: &'a ColumnData,
-    pub MidCollectableRewardPostPhase: &'a ColumnData,
-    pub HighCollectableRewardPostPhase: &'a ColumnData,
-    pub Level: &'a ColumnData,
-    pub LevelMax: &'a ColumnData,
-    pub Unknown0: &'a ColumnData,
-    pub TermName: &'a ColumnData,
+    pub ItemTradeIn: &'a Field,
+    pub BaseCollectableRating: &'a Field,
+    pub MidCollectableRating: &'a Field,
+    pub HighCollectableRating: &'a Field,
+    pub BaseCollectableReward: &'a Field,
+    pub MidCollectableReward: &'a Field,
+    pub HighCollectableReward: &'a Field,
+    pub BaseCollectableRewardPostPhase: &'a Field,
+    pub MidCollectableRewardPostPhase: &'a Field,
+    pub HighCollectableRewardPostPhase: &'a Field,
+    pub Level: &'a Field,
+    pub LevelMax: &'a Field,
+    pub Unknown0: &'a Field,
+    pub TermName: &'a Field,
 }
 #[derive(Debug, Clone)]
 pub struct HWDCrafterSupplySheet {
-    sheet: ExcelSheet,
+    sheet: Sheet,
 }
 impl HWDCrafterSupplySheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -36,7 +37,24 @@ impl HWDCrafterSupplySheet {
         let sheet = resolver.read_excel_sheet(&exh, "HWDCrafterSupply", language)?;
         Ok(Self { sheet })
     }
-    fn read_row(&self, row: &ExcelSingleRow) -> Option<HWDCrafterSupplyRow> {
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<HWDCrafterSupplyRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(&self, row_id: u32, subrow_id: u16) -> Option<HWDCrafterSupplyRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for HWDCrafterSupplySheet {
+    type Row = HWDCrafterSupplyRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
         let column_defs = &self.sheet.exh.column_definitions;
         let mut zipped: Vec<_> = row
             .columns
@@ -45,42 +63,25 @@ impl HWDCrafterSupplySheet {
             .zip(column_defs)
             .collect();
         zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<ColumnData>, Vec<ExcelColumnDefinition>) = zipped
+        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
             .into_iter()
             .unzip();
-        Some(HWDCrafterSupplyRow { columns })
-    }
-    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
-    pub fn get_row(&self, row_id: u32) -> Option<HWDCrafterSupplyRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => row,
-            ExcelRowKind::SubRows(rows) => &rows.first()?.1,
-        };
-        self.read_row(row)
-    }
-    /// Fetches the specified subrow from the sheet.
-    pub fn get_subrow(
-        &self,
-        row_id: u32,
-        subrow_id: u16,
-    ) -> Option<HWDCrafterSupplyRow> {
-        let row = &self.sheet.get_row(row_id)?;
-        let row = match row {
-            ExcelRowKind::SingleRow(row) => return None,
-            ExcelRowKind::SubRows(subrows) => {
-                &subrows.iter().filter(|(id, _)| *id == subrow_id).next()?.1
-            }
-        };
-        self.read_row(row)
-    }
-    /// Returns the number of rows in this sheet.
-    pub fn row_count(&self) -> u32 {
-        self.sheet.exh.header.row_count
+        Some(Self::Row { columns })
     }
 }
+impl<'a> IntoIterator for &'a HWDCrafterSupplySheet {
+    type Item = (u32, Vec<(u16, HWDCrafterSupplyRow)>);
+    type IntoIter = StructuredSheetIterator<'a, HWDCrafterSupplySheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, HWDCrafterSupplySheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Debug, Clone)]
 pub struct HWDCrafterSupplyRow {
-    columns: Vec<ColumnData>,
+    columns: Vec<Field>,
 }
 impl HWDCrafterSupplyRow {
     pub fn HWDCrafterSupplyParams<'a>(
