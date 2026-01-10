@@ -5,7 +5,7 @@ use physis::{
     Error, resource::{Resource, ResourceResolver},
     exd::EXD, exh::{EXH, ExcelColumnDefinition},
     excel::{Sheet, Field, Row},
-    common::Language,
+    Language,
 };
 pub struct LotteryExchangeParamsElement<'a> {
     pub AmountAccepted: &'a Field,
