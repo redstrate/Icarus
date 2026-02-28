@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct MirageStoreSetItemLookupSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl MirageStoreSetItemLookupSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,18 @@ impl MirageStoreSetItemLookupSheet {
         let exh = resolver.read_excel_sheet_header("MirageStoreSetItemLookup")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "MirageStoreSetItemLookup", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MirageStoreSetItemLookupRow> {
@@ -41,25 +53,17 @@ impl MirageStoreSetItemLookupSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for MirageStoreSetItemLookupSheet {
-    type Row = MirageStoreSetItemLookupRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for MirageStoreSetItemLookupSheet {
+    type Row = MirageStoreSetItemLookupRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a MirageStoreSetItemLookupSheet {
-    type Item = (u32, Vec<(u16, MirageStoreSetItemLookupRow)>);
+    type Item = (u32, Vec<(u16, MirageStoreSetItemLookupRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, MirageStoreSetItemLookupSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, MirageStoreSetItemLookupSheet> {
         StructuredSheetIterator {
@@ -69,17 +73,18 @@ impl<'a> IntoIterator for &'a MirageStoreSetItemLookupSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct MirageStoreSetItemLookupRow {
-    columns: Vec<Field>,
+pub struct MirageStoreSetItemLookupRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl MirageStoreSetItemLookupRow {
-    pub fn Item<'a>(&'a self) -> [&'a Field; 5] {
+impl<'a> MirageStoreSetItemLookupRow<'a> {
+    pub fn Item(&'a self) -> [&'a Field; 5] {
         [
-            &self.columns[0],
-            &self.columns[1],
-            &self.columns[2],
-            &self.columns[3],
-            &self.columns[4],
+            &self.row.columns[self.index_mapping[0]],
+            &self.row.columns[self.index_mapping[1]],
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
+            &self.row.columns[self.index_mapping[4]],
         ]
     }
 }

@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ItemSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl ItemSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl ItemSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Item")?;
         let sheet = resolver.read_excel_sheet(&exh, "Item", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ItemRow> {
@@ -36,25 +48,17 @@ impl ItemSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for ItemSheet {
-    type Row = ItemRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for ItemSheet {
+    type Row = ItemRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a ItemSheet {
-    type Item = (u32, Vec<(u16, ItemRow)>);
+    type Item = (u32, Vec<(u16, ItemRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, ItemSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, ItemSheet> {
         StructuredSheetIterator {
@@ -64,202 +68,203 @@ impl<'a> IntoIterator for &'a ItemSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct ItemRow {
-    columns: Vec<Field>,
+pub struct ItemRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl ItemRow {
-    pub fn Singular<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> ItemRow<'a> {
+    pub fn Singular(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Plural<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Plural(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Description<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Description(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Adjective<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Adjective(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn PossessivePronoun<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn PossessivePronoun(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn StartsWithVowel<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn StartsWithVowel(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn Pronoun<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn Pronoun(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn Article<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn Article(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn ModelMain<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn ModelMain(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn ModelSub<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn ModelSub(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn DamagePhys<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn DamagePhys(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
-    pub fn DamageMag<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn DamageMag(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn Delayms<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn Delayms(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn BlockRate<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn BlockRate(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn Block<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn Block(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn DefensePhys<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn DefensePhys(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn DefenseMag<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn DefenseMag(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
-    pub fn BaseParamValue<'a>(&'a self) -> [&'a Field; 6] {
+    pub fn BaseParamValue(&'a self) -> [&'a Field; 6] {
         [
-            &self.columns[19],
-            &self.columns[20],
-            &self.columns[21],
-            &self.columns[22],
-            &self.columns[23],
-            &self.columns[24],
+            &self.row.columns[self.index_mapping[19]],
+            &self.row.columns[self.index_mapping[20]],
+            &self.row.columns[self.index_mapping[21]],
+            &self.row.columns[self.index_mapping[22]],
+            &self.row.columns[self.index_mapping[23]],
+            &self.row.columns[self.index_mapping[24]],
         ]
     }
-    pub fn BaseParamValueSpecial<'a>(&'a self) -> [&'a Field; 6] {
+    pub fn BaseParamValueSpecial(&'a self) -> [&'a Field; 6] {
         [
-            &self.columns[25],
-            &self.columns[26],
-            &self.columns[27],
-            &self.columns[28],
-            &self.columns[29],
-            &self.columns[30],
+            &self.row.columns[self.index_mapping[25]],
+            &self.row.columns[self.index_mapping[26]],
+            &self.row.columns[self.index_mapping[27]],
+            &self.row.columns[self.index_mapping[28]],
+            &self.row.columns[self.index_mapping[29]],
+            &self.row.columns[self.index_mapping[30]],
         ]
     }
-    pub fn LevelEquip<'a>(&'a self) -> &'a Field {
-        &self.columns[31]
+    pub fn LevelEquip(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[31]]
     }
-    pub fn RequiredPvpRank<'a>(&'a self) -> &'a Field {
-        &self.columns[32]
+    pub fn RequiredPvpRank(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[32]]
     }
-    pub fn EquipRestriction<'a>(&'a self) -> &'a Field {
-        &self.columns[33]
+    pub fn EquipRestriction(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[33]]
     }
-    pub fn ClassJobCategory<'a>(&'a self) -> &'a Field {
-        &self.columns[34]
+    pub fn ClassJobCategory(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[34]]
     }
-    pub fn GrandCompany<'a>(&'a self) -> &'a Field {
-        &self.columns[35]
+    pub fn GrandCompany(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[35]]
     }
-    pub fn ItemSeries<'a>(&'a self) -> &'a Field {
-        &self.columns[36]
+    pub fn ItemSeries(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[36]]
     }
-    pub fn BaseParamModifier<'a>(&'a self) -> &'a Field {
-        &self.columns[37]
+    pub fn BaseParamModifier(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[37]]
     }
-    pub fn ClassJobUse<'a>(&'a self) -> &'a Field {
-        &self.columns[38]
+    pub fn ClassJobUse(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[38]]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[39]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[39]]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a Field {
-        &self.columns[40]
+    pub fn Unknown3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[40]]
     }
-    pub fn BaseParam<'a>(&'a self) -> [&'a Field; 6] {
+    pub fn BaseParam(&'a self) -> [&'a Field; 6] {
         [
-            &self.columns[41],
-            &self.columns[42],
-            &self.columns[43],
-            &self.columns[44],
-            &self.columns[45],
-            &self.columns[46],
+            &self.row.columns[self.index_mapping[41]],
+            &self.row.columns[self.index_mapping[42]],
+            &self.row.columns[self.index_mapping[43]],
+            &self.row.columns[self.index_mapping[44]],
+            &self.row.columns[self.index_mapping[45]],
+            &self.row.columns[self.index_mapping[46]],
         ]
     }
-    pub fn ItemSpecialBonus<'a>(&'a self) -> &'a Field {
-        &self.columns[47]
+    pub fn ItemSpecialBonus(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[47]]
     }
-    pub fn ItemSpecialBonusParam<'a>(&'a self) -> &'a Field {
-        &self.columns[48]
+    pub fn ItemSpecialBonusParam(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[48]]
     }
-    pub fn BaseParamSpecial<'a>(&'a self) -> [&'a Field; 6] {
+    pub fn BaseParamSpecial(&'a self) -> [&'a Field; 6] {
         [
-            &self.columns[49],
-            &self.columns[50],
-            &self.columns[51],
-            &self.columns[52],
-            &self.columns[53],
-            &self.columns[54],
+            &self.row.columns[self.index_mapping[49]],
+            &self.row.columns[self.index_mapping[50]],
+            &self.row.columns[self.index_mapping[51]],
+            &self.row.columns[self.index_mapping[52]],
+            &self.row.columns[self.index_mapping[53]],
+            &self.row.columns[self.index_mapping[54]],
         ]
     }
-    pub fn MaterializeType<'a>(&'a self) -> &'a Field {
-        &self.columns[55]
+    pub fn MaterializeType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[55]]
     }
-    pub fn MateriaSlotCount<'a>(&'a self) -> &'a Field {
-        &self.columns[56]
+    pub fn MateriaSlotCount(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[56]]
     }
-    pub fn SubStatCategory<'a>(&'a self) -> &'a Field {
-        &self.columns[57]
+    pub fn SubStatCategory(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[57]]
     }
-    pub fn IsAdvancedMeldingPermitted<'a>(&'a self) -> &'a Field {
-        &self.columns[58]
+    pub fn IsAdvancedMeldingPermitted(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[58]]
     }
-    pub fn IsPvP<'a>(&'a self) -> &'a Field {
-        &self.columns[59]
+    pub fn IsPvP(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[59]]
     }
-    pub fn IsGlamorous<'a>(&'a self) -> &'a Field {
-        &self.columns[60]
+    pub fn IsGlamorous(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[60]]
     }
-    pub fn AdditionalData<'a>(&'a self) -> &'a Field {
-        &self.columns[61]
+    pub fn AdditionalData(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[61]]
     }
-    pub fn StackSize<'a>(&'a self) -> &'a Field {
-        &self.columns[62]
+    pub fn StackSize(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[62]]
     }
-    pub fn PriceMid<'a>(&'a self) -> &'a Field {
-        &self.columns[63]
+    pub fn PriceMid(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[63]]
     }
-    pub fn PriceLow<'a>(&'a self) -> &'a Field {
-        &self.columns[64]
+    pub fn PriceLow(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[64]]
     }
-    pub fn ItemRepair<'a>(&'a self) -> &'a Field {
-        &self.columns[65]
+    pub fn ItemRepair(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[65]]
     }
-    pub fn ItemGlamour<'a>(&'a self) -> &'a Field {
-        &self.columns[66]
+    pub fn ItemGlamour(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[66]]
     }
-    pub fn Icon<'a>(&'a self) -> &'a Field {
-        &self.columns[67]
+    pub fn Icon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[67]]
     }
-    pub fn LevelItem<'a>(&'a self) -> &'a Field {
-        &self.columns[68]
+    pub fn LevelItem(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[68]]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a Field {
-        &self.columns[69]
+    pub fn Unknown4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[69]]
     }
-    pub fn ItemAction<'a>(&'a self) -> &'a Field {
-        &self.columns[70]
+    pub fn ItemAction(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[70]]
     }
-    pub fn Cooldowns<'a>(&'a self) -> &'a Field {
-        &self.columns[71]
+    pub fn Cooldowns(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[71]]
     }
-    pub fn Desynth<'a>(&'a self) -> &'a Field {
-        &self.columns[72]
+    pub fn Desynth(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[72]]
     }
-    pub fn AetherialReduce<'a>(&'a self) -> &'a Field {
-        &self.columns[73]
+    pub fn AetherialReduce(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[73]]
     }
-    pub fn Rarity<'a>(&'a self) -> &'a Field {
-        &self.columns[74]
+    pub fn Rarity(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[74]]
     }
     /// 1 = Physical Weapon
     /// 2 = Magical Weapon
@@ -319,52 +324,52 @@ impl ItemRow {
     /// 56 = Cosmic Exploration Lunar Credit
     /// 57 = Occult Crescent Sanguine Cipher
     ///
-    pub fn FilterGroup<'a>(&'a self) -> &'a Field {
-        &self.columns[75]
+    pub fn FilterGroup(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[75]]
     }
-    pub fn ItemUICategory<'a>(&'a self) -> &'a Field {
-        &self.columns[76]
+    pub fn ItemUICategory(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[76]]
     }
-    pub fn ItemSearchCategory<'a>(&'a self) -> &'a Field {
-        &self.columns[77]
+    pub fn ItemSearchCategory(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[77]]
     }
-    pub fn EquipSlotCategory<'a>(&'a self) -> &'a Field {
-        &self.columns[78]
+    pub fn EquipSlotCategory(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[78]]
     }
-    pub fn ItemSortCategory<'a>(&'a self) -> &'a Field {
-        &self.columns[79]
+    pub fn ItemSortCategory(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[79]]
     }
-    pub fn DyeCount<'a>(&'a self) -> &'a Field {
-        &self.columns[80]
+    pub fn DyeCount(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[80]]
     }
-    pub fn CastTimeSeconds<'a>(&'a self) -> &'a Field {
-        &self.columns[81]
+    pub fn CastTimeSeconds(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[81]]
     }
-    pub fn ClassJobRepair<'a>(&'a self) -> &'a Field {
-        &self.columns[82]
+    pub fn ClassJobRepair(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[82]]
     }
-    pub fn IsUnique<'a>(&'a self) -> &'a Field {
-        &self.columns[83]
+    pub fn IsUnique(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[83]]
     }
-    pub fn IsUntradable<'a>(&'a self) -> &'a Field {
-        &self.columns[84]
+    pub fn IsUntradable(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[84]]
     }
-    pub fn IsIndisposable<'a>(&'a self) -> &'a Field {
-        &self.columns[85]
+    pub fn IsIndisposable(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[85]]
     }
-    pub fn Lot<'a>(&'a self) -> &'a Field {
-        &self.columns[86]
+    pub fn Lot(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[86]]
     }
-    pub fn CanBeHq<'a>(&'a self) -> &'a Field {
-        &self.columns[87]
+    pub fn CanBeHq(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[87]]
     }
-    pub fn IsCrestWorthy<'a>(&'a self) -> &'a Field {
-        &self.columns[88]
+    pub fn IsCrestWorthy(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[88]]
     }
-    pub fn IsCollectable<'a>(&'a self) -> &'a Field {
-        &self.columns[89]
+    pub fn IsCollectable(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[89]]
     }
-    pub fn AlwaysCollectable<'a>(&'a self) -> &'a Field {
-        &self.columns[90]
+    pub fn AlwaysCollectable(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[90]]
     }
 }

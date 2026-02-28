@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct MYCWarResultNotebookSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl MYCWarResultNotebookSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl MYCWarResultNotebookSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MYCWarResultNotebook")?;
         let sheet = resolver.read_excel_sheet(&exh, "MYCWarResultNotebook", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MYCWarResultNotebookRow> {
@@ -40,25 +52,17 @@ impl MYCWarResultNotebookSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for MYCWarResultNotebookSheet {
-    type Row = MYCWarResultNotebookRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for MYCWarResultNotebookSheet {
+    type Row = MYCWarResultNotebookRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a MYCWarResultNotebookSheet {
-    type Item = (u32, Vec<(u16, MYCWarResultNotebookRow)>);
+    type Item = (u32, Vec<(u16, MYCWarResultNotebookRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, MYCWarResultNotebookSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, MYCWarResultNotebookSheet> {
         StructuredSheetIterator {
@@ -68,41 +72,42 @@ impl<'a> IntoIterator for &'a MYCWarResultNotebookSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct MYCWarResultNotebookRow {
-    columns: Vec<Field>,
+pub struct MYCWarResultNotebookRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl MYCWarResultNotebookRow {
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> MYCWarResultNotebookRow<'a> {
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Description<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Description(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn NameJP<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn NameJP(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Quest<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Quest(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Icon<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Icon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Image<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Image(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Number<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Number(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn Link<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn Link(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn Rarity<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn Rarity(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
 }

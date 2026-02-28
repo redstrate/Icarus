@@ -22,6 +22,7 @@ pub struct ItemElement<'a> {
 #[derive(Debug, Clone)]
 pub struct BankaCraftWorksSupplySheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl BankaCraftWorksSupplySheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -31,7 +32,18 @@ impl BankaCraftWorksSupplySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BankaCraftWorksSupply")?;
         let sheet = resolver.read_excel_sheet(&exh, "BankaCraftWorksSupply", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<BankaCraftWorksSupplyRow> {
@@ -52,25 +64,17 @@ impl BankaCraftWorksSupplySheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for BankaCraftWorksSupplySheet {
-    type Row = BankaCraftWorksSupplyRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for BankaCraftWorksSupplySheet {
+    type Row = BankaCraftWorksSupplyRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a BankaCraftWorksSupplySheet {
-    type Item = (u32, Vec<(u16, BankaCraftWorksSupplyRow)>);
+    type Item = (u32, Vec<(u16, BankaCraftWorksSupplyRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, BankaCraftWorksSupplySheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, BankaCraftWorksSupplySheet> {
         StructuredSheetIterator {
@@ -80,59 +84,60 @@ impl<'a> IntoIterator for &'a BankaCraftWorksSupplySheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct BankaCraftWorksSupplyRow {
-    columns: Vec<Field>,
+pub struct BankaCraftWorksSupplyRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl BankaCraftWorksSupplyRow {
-    pub fn Item<'a>(&'a self) -> [ItemElement<'a>; 4] {
+impl<'a> BankaCraftWorksSupplyRow<'a> {
+    pub fn Item(&'a self) -> [ItemElement<'a>; 4] {
         [
             ItemElement {
-                ItemId: &self.columns[0],
-                XPReward: &self.columns[1],
-                Collectability: &self.columns[2],
-                GilReward: &self.columns[3],
-                Level: &self.columns[4],
-                HighXPMultiplier: &self.columns[5],
-                HighGilMultiplier: &self.columns[6],
-                Unknown8: &self.columns[7],
-                ScripReward: &self.columns[8],
-                HighScripMultiplier: &self.columns[9],
+                ItemId: &self.row.columns[self.index_mapping[0]],
+                XPReward: &self.row.columns[self.index_mapping[1]],
+                Collectability: &self.row.columns[self.index_mapping[2]],
+                GilReward: &self.row.columns[self.index_mapping[3]],
+                Level: &self.row.columns[self.index_mapping[4]],
+                HighXPMultiplier: &self.row.columns[self.index_mapping[5]],
+                HighGilMultiplier: &self.row.columns[self.index_mapping[6]],
+                Unknown8: &self.row.columns[self.index_mapping[7]],
+                ScripReward: &self.row.columns[self.index_mapping[8]],
+                HighScripMultiplier: &self.row.columns[self.index_mapping[9]],
             },
             ItemElement {
-                ItemId: &self.columns[10],
-                XPReward: &self.columns[11],
-                Collectability: &self.columns[12],
-                GilReward: &self.columns[13],
-                Level: &self.columns[14],
-                HighXPMultiplier: &self.columns[15],
-                HighGilMultiplier: &self.columns[16],
-                Unknown8: &self.columns[17],
-                ScripReward: &self.columns[18],
-                HighScripMultiplier: &self.columns[19],
+                ItemId: &self.row.columns[self.index_mapping[10]],
+                XPReward: &self.row.columns[self.index_mapping[11]],
+                Collectability: &self.row.columns[self.index_mapping[12]],
+                GilReward: &self.row.columns[self.index_mapping[13]],
+                Level: &self.row.columns[self.index_mapping[14]],
+                HighXPMultiplier: &self.row.columns[self.index_mapping[15]],
+                HighGilMultiplier: &self.row.columns[self.index_mapping[16]],
+                Unknown8: &self.row.columns[self.index_mapping[17]],
+                ScripReward: &self.row.columns[self.index_mapping[18]],
+                HighScripMultiplier: &self.row.columns[self.index_mapping[19]],
             },
             ItemElement {
-                ItemId: &self.columns[20],
-                XPReward: &self.columns[21],
-                Collectability: &self.columns[22],
-                GilReward: &self.columns[23],
-                Level: &self.columns[24],
-                HighXPMultiplier: &self.columns[25],
-                HighGilMultiplier: &self.columns[26],
-                Unknown8: &self.columns[27],
-                ScripReward: &self.columns[28],
-                HighScripMultiplier: &self.columns[29],
+                ItemId: &self.row.columns[self.index_mapping[20]],
+                XPReward: &self.row.columns[self.index_mapping[21]],
+                Collectability: &self.row.columns[self.index_mapping[22]],
+                GilReward: &self.row.columns[self.index_mapping[23]],
+                Level: &self.row.columns[self.index_mapping[24]],
+                HighXPMultiplier: &self.row.columns[self.index_mapping[25]],
+                HighGilMultiplier: &self.row.columns[self.index_mapping[26]],
+                Unknown8: &self.row.columns[self.index_mapping[27]],
+                ScripReward: &self.row.columns[self.index_mapping[28]],
+                HighScripMultiplier: &self.row.columns[self.index_mapping[29]],
             },
             ItemElement {
-                ItemId: &self.columns[30],
-                XPReward: &self.columns[31],
-                Collectability: &self.columns[32],
-                GilReward: &self.columns[33],
-                Level: &self.columns[34],
-                HighXPMultiplier: &self.columns[35],
-                HighGilMultiplier: &self.columns[36],
-                Unknown8: &self.columns[37],
-                ScripReward: &self.columns[38],
-                HighScripMultiplier: &self.columns[39],
+                ItemId: &self.row.columns[self.index_mapping[30]],
+                XPReward: &self.row.columns[self.index_mapping[31]],
+                Collectability: &self.row.columns[self.index_mapping[32]],
+                GilReward: &self.row.columns[self.index_mapping[33]],
+                Level: &self.row.columns[self.index_mapping[34]],
+                HighXPMultiplier: &self.row.columns[self.index_mapping[35]],
+                HighGilMultiplier: &self.row.columns[self.index_mapping[36]],
+                Unknown8: &self.row.columns[self.index_mapping[37]],
+                ScripReward: &self.row.columns[self.index_mapping[38]],
+                HighScripMultiplier: &self.row.columns[self.index_mapping[39]],
             },
         ]
     }

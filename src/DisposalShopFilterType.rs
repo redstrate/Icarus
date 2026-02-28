@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct DisposalShopFilterTypeSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl DisposalShopFilterTypeSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl DisposalShopFilterTypeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DisposalShopFilterType")?;
         let sheet = resolver.read_excel_sheet(&exh, "DisposalShopFilterType", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<DisposalShopFilterTypeRow> {
@@ -40,25 +52,17 @@ impl DisposalShopFilterTypeSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for DisposalShopFilterTypeSheet {
-    type Row = DisposalShopFilterTypeRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for DisposalShopFilterTypeSheet {
+    type Row = DisposalShopFilterTypeRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a DisposalShopFilterTypeSheet {
-    type Item = (u32, Vec<(u16, DisposalShopFilterTypeRow)>);
+    type Item = (u32, Vec<(u16, DisposalShopFilterTypeRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, DisposalShopFilterTypeSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, DisposalShopFilterTypeSheet> {
         StructuredSheetIterator {
@@ -68,11 +72,12 @@ impl<'a> IntoIterator for &'a DisposalShopFilterTypeSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct DisposalShopFilterTypeRow {
-    columns: Vec<Field>,
+pub struct DisposalShopFilterTypeRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl DisposalShopFilterTypeRow {
-    pub fn Category<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> DisposalShopFilterTypeRow<'a> {
+    pub fn Category(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
 }

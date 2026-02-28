@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct WKSMissionUnitSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl WKSMissionUnitSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl WKSMissionUnitSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSMissionUnit")?;
         let sheet = resolver.read_excel_sheet(&exh, "WKSMissionUnit", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<WKSMissionUnitRow> {
@@ -36,25 +48,17 @@ impl WKSMissionUnitSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for WKSMissionUnitSheet {
-    type Row = WKSMissionUnitRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for WKSMissionUnitSheet {
+    type Row = WKSMissionUnitRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a WKSMissionUnitSheet {
-    type Item = (u32, Vec<(u16, WKSMissionUnitRow)>);
+    type Item = (u32, Vec<(u16, WKSMissionUnitRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, WKSMissionUnitSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, WKSMissionUnitSheet> {
         StructuredSheetIterator {
@@ -64,65 +68,73 @@ impl<'a> IntoIterator for &'a WKSMissionUnitSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct WKSMissionUnitRow {
-    columns: Vec<Field>,
+pub struct WKSMissionUnitRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl WKSMissionUnitRow {
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> WKSMissionUnitRow<'a> {
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn WKSMissionText<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn WKSMissionText(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn ClassJobCategory<'a>(&'a self) -> [&'a Field; 2] {
-        [&self.columns[2], &self.columns[3]]
+    pub fn ClassJobCategory(&'a self) -> [&'a Field; 2] {
+        [
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
+        ]
     }
-    pub fn MissionTime<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn MissionTime(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn MissionReward<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn MissionReward(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn SilverStarRequirement<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn SilverStarRequirement(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn GoldStarRequirement<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn GoldStarRequirement(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn MissionToDo<'a>(&'a self) -> [&'a Field; 3] {
-        [&self.columns[8], &self.columns[9], &self.columns[10]]
+    pub fn MissionToDo(&'a self) -> [&'a Field; 3] {
+        [
+            &self.row.columns[self.index_mapping[8]],
+            &self.row.columns[self.index_mapping[9]],
+            &self.row.columns[self.index_mapping[10]],
+        ]
     }
-    pub fn LockedBehind<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn LockedBehind(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn WKSMissionSupplyItem<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn WKSMissionSupplyItem(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
-    pub fn WKSMissionRecipe<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn WKSMissionRecipe(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn PlaceName<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn PlaceName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn SortKey<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn SortKey(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn WKSFunction<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn WKSFunction(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn LevelGroup<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn LevelGroup(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
-    pub fn WKSMissionLotterySpecialCond<'a>(&'a self) -> &'a Field {
-        &self.columns[19]
+    pub fn WKSMissionLotterySpecialCond(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[19]]
     }
-    pub fn IsSynced<'a>(&'a self) -> &'a Field {
-        &self.columns[20]
+    pub fn IsSynced(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[20]]
     }
-    pub fn IsSpecialQuest<'a>(&'a self) -> &'a Field {
-        &self.columns[21]
+    pub fn IsSpecialQuest(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[21]]
     }
 }

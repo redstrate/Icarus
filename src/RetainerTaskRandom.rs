@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct RetainerTaskRandomSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl RetainerTaskRandomSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl RetainerTaskRandomSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RetainerTaskRandom")?;
         let sheet = resolver.read_excel_sheet(&exh, "RetainerTaskRandom", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<RetainerTaskRandomRow> {
@@ -36,25 +48,17 @@ impl RetainerTaskRandomSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for RetainerTaskRandomSheet {
-    type Row = RetainerTaskRandomRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for RetainerTaskRandomSheet {
+    type Row = RetainerTaskRandomRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a RetainerTaskRandomSheet {
-    type Item = (u32, Vec<(u16, RetainerTaskRandomRow)>);
+    type Item = (u32, Vec<(u16, RetainerTaskRandomRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, RetainerTaskRandomSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, RetainerTaskRandomSheet> {
         StructuredSheetIterator {
@@ -64,14 +68,15 @@ impl<'a> IntoIterator for &'a RetainerTaskRandomSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct RetainerTaskRandomRow {
-    columns: Vec<Field>,
+pub struct RetainerTaskRandomRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl RetainerTaskRandomRow {
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> RetainerTaskRandomRow<'a> {
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Requirement<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Requirement(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
 }

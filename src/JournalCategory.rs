@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct JournalCategorySheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl JournalCategorySheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl JournalCategorySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("JournalCategory")?;
         let sheet = resolver.read_excel_sheet(&exh, "JournalCategory", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<JournalCategoryRow> {
@@ -36,25 +48,17 @@ impl JournalCategorySheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for JournalCategorySheet {
-    type Row = JournalCategoryRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for JournalCategorySheet {
+    type Row = JournalCategoryRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a JournalCategorySheet {
-    type Item = (u32, Vec<(u16, JournalCategoryRow)>);
+    type Item = (u32, Vec<(u16, JournalCategoryRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, JournalCategorySheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, JournalCategorySheet> {
         StructuredSheetIterator {
@@ -64,23 +68,24 @@ impl<'a> IntoIterator for &'a JournalCategorySheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct JournalCategoryRow {
-    columns: Vec<Field>,
+pub struct JournalCategoryRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl JournalCategoryRow {
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> JournalCategoryRow<'a> {
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn SeparateType<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn SeparateType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn DataType<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn DataType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn JournalSection<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn JournalSection(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn MapCondition<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn MapCondition(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
 }

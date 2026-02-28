@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct MateriaJoinRateGatherCraftSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl MateriaJoinRateGatherCraftSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,18 @@ impl MateriaJoinRateGatherCraftSheet {
         let exh = resolver.read_excel_sheet_header("MateriaJoinRateGatherCraft")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "MateriaJoinRateGatherCraft", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MateriaJoinRateGatherCraftRow> {
@@ -41,25 +53,17 @@ impl MateriaJoinRateGatherCraftSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for MateriaJoinRateGatherCraftSheet {
-    type Row = MateriaJoinRateGatherCraftRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for MateriaJoinRateGatherCraftSheet {
+    type Row = MateriaJoinRateGatherCraftRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a MateriaJoinRateGatherCraftSheet {
-    type Item = (u32, Vec<(u16, MateriaJoinRateGatherCraftRow)>);
+    type Item = (u32, Vec<(u16, MateriaJoinRateGatherCraftRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, MateriaJoinRateGatherCraftSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, MateriaJoinRateGatherCraftSheet> {
         StructuredSheetIterator {
@@ -69,14 +73,25 @@ impl<'a> IntoIterator for &'a MateriaJoinRateGatherCraftSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct MateriaJoinRateGatherCraftRow {
-    columns: Vec<Field>,
+pub struct MateriaJoinRateGatherCraftRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl MateriaJoinRateGatherCraftRow {
-    pub fn NQOvermeldPercentSlot<'a>(&'a self) -> [&'a Field; 4] {
-        [&self.columns[0], &self.columns[1], &self.columns[2], &self.columns[3]]
+impl<'a> MateriaJoinRateGatherCraftRow<'a> {
+    pub fn NQOvermeldPercentSlot(&'a self) -> [&'a Field; 4] {
+        [
+            &self.row.columns[self.index_mapping[0]],
+            &self.row.columns[self.index_mapping[1]],
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
+        ]
     }
-    pub fn HQOvermeldPercentSlot<'a>(&'a self) -> [&'a Field; 4] {
-        [&self.columns[4], &self.columns[5], &self.columns[6], &self.columns[7]]
+    pub fn HQOvermeldPercentSlot(&'a self) -> [&'a Field; 4] {
+        [
+            &self.row.columns[self.index_mapping[4]],
+            &self.row.columns[self.index_mapping[5]],
+            &self.row.columns[self.index_mapping[6]],
+            &self.row.columns[self.index_mapping[7]],
+        ]
     }
 }

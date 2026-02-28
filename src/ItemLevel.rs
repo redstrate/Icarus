@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ItemLevelSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl ItemLevelSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl ItemLevelSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ItemLevel")?;
         let sheet = resolver.read_excel_sheet(&exh, "ItemLevel", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ItemLevelRow> {
@@ -36,25 +48,17 @@ impl ItemLevelSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for ItemLevelSheet {
-    type Row = ItemLevelRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for ItemLevelSheet {
+    type Row = ItemLevelRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a ItemLevelSheet {
-    type Item = (u32, Vec<(u16, ItemLevelRow)>);
+    type Item = (u32, Vec<(u16, ItemLevelRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, ItemLevelSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, ItemLevelSheet> {
         StructuredSheetIterator {
@@ -64,230 +68,231 @@ impl<'a> IntoIterator for &'a ItemLevelSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct ItemLevelRow {
-    columns: Vec<Field>,
+pub struct ItemLevelRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl ItemLevelRow {
-    pub fn Strength<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> ItemLevelRow<'a> {
+    pub fn Strength(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Dexterity<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Dexterity(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Vitality<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Vitality(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Intelligence<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Intelligence(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Mind<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Mind(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Piety<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Piety(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn HP<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn HP(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn MP<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn MP(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn TP<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn TP(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn GP<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn GP(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn CP<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn CP(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn PhysicalDamage<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn PhysicalDamage(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn MagicalDamage<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn MagicalDamage(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
-    pub fn Delay<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn Delay(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn AdditionalEffect<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn AdditionalEffect(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn AttackSpeed<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn AttackSpeed(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn BlockRate<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn BlockRate(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn BlockStrength<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn BlockStrength(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn Tenacity<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn Tenacity(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
-    pub fn AttackPower<'a>(&'a self) -> &'a Field {
-        &self.columns[19]
+    pub fn AttackPower(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[19]]
     }
-    pub fn Defense<'a>(&'a self) -> &'a Field {
-        &self.columns[20]
+    pub fn Defense(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[20]]
     }
-    pub fn DirectHitRate<'a>(&'a self) -> &'a Field {
-        &self.columns[21]
+    pub fn DirectHitRate(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[21]]
     }
-    pub fn Evasion<'a>(&'a self) -> &'a Field {
-        &self.columns[22]
+    pub fn Evasion(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[22]]
     }
-    pub fn MagicDefense<'a>(&'a self) -> &'a Field {
-        &self.columns[23]
+    pub fn MagicDefense(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[23]]
     }
-    pub fn CriticalHitPower<'a>(&'a self) -> &'a Field {
-        &self.columns[24]
+    pub fn CriticalHitPower(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[24]]
     }
-    pub fn CriticalHitResilience<'a>(&'a self) -> &'a Field {
-        &self.columns[25]
+    pub fn CriticalHitResilience(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[25]]
     }
-    pub fn CriticalHit<'a>(&'a self) -> &'a Field {
-        &self.columns[26]
+    pub fn CriticalHit(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[26]]
     }
-    pub fn CriticalHitEvasion<'a>(&'a self) -> &'a Field {
-        &self.columns[27]
+    pub fn CriticalHitEvasion(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[27]]
     }
-    pub fn SlashingResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[28]
+    pub fn SlashingResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[28]]
     }
-    pub fn PiercingResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[29]
+    pub fn PiercingResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[29]]
     }
-    pub fn BluntResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[30]
+    pub fn BluntResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[30]]
     }
-    pub fn ProjectileResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[31]
+    pub fn ProjectileResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[31]]
     }
-    pub fn AttackMagicPotency<'a>(&'a self) -> &'a Field {
-        &self.columns[32]
+    pub fn AttackMagicPotency(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[32]]
     }
-    pub fn HealingMagicPotency<'a>(&'a self) -> &'a Field {
-        &self.columns[33]
+    pub fn HealingMagicPotency(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[33]]
     }
-    pub fn EnhancementMagicPotency<'a>(&'a self) -> &'a Field {
-        &self.columns[34]
+    pub fn EnhancementMagicPotency(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[34]]
     }
-    pub fn EnfeeblingMagicPotency<'a>(&'a self) -> &'a Field {
-        &self.columns[35]
+    pub fn EnfeeblingMagicPotency(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[35]]
     }
-    pub fn FireResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[36]
+    pub fn FireResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[36]]
     }
-    pub fn IceResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[37]
+    pub fn IceResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[37]]
     }
-    pub fn WindResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[38]
+    pub fn WindResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[38]]
     }
-    pub fn EarthResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[39]
+    pub fn EarthResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[39]]
     }
-    pub fn LightningResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[40]
+    pub fn LightningResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[40]]
     }
-    pub fn WaterResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[41]
+    pub fn WaterResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[41]]
     }
-    pub fn MagicResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[42]
+    pub fn MagicResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[42]]
     }
-    pub fn Determination<'a>(&'a self) -> &'a Field {
-        &self.columns[43]
+    pub fn Determination(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[43]]
     }
-    pub fn SkillSpeed<'a>(&'a self) -> &'a Field {
-        &self.columns[44]
+    pub fn SkillSpeed(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[44]]
     }
-    pub fn SpellSpeed<'a>(&'a self) -> &'a Field {
-        &self.columns[45]
+    pub fn SpellSpeed(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[45]]
     }
-    pub fn Haste<'a>(&'a self) -> &'a Field {
-        &self.columns[46]
+    pub fn Haste(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[46]]
     }
-    pub fn Morale<'a>(&'a self) -> &'a Field {
-        &self.columns[47]
+    pub fn Morale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[47]]
     }
-    pub fn Enmity<'a>(&'a self) -> &'a Field {
-        &self.columns[48]
+    pub fn Enmity(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[48]]
     }
-    pub fn EnmityReduction<'a>(&'a self) -> &'a Field {
-        &self.columns[49]
+    pub fn EnmityReduction(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[49]]
     }
-    pub fn CarefulDesynthesis<'a>(&'a self) -> &'a Field {
-        &self.columns[50]
+    pub fn CarefulDesynthesis(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[50]]
     }
-    pub fn EXPBonus<'a>(&'a self) -> &'a Field {
-        &self.columns[51]
+    pub fn EXPBonus(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[51]]
     }
-    pub fn Regen<'a>(&'a self) -> &'a Field {
-        &self.columns[52]
+    pub fn Regen(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[52]]
     }
-    pub fn Refresh<'a>(&'a self) -> &'a Field {
-        &self.columns[53]
+    pub fn Refresh(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[53]]
     }
-    pub fn MovementSpeed<'a>(&'a self) -> &'a Field {
-        &self.columns[54]
+    pub fn MovementSpeed(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[54]]
     }
-    pub fn Spikes<'a>(&'a self) -> &'a Field {
-        &self.columns[55]
+    pub fn Spikes(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[55]]
     }
-    pub fn SlowResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[56]
+    pub fn SlowResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[56]]
     }
-    pub fn PetrificationResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[57]
+    pub fn PetrificationResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[57]]
     }
-    pub fn ParalysisResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[58]
+    pub fn ParalysisResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[58]]
     }
-    pub fn SilenceResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[59]
+    pub fn SilenceResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[59]]
     }
-    pub fn BlindResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[60]
+    pub fn BlindResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[60]]
     }
-    pub fn PoisonResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[61]
+    pub fn PoisonResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[61]]
     }
-    pub fn StunResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[62]
+    pub fn StunResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[62]]
     }
-    pub fn SleepResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[63]
+    pub fn SleepResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[63]]
     }
-    pub fn BindResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[64]
+    pub fn BindResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[64]]
     }
-    pub fn HeavyResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[65]
+    pub fn HeavyResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[65]]
     }
-    pub fn DoomResistance<'a>(&'a self) -> &'a Field {
-        &self.columns[66]
+    pub fn DoomResistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[66]]
     }
-    pub fn ReducedDurabilityLoss<'a>(&'a self) -> &'a Field {
-        &self.columns[67]
+    pub fn ReducedDurabilityLoss(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[67]]
     }
-    pub fn IncreasedSpiritbondGain<'a>(&'a self) -> &'a Field {
-        &self.columns[68]
+    pub fn IncreasedSpiritbondGain(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[68]]
     }
-    pub fn Craftsmanship<'a>(&'a self) -> &'a Field {
-        &self.columns[69]
+    pub fn Craftsmanship(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[69]]
     }
-    pub fn Control<'a>(&'a self) -> &'a Field {
-        &self.columns[70]
+    pub fn Control(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[70]]
     }
-    pub fn Gathering<'a>(&'a self) -> &'a Field {
-        &self.columns[71]
+    pub fn Gathering(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[71]]
     }
-    pub fn Perception<'a>(&'a self) -> &'a Field {
-        &self.columns[72]
+    pub fn Perception(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[72]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[73]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[73]]
     }
 }

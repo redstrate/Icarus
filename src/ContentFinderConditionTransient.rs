@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ContentFinderConditionTransientSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl ContentFinderConditionTransientSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,18 @@ impl ContentFinderConditionTransientSheet {
         let exh = resolver.read_excel_sheet_header("ContentFinderConditionTransient")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "ContentFinderConditionTransient", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ContentFinderConditionTransientRow> {
@@ -41,25 +53,17 @@ impl ContentFinderConditionTransientSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for ContentFinderConditionTransientSheet {
-    type Row = ContentFinderConditionTransientRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for ContentFinderConditionTransientSheet {
+    type Row = ContentFinderConditionTransientRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a ContentFinderConditionTransientSheet {
-    type Item = (u32, Vec<(u16, ContentFinderConditionTransientRow)>);
+    type Item = (u32, Vec<(u16, ContentFinderConditionTransientRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, ContentFinderConditionTransientSheet>;
     fn into_iter(
         self,
@@ -71,11 +75,12 @@ impl<'a> IntoIterator for &'a ContentFinderConditionTransientSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct ContentFinderConditionTransientRow {
-    columns: Vec<Field>,
+pub struct ContentFinderConditionTransientRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl ContentFinderConditionTransientRow {
-    pub fn Description<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> ContentFinderConditionTransientRow<'a> {
+    pub fn Description(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
 }

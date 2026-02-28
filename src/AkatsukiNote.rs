@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct AkatsukiNoteSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl AkatsukiNoteSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl AkatsukiNoteSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AkatsukiNote")?;
         let sheet = resolver.read_excel_sheet(&exh, "AkatsukiNote", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<AkatsukiNoteRow> {
@@ -36,25 +48,17 @@ impl AkatsukiNoteSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for AkatsukiNoteSheet {
-    type Row = AkatsukiNoteRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for AkatsukiNoteSheet {
+    type Row = AkatsukiNoteRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a AkatsukiNoteSheet {
-    type Item = (u32, Vec<(u16, AkatsukiNoteRow)>);
+    type Item = (u32, Vec<(u16, AkatsukiNoteRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, AkatsukiNoteSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, AkatsukiNoteSheet> {
         StructuredSheetIterator {
@@ -64,35 +68,36 @@ impl<'a> IntoIterator for &'a AkatsukiNoteSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct AkatsukiNoteRow {
-    columns: Vec<Field>,
+pub struct AkatsukiNoteRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl AkatsukiNoteRow {
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> AkatsukiNoteRow<'a> {
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn ListName<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn ListName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn UnlockOnQuest<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn UnlockOnQuest(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Unknown4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Title<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Title(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Icon<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Icon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Subtitle<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Subtitle(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn Text<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn Text(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
 }

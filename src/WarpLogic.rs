@@ -14,6 +14,7 @@ pub struct WarpParamsElement<'a> {
 #[derive(Debug, Clone)]
 pub struct WarpLogicSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl WarpLogicSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -23,7 +24,18 @@ impl WarpLogicSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WarpLogic")?;
         let sheet = resolver.read_excel_sheet(&exh, "WarpLogic", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<WarpLogicRow> {
@@ -40,25 +52,17 @@ impl WarpLogicSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for WarpLogicSheet {
-    type Row = WarpLogicRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for WarpLogicSheet {
+    type Row = WarpLogicRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a WarpLogicSheet {
-    type Item = (u32, Vec<(u16, WarpLogicRow)>);
+    type Item = (u32, Vec<(u16, WarpLogicRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, WarpLogicSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, WarpLogicSheet> {
         StructuredSheetIterator {
@@ -68,70 +72,71 @@ impl<'a> IntoIterator for &'a WarpLogicSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct WarpLogicRow {
-    columns: Vec<Field>,
+pub struct WarpLogicRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl WarpLogicRow {
-    pub fn WarpParams<'a>(&'a self) -> [WarpParamsElement<'a>; 10] {
+impl<'a> WarpLogicRow<'a> {
+    pub fn WarpParams(&'a self) -> [WarpParamsElement<'a>; 10] {
         [
             WarpParamsElement {
-                Function: &self.columns[0],
-                Argument: &self.columns[1],
+                Function: &self.row.columns[self.index_mapping[0]],
+                Argument: &self.row.columns[self.index_mapping[1]],
             },
             WarpParamsElement {
-                Function: &self.columns[2],
-                Argument: &self.columns[3],
+                Function: &self.row.columns[self.index_mapping[2]],
+                Argument: &self.row.columns[self.index_mapping[3]],
             },
             WarpParamsElement {
-                Function: &self.columns[4],
-                Argument: &self.columns[5],
+                Function: &self.row.columns[self.index_mapping[4]],
+                Argument: &self.row.columns[self.index_mapping[5]],
             },
             WarpParamsElement {
-                Function: &self.columns[6],
-                Argument: &self.columns[7],
+                Function: &self.row.columns[self.index_mapping[6]],
+                Argument: &self.row.columns[self.index_mapping[7]],
             },
             WarpParamsElement {
-                Function: &self.columns[8],
-                Argument: &self.columns[9],
+                Function: &self.row.columns[self.index_mapping[8]],
+                Argument: &self.row.columns[self.index_mapping[9]],
             },
             WarpParamsElement {
-                Function: &self.columns[10],
-                Argument: &self.columns[11],
+                Function: &self.row.columns[self.index_mapping[10]],
+                Argument: &self.row.columns[self.index_mapping[11]],
             },
             WarpParamsElement {
-                Function: &self.columns[12],
-                Argument: &self.columns[13],
+                Function: &self.row.columns[self.index_mapping[12]],
+                Argument: &self.row.columns[self.index_mapping[13]],
             },
             WarpParamsElement {
-                Function: &self.columns[14],
-                Argument: &self.columns[15],
+                Function: &self.row.columns[self.index_mapping[14]],
+                Argument: &self.row.columns[self.index_mapping[15]],
             },
             WarpParamsElement {
-                Function: &self.columns[16],
-                Argument: &self.columns[17],
+                Function: &self.row.columns[self.index_mapping[16]],
+                Argument: &self.row.columns[self.index_mapping[17]],
             },
             WarpParamsElement {
-                Function: &self.columns[18],
-                Argument: &self.columns[19],
+                Function: &self.row.columns[self.index_mapping[18]],
+                Argument: &self.row.columns[self.index_mapping[19]],
             },
         ]
     }
-    pub fn Question<'a>(&'a self) -> &'a Field {
-        &self.columns[20]
+    pub fn Question(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[20]]
     }
-    pub fn ResponseYes<'a>(&'a self) -> &'a Field {
-        &self.columns[21]
+    pub fn ResponseYes(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[21]]
     }
-    pub fn ResponseNo<'a>(&'a self) -> &'a Field {
-        &self.columns[22]
+    pub fn ResponseNo(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[22]]
     }
-    pub fn WarpName<'a>(&'a self) -> &'a Field {
-        &self.columns[23]
+    pub fn WarpName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[23]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[24]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[24]]
     }
-    pub fn CanSkipCutscene<'a>(&'a self) -> &'a Field {
-        &self.columns[25]
+    pub fn CanSkipCutscene(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[25]]
     }
 }

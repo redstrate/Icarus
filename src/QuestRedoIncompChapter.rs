@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct QuestRedoIncompChapterSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl QuestRedoIncompChapterSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl QuestRedoIncompChapterSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestRedoIncompChapter")?;
         let sheet = resolver.read_excel_sheet(&exh, "QuestRedoIncompChapter", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<QuestRedoIncompChapterRow> {
@@ -40,25 +52,17 @@ impl QuestRedoIncompChapterSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for QuestRedoIncompChapterSheet {
-    type Row = QuestRedoIncompChapterRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for QuestRedoIncompChapterSheet {
+    type Row = QuestRedoIncompChapterRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a QuestRedoIncompChapterSheet {
-    type Item = (u32, Vec<(u16, QuestRedoIncompChapterRow)>);
+    type Item = (u32, Vec<(u16, QuestRedoIncompChapterRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, QuestRedoIncompChapterSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, QuestRedoIncompChapterSheet> {
         StructuredSheetIterator {
@@ -68,11 +72,12 @@ impl<'a> IntoIterator for &'a QuestRedoIncompChapterSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct QuestRedoIncompChapterRow {
-    columns: Vec<Field>,
+pub struct QuestRedoIncompChapterRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl QuestRedoIncompChapterRow {
-    pub fn Chapter<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> QuestRedoIncompChapterRow<'a> {
+    pub fn Chapter(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
 }

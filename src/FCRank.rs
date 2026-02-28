@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct FCRankSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl FCRankSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl FCRankSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FCRank")?;
         let sheet = resolver.read_excel_sheet(&exh, "FCRank", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<FCRankRow> {
@@ -36,25 +48,17 @@ impl FCRankSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for FCRankSheet {
-    type Row = FCRankRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for FCRankSheet {
+    type Row = FCRankRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a FCRankSheet {
-    type Item = (u32, Vec<(u16, FCRankRow)>);
+    type Item = (u32, Vec<(u16, FCRankRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, FCRankSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, FCRankSheet> {
         StructuredSheetIterator {
@@ -64,32 +68,33 @@ impl<'a> IntoIterator for &'a FCRankSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct FCRankRow {
-    columns: Vec<Field>,
+pub struct FCRankRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl FCRankRow {
-    pub fn NextPoint<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> FCRankRow<'a> {
+    pub fn NextPoint(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn CurrentPoint<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn CurrentPoint(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Rights<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Rights(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn FCActionActiveNum<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn FCActionActiveNum(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn FCActionStockNum<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn FCActionStockNum(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn FCChestCompartments<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn FCChestCompartments(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
 }

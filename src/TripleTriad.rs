@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct TripleTriadSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl TripleTriadSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl TripleTriadSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TripleTriad")?;
         let sheet = resolver.read_excel_sheet(&exh, "TripleTriad", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<TripleTriadRow> {
@@ -36,25 +48,17 @@ impl TripleTriadSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for TripleTriadSheet {
-    type Row = TripleTriadRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for TripleTriadSheet {
+    type Row = TripleTriadRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a TripleTriadSheet {
-    type Item = (u32, Vec<(u16, TripleTriadRow)>);
+    type Item = (u32, Vec<(u16, TripleTriadRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, TripleTriadSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, TripleTriadSheet> {
         StructuredSheetIterator {
@@ -64,68 +68,81 @@ impl<'a> IntoIterator for &'a TripleTriadSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct TripleTriadRow {
-    columns: Vec<Field>,
+pub struct TripleTriadRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl TripleTriadRow {
-    pub fn ItemPossibleReward<'a>(&'a self) -> [&'a Field; 4] {
-        [&self.columns[0], &self.columns[1], &self.columns[2], &self.columns[3]]
-    }
-    pub fn PreviousQuest<'a>(&'a self) -> [&'a Field; 3] {
-        [&self.columns[4], &self.columns[5], &self.columns[6]]
-    }
-    pub fn DefaultTalkChallenge<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
-    }
-    pub fn DefaultTalkUnavailable<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
-    }
-    pub fn DefaultTalkNPCWin<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
-    }
-    pub fn DefaultTalkDraw<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
-    }
-    pub fn DefaultTalkPCWin<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
-    }
-    pub fn TripleTriadCardFixed<'a>(&'a self) -> [&'a Field; 5] {
+impl<'a> TripleTriadRow<'a> {
+    pub fn ItemPossibleReward(&'a self) -> [&'a Field; 4] {
         [
-            &self.columns[12],
-            &self.columns[13],
-            &self.columns[14],
-            &self.columns[15],
-            &self.columns[16],
+            &self.row.columns[self.index_mapping[0]],
+            &self.row.columns[self.index_mapping[1]],
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
         ]
     }
-    pub fn TripleTriadCardVariable<'a>(&'a self) -> [&'a Field; 5] {
+    pub fn PreviousQuest(&'a self) -> [&'a Field; 3] {
         [
-            &self.columns[17],
-            &self.columns[18],
-            &self.columns[19],
-            &self.columns[20],
-            &self.columns[21],
+            &self.row.columns[self.index_mapping[4]],
+            &self.row.columns[self.index_mapping[5]],
+            &self.row.columns[self.index_mapping[6]],
         ]
     }
-    pub fn Fee<'a>(&'a self) -> &'a Field {
-        &self.columns[22]
+    pub fn DefaultTalkChallenge(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn StartTime<'a>(&'a self) -> &'a Field {
-        &self.columns[23]
+    pub fn DefaultTalkUnavailable(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn EndTime<'a>(&'a self) -> &'a Field {
-        &self.columns[24]
+    pub fn DefaultTalkNPCWin(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn TripleTriadRule<'a>(&'a self) -> [&'a Field; 2] {
-        [&self.columns[25], &self.columns[26]]
+    pub fn DefaultTalkDraw(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn PreviousQuestJoin<'a>(&'a self) -> &'a Field {
-        &self.columns[27]
+    pub fn DefaultTalkPCWin(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn UsesRegionalRules<'a>(&'a self) -> &'a Field {
-        &self.columns[28]
+    pub fn TripleTriadCardFixed(&'a self) -> [&'a Field; 5] {
+        [
+            &self.row.columns[self.index_mapping[12]],
+            &self.row.columns[self.index_mapping[13]],
+            &self.row.columns[self.index_mapping[14]],
+            &self.row.columns[self.index_mapping[15]],
+            &self.row.columns[self.index_mapping[16]],
+        ]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[29]
+    pub fn TripleTriadCardVariable(&'a self) -> [&'a Field; 5] {
+        [
+            &self.row.columns[self.index_mapping[17]],
+            &self.row.columns[self.index_mapping[18]],
+            &self.row.columns[self.index_mapping[19]],
+            &self.row.columns[self.index_mapping[20]],
+            &self.row.columns[self.index_mapping[21]],
+        ]
+    }
+    pub fn Fee(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[22]]
+    }
+    pub fn StartTime(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[23]]
+    }
+    pub fn EndTime(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[24]]
+    }
+    pub fn TripleTriadRule(&'a self) -> [&'a Field; 2] {
+        [
+            &self.row.columns[self.index_mapping[25]],
+            &self.row.columns[self.index_mapping[26]],
+        ]
+    }
+    pub fn PreviousQuestJoin(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[27]]
+    }
+    pub fn UsesRegionalRules(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[28]]
+    }
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[29]]
     }
 }

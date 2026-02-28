@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct WKSAchievementDailyDefineSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl WKSAchievementDailyDefineSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,18 @@ impl WKSAchievementDailyDefineSheet {
         let exh = resolver.read_excel_sheet_header("WKSAchievementDailyDefine")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "WKSAchievementDailyDefine", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<WKSAchievementDailyDefineRow> {
@@ -41,25 +53,17 @@ impl WKSAchievementDailyDefineSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for WKSAchievementDailyDefineSheet {
-    type Row = WKSAchievementDailyDefineRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for WKSAchievementDailyDefineSheet {
+    type Row = WKSAchievementDailyDefineRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a WKSAchievementDailyDefineSheet {
-    type Item = (u32, Vec<(u16, WKSAchievementDailyDefineRow)>);
+    type Item = (u32, Vec<(u16, WKSAchievementDailyDefineRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, WKSAchievementDailyDefineSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, WKSAchievementDailyDefineSheet> {
         StructuredSheetIterator {
@@ -69,41 +73,48 @@ impl<'a> IntoIterator for &'a WKSAchievementDailyDefineSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct WKSAchievementDailyDefineRow {
-    columns: Vec<Field>,
+pub struct WKSAchievementDailyDefineRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl WKSAchievementDailyDefineRow {
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> WKSAchievementDailyDefineRow<'a> {
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Unknown3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn RewardItem<'a>(&'a self) -> [&'a Field; 2] {
-        [&self.columns[4], &self.columns[5]]
+    pub fn RewardItem(&'a self) -> [&'a Field; 2] {
+        [
+            &self.row.columns[self.index_mapping[4]],
+            &self.row.columns[self.index_mapping[5]],
+        ]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Unknown4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Unknown5<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Unknown5(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn SuccessPointsRequired<'a>(&'a self) -> [&'a Field; 2] {
-        [&self.columns[8], &self.columns[9]]
+    pub fn SuccessPointsRequired(&'a self) -> [&'a Field; 2] {
+        [
+            &self.row.columns[self.index_mapping[8]],
+            &self.row.columns[self.index_mapping[9]],
+        ]
     }
-    pub fn Unknown6<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn Unknown6(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn Unknown7<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn Unknown7(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn RewardQuantity<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn RewardQuantity(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
 }

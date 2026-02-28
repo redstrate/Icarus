@@ -14,6 +14,7 @@ pub struct SupplyDataElement<'a> {
 #[derive(Debug, Clone)]
 pub struct GCSupplyDutySheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl GCSupplyDutySheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -23,7 +24,18 @@ impl GCSupplyDutySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GCSupplyDuty")?;
         let sheet = resolver.read_excel_sheet(&exh, "GCSupplyDuty", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<GCSupplyDutyRow> {
@@ -40,25 +52,17 @@ impl GCSupplyDutySheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for GCSupplyDutySheet {
-    type Row = GCSupplyDutyRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for GCSupplyDutySheet {
+    type Row = GCSupplyDutyRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a GCSupplyDutySheet {
-    type Item = (u32, Vec<(u16, GCSupplyDutyRow)>);
+    type Item = (u32, Vec<(u16, GCSupplyDutyRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, GCSupplyDutySheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, GCSupplyDutySheet> {
         StructuredSheetIterator {
@@ -68,55 +72,144 @@ impl<'a> IntoIterator for &'a GCSupplyDutySheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct GCSupplyDutyRow {
-    columns: Vec<Field>,
+pub struct GCSupplyDutyRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl GCSupplyDutyRow {
-    pub fn SupplyData<'a>(&'a self) -> [SupplyDataElement<'a>; 11] {
+impl<'a> GCSupplyDutyRow<'a> {
+    pub fn SupplyData(&'a self) -> [SupplyDataElement<'a>; 11] {
         [
             SupplyDataElement {
-                Item: [&self.columns[0], &self.columns[1], &self.columns[2]],
-                ItemCount: [&self.columns[3], &self.columns[4], &self.columns[5]],
+                Item: [
+                    &self.row.columns[self.index_mapping[0]],
+                    &self.row.columns[self.index_mapping[1]],
+                    &self.row.columns[self.index_mapping[2]],
+                ],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[3]],
+                    &self.row.columns[self.index_mapping[4]],
+                    &self.row.columns[self.index_mapping[5]],
+                ],
             },
             SupplyDataElement {
-                Item: [&self.columns[6], &self.columns[7], &self.columns[8]],
-                ItemCount: [&self.columns[9], &self.columns[10], &self.columns[11]],
+                Item: [
+                    &self.row.columns[self.index_mapping[6]],
+                    &self.row.columns[self.index_mapping[7]],
+                    &self.row.columns[self.index_mapping[8]],
+                ],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[9]],
+                    &self.row.columns[self.index_mapping[10]],
+                    &self.row.columns[self.index_mapping[11]],
+                ],
             },
             SupplyDataElement {
-                Item: [&self.columns[12], &self.columns[13], &self.columns[14]],
-                ItemCount: [&self.columns[15], &self.columns[16], &self.columns[17]],
+                Item: [
+                    &self.row.columns[self.index_mapping[12]],
+                    &self.row.columns[self.index_mapping[13]],
+                    &self.row.columns[self.index_mapping[14]],
+                ],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[15]],
+                    &self.row.columns[self.index_mapping[16]],
+                    &self.row.columns[self.index_mapping[17]],
+                ],
             },
             SupplyDataElement {
-                Item: [&self.columns[18], &self.columns[19], &self.columns[20]],
-                ItemCount: [&self.columns[21], &self.columns[22], &self.columns[23]],
+                Item: [
+                    &self.row.columns[self.index_mapping[18]],
+                    &self.row.columns[self.index_mapping[19]],
+                    &self.row.columns[self.index_mapping[20]],
+                ],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[21]],
+                    &self.row.columns[self.index_mapping[22]],
+                    &self.row.columns[self.index_mapping[23]],
+                ],
             },
             SupplyDataElement {
-                Item: [&self.columns[24], &self.columns[25], &self.columns[26]],
-                ItemCount: [&self.columns[27], &self.columns[28], &self.columns[29]],
+                Item: [
+                    &self.row.columns[self.index_mapping[24]],
+                    &self.row.columns[self.index_mapping[25]],
+                    &self.row.columns[self.index_mapping[26]],
+                ],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[27]],
+                    &self.row.columns[self.index_mapping[28]],
+                    &self.row.columns[self.index_mapping[29]],
+                ],
             },
             SupplyDataElement {
-                Item: [&self.columns[30], &self.columns[31], &self.columns[32]],
-                ItemCount: [&self.columns[33], &self.columns[34], &self.columns[35]],
+                Item: [
+                    &self.row.columns[self.index_mapping[30]],
+                    &self.row.columns[self.index_mapping[31]],
+                    &self.row.columns[self.index_mapping[32]],
+                ],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[33]],
+                    &self.row.columns[self.index_mapping[34]],
+                    &self.row.columns[self.index_mapping[35]],
+                ],
             },
             SupplyDataElement {
-                Item: [&self.columns[36], &self.columns[37], &self.columns[38]],
-                ItemCount: [&self.columns[39], &self.columns[40], &self.columns[41]],
+                Item: [
+                    &self.row.columns[self.index_mapping[36]],
+                    &self.row.columns[self.index_mapping[37]],
+                    &self.row.columns[self.index_mapping[38]],
+                ],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[39]],
+                    &self.row.columns[self.index_mapping[40]],
+                    &self.row.columns[self.index_mapping[41]],
+                ],
             },
             SupplyDataElement {
-                Item: [&self.columns[42], &self.columns[43], &self.columns[44]],
-                ItemCount: [&self.columns[45], &self.columns[46], &self.columns[47]],
+                Item: [
+                    &self.row.columns[self.index_mapping[42]],
+                    &self.row.columns[self.index_mapping[43]],
+                    &self.row.columns[self.index_mapping[44]],
+                ],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[45]],
+                    &self.row.columns[self.index_mapping[46]],
+                    &self.row.columns[self.index_mapping[47]],
+                ],
             },
             SupplyDataElement {
-                Item: [&self.columns[48], &self.columns[49], &self.columns[50]],
-                ItemCount: [&self.columns[51], &self.columns[52], &self.columns[53]],
+                Item: [
+                    &self.row.columns[self.index_mapping[48]],
+                    &self.row.columns[self.index_mapping[49]],
+                    &self.row.columns[self.index_mapping[50]],
+                ],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[51]],
+                    &self.row.columns[self.index_mapping[52]],
+                    &self.row.columns[self.index_mapping[53]],
+                ],
             },
             SupplyDataElement {
-                Item: [&self.columns[54], &self.columns[55], &self.columns[56]],
-                ItemCount: [&self.columns[57], &self.columns[58], &self.columns[59]],
+                Item: [
+                    &self.row.columns[self.index_mapping[54]],
+                    &self.row.columns[self.index_mapping[55]],
+                    &self.row.columns[self.index_mapping[56]],
+                ],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[57]],
+                    &self.row.columns[self.index_mapping[58]],
+                    &self.row.columns[self.index_mapping[59]],
+                ],
             },
             SupplyDataElement {
-                Item: [&self.columns[60], &self.columns[61], &self.columns[62]],
-                ItemCount: [&self.columns[63], &self.columns[64], &self.columns[65]],
+                Item: [
+                    &self.row.columns[self.index_mapping[60]],
+                    &self.row.columns[self.index_mapping[61]],
+                    &self.row.columns[self.index_mapping[62]],
+                ],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[63]],
+                    &self.row.columns[self.index_mapping[64]],
+                    &self.row.columns[self.index_mapping[65]],
+                ],
             },
         ]
     }

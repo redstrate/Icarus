@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct AOZContentBriefingBNpcSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl AOZContentBriefingBNpcSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl AOZContentBriefingBNpcSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AOZContentBriefingBNpc")?;
         let sheet = resolver.read_excel_sheet(&exh, "AOZContentBriefingBNpc", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<AOZContentBriefingBNpcRow> {
@@ -40,25 +52,17 @@ impl AOZContentBriefingBNpcSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for AOZContentBriefingBNpcSheet {
-    type Row = AOZContentBriefingBNpcRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for AOZContentBriefingBNpcSheet {
+    type Row = AOZContentBriefingBNpcRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a AOZContentBriefingBNpcSheet {
-    type Item = (u32, Vec<(u16, AOZContentBriefingBNpcRow)>);
+    type Item = (u32, Vec<(u16, AOZContentBriefingBNpcRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, AOZContentBriefingBNpcSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, AOZContentBriefingBNpcSheet> {
         StructuredSheetIterator {
@@ -68,83 +72,84 @@ impl<'a> IntoIterator for &'a AOZContentBriefingBNpcSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct AOZContentBriefingBNpcRow {
-    columns: Vec<Field>,
+pub struct AOZContentBriefingBNpcRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl AOZContentBriefingBNpcRow {
-    pub fn BNpcName<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> AOZContentBriefingBNpcRow<'a> {
+    pub fn BNpcName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn TargetSmall<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn TargetSmall(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn TargetLarge<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn TargetLarge(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Endurance<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Endurance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Fire<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Fire(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Ice<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Ice(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Wind<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Wind(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Earth<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Earth(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn Thunder<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn Thunder(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn Water<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn Water(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn Slashing<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn Slashing(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn Piercing<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn Piercing(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn Blunt<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn Blunt(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
-    pub fn Magic<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn Magic(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn HideStats<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn HideStats(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn SlowVuln<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn SlowVuln(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn PetrificationVuln<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn PetrificationVuln(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn ParalysisVuln<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn ParalysisVuln(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn InterruptionVuln<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn InterruptionVuln(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
-    pub fn BlindVuln<'a>(&'a self) -> &'a Field {
-        &self.columns[19]
+    pub fn BlindVuln(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[19]]
     }
-    pub fn StunVuln<'a>(&'a self) -> &'a Field {
-        &self.columns[20]
+    pub fn StunVuln(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[20]]
     }
-    pub fn SleepVuln<'a>(&'a self) -> &'a Field {
-        &self.columns[21]
+    pub fn SleepVuln(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[21]]
     }
-    pub fn BindVuln<'a>(&'a self) -> &'a Field {
-        &self.columns[22]
+    pub fn BindVuln(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[22]]
     }
-    pub fn HeavyVuln<'a>(&'a self) -> &'a Field {
-        &self.columns[23]
+    pub fn HeavyVuln(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[23]]
     }
-    pub fn FlatOrDeathVuln<'a>(&'a self) -> &'a Field {
-        &self.columns[24]
+    pub fn FlatOrDeathVuln(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[24]]
     }
 }

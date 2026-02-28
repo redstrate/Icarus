@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct LevelSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl LevelSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl LevelSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Level")?;
         let sheet = resolver.read_excel_sheet(&exh, "Level", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<LevelRow> {
@@ -36,25 +48,17 @@ impl LevelSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for LevelSheet {
-    type Row = LevelRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for LevelSheet {
+    type Row = LevelRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a LevelSheet {
-    type Item = (u32, Vec<(u16, LevelRow)>);
+    type Item = (u32, Vec<(u16, LevelRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, LevelSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, LevelSheet> {
         StructuredSheetIterator {
@@ -64,38 +68,39 @@ impl<'a> IntoIterator for &'a LevelSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct LevelRow {
-    columns: Vec<Field>,
+pub struct LevelRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl LevelRow {
-    pub fn X<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> LevelRow<'a> {
+    pub fn X(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Y<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Y(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Z<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Z(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Yaw<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Yaw(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Radius<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Radius(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Object<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Object(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn EventId<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn EventId(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Map<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Map(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn Territory<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn Territory(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn Type<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn Type(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
 }

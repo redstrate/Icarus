@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct CharaMakeNameSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl CharaMakeNameSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl CharaMakeNameSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CharaMakeName")?;
         let sheet = resolver.read_excel_sheet(&exh, "CharaMakeName", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<CharaMakeNameRow> {
@@ -36,25 +48,17 @@ impl CharaMakeNameSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for CharaMakeNameSheet {
-    type Row = CharaMakeNameRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for CharaMakeNameSheet {
+    type Row = CharaMakeNameRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a CharaMakeNameSheet {
-    type Item = (u32, Vec<(u16, CharaMakeNameRow)>);
+    type Item = (u32, Vec<(u16, CharaMakeNameRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, CharaMakeNameSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, CharaMakeNameSheet> {
         StructuredSheetIterator {
@@ -64,158 +68,159 @@ impl<'a> IntoIterator for &'a CharaMakeNameSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct CharaMakeNameRow {
-    columns: Vec<Field>,
+pub struct CharaMakeNameRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl CharaMakeNameRow {
-    pub fn HyurMidlanderMale<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> CharaMakeNameRow<'a> {
+    pub fn HyurMidlanderMale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn HyurMidlanderFemale<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn HyurMidlanderFemale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn HyurMidlanderLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn HyurMidlanderLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn HyurHighlanderMale<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn HyurHighlanderMale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn HyurHighlanderFemale<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn HyurHighlanderFemale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn HyurHighlanderLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn HyurHighlanderLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn ElezenMale<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn ElezenMale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn ElezenFemale<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn ElezenFemale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn ElezenWildwoodLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn ElezenWildwoodLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn ElezenDuskwightLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn ElezenDuskwightLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn MiqoteSunMale<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn MiqoteSunMale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn MiqoteSunFemale<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn MiqoteSunFemale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn MiqoteSunMaleLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn MiqoteSunMaleLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
-    pub fn MiqoteSunFemaleLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn MiqoteSunFemaleLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn MiqoteMoonMale<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn MiqoteMoonMale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn MiqoteMoonFemale<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn MiqoteMoonFemale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn MiqoteMoonLastname<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn MiqoteMoonLastname(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn LalafellPlainsfolkFirstNameStart<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn LalafellPlainsfolkFirstNameStart(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn LalafellPlainsfolkLastNameStart<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn LalafellPlainsfolkLastNameStart(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
-    pub fn LalafellPlainsfolkEndOfNames<'a>(&'a self) -> &'a Field {
-        &self.columns[19]
+    pub fn LalafellPlainsfolkEndOfNames(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[19]]
     }
-    pub fn LalafellDunesfolkMale<'a>(&'a self) -> &'a Field {
-        &self.columns[20]
+    pub fn LalafellDunesfolkMale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[20]]
     }
-    pub fn LalafellDunesfolkMaleLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[21]
+    pub fn LalafellDunesfolkMaleLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[21]]
     }
-    pub fn LalafellDunesfolkFemale<'a>(&'a self) -> &'a Field {
-        &self.columns[22]
+    pub fn LalafellDunesfolkFemale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[22]]
     }
-    pub fn LalafellDunesfolkFemaleLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[23]
+    pub fn LalafellDunesfolkFemaleLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[23]]
     }
-    pub fn RoegadynSeaWolfMale<'a>(&'a self) -> &'a Field {
-        &self.columns[24]
+    pub fn RoegadynSeaWolfMale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[24]]
     }
-    pub fn RoegadynSeaWolfMaleLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[25]
+    pub fn RoegadynSeaWolfMaleLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[25]]
     }
-    pub fn RoegadynSeaWolfFemale<'a>(&'a self) -> &'a Field {
-        &self.columns[26]
+    pub fn RoegadynSeaWolfFemale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[26]]
     }
-    pub fn RoegadynSeaWolfFemaleLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[27]
+    pub fn RoegadynSeaWolfFemaleLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[27]]
     }
-    pub fn RoegadynHellsguardFirstName<'a>(&'a self) -> &'a Field {
-        &self.columns[28]
+    pub fn RoegadynHellsguardFirstName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[28]]
     }
-    pub fn RoegadynHellsguardMaleLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[29]
+    pub fn RoegadynHellsguardMaleLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[29]]
     }
-    pub fn RoegadynHellsguardFemaleLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[30]
+    pub fn RoegadynHellsguardFemaleLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[30]]
     }
-    pub fn AuRaRaenMale<'a>(&'a self) -> &'a Field {
-        &self.columns[31]
+    pub fn AuRaRaenMale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[31]]
     }
-    pub fn AuRaRaenFemale<'a>(&'a self) -> &'a Field {
-        &self.columns[32]
+    pub fn AuRaRaenFemale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[32]]
     }
-    pub fn AuRaRaenLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[33]
+    pub fn AuRaRaenLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[33]]
     }
-    pub fn AuRaXaelaMale<'a>(&'a self) -> &'a Field {
-        &self.columns[34]
+    pub fn AuRaXaelaMale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[34]]
     }
-    pub fn AuRaXaelaFemale<'a>(&'a self) -> &'a Field {
-        &self.columns[35]
+    pub fn AuRaXaelaFemale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[35]]
     }
-    pub fn AuRaXaelaLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[36]
+    pub fn AuRaXaelaLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[36]]
     }
-    pub fn HrothgarHellionsFirstName<'a>(&'a self) -> &'a Field {
-        &self.columns[37]
+    pub fn HrothgarHellionsFirstName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[37]]
     }
-    pub fn HrothgarHellionsLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[38]
+    pub fn HrothgarHellionsLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[38]]
     }
-    pub fn HrothgarLostFirstName<'a>(&'a self) -> &'a Field {
-        &self.columns[39]
+    pub fn HrothgarLostFirstName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[39]]
     }
-    pub fn HrothgarLostLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[40]
+    pub fn HrothgarLostLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[40]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[41]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[41]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[42]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[42]]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[43]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[43]]
     }
-    pub fn VieraFirstName<'a>(&'a self) -> &'a Field {
-        &self.columns[44]
+    pub fn VieraFirstName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[44]]
     }
-    pub fn VieraRavaLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[45]
+    pub fn VieraRavaLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[45]]
     }
-    pub fn VieraVeenaLastName<'a>(&'a self) -> &'a Field {
-        &self.columns[46]
+    pub fn VieraVeenaLastName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[46]]
     }
-    pub fn Unknown_70_1<'a>(&'a self) -> &'a Field {
-        &self.columns[47]
+    pub fn Unknown_70_1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[47]]
     }
-    pub fn Unknown_70_2<'a>(&'a self) -> &'a Field {
-        &self.columns[48]
+    pub fn Unknown_70_2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[48]]
     }
-    pub fn Unknown_70_3<'a>(&'a self) -> &'a Field {
-        &self.columns[49]
+    pub fn Unknown_70_3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[49]]
     }
 }

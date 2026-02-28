@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct TradeScreenImageSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl TradeScreenImageSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl TradeScreenImageSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TradeScreenImage")?;
         let sheet = resolver.read_excel_sheet(&exh, "TradeScreenImage", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<TradeScreenImageRow> {
@@ -36,25 +48,17 @@ impl TradeScreenImageSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for TradeScreenImageSheet {
-    type Row = TradeScreenImageRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for TradeScreenImageSheet {
+    type Row = TradeScreenImageRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a TradeScreenImageSheet {
-    type Item = (u32, Vec<(u16, TradeScreenImageRow)>);
+    type Item = (u32, Vec<(u16, TradeScreenImageRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, TradeScreenImageSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, TradeScreenImageSheet> {
         StructuredSheetIterator {
@@ -64,21 +68,31 @@ impl<'a> IntoIterator for &'a TradeScreenImageSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct TradeScreenImageRow {
-    columns: Vec<Field>,
+pub struct TradeScreenImageRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl TradeScreenImageRow {
-    pub fn Items<'a>(&'a self) -> [&'a Field; 2] {
-        [&self.columns[0], &self.columns[1]]
+impl<'a> TradeScreenImageRow<'a> {
+    pub fn Items(&'a self) -> [&'a Field; 2] {
+        [
+            &self.row.columns[self.index_mapping[0]],
+            &self.row.columns[self.index_mapping[1]],
+        ]
     }
-    pub fn ItemIcons<'a>(&'a self) -> [&'a Field; 2] {
-        [&self.columns[2], &self.columns[3]]
+    pub fn ItemIcons(&'a self) -> [&'a Field; 2] {
+        [
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
+        ]
     }
-    pub fn ItemValues<'a>(&'a self) -> [&'a Field; 2] {
-        [&self.columns[4], &self.columns[5]]
+    pub fn ItemValues(&'a self) -> [&'a Field; 2] {
+        [
+            &self.row.columns[self.index_mapping[4]],
+            &self.row.columns[self.index_mapping[5]],
+        ]
     }
     /// 1 = Icon 180096 ("Excellent Trade!"), 2 = Icon 180097 ("Feat Accomplished!")
-    pub fn BannerType<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn BannerType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
 }

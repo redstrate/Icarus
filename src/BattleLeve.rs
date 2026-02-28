@@ -21,6 +21,7 @@ pub struct LeveDataElement<'a> {
 #[derive(Debug, Clone)]
 pub struct BattleLeveSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl BattleLeveSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -30,7 +31,18 @@ impl BattleLeveSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BattleLeve")?;
         let sheet = resolver.read_excel_sheet(&exh, "BattleLeve", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<BattleLeveRow> {
@@ -47,25 +59,17 @@ impl BattleLeveSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for BattleLeveSheet {
-    type Row = BattleLeveRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for BattleLeveSheet {
+    type Row = BattleLeveRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a BattleLeveSheet {
-    type Item = (u32, Vec<(u16, BattleLeveRow)>);
+    type Item = (u32, Vec<(u16, BattleLeveRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, BattleLeveSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, BattleLeveSheet> {
         StructuredSheetIterator {
@@ -75,256 +79,264 @@ impl<'a> IntoIterator for &'a BattleLeveSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct BattleLeveRow {
-    columns: Vec<Field>,
+pub struct BattleLeveRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl BattleLeveRow {
-    pub fn Time<'a>(&'a self) -> [&'a Field; 8] {
+impl<'a> BattleLeveRow<'a> {
+    pub fn Time(&'a self) -> [&'a Field; 8] {
         [
-            &self.columns[0],
-            &self.columns[1],
-            &self.columns[2],
-            &self.columns[3],
-            &self.columns[4],
-            &self.columns[5],
-            &self.columns[6],
-            &self.columns[7],
+            &self.row.columns[self.index_mapping[0]],
+            &self.row.columns[self.index_mapping[1]],
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
+            &self.row.columns[self.index_mapping[4]],
+            &self.row.columns[self.index_mapping[5]],
+            &self.row.columns[self.index_mapping[6]],
+            &self.row.columns[self.index_mapping[7]],
         ]
     }
-    pub fn LeveData<'a>(&'a self) -> [LeveDataElement<'a>; 8] {
+    pub fn LeveData(&'a self) -> [LeveDataElement<'a>; 8] {
         [
             LeveDataElement {
-                BNpcName: &self.columns[8],
-                ToDoNumberInvolved: &self.columns[9],
+                BNpcName: &self.row.columns[self.index_mapping[8]],
+                ToDoNumberInvolved: &self.row.columns[self.index_mapping[9]],
                 ToDoParam: [
-                    &self.columns[10],
-                    &self.columns[11],
-                    &self.columns[12],
-                    &self.columns[13],
-                    &self.columns[14],
+                    &self.row.columns[self.index_mapping[10]],
+                    &self.row.columns[self.index_mapping[11]],
+                    &self.row.columns[self.index_mapping[12]],
+                    &self.row.columns[self.index_mapping[13]],
+                    &self.row.columns[self.index_mapping[14]],
                 ],
-                BaseID: &self.columns[15],
-                ItemsInvolved: &self.columns[16],
-                EnemyLevel: &self.columns[17],
-                ItemsInvolvedQty: &self.columns[18],
-                ItemDropRate: &self.columns[19],
+                BaseID: &self.row.columns[self.index_mapping[15]],
+                ItemsInvolved: &self.row.columns[self.index_mapping[16]],
+                EnemyLevel: &self.row.columns[self.index_mapping[17]],
+                ItemsInvolvedQty: &self.row.columns[self.index_mapping[18]],
+                ItemDropRate: &self.row.columns[self.index_mapping[19]],
                 NumOfAppearance: [
-                    &self.columns[20],
-                    &self.columns[21],
-                    &self.columns[22],
-                    &self.columns[23],
-                    &self.columns[24],
-                    &self.columns[25],
-                    &self.columns[26],
-                    &self.columns[27],
+                    &self.row.columns[self.index_mapping[20]],
+                    &self.row.columns[self.index_mapping[21]],
+                    &self.row.columns[self.index_mapping[22]],
+                    &self.row.columns[self.index_mapping[23]],
+                    &self.row.columns[self.index_mapping[24]],
+                    &self.row.columns[self.index_mapping[25]],
+                    &self.row.columns[self.index_mapping[26]],
+                    &self.row.columns[self.index_mapping[27]],
                 ],
             },
             LeveDataElement {
-                BNpcName: &self.columns[28],
-                ToDoNumberInvolved: &self.columns[29],
+                BNpcName: &self.row.columns[self.index_mapping[28]],
+                ToDoNumberInvolved: &self.row.columns[self.index_mapping[29]],
                 ToDoParam: [
-                    &self.columns[30],
-                    &self.columns[31],
-                    &self.columns[32],
-                    &self.columns[33],
-                    &self.columns[34],
+                    &self.row.columns[self.index_mapping[30]],
+                    &self.row.columns[self.index_mapping[31]],
+                    &self.row.columns[self.index_mapping[32]],
+                    &self.row.columns[self.index_mapping[33]],
+                    &self.row.columns[self.index_mapping[34]],
                 ],
-                BaseID: &self.columns[35],
-                ItemsInvolved: &self.columns[36],
-                EnemyLevel: &self.columns[37],
-                ItemsInvolvedQty: &self.columns[38],
-                ItemDropRate: &self.columns[39],
+                BaseID: &self.row.columns[self.index_mapping[35]],
+                ItemsInvolved: &self.row.columns[self.index_mapping[36]],
+                EnemyLevel: &self.row.columns[self.index_mapping[37]],
+                ItemsInvolvedQty: &self.row.columns[self.index_mapping[38]],
+                ItemDropRate: &self.row.columns[self.index_mapping[39]],
                 NumOfAppearance: [
-                    &self.columns[40],
-                    &self.columns[41],
-                    &self.columns[42],
-                    &self.columns[43],
-                    &self.columns[44],
-                    &self.columns[45],
-                    &self.columns[46],
-                    &self.columns[47],
+                    &self.row.columns[self.index_mapping[40]],
+                    &self.row.columns[self.index_mapping[41]],
+                    &self.row.columns[self.index_mapping[42]],
+                    &self.row.columns[self.index_mapping[43]],
+                    &self.row.columns[self.index_mapping[44]],
+                    &self.row.columns[self.index_mapping[45]],
+                    &self.row.columns[self.index_mapping[46]],
+                    &self.row.columns[self.index_mapping[47]],
                 ],
             },
             LeveDataElement {
-                BNpcName: &self.columns[48],
-                ToDoNumberInvolved: &self.columns[49],
+                BNpcName: &self.row.columns[self.index_mapping[48]],
+                ToDoNumberInvolved: &self.row.columns[self.index_mapping[49]],
                 ToDoParam: [
-                    &self.columns[50],
-                    &self.columns[51],
-                    &self.columns[52],
-                    &self.columns[53],
-                    &self.columns[54],
+                    &self.row.columns[self.index_mapping[50]],
+                    &self.row.columns[self.index_mapping[51]],
+                    &self.row.columns[self.index_mapping[52]],
+                    &self.row.columns[self.index_mapping[53]],
+                    &self.row.columns[self.index_mapping[54]],
                 ],
-                BaseID: &self.columns[55],
-                ItemsInvolved: &self.columns[56],
-                EnemyLevel: &self.columns[57],
-                ItemsInvolvedQty: &self.columns[58],
-                ItemDropRate: &self.columns[59],
+                BaseID: &self.row.columns[self.index_mapping[55]],
+                ItemsInvolved: &self.row.columns[self.index_mapping[56]],
+                EnemyLevel: &self.row.columns[self.index_mapping[57]],
+                ItemsInvolvedQty: &self.row.columns[self.index_mapping[58]],
+                ItemDropRate: &self.row.columns[self.index_mapping[59]],
                 NumOfAppearance: [
-                    &self.columns[60],
-                    &self.columns[61],
-                    &self.columns[62],
-                    &self.columns[63],
-                    &self.columns[64],
-                    &self.columns[65],
-                    &self.columns[66],
-                    &self.columns[67],
+                    &self.row.columns[self.index_mapping[60]],
+                    &self.row.columns[self.index_mapping[61]],
+                    &self.row.columns[self.index_mapping[62]],
+                    &self.row.columns[self.index_mapping[63]],
+                    &self.row.columns[self.index_mapping[64]],
+                    &self.row.columns[self.index_mapping[65]],
+                    &self.row.columns[self.index_mapping[66]],
+                    &self.row.columns[self.index_mapping[67]],
                 ],
             },
             LeveDataElement {
-                BNpcName: &self.columns[68],
-                ToDoNumberInvolved: &self.columns[69],
+                BNpcName: &self.row.columns[self.index_mapping[68]],
+                ToDoNumberInvolved: &self.row.columns[self.index_mapping[69]],
                 ToDoParam: [
-                    &self.columns[70],
-                    &self.columns[71],
-                    &self.columns[72],
-                    &self.columns[73],
-                    &self.columns[74],
+                    &self.row.columns[self.index_mapping[70]],
+                    &self.row.columns[self.index_mapping[71]],
+                    &self.row.columns[self.index_mapping[72]],
+                    &self.row.columns[self.index_mapping[73]],
+                    &self.row.columns[self.index_mapping[74]],
                 ],
-                BaseID: &self.columns[75],
-                ItemsInvolved: &self.columns[76],
-                EnemyLevel: &self.columns[77],
-                ItemsInvolvedQty: &self.columns[78],
-                ItemDropRate: &self.columns[79],
+                BaseID: &self.row.columns[self.index_mapping[75]],
+                ItemsInvolved: &self.row.columns[self.index_mapping[76]],
+                EnemyLevel: &self.row.columns[self.index_mapping[77]],
+                ItemsInvolvedQty: &self.row.columns[self.index_mapping[78]],
+                ItemDropRate: &self.row.columns[self.index_mapping[79]],
                 NumOfAppearance: [
-                    &self.columns[80],
-                    &self.columns[81],
-                    &self.columns[82],
-                    &self.columns[83],
-                    &self.columns[84],
-                    &self.columns[85],
-                    &self.columns[86],
-                    &self.columns[87],
+                    &self.row.columns[self.index_mapping[80]],
+                    &self.row.columns[self.index_mapping[81]],
+                    &self.row.columns[self.index_mapping[82]],
+                    &self.row.columns[self.index_mapping[83]],
+                    &self.row.columns[self.index_mapping[84]],
+                    &self.row.columns[self.index_mapping[85]],
+                    &self.row.columns[self.index_mapping[86]],
+                    &self.row.columns[self.index_mapping[87]],
                 ],
             },
             LeveDataElement {
-                BNpcName: &self.columns[88],
-                ToDoNumberInvolved: &self.columns[89],
+                BNpcName: &self.row.columns[self.index_mapping[88]],
+                ToDoNumberInvolved: &self.row.columns[self.index_mapping[89]],
                 ToDoParam: [
-                    &self.columns[90],
-                    &self.columns[91],
-                    &self.columns[92],
-                    &self.columns[93],
-                    &self.columns[94],
+                    &self.row.columns[self.index_mapping[90]],
+                    &self.row.columns[self.index_mapping[91]],
+                    &self.row.columns[self.index_mapping[92]],
+                    &self.row.columns[self.index_mapping[93]],
+                    &self.row.columns[self.index_mapping[94]],
                 ],
-                BaseID: &self.columns[95],
-                ItemsInvolved: &self.columns[96],
-                EnemyLevel: &self.columns[97],
-                ItemsInvolvedQty: &self.columns[98],
-                ItemDropRate: &self.columns[99],
+                BaseID: &self.row.columns[self.index_mapping[95]],
+                ItemsInvolved: &self.row.columns[self.index_mapping[96]],
+                EnemyLevel: &self.row.columns[self.index_mapping[97]],
+                ItemsInvolvedQty: &self.row.columns[self.index_mapping[98]],
+                ItemDropRate: &self.row.columns[self.index_mapping[99]],
                 NumOfAppearance: [
-                    &self.columns[100],
-                    &self.columns[101],
-                    &self.columns[102],
-                    &self.columns[103],
-                    &self.columns[104],
-                    &self.columns[105],
-                    &self.columns[106],
-                    &self.columns[107],
+                    &self.row.columns[self.index_mapping[100]],
+                    &self.row.columns[self.index_mapping[101]],
+                    &self.row.columns[self.index_mapping[102]],
+                    &self.row.columns[self.index_mapping[103]],
+                    &self.row.columns[self.index_mapping[104]],
+                    &self.row.columns[self.index_mapping[105]],
+                    &self.row.columns[self.index_mapping[106]],
+                    &self.row.columns[self.index_mapping[107]],
                 ],
             },
             LeveDataElement {
-                BNpcName: &self.columns[108],
-                ToDoNumberInvolved: &self.columns[109],
+                BNpcName: &self.row.columns[self.index_mapping[108]],
+                ToDoNumberInvolved: &self.row.columns[self.index_mapping[109]],
                 ToDoParam: [
-                    &self.columns[110],
-                    &self.columns[111],
-                    &self.columns[112],
-                    &self.columns[113],
-                    &self.columns[114],
+                    &self.row.columns[self.index_mapping[110]],
+                    &self.row.columns[self.index_mapping[111]],
+                    &self.row.columns[self.index_mapping[112]],
+                    &self.row.columns[self.index_mapping[113]],
+                    &self.row.columns[self.index_mapping[114]],
                 ],
-                BaseID: &self.columns[115],
-                ItemsInvolved: &self.columns[116],
-                EnemyLevel: &self.columns[117],
-                ItemsInvolvedQty: &self.columns[118],
-                ItemDropRate: &self.columns[119],
+                BaseID: &self.row.columns[self.index_mapping[115]],
+                ItemsInvolved: &self.row.columns[self.index_mapping[116]],
+                EnemyLevel: &self.row.columns[self.index_mapping[117]],
+                ItemsInvolvedQty: &self.row.columns[self.index_mapping[118]],
+                ItemDropRate: &self.row.columns[self.index_mapping[119]],
                 NumOfAppearance: [
-                    &self.columns[120],
-                    &self.columns[121],
-                    &self.columns[122],
-                    &self.columns[123],
-                    &self.columns[124],
-                    &self.columns[125],
-                    &self.columns[126],
-                    &self.columns[127],
+                    &self.row.columns[self.index_mapping[120]],
+                    &self.row.columns[self.index_mapping[121]],
+                    &self.row.columns[self.index_mapping[122]],
+                    &self.row.columns[self.index_mapping[123]],
+                    &self.row.columns[self.index_mapping[124]],
+                    &self.row.columns[self.index_mapping[125]],
+                    &self.row.columns[self.index_mapping[126]],
+                    &self.row.columns[self.index_mapping[127]],
                 ],
             },
             LeveDataElement {
-                BNpcName: &self.columns[128],
-                ToDoNumberInvolved: &self.columns[129],
+                BNpcName: &self.row.columns[self.index_mapping[128]],
+                ToDoNumberInvolved: &self.row.columns[self.index_mapping[129]],
                 ToDoParam: [
-                    &self.columns[130],
-                    &self.columns[131],
-                    &self.columns[132],
-                    &self.columns[133],
-                    &self.columns[134],
+                    &self.row.columns[self.index_mapping[130]],
+                    &self.row.columns[self.index_mapping[131]],
+                    &self.row.columns[self.index_mapping[132]],
+                    &self.row.columns[self.index_mapping[133]],
+                    &self.row.columns[self.index_mapping[134]],
                 ],
-                BaseID: &self.columns[135],
-                ItemsInvolved: &self.columns[136],
-                EnemyLevel: &self.columns[137],
-                ItemsInvolvedQty: &self.columns[138],
-                ItemDropRate: &self.columns[139],
+                BaseID: &self.row.columns[self.index_mapping[135]],
+                ItemsInvolved: &self.row.columns[self.index_mapping[136]],
+                EnemyLevel: &self.row.columns[self.index_mapping[137]],
+                ItemsInvolvedQty: &self.row.columns[self.index_mapping[138]],
+                ItemDropRate: &self.row.columns[self.index_mapping[139]],
                 NumOfAppearance: [
-                    &self.columns[140],
-                    &self.columns[141],
-                    &self.columns[142],
-                    &self.columns[143],
-                    &self.columns[144],
-                    &self.columns[145],
-                    &self.columns[146],
-                    &self.columns[147],
+                    &self.row.columns[self.index_mapping[140]],
+                    &self.row.columns[self.index_mapping[141]],
+                    &self.row.columns[self.index_mapping[142]],
+                    &self.row.columns[self.index_mapping[143]],
+                    &self.row.columns[self.index_mapping[144]],
+                    &self.row.columns[self.index_mapping[145]],
+                    &self.row.columns[self.index_mapping[146]],
+                    &self.row.columns[self.index_mapping[147]],
                 ],
             },
             LeveDataElement {
-                BNpcName: &self.columns[148],
-                ToDoNumberInvolved: &self.columns[149],
+                BNpcName: &self.row.columns[self.index_mapping[148]],
+                ToDoNumberInvolved: &self.row.columns[self.index_mapping[149]],
                 ToDoParam: [
-                    &self.columns[150],
-                    &self.columns[151],
-                    &self.columns[152],
-                    &self.columns[153],
-                    &self.columns[154],
+                    &self.row.columns[self.index_mapping[150]],
+                    &self.row.columns[self.index_mapping[151]],
+                    &self.row.columns[self.index_mapping[152]],
+                    &self.row.columns[self.index_mapping[153]],
+                    &self.row.columns[self.index_mapping[154]],
                 ],
-                BaseID: &self.columns[155],
-                ItemsInvolved: &self.columns[156],
-                EnemyLevel: &self.columns[157],
-                ItemsInvolvedQty: &self.columns[158],
-                ItemDropRate: &self.columns[159],
+                BaseID: &self.row.columns[self.index_mapping[155]],
+                ItemsInvolved: &self.row.columns[self.index_mapping[156]],
+                EnemyLevel: &self.row.columns[self.index_mapping[157]],
+                ItemsInvolvedQty: &self.row.columns[self.index_mapping[158]],
+                ItemDropRate: &self.row.columns[self.index_mapping[159]],
                 NumOfAppearance: [
-                    &self.columns[160],
-                    &self.columns[161],
-                    &self.columns[162],
-                    &self.columns[163],
-                    &self.columns[164],
-                    &self.columns[165],
-                    &self.columns[166],
-                    &self.columns[167],
+                    &self.row.columns[self.index_mapping[160]],
+                    &self.row.columns[self.index_mapping[161]],
+                    &self.row.columns[self.index_mapping[162]],
+                    &self.row.columns[self.index_mapping[163]],
+                    &self.row.columns[self.index_mapping[164]],
+                    &self.row.columns[self.index_mapping[165]],
+                    &self.row.columns[self.index_mapping[166]],
+                    &self.row.columns[self.index_mapping[167]],
                 ],
             },
         ]
     }
-    pub fn ToDoSequence<'a>(&'a self) -> [&'a Field; 8] {
+    pub fn ToDoSequence(&'a self) -> [&'a Field; 8] {
         [
-            &self.columns[168],
-            &self.columns[169],
-            &self.columns[170],
-            &self.columns[171],
-            &self.columns[172],
-            &self.columns[173],
-            &self.columns[174],
-            &self.columns[175],
+            &self.row.columns[self.index_mapping[168]],
+            &self.row.columns[self.index_mapping[169]],
+            &self.row.columns[self.index_mapping[170]],
+            &self.row.columns[self.index_mapping[171]],
+            &self.row.columns[self.index_mapping[172]],
+            &self.row.columns[self.index_mapping[173]],
+            &self.row.columns[self.index_mapping[174]],
+            &self.row.columns[self.index_mapping[175]],
         ]
     }
-    pub fn Rule<'a>(&'a self) -> &'a Field {
-        &self.columns[176]
+    pub fn Rule(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[176]]
     }
-    pub fn Objectives<'a>(&'a self) -> [&'a Field; 3] {
-        [&self.columns[177], &self.columns[178], &self.columns[179]]
+    pub fn Objectives(&'a self) -> [&'a Field; 3] {
+        [
+            &self.row.columns[self.index_mapping[177]],
+            &self.row.columns[self.index_mapping[178]],
+            &self.row.columns[self.index_mapping[179]],
+        ]
     }
-    pub fn Help<'a>(&'a self) -> [&'a Field; 2] {
-        [&self.columns[180], &self.columns[181]]
+    pub fn Help(&'a self) -> [&'a Field; 2] {
+        [
+            &self.row.columns[self.index_mapping[180]],
+            &self.row.columns[self.index_mapping[181]],
+        ]
     }
-    pub fn Variant<'a>(&'a self) -> &'a Field {
-        &self.columns[182]
+    pub fn Variant(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[182]]
     }
 }

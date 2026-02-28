@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct BannerTimelineSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl BannerTimelineSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl BannerTimelineSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BannerTimeline")?;
         let sheet = resolver.read_excel_sheet(&exh, "BannerTimeline", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<BannerTimelineRow> {
@@ -36,25 +48,17 @@ impl BannerTimelineSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for BannerTimelineSheet {
-    type Row = BannerTimelineRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for BannerTimelineSheet {
+    type Row = BannerTimelineRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a BannerTimelineSheet {
-    type Item = (u32, Vec<(u16, BannerTimelineRow)>);
+    type Item = (u32, Vec<(u16, BannerTimelineRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, BannerTimelineSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, BannerTimelineSheet> {
         StructuredSheetIterator {
@@ -64,41 +68,42 @@ impl<'a> IntoIterator for &'a BannerTimelineSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct BannerTimelineRow {
-    columns: Vec<Field>,
+pub struct BannerTimelineRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl BannerTimelineRow {
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> BannerTimelineRow<'a> {
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn AdditionalData<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn AdditionalData(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Icon<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Icon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn UnlockCondition<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn UnlockCondition(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Unknown_70_1<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Unknown_70_1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Unknown_70_2<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Unknown_70_2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn SortKey<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn SortKey(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn Type<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn Type(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn AcceptClassJobCategory<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn AcceptClassJobCategory(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn Category<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn Category(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
 }

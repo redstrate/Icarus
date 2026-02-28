@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct RacingChocoboNameInfoSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl RacingChocoboNameInfoSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl RacingChocoboNameInfoSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RacingChocoboNameInfo")?;
         let sheet = resolver.read_excel_sheet(&exh, "RacingChocoboNameInfo", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<RacingChocoboNameInfoRow> {
@@ -40,25 +52,17 @@ impl RacingChocoboNameInfoSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for RacingChocoboNameInfoSheet {
-    type Row = RacingChocoboNameInfoRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for RacingChocoboNameInfoSheet {
+    type Row = RacingChocoboNameInfoRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a RacingChocoboNameInfoSheet {
-    type Item = (u32, Vec<(u16, RacingChocoboNameInfoRow)>);
+    type Item = (u32, Vec<(u16, RacingChocoboNameInfoRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, RacingChocoboNameInfoSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, RacingChocoboNameInfoSheet> {
         StructuredSheetIterator {
@@ -68,29 +72,34 @@ impl<'a> IntoIterator for &'a RacingChocoboNameInfoSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct RacingChocoboNameInfoRow {
-    columns: Vec<Field>,
+pub struct RacingChocoboNameInfoRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl RacingChocoboNameInfoRow {
-    pub fn Name<'a>(&'a self) -> [&'a Field; 3] {
-        [&self.columns[0], &self.columns[1], &self.columns[2]]
+impl<'a> RacingChocoboNameInfoRow<'a> {
+    pub fn Name(&'a self) -> [&'a Field; 3] {
+        [
+            &self.row.columns[self.index_mapping[0]],
+            &self.row.columns[self.index_mapping[1]],
+            &self.row.columns[self.index_mapping[2]],
+        ]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Unknown4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn RacingChocoboNameCategory<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn RacingChocoboNameCategory(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn Unknown3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
 }

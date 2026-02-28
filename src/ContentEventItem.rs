@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ContentEventItemSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl ContentEventItemSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl ContentEventItemSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentEventItem")?;
         let sheet = resolver.read_excel_sheet(&exh, "ContentEventItem", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ContentEventItemRow> {
@@ -36,25 +48,17 @@ impl ContentEventItemSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for ContentEventItemSheet {
-    type Row = ContentEventItemRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for ContentEventItemSheet {
+    type Row = ContentEventItemRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a ContentEventItemSheet {
-    type Item = (u32, Vec<(u16, ContentEventItemRow)>);
+    type Item = (u32, Vec<(u16, ContentEventItemRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, ContentEventItemSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, ContentEventItemSheet> {
         StructuredSheetIterator {
@@ -64,11 +68,12 @@ impl<'a> IntoIterator for &'a ContentEventItemSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct ContentEventItemRow {
-    columns: Vec<Field>,
+pub struct ContentEventItemRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl ContentEventItemRow {
-    pub fn EventItem<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> ContentEventItemRow<'a> {
+    pub fn EventItem(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
 }

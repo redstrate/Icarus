@@ -26,6 +26,7 @@ pub struct HWDCrafterSupplyParamsElement<'a> {
 #[derive(Debug, Clone)]
 pub struct HWDCrafterSupplySheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl HWDCrafterSupplySheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -35,7 +36,18 @@ impl HWDCrafterSupplySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HWDCrafterSupply")?;
         let sheet = resolver.read_excel_sheet(&exh, "HWDCrafterSupply", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<HWDCrafterSupplyRow> {
@@ -52,25 +64,17 @@ impl HWDCrafterSupplySheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for HWDCrafterSupplySheet {
-    type Row = HWDCrafterSupplyRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for HWDCrafterSupplySheet {
+    type Row = HWDCrafterSupplyRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a HWDCrafterSupplySheet {
-    type Item = (u32, Vec<(u16, HWDCrafterSupplyRow)>);
+    type Item = (u32, Vec<(u16, HWDCrafterSupplyRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, HWDCrafterSupplySheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, HWDCrafterSupplySheet> {
         StructuredSheetIterator {
@@ -80,381 +84,500 @@ impl<'a> IntoIterator for &'a HWDCrafterSupplySheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct HWDCrafterSupplyRow {
-    columns: Vec<Field>,
+pub struct HWDCrafterSupplyRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl HWDCrafterSupplyRow {
-    pub fn HWDCrafterSupplyParams<'a>(
-        &'a self,
-    ) -> [HWDCrafterSupplyParamsElement<'a>; 23] {
+impl<'a> HWDCrafterSupplyRow<'a> {
+    pub fn HWDCrafterSupplyParams(&'a self) -> [HWDCrafterSupplyParamsElement<'a>; 23] {
         [
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[0],
-                BaseCollectableRating: &self.columns[1],
-                MidCollectableRating: &self.columns[2],
-                HighCollectableRating: &self.columns[3],
-                BaseCollectableReward: &self.columns[4],
-                MidCollectableReward: &self.columns[5],
-                HighCollectableReward: &self.columns[6],
-                BaseCollectableRewardPostPhase: &self.columns[7],
-                MidCollectableRewardPostPhase: &self.columns[8],
-                HighCollectableRewardPostPhase: &self.columns[9],
-                Level: &self.columns[10],
-                LevelMax: &self.columns[11],
-                Unknown0: &self.columns[12],
-                TermName: &self.columns[13],
+                ItemTradeIn: &self.row.columns[self.index_mapping[0]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[1]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[2]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[3]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[4]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[5]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[6]],
+                BaseCollectableRewardPostPhase: &self.row.columns[self.index_mapping[7]],
+                MidCollectableRewardPostPhase: &self.row.columns[self.index_mapping[8]],
+                HighCollectableRewardPostPhase: &self.row.columns[self.index_mapping[9]],
+                Level: &self.row.columns[self.index_mapping[10]],
+                LevelMax: &self.row.columns[self.index_mapping[11]],
+                Unknown0: &self.row.columns[self.index_mapping[12]],
+                TermName: &self.row.columns[self.index_mapping[13]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[14],
-                BaseCollectableRating: &self.columns[15],
-                MidCollectableRating: &self.columns[16],
-                HighCollectableRating: &self.columns[17],
-                BaseCollectableReward: &self.columns[18],
-                MidCollectableReward: &self.columns[19],
-                HighCollectableReward: &self.columns[20],
-                BaseCollectableRewardPostPhase: &self.columns[21],
-                MidCollectableRewardPostPhase: &self.columns[22],
-                HighCollectableRewardPostPhase: &self.columns[23],
-                Level: &self.columns[24],
-                LevelMax: &self.columns[25],
-                Unknown0: &self.columns[26],
-                TermName: &self.columns[27],
+                ItemTradeIn: &self.row.columns[self.index_mapping[14]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[15]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[16]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[17]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[18]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[19]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[20]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[21]],
+                MidCollectableRewardPostPhase: &self.row.columns[self.index_mapping[22]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[23]],
+                Level: &self.row.columns[self.index_mapping[24]],
+                LevelMax: &self.row.columns[self.index_mapping[25]],
+                Unknown0: &self.row.columns[self.index_mapping[26]],
+                TermName: &self.row.columns[self.index_mapping[27]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[28],
-                BaseCollectableRating: &self.columns[29],
-                MidCollectableRating: &self.columns[30],
-                HighCollectableRating: &self.columns[31],
-                BaseCollectableReward: &self.columns[32],
-                MidCollectableReward: &self.columns[33],
-                HighCollectableReward: &self.columns[34],
-                BaseCollectableRewardPostPhase: &self.columns[35],
-                MidCollectableRewardPostPhase: &self.columns[36],
-                HighCollectableRewardPostPhase: &self.columns[37],
-                Level: &self.columns[38],
-                LevelMax: &self.columns[39],
-                Unknown0: &self.columns[40],
-                TermName: &self.columns[41],
+                ItemTradeIn: &self.row.columns[self.index_mapping[28]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[29]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[30]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[31]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[32]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[33]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[34]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[35]],
+                MidCollectableRewardPostPhase: &self.row.columns[self.index_mapping[36]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[37]],
+                Level: &self.row.columns[self.index_mapping[38]],
+                LevelMax: &self.row.columns[self.index_mapping[39]],
+                Unknown0: &self.row.columns[self.index_mapping[40]],
+                TermName: &self.row.columns[self.index_mapping[41]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[42],
-                BaseCollectableRating: &self.columns[43],
-                MidCollectableRating: &self.columns[44],
-                HighCollectableRating: &self.columns[45],
-                BaseCollectableReward: &self.columns[46],
-                MidCollectableReward: &self.columns[47],
-                HighCollectableReward: &self.columns[48],
-                BaseCollectableRewardPostPhase: &self.columns[49],
-                MidCollectableRewardPostPhase: &self.columns[50],
-                HighCollectableRewardPostPhase: &self.columns[51],
-                Level: &self.columns[52],
-                LevelMax: &self.columns[53],
-                Unknown0: &self.columns[54],
-                TermName: &self.columns[55],
+                ItemTradeIn: &self.row.columns[self.index_mapping[42]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[43]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[44]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[45]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[46]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[47]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[48]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[49]],
+                MidCollectableRewardPostPhase: &self.row.columns[self.index_mapping[50]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[51]],
+                Level: &self.row.columns[self.index_mapping[52]],
+                LevelMax: &self.row.columns[self.index_mapping[53]],
+                Unknown0: &self.row.columns[self.index_mapping[54]],
+                TermName: &self.row.columns[self.index_mapping[55]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[56],
-                BaseCollectableRating: &self.columns[57],
-                MidCollectableRating: &self.columns[58],
-                HighCollectableRating: &self.columns[59],
-                BaseCollectableReward: &self.columns[60],
-                MidCollectableReward: &self.columns[61],
-                HighCollectableReward: &self.columns[62],
-                BaseCollectableRewardPostPhase: &self.columns[63],
-                MidCollectableRewardPostPhase: &self.columns[64],
-                HighCollectableRewardPostPhase: &self.columns[65],
-                Level: &self.columns[66],
-                LevelMax: &self.columns[67],
-                Unknown0: &self.columns[68],
-                TermName: &self.columns[69],
+                ItemTradeIn: &self.row.columns[self.index_mapping[56]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[57]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[58]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[59]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[60]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[61]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[62]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[63]],
+                MidCollectableRewardPostPhase: &self.row.columns[self.index_mapping[64]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[65]],
+                Level: &self.row.columns[self.index_mapping[66]],
+                LevelMax: &self.row.columns[self.index_mapping[67]],
+                Unknown0: &self.row.columns[self.index_mapping[68]],
+                TermName: &self.row.columns[self.index_mapping[69]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[70],
-                BaseCollectableRating: &self.columns[71],
-                MidCollectableRating: &self.columns[72],
-                HighCollectableRating: &self.columns[73],
-                BaseCollectableReward: &self.columns[74],
-                MidCollectableReward: &self.columns[75],
-                HighCollectableReward: &self.columns[76],
-                BaseCollectableRewardPostPhase: &self.columns[77],
-                MidCollectableRewardPostPhase: &self.columns[78],
-                HighCollectableRewardPostPhase: &self.columns[79],
-                Level: &self.columns[80],
-                LevelMax: &self.columns[81],
-                Unknown0: &self.columns[82],
-                TermName: &self.columns[83],
+                ItemTradeIn: &self.row.columns[self.index_mapping[70]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[71]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[72]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[73]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[74]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[75]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[76]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[77]],
+                MidCollectableRewardPostPhase: &self.row.columns[self.index_mapping[78]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[79]],
+                Level: &self.row.columns[self.index_mapping[80]],
+                LevelMax: &self.row.columns[self.index_mapping[81]],
+                Unknown0: &self.row.columns[self.index_mapping[82]],
+                TermName: &self.row.columns[self.index_mapping[83]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[84],
-                BaseCollectableRating: &self.columns[85],
-                MidCollectableRating: &self.columns[86],
-                HighCollectableRating: &self.columns[87],
-                BaseCollectableReward: &self.columns[88],
-                MidCollectableReward: &self.columns[89],
-                HighCollectableReward: &self.columns[90],
-                BaseCollectableRewardPostPhase: &self.columns[91],
-                MidCollectableRewardPostPhase: &self.columns[92],
-                HighCollectableRewardPostPhase: &self.columns[93],
-                Level: &self.columns[94],
-                LevelMax: &self.columns[95],
-                Unknown0: &self.columns[96],
-                TermName: &self.columns[97],
+                ItemTradeIn: &self.row.columns[self.index_mapping[84]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[85]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[86]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[87]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[88]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[89]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[90]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[91]],
+                MidCollectableRewardPostPhase: &self.row.columns[self.index_mapping[92]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[93]],
+                Level: &self.row.columns[self.index_mapping[94]],
+                LevelMax: &self.row.columns[self.index_mapping[95]],
+                Unknown0: &self.row.columns[self.index_mapping[96]],
+                TermName: &self.row.columns[self.index_mapping[97]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[98],
-                BaseCollectableRating: &self.columns[99],
-                MidCollectableRating: &self.columns[100],
-                HighCollectableRating: &self.columns[101],
-                BaseCollectableReward: &self.columns[102],
-                MidCollectableReward: &self.columns[103],
-                HighCollectableReward: &self.columns[104],
-                BaseCollectableRewardPostPhase: &self.columns[105],
-                MidCollectableRewardPostPhase: &self.columns[106],
-                HighCollectableRewardPostPhase: &self.columns[107],
-                Level: &self.columns[108],
-                LevelMax: &self.columns[109],
-                Unknown0: &self.columns[110],
-                TermName: &self.columns[111],
+                ItemTradeIn: &self.row.columns[self.index_mapping[98]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[99]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[100]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[101]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[102]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[103]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[104]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[105]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[106]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[107]],
+                Level: &self.row.columns[self.index_mapping[108]],
+                LevelMax: &self.row.columns[self.index_mapping[109]],
+                Unknown0: &self.row.columns[self.index_mapping[110]],
+                TermName: &self.row.columns[self.index_mapping[111]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[112],
-                BaseCollectableRating: &self.columns[113],
-                MidCollectableRating: &self.columns[114],
-                HighCollectableRating: &self.columns[115],
-                BaseCollectableReward: &self.columns[116],
-                MidCollectableReward: &self.columns[117],
-                HighCollectableReward: &self.columns[118],
-                BaseCollectableRewardPostPhase: &self.columns[119],
-                MidCollectableRewardPostPhase: &self.columns[120],
-                HighCollectableRewardPostPhase: &self.columns[121],
-                Level: &self.columns[122],
-                LevelMax: &self.columns[123],
-                Unknown0: &self.columns[124],
-                TermName: &self.columns[125],
+                ItemTradeIn: &self.row.columns[self.index_mapping[112]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[113]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[114]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[115]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[116]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[117]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[118]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[119]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[120]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[121]],
+                Level: &self.row.columns[self.index_mapping[122]],
+                LevelMax: &self.row.columns[self.index_mapping[123]],
+                Unknown0: &self.row.columns[self.index_mapping[124]],
+                TermName: &self.row.columns[self.index_mapping[125]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[126],
-                BaseCollectableRating: &self.columns[127],
-                MidCollectableRating: &self.columns[128],
-                HighCollectableRating: &self.columns[129],
-                BaseCollectableReward: &self.columns[130],
-                MidCollectableReward: &self.columns[131],
-                HighCollectableReward: &self.columns[132],
-                BaseCollectableRewardPostPhase: &self.columns[133],
-                MidCollectableRewardPostPhase: &self.columns[134],
-                HighCollectableRewardPostPhase: &self.columns[135],
-                Level: &self.columns[136],
-                LevelMax: &self.columns[137],
-                Unknown0: &self.columns[138],
-                TermName: &self.columns[139],
+                ItemTradeIn: &self.row.columns[self.index_mapping[126]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[127]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[128]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[129]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[130]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[131]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[132]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[133]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[134]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[135]],
+                Level: &self.row.columns[self.index_mapping[136]],
+                LevelMax: &self.row.columns[self.index_mapping[137]],
+                Unknown0: &self.row.columns[self.index_mapping[138]],
+                TermName: &self.row.columns[self.index_mapping[139]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[140],
-                BaseCollectableRating: &self.columns[141],
-                MidCollectableRating: &self.columns[142],
-                HighCollectableRating: &self.columns[143],
-                BaseCollectableReward: &self.columns[144],
-                MidCollectableReward: &self.columns[145],
-                HighCollectableReward: &self.columns[146],
-                BaseCollectableRewardPostPhase: &self.columns[147],
-                MidCollectableRewardPostPhase: &self.columns[148],
-                HighCollectableRewardPostPhase: &self.columns[149],
-                Level: &self.columns[150],
-                LevelMax: &self.columns[151],
-                Unknown0: &self.columns[152],
-                TermName: &self.columns[153],
+                ItemTradeIn: &self.row.columns[self.index_mapping[140]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[141]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[142]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[143]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[144]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[145]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[146]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[147]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[148]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[149]],
+                Level: &self.row.columns[self.index_mapping[150]],
+                LevelMax: &self.row.columns[self.index_mapping[151]],
+                Unknown0: &self.row.columns[self.index_mapping[152]],
+                TermName: &self.row.columns[self.index_mapping[153]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[154],
-                BaseCollectableRating: &self.columns[155],
-                MidCollectableRating: &self.columns[156],
-                HighCollectableRating: &self.columns[157],
-                BaseCollectableReward: &self.columns[158],
-                MidCollectableReward: &self.columns[159],
-                HighCollectableReward: &self.columns[160],
-                BaseCollectableRewardPostPhase: &self.columns[161],
-                MidCollectableRewardPostPhase: &self.columns[162],
-                HighCollectableRewardPostPhase: &self.columns[163],
-                Level: &self.columns[164],
-                LevelMax: &self.columns[165],
-                Unknown0: &self.columns[166],
-                TermName: &self.columns[167],
+                ItemTradeIn: &self.row.columns[self.index_mapping[154]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[155]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[156]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[157]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[158]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[159]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[160]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[161]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[162]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[163]],
+                Level: &self.row.columns[self.index_mapping[164]],
+                LevelMax: &self.row.columns[self.index_mapping[165]],
+                Unknown0: &self.row.columns[self.index_mapping[166]],
+                TermName: &self.row.columns[self.index_mapping[167]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[168],
-                BaseCollectableRating: &self.columns[169],
-                MidCollectableRating: &self.columns[170],
-                HighCollectableRating: &self.columns[171],
-                BaseCollectableReward: &self.columns[172],
-                MidCollectableReward: &self.columns[173],
-                HighCollectableReward: &self.columns[174],
-                BaseCollectableRewardPostPhase: &self.columns[175],
-                MidCollectableRewardPostPhase: &self.columns[176],
-                HighCollectableRewardPostPhase: &self.columns[177],
-                Level: &self.columns[178],
-                LevelMax: &self.columns[179],
-                Unknown0: &self.columns[180],
-                TermName: &self.columns[181],
+                ItemTradeIn: &self.row.columns[self.index_mapping[168]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[169]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[170]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[171]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[172]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[173]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[174]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[175]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[176]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[177]],
+                Level: &self.row.columns[self.index_mapping[178]],
+                LevelMax: &self.row.columns[self.index_mapping[179]],
+                Unknown0: &self.row.columns[self.index_mapping[180]],
+                TermName: &self.row.columns[self.index_mapping[181]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[182],
-                BaseCollectableRating: &self.columns[183],
-                MidCollectableRating: &self.columns[184],
-                HighCollectableRating: &self.columns[185],
-                BaseCollectableReward: &self.columns[186],
-                MidCollectableReward: &self.columns[187],
-                HighCollectableReward: &self.columns[188],
-                BaseCollectableRewardPostPhase: &self.columns[189],
-                MidCollectableRewardPostPhase: &self.columns[190],
-                HighCollectableRewardPostPhase: &self.columns[191],
-                Level: &self.columns[192],
-                LevelMax: &self.columns[193],
-                Unknown0: &self.columns[194],
-                TermName: &self.columns[195],
+                ItemTradeIn: &self.row.columns[self.index_mapping[182]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[183]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[184]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[185]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[186]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[187]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[188]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[189]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[190]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[191]],
+                Level: &self.row.columns[self.index_mapping[192]],
+                LevelMax: &self.row.columns[self.index_mapping[193]],
+                Unknown0: &self.row.columns[self.index_mapping[194]],
+                TermName: &self.row.columns[self.index_mapping[195]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[196],
-                BaseCollectableRating: &self.columns[197],
-                MidCollectableRating: &self.columns[198],
-                HighCollectableRating: &self.columns[199],
-                BaseCollectableReward: &self.columns[200],
-                MidCollectableReward: &self.columns[201],
-                HighCollectableReward: &self.columns[202],
-                BaseCollectableRewardPostPhase: &self.columns[203],
-                MidCollectableRewardPostPhase: &self.columns[204],
-                HighCollectableRewardPostPhase: &self.columns[205],
-                Level: &self.columns[206],
-                LevelMax: &self.columns[207],
-                Unknown0: &self.columns[208],
-                TermName: &self.columns[209],
+                ItemTradeIn: &self.row.columns[self.index_mapping[196]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[197]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[198]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[199]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[200]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[201]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[202]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[203]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[204]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[205]],
+                Level: &self.row.columns[self.index_mapping[206]],
+                LevelMax: &self.row.columns[self.index_mapping[207]],
+                Unknown0: &self.row.columns[self.index_mapping[208]],
+                TermName: &self.row.columns[self.index_mapping[209]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[210],
-                BaseCollectableRating: &self.columns[211],
-                MidCollectableRating: &self.columns[212],
-                HighCollectableRating: &self.columns[213],
-                BaseCollectableReward: &self.columns[214],
-                MidCollectableReward: &self.columns[215],
-                HighCollectableReward: &self.columns[216],
-                BaseCollectableRewardPostPhase: &self.columns[217],
-                MidCollectableRewardPostPhase: &self.columns[218],
-                HighCollectableRewardPostPhase: &self.columns[219],
-                Level: &self.columns[220],
-                LevelMax: &self.columns[221],
-                Unknown0: &self.columns[222],
-                TermName: &self.columns[223],
+                ItemTradeIn: &self.row.columns[self.index_mapping[210]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[211]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[212]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[213]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[214]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[215]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[216]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[217]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[218]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[219]],
+                Level: &self.row.columns[self.index_mapping[220]],
+                LevelMax: &self.row.columns[self.index_mapping[221]],
+                Unknown0: &self.row.columns[self.index_mapping[222]],
+                TermName: &self.row.columns[self.index_mapping[223]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[224],
-                BaseCollectableRating: &self.columns[225],
-                MidCollectableRating: &self.columns[226],
-                HighCollectableRating: &self.columns[227],
-                BaseCollectableReward: &self.columns[228],
-                MidCollectableReward: &self.columns[229],
-                HighCollectableReward: &self.columns[230],
-                BaseCollectableRewardPostPhase: &self.columns[231],
-                MidCollectableRewardPostPhase: &self.columns[232],
-                HighCollectableRewardPostPhase: &self.columns[233],
-                Level: &self.columns[234],
-                LevelMax: &self.columns[235],
-                Unknown0: &self.columns[236],
-                TermName: &self.columns[237],
+                ItemTradeIn: &self.row.columns[self.index_mapping[224]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[225]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[226]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[227]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[228]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[229]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[230]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[231]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[232]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[233]],
+                Level: &self.row.columns[self.index_mapping[234]],
+                LevelMax: &self.row.columns[self.index_mapping[235]],
+                Unknown0: &self.row.columns[self.index_mapping[236]],
+                TermName: &self.row.columns[self.index_mapping[237]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[238],
-                BaseCollectableRating: &self.columns[239],
-                MidCollectableRating: &self.columns[240],
-                HighCollectableRating: &self.columns[241],
-                BaseCollectableReward: &self.columns[242],
-                MidCollectableReward: &self.columns[243],
-                HighCollectableReward: &self.columns[244],
-                BaseCollectableRewardPostPhase: &self.columns[245],
-                MidCollectableRewardPostPhase: &self.columns[246],
-                HighCollectableRewardPostPhase: &self.columns[247],
-                Level: &self.columns[248],
-                LevelMax: &self.columns[249],
-                Unknown0: &self.columns[250],
-                TermName: &self.columns[251],
+                ItemTradeIn: &self.row.columns[self.index_mapping[238]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[239]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[240]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[241]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[242]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[243]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[244]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[245]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[246]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[247]],
+                Level: &self.row.columns[self.index_mapping[248]],
+                LevelMax: &self.row.columns[self.index_mapping[249]],
+                Unknown0: &self.row.columns[self.index_mapping[250]],
+                TermName: &self.row.columns[self.index_mapping[251]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[252],
-                BaseCollectableRating: &self.columns[253],
-                MidCollectableRating: &self.columns[254],
-                HighCollectableRating: &self.columns[255],
-                BaseCollectableReward: &self.columns[256],
-                MidCollectableReward: &self.columns[257],
-                HighCollectableReward: &self.columns[258],
-                BaseCollectableRewardPostPhase: &self.columns[259],
-                MidCollectableRewardPostPhase: &self.columns[260],
-                HighCollectableRewardPostPhase: &self.columns[261],
-                Level: &self.columns[262],
-                LevelMax: &self.columns[263],
-                Unknown0: &self.columns[264],
-                TermName: &self.columns[265],
+                ItemTradeIn: &self.row.columns[self.index_mapping[252]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[253]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[254]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[255]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[256]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[257]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[258]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[259]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[260]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[261]],
+                Level: &self.row.columns[self.index_mapping[262]],
+                LevelMax: &self.row.columns[self.index_mapping[263]],
+                Unknown0: &self.row.columns[self.index_mapping[264]],
+                TermName: &self.row.columns[self.index_mapping[265]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[266],
-                BaseCollectableRating: &self.columns[267],
-                MidCollectableRating: &self.columns[268],
-                HighCollectableRating: &self.columns[269],
-                BaseCollectableReward: &self.columns[270],
-                MidCollectableReward: &self.columns[271],
-                HighCollectableReward: &self.columns[272],
-                BaseCollectableRewardPostPhase: &self.columns[273],
-                MidCollectableRewardPostPhase: &self.columns[274],
-                HighCollectableRewardPostPhase: &self.columns[275],
-                Level: &self.columns[276],
-                LevelMax: &self.columns[277],
-                Unknown0: &self.columns[278],
-                TermName: &self.columns[279],
+                ItemTradeIn: &self.row.columns[self.index_mapping[266]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[267]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[268]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[269]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[270]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[271]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[272]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[273]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[274]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[275]],
+                Level: &self.row.columns[self.index_mapping[276]],
+                LevelMax: &self.row.columns[self.index_mapping[277]],
+                Unknown0: &self.row.columns[self.index_mapping[278]],
+                TermName: &self.row.columns[self.index_mapping[279]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[280],
-                BaseCollectableRating: &self.columns[281],
-                MidCollectableRating: &self.columns[282],
-                HighCollectableRating: &self.columns[283],
-                BaseCollectableReward: &self.columns[284],
-                MidCollectableReward: &self.columns[285],
-                HighCollectableReward: &self.columns[286],
-                BaseCollectableRewardPostPhase: &self.columns[287],
-                MidCollectableRewardPostPhase: &self.columns[288],
-                HighCollectableRewardPostPhase: &self.columns[289],
-                Level: &self.columns[290],
-                LevelMax: &self.columns[291],
-                Unknown0: &self.columns[292],
-                TermName: &self.columns[293],
+                ItemTradeIn: &self.row.columns[self.index_mapping[280]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[281]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[282]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[283]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[284]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[285]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[286]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[287]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[288]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[289]],
+                Level: &self.row.columns[self.index_mapping[290]],
+                LevelMax: &self.row.columns[self.index_mapping[291]],
+                Unknown0: &self.row.columns[self.index_mapping[292]],
+                TermName: &self.row.columns[self.index_mapping[293]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[294],
-                BaseCollectableRating: &self.columns[295],
-                MidCollectableRating: &self.columns[296],
-                HighCollectableRating: &self.columns[297],
-                BaseCollectableReward: &self.columns[298],
-                MidCollectableReward: &self.columns[299],
-                HighCollectableReward: &self.columns[300],
-                BaseCollectableRewardPostPhase: &self.columns[301],
-                MidCollectableRewardPostPhase: &self.columns[302],
-                HighCollectableRewardPostPhase: &self.columns[303],
-                Level: &self.columns[304],
-                LevelMax: &self.columns[305],
-                Unknown0: &self.columns[306],
-                TermName: &self.columns[307],
+                ItemTradeIn: &self.row.columns[self.index_mapping[294]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[295]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[296]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[297]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[298]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[299]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[300]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[301]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[302]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[303]],
+                Level: &self.row.columns[self.index_mapping[304]],
+                LevelMax: &self.row.columns[self.index_mapping[305]],
+                Unknown0: &self.row.columns[self.index_mapping[306]],
+                TermName: &self.row.columns[self.index_mapping[307]],
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.columns[308],
-                BaseCollectableRating: &self.columns[309],
-                MidCollectableRating: &self.columns[310],
-                HighCollectableRating: &self.columns[311],
-                BaseCollectableReward: &self.columns[312],
-                MidCollectableReward: &self.columns[313],
-                HighCollectableReward: &self.columns[314],
-                BaseCollectableRewardPostPhase: &self.columns[315],
-                MidCollectableRewardPostPhase: &self.columns[316],
-                HighCollectableRewardPostPhase: &self.columns[317],
-                Level: &self.columns[318],
-                LevelMax: &self.columns[319],
-                Unknown0: &self.columns[320],
-                TermName: &self.columns[321],
+                ItemTradeIn: &self.row.columns[self.index_mapping[308]],
+                BaseCollectableRating: &self.row.columns[self.index_mapping[309]],
+                MidCollectableRating: &self.row.columns[self.index_mapping[310]],
+                HighCollectableRating: &self.row.columns[self.index_mapping[311]],
+                BaseCollectableReward: &self.row.columns[self.index_mapping[312]],
+                MidCollectableReward: &self.row.columns[self.index_mapping[313]],
+                HighCollectableReward: &self.row.columns[self.index_mapping[314]],
+                BaseCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[315]],
+                MidCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[316]],
+                HighCollectableRewardPostPhase: &self
+                    .row
+                    .columns[self.index_mapping[317]],
+                Level: &self.row.columns[self.index_mapping[318]],
+                LevelMax: &self.row.columns[self.index_mapping[319]],
+                Unknown0: &self.row.columns[self.index_mapping[320]],
+                TermName: &self.row.columns[self.index_mapping[321]],
             },
         ]
     }

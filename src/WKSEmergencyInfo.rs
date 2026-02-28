@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct WKSEmergencyInfoSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl WKSEmergencyInfoSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl WKSEmergencyInfoSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSEmergencyInfo")?;
         let sheet = resolver.read_excel_sheet(&exh, "WKSEmergencyInfo", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<WKSEmergencyInfoRow> {
@@ -36,25 +48,17 @@ impl WKSEmergencyInfoSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for WKSEmergencyInfoSheet {
-    type Row = WKSEmergencyInfoRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for WKSEmergencyInfoSheet {
+    type Row = WKSEmergencyInfoRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a WKSEmergencyInfoSheet {
-    type Item = (u32, Vec<(u16, WKSEmergencyInfoRow)>);
+    type Item = (u32, Vec<(u16, WKSEmergencyInfoRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, WKSEmergencyInfoSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, WKSEmergencyInfoSheet> {
         StructuredSheetIterator {
@@ -64,21 +68,25 @@ impl<'a> IntoIterator for &'a WKSEmergencyInfoSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct WKSEmergencyInfoRow {
-    columns: Vec<Field>,
+pub struct WKSEmergencyInfoRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl WKSEmergencyInfoRow {
-    pub fn EmergencyProblem<'a>(&'a self) -> [&'a Field; 2] {
-        [&self.columns[0], &self.columns[1]]
+impl<'a> WKSEmergencyInfoRow<'a> {
+    pub fn EmergencyProblem(&'a self) -> [&'a Field; 2] {
+        [
+            &self.row.columns[self.index_mapping[0]],
+            &self.row.columns[self.index_mapping[1]],
+        ]
     }
     /// Has between 5 and 6 subrows
-    pub fn WKSEmergencyMissionRowId<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn WKSEmergencyMissionRowId(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Unknown3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn WKSEmergencyWarningText<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn WKSEmergencyWarningText(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
 }

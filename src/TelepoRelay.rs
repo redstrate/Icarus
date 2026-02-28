@@ -15,6 +15,7 @@ pub struct RelaysElement<'a> {
 #[derive(Debug, Clone)]
 pub struct TelepoRelaySheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl TelepoRelaySheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -24,7 +25,18 @@ impl TelepoRelaySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TelepoRelay")?;
         let sheet = resolver.read_excel_sheet(&exh, "TelepoRelay", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<TelepoRelayRow> {
@@ -41,25 +53,17 @@ impl TelepoRelaySheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for TelepoRelaySheet {
-    type Row = TelepoRelayRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for TelepoRelaySheet {
+    type Row = TelepoRelayRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a TelepoRelaySheet {
-    type Item = (u32, Vec<(u16, TelepoRelayRow)>);
+    type Item = (u32, Vec<(u16, TelepoRelayRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, TelepoRelaySheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, TelepoRelaySheet> {
         StructuredSheetIterator {
@@ -69,60 +73,61 @@ impl<'a> IntoIterator for &'a TelepoRelaySheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct TelepoRelayRow {
-    columns: Vec<Field>,
+pub struct TelepoRelayRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl TelepoRelayRow {
-    pub fn Relays<'a>(&'a self) -> [RelaysElement<'a>; 9] {
+impl<'a> TelepoRelayRow<'a> {
+    pub fn Relays(&'a self) -> [RelaysElement<'a>; 9] {
         [
             RelaysElement {
-                EnterTerritory: &self.columns[0],
-                ExitTerritory: &self.columns[1],
-                Cost: &self.columns[2],
+                EnterTerritory: &self.row.columns[self.index_mapping[0]],
+                ExitTerritory: &self.row.columns[self.index_mapping[1]],
+                Cost: &self.row.columns[self.index_mapping[2]],
             },
             RelaysElement {
-                EnterTerritory: &self.columns[3],
-                ExitTerritory: &self.columns[4],
-                Cost: &self.columns[5],
+                EnterTerritory: &self.row.columns[self.index_mapping[3]],
+                ExitTerritory: &self.row.columns[self.index_mapping[4]],
+                Cost: &self.row.columns[self.index_mapping[5]],
             },
             RelaysElement {
-                EnterTerritory: &self.columns[6],
-                ExitTerritory: &self.columns[7],
-                Cost: &self.columns[8],
+                EnterTerritory: &self.row.columns[self.index_mapping[6]],
+                ExitTerritory: &self.row.columns[self.index_mapping[7]],
+                Cost: &self.row.columns[self.index_mapping[8]],
             },
             RelaysElement {
-                EnterTerritory: &self.columns[9],
-                ExitTerritory: &self.columns[10],
-                Cost: &self.columns[11],
+                EnterTerritory: &self.row.columns[self.index_mapping[9]],
+                ExitTerritory: &self.row.columns[self.index_mapping[10]],
+                Cost: &self.row.columns[self.index_mapping[11]],
             },
             RelaysElement {
-                EnterTerritory: &self.columns[12],
-                ExitTerritory: &self.columns[13],
-                Cost: &self.columns[14],
+                EnterTerritory: &self.row.columns[self.index_mapping[12]],
+                ExitTerritory: &self.row.columns[self.index_mapping[13]],
+                Cost: &self.row.columns[self.index_mapping[14]],
             },
             RelaysElement {
-                EnterTerritory: &self.columns[15],
-                ExitTerritory: &self.columns[16],
-                Cost: &self.columns[17],
+                EnterTerritory: &self.row.columns[self.index_mapping[15]],
+                ExitTerritory: &self.row.columns[self.index_mapping[16]],
+                Cost: &self.row.columns[self.index_mapping[17]],
             },
             RelaysElement {
-                EnterTerritory: &self.columns[18],
-                ExitTerritory: &self.columns[19],
-                Cost: &self.columns[20],
+                EnterTerritory: &self.row.columns[self.index_mapping[18]],
+                ExitTerritory: &self.row.columns[self.index_mapping[19]],
+                Cost: &self.row.columns[self.index_mapping[20]],
             },
             RelaysElement {
-                EnterTerritory: &self.columns[21],
-                ExitTerritory: &self.columns[22],
-                Cost: &self.columns[23],
+                EnterTerritory: &self.row.columns[self.index_mapping[21]],
+                ExitTerritory: &self.row.columns[self.index_mapping[22]],
+                Cost: &self.row.columns[self.index_mapping[23]],
             },
             RelaysElement {
-                EnterTerritory: &self.columns[24],
-                ExitTerritory: &self.columns[25],
-                Cost: &self.columns[26],
+                EnterTerritory: &self.row.columns[self.index_mapping[24]],
+                ExitTerritory: &self.row.columns[self.index_mapping[25]],
+                Cost: &self.row.columns[self.index_mapping[26]],
             },
         ]
     }
-    pub fn Unknown_70<'a>(&'a self) -> &'a Field {
-        &self.columns[27]
+    pub fn Unknown_70(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[27]]
     }
 }

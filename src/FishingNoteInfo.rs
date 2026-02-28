@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct FishingNoteInfoSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl FishingNoteInfoSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl FishingNoteInfoSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FishingNoteInfo")?;
         let sheet = resolver.read_excel_sheet(&exh, "FishingNoteInfo", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<FishingNoteInfoRow> {
@@ -36,25 +48,17 @@ impl FishingNoteInfoSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for FishingNoteInfoSheet {
-    type Row = FishingNoteInfoRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for FishingNoteInfoSheet {
+    type Row = FishingNoteInfoRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a FishingNoteInfoSheet {
-    type Item = (u32, Vec<(u16, FishingNoteInfoRow)>);
+    type Item = (u32, Vec<(u16, FishingNoteInfoRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, FishingNoteInfoSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, FishingNoteInfoSheet> {
         StructuredSheetIterator {
@@ -64,29 +68,30 @@ impl<'a> IntoIterator for &'a FishingNoteInfoSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct FishingNoteInfoRow {
-    columns: Vec<Field>,
+pub struct FishingNoteInfoRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl FishingNoteInfoRow {
-    pub fn Item<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> FishingNoteInfoRow<'a> {
+    pub fn Item(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Size<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Size(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn AquariumWater<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn AquariumWater(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn WeatherRestriction<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn WeatherRestriction(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn TimeRestriction<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn TimeRestriction(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn SpecialConditions<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn SpecialConditions(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn IsCollectable<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn IsCollectable(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
 }

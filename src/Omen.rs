@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct OmenSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl OmenSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl OmenSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Omen")?;
         let sheet = resolver.read_excel_sheet(&exh, "Omen", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<OmenRow> {
@@ -36,25 +48,17 @@ impl OmenSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for OmenSheet {
-    type Row = OmenRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for OmenSheet {
+    type Row = OmenRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a OmenSheet {
-    type Item = (u32, Vec<(u16, OmenRow)>);
+    type Item = (u32, Vec<(u16, OmenRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, OmenSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, OmenSheet> {
         StructuredSheetIterator {
@@ -64,26 +68,27 @@ impl<'a> IntoIterator for &'a OmenSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct OmenRow {
-    columns: Vec<Field>,
+pub struct OmenRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl OmenRow {
-    pub fn Path<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> OmenRow<'a> {
+    pub fn Path(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn PathAlly<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn PathAlly(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Type<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Type(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn RestrictYScale<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn RestrictYScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn LargeScale<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn LargeScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
 }

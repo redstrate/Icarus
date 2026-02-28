@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct PatchMarkSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl PatchMarkSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl PatchMarkSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PatchMark")?;
         let sheet = resolver.read_excel_sheet(&exh, "PatchMark", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<PatchMarkRow> {
@@ -36,25 +48,17 @@ impl PatchMarkSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for PatchMarkSheet {
-    type Row = PatchMarkRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for PatchMarkSheet {
+    type Row = PatchMarkRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a PatchMarkSheet {
-    type Item = (u32, Vec<(u16, PatchMarkRow)>);
+    type Item = (u32, Vec<(u16, PatchMarkRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, PatchMarkSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, PatchMarkSheet> {
         StructuredSheetIterator {
@@ -64,24 +68,25 @@ impl<'a> IntoIterator for &'a PatchMarkSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct PatchMarkRow {
-    columns: Vec<Field>,
+pub struct PatchMarkRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl PatchMarkRow {
-    pub fn Requirement<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> PatchMarkRow<'a> {
+    pub fn Requirement(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn MarkID<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn MarkID(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn SubCategory<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn SubCategory(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn SubCategoryType<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn SubCategoryType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
     /// 1 = Some Housing Permission 1
     /// 2 = Some Housing Permission 2
@@ -90,13 +95,13 @@ impl PatchMarkRow {
     /// 5 = InstanceContent 50001 unlocked, but 50003 not
     /// 6 = LocalPlayer has a FreeCompanyTag
     ///
-    pub fn RequirementType<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn RequirementType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Version<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Version(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Category<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Category(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
 }

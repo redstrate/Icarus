@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct WKSMissionRewardSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl WKSMissionRewardSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl WKSMissionRewardSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSMissionReward")?;
         let sheet = resolver.read_excel_sheet(&exh, "WKSMissionReward", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<WKSMissionRewardRow> {
@@ -36,25 +48,17 @@ impl WKSMissionRewardSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for WKSMissionRewardSheet {
-    type Row = WKSMissionRewardRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for WKSMissionRewardSheet {
+    type Row = WKSMissionRewardRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a WKSMissionRewardSheet {
-    type Item = (u32, Vec<(u16, WKSMissionRewardRow)>);
+    type Item = (u32, Vec<(u16, WKSMissionRewardRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, WKSMissionRewardSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, WKSMissionRewardSheet> {
         StructuredSheetIterator {
@@ -64,40 +68,57 @@ impl<'a> IntoIterator for &'a WKSMissionRewardSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct WKSMissionRewardRow {
-    columns: Vec<Field>,
+pub struct WKSMissionRewardRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl WKSMissionRewardRow {
-    pub fn Item<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> WKSMissionRewardRow<'a> {
+    pub fn Item(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
     /// ExpReward = ExpToNex * (lvl < 50 ? ExpModifier[0] : lvl < 90 ? ExpModifier[1] : ExpModifier[2]) / 100
-    pub fn ExpModifier<'a>(&'a self) -> [&'a Field; 3] {
-        [&self.columns[1], &self.columns[2], &self.columns[3]]
+    pub fn ExpModifier(&'a self) -> [&'a Field; 3] {
+        [
+            &self.row.columns[self.index_mapping[1]],
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
+        ]
     }
-    pub fn CosmoCredits<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn CosmoCredits(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn PlanetCredits<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn PlanetCredits(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Unknown20<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Unknown20(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn ResearchReward<'a>(&'a self) -> [&'a Field; 3] {
-        [&self.columns[7], &self.columns[8], &self.columns[9]]
+    pub fn ResearchReward(&'a self) -> [&'a Field; 3] {
+        [
+            &self.row.columns[self.index_mapping[7]],
+            &self.row.columns[self.index_mapping[8]],
+            &self.row.columns[self.index_mapping[9]],
+        ]
     }
-    pub fn ItemCount<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn ItemCount(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
     /// Needs to match WKSEmergencyProblem.Unknown2 to be active?
-    pub fn Unknown19<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn Unknown19(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn Tool<'a>(&'a self) -> [&'a Field; 3] {
-        [&self.columns[12], &self.columns[13], &self.columns[14]]
+    pub fn Tool(&'a self) -> [&'a Field; 3] {
+        [
+            &self.row.columns[self.index_mapping[12]],
+            &self.row.columns[self.index_mapping[13]],
+            &self.row.columns[self.index_mapping[14]],
+        ]
     }
-    pub fn TypeIndex<'a>(&'a self) -> [&'a Field; 3] {
-        [&self.columns[15], &self.columns[16], &self.columns[17]]
+    pub fn TypeIndex(&'a self) -> [&'a Field; 3] {
+        [
+            &self.row.columns[self.index_mapping[15]],
+            &self.row.columns[self.index_mapping[16]],
+            &self.row.columns[self.index_mapping[17]],
+        ]
     }
 }

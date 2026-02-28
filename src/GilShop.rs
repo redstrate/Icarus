@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct GilShopSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl GilShopSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl GilShopSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GilShop")?;
         let sheet = resolver.read_excel_sheet(&exh, "GilShop", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<GilShopRow> {
@@ -36,25 +48,17 @@ impl GilShopSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for GilShopSheet {
-    type Row = GilShopRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for GilShopSheet {
+    type Row = GilShopRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a GilShopSheet {
-    type Item = (u32, Vec<(u16, GilShopRow)>);
+    type Item = (u32, Vec<(u16, GilShopRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, GilShopSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, GilShopSheet> {
         StructuredSheetIterator {
@@ -64,32 +68,33 @@ impl<'a> IntoIterator for &'a GilShopSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct GilShopRow {
-    columns: Vec<Field>,
+pub struct GilShopRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl GilShopRow {
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> GilShopRow<'a> {
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Icon<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Icon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Quest<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Quest(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn AcceptTalk<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn AcceptTalk(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn FailTalk<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn FailTalk(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn FestivalId<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn FestivalId(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn FestivalPhase<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn FestivalPhase(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
 }

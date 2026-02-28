@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ContentsTutorialSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl ContentsTutorialSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl ContentsTutorialSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentsTutorial")?;
         let sheet = resolver.read_excel_sheet(&exh, "ContentsTutorial", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ContentsTutorialRow> {
@@ -36,25 +48,17 @@ impl ContentsTutorialSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for ContentsTutorialSheet {
-    type Row = ContentsTutorialRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for ContentsTutorialSheet {
+    type Row = ContentsTutorialRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a ContentsTutorialSheet {
-    type Item = (u32, Vec<(u16, ContentsTutorialRow)>);
+    type Item = (u32, Vec<(u16, ContentsTutorialRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, ContentsTutorialSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, ContentsTutorialSheet> {
         StructuredSheetIterator {
@@ -64,29 +68,30 @@ impl<'a> IntoIterator for &'a ContentsTutorialSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct ContentsTutorialRow {
-    columns: Vec<Field>,
+pub struct ContentsTutorialRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl ContentsTutorialRow {
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> ContentsTutorialRow<'a> {
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Description<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Description(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Page<'a>(&'a self) -> [&'a Field; 8] {
+    pub fn Page(&'a self) -> [&'a Field; 8] {
         [
-            &self.columns[3],
-            &self.columns[4],
-            &self.columns[5],
-            &self.columns[6],
-            &self.columns[7],
-            &self.columns[8],
-            &self.columns[9],
-            &self.columns[10],
+            &self.row.columns[self.index_mapping[3]],
+            &self.row.columns[self.index_mapping[4]],
+            &self.row.columns[self.index_mapping[5]],
+            &self.row.columns[self.index_mapping[6]],
+            &self.row.columns[self.index_mapping[7]],
+            &self.row.columns[self.index_mapping[8]],
+            &self.row.columns[self.index_mapping[9]],
+            &self.row.columns[self.index_mapping[10]],
         ]
     }
 }

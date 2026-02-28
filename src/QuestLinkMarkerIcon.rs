@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct QuestLinkMarkerIconSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl QuestLinkMarkerIconSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl QuestLinkMarkerIconSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestLinkMarkerIcon")?;
         let sheet = resolver.read_excel_sheet(&exh, "QuestLinkMarkerIcon", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<QuestLinkMarkerIconRow> {
@@ -36,25 +48,17 @@ impl QuestLinkMarkerIconSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for QuestLinkMarkerIconSheet {
-    type Row = QuestLinkMarkerIconRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for QuestLinkMarkerIconSheet {
+    type Row = QuestLinkMarkerIconRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a QuestLinkMarkerIconSheet {
-    type Item = (u32, Vec<(u16, QuestLinkMarkerIconRow)>);
+    type Item = (u32, Vec<(u16, QuestLinkMarkerIconRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, QuestLinkMarkerIconSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, QuestLinkMarkerIconSheet> {
         StructuredSheetIterator {
@@ -64,11 +68,12 @@ impl<'a> IntoIterator for &'a QuestLinkMarkerIconSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct QuestLinkMarkerIconRow {
-    columns: Vec<Field>,
+pub struct QuestLinkMarkerIconRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl QuestLinkMarkerIconRow {
-    pub fn Icon<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> QuestLinkMarkerIconRow<'a> {
+    pub fn Icon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
 }

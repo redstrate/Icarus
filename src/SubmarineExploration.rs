@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct SubmarineExplorationSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl SubmarineExplorationSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl SubmarineExplorationSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SubmarineExploration")?;
         let sheet = resolver.read_excel_sheet(&exh, "SubmarineExploration", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<SubmarineExplorationRow> {
@@ -40,25 +52,17 @@ impl SubmarineExplorationSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for SubmarineExplorationSheet {
-    type Row = SubmarineExplorationRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for SubmarineExplorationSheet {
+    type Row = SubmarineExplorationRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a SubmarineExplorationSheet {
-    type Item = (u32, Vec<(u16, SubmarineExplorationRow)>);
+    type Item = (u32, Vec<(u16, SubmarineExplorationRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, SubmarineExplorationSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, SubmarineExplorationSheet> {
         StructuredSheetIterator {
@@ -68,47 +72,48 @@ impl<'a> IntoIterator for &'a SubmarineExplorationSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct SubmarineExplorationRow {
-    columns: Vec<Field>,
+pub struct SubmarineExplorationRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl SubmarineExplorationRow {
-    pub fn Destination<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> SubmarineExplorationRow<'a> {
+    pub fn Destination(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Location<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Location(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn ExpReward<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn ExpReward(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn SurveyDurationmin<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn SurveyDurationmin(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn X<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn X(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Y<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Y(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Z<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Z(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Map<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Map(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn Stars<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn Stars(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn RankReq<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn RankReq(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn CeruleumTankReq<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn CeruleumTankReq(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn SurveyDistance<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn SurveyDistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn StartingPoint<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn StartingPoint(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
 }

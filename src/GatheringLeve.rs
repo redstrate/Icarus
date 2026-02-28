@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct GatheringLeveSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl GatheringLeveSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl GatheringLeveSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GatheringLeve")?;
         let sheet = resolver.read_excel_sheet(&exh, "GatheringLeve", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<GatheringLeveRow> {
@@ -36,25 +48,17 @@ impl GatheringLeveSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for GatheringLeveSheet {
-    type Row = GatheringLeveRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for GatheringLeveSheet {
+    type Row = GatheringLeveRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a GatheringLeveSheet {
-    type Item = (u32, Vec<(u16, GatheringLeveRow)>);
+    type Item = (u32, Vec<(u16, GatheringLeveRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, GatheringLeveSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, GatheringLeveSheet> {
         StructuredSheetIterator {
@@ -64,35 +68,54 @@ impl<'a> IntoIterator for &'a GatheringLeveSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct GatheringLeveRow {
-    columns: Vec<Field>,
+pub struct GatheringLeveRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl GatheringLeveRow {
-    pub fn Route<'a>(&'a self) -> [&'a Field; 4] {
-        [&self.columns[0], &self.columns[1], &self.columns[2], &self.columns[3]]
+impl<'a> GatheringLeveRow<'a> {
+    pub fn Route(&'a self) -> [&'a Field; 4] {
+        [
+            &self.row.columns[self.index_mapping[0]],
+            &self.row.columns[self.index_mapping[1]],
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
+        ]
     }
-    pub fn RequiredItem<'a>(&'a self) -> [&'a Field; 4] {
-        [&self.columns[4], &self.columns[5], &self.columns[6], &self.columns[7]]
+    pub fn RequiredItem(&'a self) -> [&'a Field; 4] {
+        [
+            &self.row.columns[self.index_mapping[4]],
+            &self.row.columns[self.index_mapping[5]],
+            &self.row.columns[self.index_mapping[6]],
+            &self.row.columns[self.index_mapping[7]],
+        ]
     }
-    pub fn Rule<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn Rule(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn BNpcEntry<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn BNpcEntry(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn Objective<'a>(&'a self) -> [&'a Field; 2] {
-        [&self.columns[10], &self.columns[11]]
+    pub fn Objective(&'a self) -> [&'a Field; 2] {
+        [
+            &self.row.columns[self.index_mapping[10]],
+            &self.row.columns[self.index_mapping[11]],
+        ]
     }
-    pub fn RequiredItemQuantity<'a>(&'a self) -> [&'a Field; 4] {
-        [&self.columns[12], &self.columns[13], &self.columns[14], &self.columns[15]]
+    pub fn RequiredItemQuantity(&'a self) -> [&'a Field; 4] {
+        [
+            &self.row.columns[self.index_mapping[12]],
+            &self.row.columns[self.index_mapping[13]],
+            &self.row.columns[self.index_mapping[14]],
+            &self.row.columns[self.index_mapping[15]],
+        ]
     }
-    pub fn ItemNumber<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn ItemNumber(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn Varient<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn Varient(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn UseSecondaryTool<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn UseSecondaryTool(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
 }

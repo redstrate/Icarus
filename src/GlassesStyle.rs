@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct GlassesStyleSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl GlassesStyleSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl GlassesStyleSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GlassesStyle")?;
         let sheet = resolver.read_excel_sheet(&exh, "GlassesStyle", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<GlassesStyleRow> {
@@ -36,25 +48,17 @@ impl GlassesStyleSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for GlassesStyleSheet {
-    type Row = GlassesStyleRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for GlassesStyleSheet {
+    type Row = GlassesStyleRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a GlassesStyleSheet {
-    type Item = (u32, Vec<(u16, GlassesStyleRow)>);
+    type Item = (u32, Vec<(u16, GlassesStyleRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, GlassesStyleSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, GlassesStyleSheet> {
         StructuredSheetIterator {
@@ -64,60 +68,61 @@ impl<'a> IntoIterator for &'a GlassesStyleSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct GlassesStyleRow {
-    columns: Vec<Field>,
+pub struct GlassesStyleRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl GlassesStyleRow {
-    pub fn Singular<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> GlassesStyleRow<'a> {
+    pub fn Singular(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Plural<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Plural(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Unknown_70_1<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Unknown_70_1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Unknown_70_2<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Unknown_70_2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Unknown_70_3<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Unknown_70_3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Unknown_70_4<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Unknown_70_4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Unknown_70_5<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Unknown_70_5(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn Unknown_70_6<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn Unknown_70_6(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn Icon<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn Icon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn Order<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn Order(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn Glasses<'a>(&'a self) -> [&'a Field; 12] {
+    pub fn Glasses(&'a self) -> [&'a Field; 12] {
         [
-            &self.columns[11],
-            &self.columns[12],
-            &self.columns[13],
-            &self.columns[14],
-            &self.columns[15],
-            &self.columns[16],
-            &self.columns[17],
-            &self.columns[18],
-            &self.columns[19],
-            &self.columns[20],
-            &self.columns[21],
-            &self.columns[22],
+            &self.row.columns[self.index_mapping[11]],
+            &self.row.columns[self.index_mapping[12]],
+            &self.row.columns[self.index_mapping[13]],
+            &self.row.columns[self.index_mapping[14]],
+            &self.row.columns[self.index_mapping[15]],
+            &self.row.columns[self.index_mapping[16]],
+            &self.row.columns[self.index_mapping[17]],
+            &self.row.columns[self.index_mapping[18]],
+            &self.row.columns[self.index_mapping[19]],
+            &self.row.columns[self.index_mapping[20]],
+            &self.row.columns[self.index_mapping[21]],
+            &self.row.columns[self.index_mapping[22]],
         ]
     }
-    pub fn Unknown_70_7<'a>(&'a self) -> &'a Field {
-        &self.columns[23]
+    pub fn Unknown_70_7(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[23]]
     }
 }

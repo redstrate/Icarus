@@ -14,6 +14,7 @@ pub struct ObjectiveIconElement<'a> {
 #[derive(Debug, Clone)]
 pub struct FateSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl FateSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -23,7 +24,18 @@ impl FateSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Fate")?;
         let sheet = resolver.read_excel_sheet(&exh, "Fate", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<FateRow> {
@@ -40,25 +52,17 @@ impl FateSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for FateSheet {
-    type Row = FateRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for FateSheet {
+    type Row = FateRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a FateSheet {
-    type Item = (u32, Vec<(u16, FateRow)>);
+    type Item = (u32, Vec<(u16, FateRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, FateSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, FateSheet> {
         StructuredSheetIterator {
@@ -68,263 +72,276 @@ impl<'a> IntoIterator for &'a FateSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct FateRow {
-    columns: Vec<Field>,
+pub struct FateRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl FateRow {
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> FateRow<'a> {
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Description<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Description(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Objective<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Objective(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn StatusText<'a>(&'a self) -> [&'a Field; 3] {
-        [&self.columns[3], &self.columns[4], &self.columns[5]]
+    pub fn StatusText(&'a self) -> [&'a Field; 3] {
+        [
+            &self.row.columns[self.index_mapping[3]],
+            &self.row.columns[self.index_mapping[4]],
+            &self.row.columns[self.index_mapping[5]],
+        ]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn ReqEventItem<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn ReqEventItem(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn TurnInEventItem<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn TurnInEventItem(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn Unknown2<'a>(&'a self) -> [&'a Field; 3] {
-        [&self.columns[10], &self.columns[11], &self.columns[12]]
+    pub fn Unknown2(&'a self) -> [&'a Field; 3] {
+        [
+            &self.row.columns[self.index_mapping[10]],
+            &self.row.columns[self.index_mapping[11]],
+            &self.row.columns[self.index_mapping[12]],
+        ]
     }
-    pub fn Unknown10<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn Unknown10(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn Unknown11<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn Unknown11(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn Unknown12<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn Unknown12(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn ObjectiveIcon<'a>(&'a self) -> [ObjectiveIconElement<'a>; 32] {
+    pub fn ObjectiveIcon(&'a self) -> [ObjectiveIconElement<'a>; 32] {
         [
             ObjectiveIconElement {
-                LayoutId: &self.columns[16],
-                Icon: &self.columns[17],
+                LayoutId: &self.row.columns[self.index_mapping[16]],
+                Icon: &self.row.columns[self.index_mapping[17]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[18],
-                Icon: &self.columns[19],
+                LayoutId: &self.row.columns[self.index_mapping[18]],
+                Icon: &self.row.columns[self.index_mapping[19]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[20],
-                Icon: &self.columns[21],
+                LayoutId: &self.row.columns[self.index_mapping[20]],
+                Icon: &self.row.columns[self.index_mapping[21]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[22],
-                Icon: &self.columns[23],
+                LayoutId: &self.row.columns[self.index_mapping[22]],
+                Icon: &self.row.columns[self.index_mapping[23]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[24],
-                Icon: &self.columns[25],
+                LayoutId: &self.row.columns[self.index_mapping[24]],
+                Icon: &self.row.columns[self.index_mapping[25]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[26],
-                Icon: &self.columns[27],
+                LayoutId: &self.row.columns[self.index_mapping[26]],
+                Icon: &self.row.columns[self.index_mapping[27]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[28],
-                Icon: &self.columns[29],
+                LayoutId: &self.row.columns[self.index_mapping[28]],
+                Icon: &self.row.columns[self.index_mapping[29]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[30],
-                Icon: &self.columns[31],
+                LayoutId: &self.row.columns[self.index_mapping[30]],
+                Icon: &self.row.columns[self.index_mapping[31]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[32],
-                Icon: &self.columns[33],
+                LayoutId: &self.row.columns[self.index_mapping[32]],
+                Icon: &self.row.columns[self.index_mapping[33]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[34],
-                Icon: &self.columns[35],
+                LayoutId: &self.row.columns[self.index_mapping[34]],
+                Icon: &self.row.columns[self.index_mapping[35]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[36],
-                Icon: &self.columns[37],
+                LayoutId: &self.row.columns[self.index_mapping[36]],
+                Icon: &self.row.columns[self.index_mapping[37]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[38],
-                Icon: &self.columns[39],
+                LayoutId: &self.row.columns[self.index_mapping[38]],
+                Icon: &self.row.columns[self.index_mapping[39]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[40],
-                Icon: &self.columns[41],
+                LayoutId: &self.row.columns[self.index_mapping[40]],
+                Icon: &self.row.columns[self.index_mapping[41]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[42],
-                Icon: &self.columns[43],
+                LayoutId: &self.row.columns[self.index_mapping[42]],
+                Icon: &self.row.columns[self.index_mapping[43]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[44],
-                Icon: &self.columns[45],
+                LayoutId: &self.row.columns[self.index_mapping[44]],
+                Icon: &self.row.columns[self.index_mapping[45]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[46],
-                Icon: &self.columns[47],
+                LayoutId: &self.row.columns[self.index_mapping[46]],
+                Icon: &self.row.columns[self.index_mapping[47]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[48],
-                Icon: &self.columns[49],
+                LayoutId: &self.row.columns[self.index_mapping[48]],
+                Icon: &self.row.columns[self.index_mapping[49]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[50],
-                Icon: &self.columns[51],
+                LayoutId: &self.row.columns[self.index_mapping[50]],
+                Icon: &self.row.columns[self.index_mapping[51]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[52],
-                Icon: &self.columns[53],
+                LayoutId: &self.row.columns[self.index_mapping[52]],
+                Icon: &self.row.columns[self.index_mapping[53]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[54],
-                Icon: &self.columns[55],
+                LayoutId: &self.row.columns[self.index_mapping[54]],
+                Icon: &self.row.columns[self.index_mapping[55]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[56],
-                Icon: &self.columns[57],
+                LayoutId: &self.row.columns[self.index_mapping[56]],
+                Icon: &self.row.columns[self.index_mapping[57]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[58],
-                Icon: &self.columns[59],
+                LayoutId: &self.row.columns[self.index_mapping[58]],
+                Icon: &self.row.columns[self.index_mapping[59]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[60],
-                Icon: &self.columns[61],
+                LayoutId: &self.row.columns[self.index_mapping[60]],
+                Icon: &self.row.columns[self.index_mapping[61]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[62],
-                Icon: &self.columns[63],
+                LayoutId: &self.row.columns[self.index_mapping[62]],
+                Icon: &self.row.columns[self.index_mapping[63]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[64],
-                Icon: &self.columns[65],
+                LayoutId: &self.row.columns[self.index_mapping[64]],
+                Icon: &self.row.columns[self.index_mapping[65]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[66],
-                Icon: &self.columns[67],
+                LayoutId: &self.row.columns[self.index_mapping[66]],
+                Icon: &self.row.columns[self.index_mapping[67]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[68],
-                Icon: &self.columns[69],
+                LayoutId: &self.row.columns[self.index_mapping[68]],
+                Icon: &self.row.columns[self.index_mapping[69]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[70],
-                Icon: &self.columns[71],
+                LayoutId: &self.row.columns[self.index_mapping[70]],
+                Icon: &self.row.columns[self.index_mapping[71]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[72],
-                Icon: &self.columns[73],
+                LayoutId: &self.row.columns[self.index_mapping[72]],
+                Icon: &self.row.columns[self.index_mapping[73]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[74],
-                Icon: &self.columns[75],
+                LayoutId: &self.row.columns[self.index_mapping[74]],
+                Icon: &self.row.columns[self.index_mapping[75]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[76],
-                Icon: &self.columns[77],
+                LayoutId: &self.row.columns[self.index_mapping[76]],
+                Icon: &self.row.columns[self.index_mapping[77]],
             },
             ObjectiveIconElement {
-                LayoutId: &self.columns[78],
-                Icon: &self.columns[79],
+                LayoutId: &self.row.columns[self.index_mapping[78]],
+                Icon: &self.row.columns[self.index_mapping[79]],
             },
         ]
     }
-    pub fn Location<'a>(&'a self) -> &'a Field {
-        &self.columns[80]
+    pub fn Location(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[80]]
     }
-    pub fn EventItem<'a>(&'a self) -> &'a Field {
-        &self.columns[81]
+    pub fn EventItem(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[81]]
     }
-    pub fn Icon<'a>(&'a self) -> &'a Field {
-        &self.columns[82]
+    pub fn Icon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[82]]
     }
-    pub fn MapIcon<'a>(&'a self) -> &'a Field {
-        &self.columns[83]
+    pub fn MapIcon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[83]]
     }
-    pub fn InactiveMapIcon<'a>(&'a self) -> &'a Field {
-        &self.columns[84]
+    pub fn InactiveMapIcon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[84]]
     }
-    pub fn LGBGuardNPCLocation<'a>(&'a self) -> &'a Field {
-        &self.columns[85]
+    pub fn LGBGuardNPCLocation(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[85]]
     }
-    pub fn RequiredQuest<'a>(&'a self) -> &'a Field {
-        &self.columns[86]
+    pub fn RequiredQuest(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[86]]
     }
-    pub fn FATEChain<'a>(&'a self) -> &'a Field {
-        &self.columns[87]
+    pub fn FATEChain(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[87]]
     }
-    pub fn Unknown13<'a>(&'a self) -> &'a Field {
-        &self.columns[88]
+    pub fn Unknown13(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[88]]
     }
-    pub fn FateRuleEx<'a>(&'a self) -> &'a Field {
-        &self.columns[89]
+    pub fn FateRuleEx(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[89]]
     }
-    pub fn Music<'a>(&'a self) -> &'a Field {
-        &self.columns[90]
+    pub fn Music(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[90]]
     }
-    pub fn ScreenImageAccept<'a>(&'a self) -> &'a Field {
-        &self.columns[91]
+    pub fn ScreenImageAccept(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[91]]
     }
-    pub fn ScreenImageComplete<'a>(&'a self) -> &'a Field {
-        &self.columns[92]
+    pub fn ScreenImageComplete(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[92]]
     }
-    pub fn ScreenImageFailed<'a>(&'a self) -> &'a Field {
-        &self.columns[93]
+    pub fn ScreenImageFailed(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[93]]
     }
-    pub fn GivenStatus<'a>(&'a self) -> &'a Field {
-        &self.columns[94]
+    pub fn GivenStatus(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[94]]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a Field {
-        &self.columns[95]
+    pub fn Unknown4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[95]]
     }
-    pub fn Unknown5<'a>(&'a self) -> &'a Field {
-        &self.columns[96]
+    pub fn Unknown5(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[96]]
     }
-    pub fn EurekaFate<'a>(&'a self) -> &'a Field {
-        &self.columns[97]
+    pub fn EurekaFate(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[97]]
     }
-    pub fn Rule<'a>(&'a self) -> &'a Field {
-        &self.columns[98]
+    pub fn Rule(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[98]]
     }
-    pub fn ClassJobLevel<'a>(&'a self) -> &'a Field {
-        &self.columns[99]
+    pub fn ClassJobLevel(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[99]]
     }
-    pub fn ClassJobLevelMax<'a>(&'a self) -> &'a Field {
-        &self.columns[100]
+    pub fn ClassJobLevelMax(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[100]]
     }
-    pub fn StatusValue<'a>(&'a self) -> [&'a Field; 3] {
-        [&self.columns[101], &self.columns[102], &self.columns[103]]
+    pub fn StatusValue(&'a self) -> [&'a Field; 3] {
+        [
+            &self.row.columns[self.index_mapping[101]],
+            &self.row.columns[self.index_mapping[102]],
+            &self.row.columns[self.index_mapping[103]],
+        ]
     }
-    pub fn Unknown6<'a>(&'a self) -> &'a Field {
-        &self.columns[104]
+    pub fn Unknown6(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[104]]
     }
-    pub fn Unknown7<'a>(&'a self) -> &'a Field {
-        &self.columns[105]
+    pub fn Unknown7(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[105]]
     }
-    pub fn SpecialFate<'a>(&'a self) -> &'a Field {
-        &self.columns[106]
+    pub fn SpecialFate(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[106]]
     }
-    pub fn Unknown8<'a>(&'a self) -> &'a Field {
-        &self.columns[107]
+    pub fn Unknown8(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[107]]
     }
-    pub fn AdventEvent<'a>(&'a self) -> &'a Field {
-        &self.columns[108]
+    pub fn AdventEvent(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[108]]
     }
-    pub fn MoonFaireEvent<'a>(&'a self) -> &'a Field {
-        &self.columns[109]
+    pub fn MoonFaireEvent(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[109]]
     }
-    pub fn Unknown9<'a>(&'a self) -> &'a Field {
-        &self.columns[110]
+    pub fn Unknown9(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[110]]
     }
 }

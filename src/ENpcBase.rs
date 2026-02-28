@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ENpcBaseSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl ENpcBaseSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl ENpcBaseSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ENpcBase")?;
         let sheet = resolver.read_excel_sheet(&exh, "ENpcBase", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ENpcBaseRow> {
@@ -36,25 +48,17 @@ impl ENpcBaseSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for ENpcBaseSheet {
-    type Row = ENpcBaseRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for ENpcBaseSheet {
+    type Row = ENpcBaseRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a ENpcBaseSheet {
-    type Item = (u32, Vec<(u16, ENpcBaseRow)>);
+    type Item = (u32, Vec<(u16, ENpcBaseRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, ENpcBaseSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, ENpcBaseSheet> {
         StructuredSheetIterator {
@@ -64,278 +68,279 @@ impl<'a> IntoIterator for &'a ENpcBaseSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct ENpcBaseRow {
-    columns: Vec<Field>,
+pub struct ENpcBaseRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl ENpcBaseRow {
-    pub fn ENpcData<'a>(&'a self) -> [&'a Field; 32] {
+impl<'a> ENpcBaseRow<'a> {
+    pub fn ENpcData(&'a self) -> [&'a Field; 32] {
         [
-            &self.columns[0],
-            &self.columns[1],
-            &self.columns[2],
-            &self.columns[3],
-            &self.columns[4],
-            &self.columns[5],
-            &self.columns[6],
-            &self.columns[7],
-            &self.columns[8],
-            &self.columns[9],
-            &self.columns[10],
-            &self.columns[11],
-            &self.columns[12],
-            &self.columns[13],
-            &self.columns[14],
-            &self.columns[15],
-            &self.columns[16],
-            &self.columns[17],
-            &self.columns[18],
-            &self.columns[19],
-            &self.columns[20],
-            &self.columns[21],
-            &self.columns[22],
-            &self.columns[23],
-            &self.columns[24],
-            &self.columns[25],
-            &self.columns[26],
-            &self.columns[27],
-            &self.columns[28],
-            &self.columns[29],
-            &self.columns[30],
-            &self.columns[31],
+            &self.row.columns[self.index_mapping[0]],
+            &self.row.columns[self.index_mapping[1]],
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
+            &self.row.columns[self.index_mapping[4]],
+            &self.row.columns[self.index_mapping[5]],
+            &self.row.columns[self.index_mapping[6]],
+            &self.row.columns[self.index_mapping[7]],
+            &self.row.columns[self.index_mapping[8]],
+            &self.row.columns[self.index_mapping[9]],
+            &self.row.columns[self.index_mapping[10]],
+            &self.row.columns[self.index_mapping[11]],
+            &self.row.columns[self.index_mapping[12]],
+            &self.row.columns[self.index_mapping[13]],
+            &self.row.columns[self.index_mapping[14]],
+            &self.row.columns[self.index_mapping[15]],
+            &self.row.columns[self.index_mapping[16]],
+            &self.row.columns[self.index_mapping[17]],
+            &self.row.columns[self.index_mapping[18]],
+            &self.row.columns[self.index_mapping[19]],
+            &self.row.columns[self.index_mapping[20]],
+            &self.row.columns[self.index_mapping[21]],
+            &self.row.columns[self.index_mapping[22]],
+            &self.row.columns[self.index_mapping[23]],
+            &self.row.columns[self.index_mapping[24]],
+            &self.row.columns[self.index_mapping[25]],
+            &self.row.columns[self.index_mapping[26]],
+            &self.row.columns[self.index_mapping[27]],
+            &self.row.columns[self.index_mapping[28]],
+            &self.row.columns[self.index_mapping[29]],
+            &self.row.columns[self.index_mapping[30]],
+            &self.row.columns[self.index_mapping[31]],
         ]
     }
-    pub fn ModelMainHand<'a>(&'a self) -> &'a Field {
-        &self.columns[32]
+    pub fn ModelMainHand(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[32]]
     }
-    pub fn ModelOffHand<'a>(&'a self) -> &'a Field {
-        &self.columns[33]
+    pub fn ModelOffHand(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[33]]
     }
-    pub fn Scale<'a>(&'a self) -> &'a Field {
-        &self.columns[34]
+    pub fn Scale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[34]]
     }
-    pub fn ModelHead<'a>(&'a self) -> &'a Field {
-        &self.columns[35]
+    pub fn ModelHead(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[35]]
     }
-    pub fn ModelBody<'a>(&'a self) -> &'a Field {
-        &self.columns[36]
+    pub fn ModelBody(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[36]]
     }
-    pub fn ModelHands<'a>(&'a self) -> &'a Field {
-        &self.columns[37]
+    pub fn ModelHands(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[37]]
     }
-    pub fn ModelLegs<'a>(&'a self) -> &'a Field {
-        &self.columns[38]
+    pub fn ModelLegs(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[38]]
     }
-    pub fn ModelFeet<'a>(&'a self) -> &'a Field {
-        &self.columns[39]
+    pub fn ModelFeet(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[39]]
     }
-    pub fn ModelEars<'a>(&'a self) -> &'a Field {
-        &self.columns[40]
+    pub fn ModelEars(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[40]]
     }
-    pub fn ModelNeck<'a>(&'a self) -> &'a Field {
-        &self.columns[41]
+    pub fn ModelNeck(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[41]]
     }
-    pub fn ModelWrists<'a>(&'a self) -> &'a Field {
-        &self.columns[42]
+    pub fn ModelWrists(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[42]]
     }
-    pub fn ModelLeftRing<'a>(&'a self) -> &'a Field {
-        &self.columns[43]
+    pub fn ModelLeftRing(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[43]]
     }
-    pub fn ModelRightRing<'a>(&'a self) -> &'a Field {
-        &self.columns[44]
+    pub fn ModelRightRing(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[44]]
     }
-    pub fn EventHandler<'a>(&'a self) -> &'a Field {
-        &self.columns[45]
+    pub fn EventHandler(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[45]]
     }
-    pub fn ModelChara<'a>(&'a self) -> &'a Field {
-        &self.columns[46]
+    pub fn ModelChara(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[46]]
     }
-    pub fn NpcEquip<'a>(&'a self) -> &'a Field {
-        &self.columns[47]
+    pub fn NpcEquip(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[47]]
     }
-    pub fn Behavior<'a>(&'a self) -> &'a Field {
-        &self.columns[48]
+    pub fn Behavior(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[48]]
     }
-    pub fn Unknown_70_1<'a>(&'a self) -> &'a Field {
-        &self.columns[49]
+    pub fn Unknown_70_1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[49]]
     }
-    pub fn Unknown_70_2<'a>(&'a self) -> &'a Field {
-        &self.columns[50]
+    pub fn Unknown_70_2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[50]]
     }
-    pub fn Balloon<'a>(&'a self) -> &'a Field {
-        &self.columns[51]
+    pub fn Balloon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[51]]
     }
-    pub fn Race<'a>(&'a self) -> &'a Field {
-        &self.columns[52]
+    pub fn Race(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[52]]
     }
-    pub fn Gender<'a>(&'a self) -> &'a Field {
-        &self.columns[53]
+    pub fn Gender(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[53]]
     }
-    pub fn BodyType<'a>(&'a self) -> &'a Field {
-        &self.columns[54]
+    pub fn BodyType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[54]]
     }
-    pub fn Height<'a>(&'a self) -> &'a Field {
-        &self.columns[55]
+    pub fn Height(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[55]]
     }
-    pub fn Tribe<'a>(&'a self) -> &'a Field {
-        &self.columns[56]
+    pub fn Tribe(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[56]]
     }
-    pub fn Face<'a>(&'a self) -> &'a Field {
-        &self.columns[57]
+    pub fn Face(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[57]]
     }
-    pub fn HairStyle<'a>(&'a self) -> &'a Field {
-        &self.columns[58]
+    pub fn HairStyle(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[58]]
     }
-    pub fn HairHighlight<'a>(&'a self) -> &'a Field {
-        &self.columns[59]
+    pub fn HairHighlight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[59]]
     }
-    pub fn SkinColor<'a>(&'a self) -> &'a Field {
-        &self.columns[60]
+    pub fn SkinColor(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[60]]
     }
-    pub fn EyeHeterochromia<'a>(&'a self) -> &'a Field {
-        &self.columns[61]
+    pub fn EyeHeterochromia(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[61]]
     }
-    pub fn HairColor<'a>(&'a self) -> &'a Field {
-        &self.columns[62]
+    pub fn HairColor(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[62]]
     }
-    pub fn HairHighlightColor<'a>(&'a self) -> &'a Field {
-        &self.columns[63]
+    pub fn HairHighlightColor(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[63]]
     }
-    pub fn FacialFeature<'a>(&'a self) -> &'a Field {
-        &self.columns[64]
+    pub fn FacialFeature(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[64]]
     }
-    pub fn FacialFeatureColor<'a>(&'a self) -> &'a Field {
-        &self.columns[65]
+    pub fn FacialFeatureColor(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[65]]
     }
-    pub fn Eyebrows<'a>(&'a self) -> &'a Field {
-        &self.columns[66]
+    pub fn Eyebrows(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[66]]
     }
-    pub fn EyeColor<'a>(&'a self) -> &'a Field {
-        &self.columns[67]
+    pub fn EyeColor(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[67]]
     }
-    pub fn EyeShape<'a>(&'a self) -> &'a Field {
-        &self.columns[68]
+    pub fn EyeShape(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[68]]
     }
-    pub fn Nose<'a>(&'a self) -> &'a Field {
-        &self.columns[69]
+    pub fn Nose(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[69]]
     }
-    pub fn Jaw<'a>(&'a self) -> &'a Field {
-        &self.columns[70]
+    pub fn Jaw(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[70]]
     }
-    pub fn Mouth<'a>(&'a self) -> &'a Field {
-        &self.columns[71]
+    pub fn Mouth(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[71]]
     }
-    pub fn LipColor<'a>(&'a self) -> &'a Field {
-        &self.columns[72]
+    pub fn LipColor(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[72]]
     }
-    pub fn BustOrTone1<'a>(&'a self) -> &'a Field {
-        &self.columns[73]
+    pub fn BustOrTone1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[73]]
     }
-    pub fn ExtraFeature1<'a>(&'a self) -> &'a Field {
-        &self.columns[74]
+    pub fn ExtraFeature1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[74]]
     }
-    pub fn ExtraFeature2OrBust<'a>(&'a self) -> &'a Field {
-        &self.columns[75]
+    pub fn ExtraFeature2OrBust(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[75]]
     }
-    pub fn FacePaint<'a>(&'a self) -> &'a Field {
-        &self.columns[76]
+    pub fn FacePaint(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[76]]
     }
-    pub fn FacePaintColor<'a>(&'a self) -> &'a Field {
-        &self.columns[77]
+    pub fn FacePaintColor(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[77]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[78]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[78]]
     }
-    pub fn DyeMainHand<'a>(&'a self) -> &'a Field {
-        &self.columns[79]
+    pub fn DyeMainHand(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[79]]
     }
-    pub fn Dye2MainHand<'a>(&'a self) -> &'a Field {
-        &self.columns[80]
+    pub fn Dye2MainHand(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[80]]
     }
-    pub fn DyeOffHand<'a>(&'a self) -> &'a Field {
-        &self.columns[81]
+    pub fn DyeOffHand(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[81]]
     }
-    pub fn Dye2OffHand<'a>(&'a self) -> &'a Field {
-        &self.columns[82]
+    pub fn Dye2OffHand(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[82]]
     }
-    pub fn DyeHead<'a>(&'a self) -> &'a Field {
-        &self.columns[83]
+    pub fn DyeHead(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[83]]
     }
-    pub fn DyeBody<'a>(&'a self) -> &'a Field {
-        &self.columns[84]
+    pub fn DyeBody(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[84]]
     }
-    pub fn DyeHands<'a>(&'a self) -> &'a Field {
-        &self.columns[85]
+    pub fn DyeHands(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[85]]
     }
-    pub fn DyeLegs<'a>(&'a self) -> &'a Field {
-        &self.columns[86]
+    pub fn DyeLegs(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[86]]
     }
-    pub fn DyeFeet<'a>(&'a self) -> &'a Field {
-        &self.columns[87]
+    pub fn DyeFeet(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[87]]
     }
-    pub fn DyeEars<'a>(&'a self) -> &'a Field {
-        &self.columns[88]
+    pub fn DyeEars(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[88]]
     }
-    pub fn DyeNeck<'a>(&'a self) -> &'a Field {
-        &self.columns[89]
+    pub fn DyeNeck(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[89]]
     }
-    pub fn DyeWrists<'a>(&'a self) -> &'a Field {
-        &self.columns[90]
+    pub fn DyeWrists(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[90]]
     }
-    pub fn DyeLeftRing<'a>(&'a self) -> &'a Field {
-        &self.columns[91]
+    pub fn DyeLeftRing(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[91]]
     }
-    pub fn DyeRightRing<'a>(&'a self) -> &'a Field {
-        &self.columns[92]
+    pub fn DyeRightRing(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[92]]
     }
-    pub fn Dye2Head<'a>(&'a self) -> &'a Field {
-        &self.columns[93]
+    pub fn Dye2Head(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[93]]
     }
-    pub fn Dye2Body<'a>(&'a self) -> &'a Field {
-        &self.columns[94]
+    pub fn Dye2Body(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[94]]
     }
-    pub fn Dye2Hands<'a>(&'a self) -> &'a Field {
-        &self.columns[95]
+    pub fn Dye2Hands(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[95]]
     }
-    pub fn Dye2Legs<'a>(&'a self) -> &'a Field {
-        &self.columns[96]
+    pub fn Dye2Legs(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[96]]
     }
-    pub fn Dye2Feet<'a>(&'a self) -> &'a Field {
-        &self.columns[97]
+    pub fn Dye2Feet(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[97]]
     }
-    pub fn Dye2Ears<'a>(&'a self) -> &'a Field {
-        &self.columns[98]
+    pub fn Dye2Ears(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[98]]
     }
-    pub fn Dye2Neck<'a>(&'a self) -> &'a Field {
-        &self.columns[99]
+    pub fn Dye2Neck(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[99]]
     }
-    pub fn Dye2Wrists<'a>(&'a self) -> &'a Field {
-        &self.columns[100]
+    pub fn Dye2Wrists(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[100]]
     }
-    pub fn Dye2LeftRing<'a>(&'a self) -> &'a Field {
-        &self.columns[101]
+    pub fn Dye2LeftRing(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[101]]
     }
-    pub fn Dye2RightRing<'a>(&'a self) -> &'a Field {
-        &self.columns[102]
+    pub fn Dye2RightRing(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[102]]
     }
-    pub fn Invisibility<'a>(&'a self) -> &'a Field {
-        &self.columns[103]
+    pub fn Invisibility(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[103]]
     }
-    pub fn DefaultBalloon<'a>(&'a self) -> &'a Field {
-        &self.columns[104]
+    pub fn DefaultBalloon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[104]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[105]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[105]]
     }
-    pub fn Important<'a>(&'a self) -> &'a Field {
-        &self.columns[106]
+    pub fn Important(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[106]]
     }
-    pub fn Visor<'a>(&'a self) -> &'a Field {
-        &self.columns[107]
+    pub fn Visor(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[107]]
     }
-    pub fn NotRewriteHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[108]
+    pub fn NotRewriteHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[108]]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[109]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[109]]
     }
 }

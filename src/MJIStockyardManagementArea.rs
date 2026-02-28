@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct MJIStockyardManagementAreaSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl MJIStockyardManagementAreaSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,18 @@ impl MJIStockyardManagementAreaSheet {
         let exh = resolver.read_excel_sheet_header("MJIStockyardManagementArea")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "MJIStockyardManagementArea", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MJIStockyardManagementAreaRow> {
@@ -41,25 +53,17 @@ impl MJIStockyardManagementAreaSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for MJIStockyardManagementAreaSheet {
-    type Row = MJIStockyardManagementAreaRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for MJIStockyardManagementAreaSheet {
+    type Row = MJIStockyardManagementAreaRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a MJIStockyardManagementAreaSheet {
-    type Item = (u32, Vec<(u16, MJIStockyardManagementAreaRow)>);
+    type Item = (u32, Vec<(u16, MJIStockyardManagementAreaRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, MJIStockyardManagementAreaSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, MJIStockyardManagementAreaSheet> {
         StructuredSheetIterator {
@@ -69,17 +73,18 @@ impl<'a> IntoIterator for &'a MJIStockyardManagementAreaSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct MJIStockyardManagementAreaRow {
-    columns: Vec<Field>,
+pub struct MJIStockyardManagementAreaRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl MJIStockyardManagementAreaRow {
-    pub fn Area<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> MJIStockyardManagementAreaRow<'a> {
+    pub fn Area(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn RareMaterial<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn RareMaterial(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
 }

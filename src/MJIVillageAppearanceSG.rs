@@ -14,6 +14,7 @@ pub struct VillageAppearanceDataElement<'a> {
 #[derive(Debug, Clone)]
 pub struct MJIVillageAppearanceSGSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl MJIVillageAppearanceSGSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -23,7 +24,18 @@ impl MJIVillageAppearanceSGSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJIVillageAppearanceSG")?;
         let sheet = resolver.read_excel_sheet(&exh, "MJIVillageAppearanceSG", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MJIVillageAppearanceSGRow> {
@@ -44,25 +56,17 @@ impl MJIVillageAppearanceSGSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for MJIVillageAppearanceSGSheet {
-    type Row = MJIVillageAppearanceSGRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for MJIVillageAppearanceSGSheet {
+    type Row = MJIVillageAppearanceSGRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a MJIVillageAppearanceSGSheet {
-    type Item = (u32, Vec<(u16, MJIVillageAppearanceSGRow)>);
+    type Item = (u32, Vec<(u16, MJIVillageAppearanceSGRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, MJIVillageAppearanceSGSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, MJIVillageAppearanceSGSheet> {
         StructuredSheetIterator {
@@ -72,31 +76,32 @@ impl<'a> IntoIterator for &'a MJIVillageAppearanceSGSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct MJIVillageAppearanceSGRow {
-    columns: Vec<Field>,
+pub struct MJIVillageAppearanceSGRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl MJIVillageAppearanceSGRow {
-    pub fn VillageAppearanceData<'a>(&'a self) -> [VillageAppearanceDataElement<'a>; 5] {
+impl<'a> MJIVillageAppearanceSGRow<'a> {
+    pub fn VillageAppearanceData(&'a self) -> [VillageAppearanceDataElement<'a>; 5] {
         [
             VillageAppearanceDataElement {
-                UnknownParam: &self.columns[0],
-                SGB: &self.columns[1],
+                UnknownParam: &self.row.columns[self.index_mapping[0]],
+                SGB: &self.row.columns[self.index_mapping[1]],
             },
             VillageAppearanceDataElement {
-                UnknownParam: &self.columns[2],
-                SGB: &self.columns[3],
+                UnknownParam: &self.row.columns[self.index_mapping[2]],
+                SGB: &self.row.columns[self.index_mapping[3]],
             },
             VillageAppearanceDataElement {
-                UnknownParam: &self.columns[4],
-                SGB: &self.columns[5],
+                UnknownParam: &self.row.columns[self.index_mapping[4]],
+                SGB: &self.row.columns[self.index_mapping[5]],
             },
             VillageAppearanceDataElement {
-                UnknownParam: &self.columns[6],
-                SGB: &self.columns[7],
+                UnknownParam: &self.row.columns[self.index_mapping[6]],
+                SGB: &self.row.columns[self.index_mapping[7]],
             },
             VillageAppearanceDataElement {
-                UnknownParam: &self.columns[8],
-                SGB: &self.columns[9],
+                UnknownParam: &self.row.columns[self.index_mapping[8]],
+                SGB: &self.row.columns[self.index_mapping[9]],
             },
         ]
     }

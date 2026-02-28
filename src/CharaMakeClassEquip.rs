@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct CharaMakeClassEquipSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl CharaMakeClassEquipSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl CharaMakeClassEquipSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CharaMakeClassEquip")?;
         let sheet = resolver.read_excel_sheet(&exh, "CharaMakeClassEquip", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<CharaMakeClassEquipRow> {
@@ -36,25 +48,17 @@ impl CharaMakeClassEquipSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for CharaMakeClassEquipSheet {
-    type Row = CharaMakeClassEquipRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for CharaMakeClassEquipSheet {
+    type Row = CharaMakeClassEquipRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a CharaMakeClassEquipSheet {
-    type Item = (u32, Vec<(u16, CharaMakeClassEquipRow)>);
+    type Item = (u32, Vec<(u16, CharaMakeClassEquipRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, CharaMakeClassEquipSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, CharaMakeClassEquipSheet> {
         StructuredSheetIterator {
@@ -64,32 +68,33 @@ impl<'a> IntoIterator for &'a CharaMakeClassEquipSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct CharaMakeClassEquipRow {
-    columns: Vec<Field>,
+pub struct CharaMakeClassEquipRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl CharaMakeClassEquipRow {
-    pub fn Helmet<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> CharaMakeClassEquipRow<'a> {
+    pub fn Helmet(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Top<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Top(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Glove<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Glove(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Down<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Down(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Shoes<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Shoes(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Weapon<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Weapon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn SubWeapon<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn SubWeapon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Class<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Class(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
 }

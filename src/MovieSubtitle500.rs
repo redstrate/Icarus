@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct MovieSubtitle500Sheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl MovieSubtitle500Sheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl MovieSubtitle500Sheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MovieSubtitle500")?;
         let sheet = resolver.read_excel_sheet(&exh, "MovieSubtitle500", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MovieSubtitle500Row> {
@@ -36,25 +48,17 @@ impl MovieSubtitle500Sheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for MovieSubtitle500Sheet {
-    type Row = MovieSubtitle500Row;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for MovieSubtitle500Sheet {
+    type Row = MovieSubtitle500Row<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a MovieSubtitle500Sheet {
-    type Item = (u32, Vec<(u16, MovieSubtitle500Row)>);
+    type Item = (u32, Vec<(u16, MovieSubtitle500Row<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, MovieSubtitle500Sheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, MovieSubtitle500Sheet> {
         StructuredSheetIterator {
@@ -64,14 +68,15 @@ impl<'a> IntoIterator for &'a MovieSubtitle500Sheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct MovieSubtitle500Row {
-    columns: Vec<Field>,
+pub struct MovieSubtitle500Row<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl MovieSubtitle500Row {
-    pub fn StartTime<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> MovieSubtitle500Row<'a> {
+    pub fn StartTime(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn EndTime<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn EndTime(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
 }

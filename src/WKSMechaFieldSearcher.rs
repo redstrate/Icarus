@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct WKSMechaFieldSearcherSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl WKSMechaFieldSearcherSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl WKSMechaFieldSearcherSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSMechaFieldSearcher")?;
         let sheet = resolver.read_excel_sheet(&exh, "WKSMechaFieldSearcher", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<WKSMechaFieldSearcherRow> {
@@ -40,25 +52,17 @@ impl WKSMechaFieldSearcherSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for WKSMechaFieldSearcherSheet {
-    type Row = WKSMechaFieldSearcherRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for WKSMechaFieldSearcherSheet {
+    type Row = WKSMechaFieldSearcherRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a WKSMechaFieldSearcherSheet {
-    type Item = (u32, Vec<(u16, WKSMechaFieldSearcherRow)>);
+    type Item = (u32, Vec<(u16, WKSMechaFieldSearcherRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, WKSMechaFieldSearcherSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, WKSMechaFieldSearcherSheet> {
         StructuredSheetIterator {
@@ -68,14 +72,15 @@ impl<'a> IntoIterator for &'a WKSMechaFieldSearcherSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct WKSMechaFieldSearcherRow {
-    columns: Vec<Field>,
+pub struct WKSMechaFieldSearcherRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl WKSMechaFieldSearcherRow {
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> WKSMechaFieldSearcherRow<'a> {
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
 }

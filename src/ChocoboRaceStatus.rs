@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ChocoboRaceStatusSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl ChocoboRaceStatusSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl ChocoboRaceStatusSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ChocoboRaceStatus")?;
         let sheet = resolver.read_excel_sheet(&exh, "ChocoboRaceStatus", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ChocoboRaceStatusRow> {
@@ -36,25 +48,17 @@ impl ChocoboRaceStatusSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for ChocoboRaceStatusSheet {
-    type Row = ChocoboRaceStatusRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for ChocoboRaceStatusSheet {
+    type Row = ChocoboRaceStatusRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a ChocoboRaceStatusSheet {
-    type Item = (u32, Vec<(u16, ChocoboRaceStatusRow)>);
+    type Item = (u32, Vec<(u16, ChocoboRaceStatusRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, ChocoboRaceStatusSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, ChocoboRaceStatusSheet> {
         StructuredSheetIterator {
@@ -64,14 +68,15 @@ impl<'a> IntoIterator for &'a ChocoboRaceStatusSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct ChocoboRaceStatusRow {
-    columns: Vec<Field>,
+pub struct ChocoboRaceStatusRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl ChocoboRaceStatusRow {
-    pub fn Status<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> ChocoboRaceStatusRow<'a> {
+    pub fn Status(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
 }

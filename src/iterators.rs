@@ -2,12 +2,12 @@ use crate::StructuredSheet;
 
 use physis::excel::{SheetIterator, Page, Row};
 
-pub struct StructuredSheetIterator<'a, S: StructuredSheet> {
+pub struct StructuredSheetIterator<'a, S: StructuredSheet<'a>> {
     pub(crate) sheet: &'a S,
     pub(crate) iterator: SheetIterator<'a>,
 }
 
-impl<'a, S: StructuredSheet> StructuredSheetIterator<'a, S> {
+impl<'a, S: StructuredSheet<'a>> StructuredSheetIterator<'a, S> {
     /// Flattens this iterator, giving you one that only contains rows.
     ///
     /// If this sheet actually has subrows, then it only takes the first one in each row.
@@ -19,7 +19,7 @@ impl<'a, S: StructuredSheet> StructuredSheetIterator<'a, S> {
     }
 }
 
-impl<'a, S: StructuredSheet> Iterator for StructuredSheetIterator<'a, S> {
+impl<'a, S: StructuredSheet<'a>> Iterator for StructuredSheetIterator<'a, S> {
     type Item = (u32, Vec<(u16, S::Row)>);
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -31,12 +31,12 @@ impl<'a, S: StructuredSheet> Iterator for StructuredSheetIterator<'a, S> {
 /// Iterator over an [Page], but only the rows.
 ///
 /// To create this iterator, use [PageIterator::flatten_subrows].
-pub struct StructuredRowIterator<'a, S: StructuredSheet> {
+pub struct StructuredRowIterator<'a, S: StructuredSheet<'a>> {
     sheet: &'a S,
     iterator: SheetIterator<'a>,
 }
 
-impl<'a, S: StructuredSheet> Iterator for StructuredRowIterator<'a, S> {
+impl<'a, S: StructuredSheet<'a>> Iterator for StructuredRowIterator<'a, S> {
     type Item = (u32, S::Row);
 
     fn next(&mut self) -> Option<Self::Item> {

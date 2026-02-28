@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct CraftLeveSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl CraftLeveSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl CraftLeveSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CraftLeve")?;
         let sheet = resolver.read_excel_sheet(&exh, "CraftLeve", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<CraftLeveRow> {
@@ -36,25 +48,17 @@ impl CraftLeveSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for CraftLeveSheet {
-    type Row = CraftLeveRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for CraftLeveSheet {
+    type Row = CraftLeveRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a CraftLeveSheet {
-    type Item = (u32, Vec<(u16, CraftLeveRow)>);
+    type Item = (u32, Vec<(u16, CraftLeveRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, CraftLeveSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, CraftLeveSheet> {
         StructuredSheetIterator {
@@ -64,23 +68,34 @@ impl<'a> IntoIterator for &'a CraftLeveSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct CraftLeveRow {
-    columns: Vec<Field>,
+pub struct CraftLeveRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl CraftLeveRow {
-    pub fn Leve<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> CraftLeveRow<'a> {
+    pub fn Leve(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn CraftLeveTalk<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn CraftLeveTalk(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Item<'a>(&'a self) -> [&'a Field; 4] {
-        [&self.columns[2], &self.columns[3], &self.columns[4], &self.columns[5]]
+    pub fn Item(&'a self) -> [&'a Field; 4] {
+        [
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
+            &self.row.columns[self.index_mapping[4]],
+            &self.row.columns[self.index_mapping[5]],
+        ]
     }
-    pub fn ItemCount<'a>(&'a self) -> [&'a Field; 4] {
-        [&self.columns[6], &self.columns[7], &self.columns[8], &self.columns[9]]
+    pub fn ItemCount(&'a self) -> [&'a Field; 4] {
+        [
+            &self.row.columns[self.index_mapping[6]],
+            &self.row.columns[self.index_mapping[7]],
+            &self.row.columns[self.index_mapping[8]],
+            &self.row.columns[self.index_mapping[9]],
+        ]
     }
-    pub fn Repeats<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn Repeats(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
 }

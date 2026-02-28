@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct RacingChocoboNameCategorySheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl RacingChocoboNameCategorySheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,18 @@ impl RacingChocoboNameCategorySheet {
         let exh = resolver.read_excel_sheet_header("RacingChocoboNameCategory")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "RacingChocoboNameCategory", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<RacingChocoboNameCategoryRow> {
@@ -41,25 +53,17 @@ impl RacingChocoboNameCategorySheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for RacingChocoboNameCategorySheet {
-    type Row = RacingChocoboNameCategoryRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for RacingChocoboNameCategorySheet {
+    type Row = RacingChocoboNameCategoryRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a RacingChocoboNameCategorySheet {
-    type Item = (u32, Vec<(u16, RacingChocoboNameCategoryRow)>);
+    type Item = (u32, Vec<(u16, RacingChocoboNameCategoryRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, RacingChocoboNameCategorySheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, RacingChocoboNameCategorySheet> {
         StructuredSheetIterator {
@@ -69,14 +73,15 @@ impl<'a> IntoIterator for &'a RacingChocoboNameCategorySheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct RacingChocoboNameCategoryRow {
-    columns: Vec<Field>,
+pub struct RacingChocoboNameCategoryRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl RacingChocoboNameCategoryRow {
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> RacingChocoboNameCategoryRow<'a> {
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn SortKey<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn SortKey(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
 }

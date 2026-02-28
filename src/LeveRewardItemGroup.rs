@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct LeveRewardItemGroupSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl LeveRewardItemGroupSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl LeveRewardItemGroupSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("LeveRewardItemGroup")?;
         let sheet = resolver.read_excel_sheet(&exh, "LeveRewardItemGroup", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<LeveRewardItemGroupRow> {
@@ -36,25 +48,17 @@ impl LeveRewardItemGroupSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for LeveRewardItemGroupSheet {
-    type Row = LeveRewardItemGroupRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for LeveRewardItemGroupSheet {
+    type Row = LeveRewardItemGroupRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a LeveRewardItemGroupSheet {
-    type Item = (u32, Vec<(u16, LeveRewardItemGroupRow)>);
+    type Item = (u32, Vec<(u16, LeveRewardItemGroupRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, LeveRewardItemGroupSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, LeveRewardItemGroupSheet> {
         StructuredSheetIterator {
@@ -64,47 +68,48 @@ impl<'a> IntoIterator for &'a LeveRewardItemGroupSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct LeveRewardItemGroupRow {
-    columns: Vec<Field>,
+pub struct LeveRewardItemGroupRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl LeveRewardItemGroupRow {
-    pub fn Item<'a>(&'a self) -> [&'a Field; 9] {
+impl<'a> LeveRewardItemGroupRow<'a> {
+    pub fn Item(&'a self) -> [&'a Field; 9] {
         [
-            &self.columns[0],
-            &self.columns[1],
-            &self.columns[2],
-            &self.columns[3],
-            &self.columns[4],
-            &self.columns[5],
-            &self.columns[6],
-            &self.columns[7],
-            &self.columns[8],
+            &self.row.columns[self.index_mapping[0]],
+            &self.row.columns[self.index_mapping[1]],
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
+            &self.row.columns[self.index_mapping[4]],
+            &self.row.columns[self.index_mapping[5]],
+            &self.row.columns[self.index_mapping[6]],
+            &self.row.columns[self.index_mapping[7]],
+            &self.row.columns[self.index_mapping[8]],
         ]
     }
-    pub fn Count<'a>(&'a self) -> [&'a Field; 9] {
+    pub fn Count(&'a self) -> [&'a Field; 9] {
         [
-            &self.columns[9],
-            &self.columns[10],
-            &self.columns[11],
-            &self.columns[12],
-            &self.columns[13],
-            &self.columns[14],
-            &self.columns[15],
-            &self.columns[16],
-            &self.columns[17],
+            &self.row.columns[self.index_mapping[9]],
+            &self.row.columns[self.index_mapping[10]],
+            &self.row.columns[self.index_mapping[11]],
+            &self.row.columns[self.index_mapping[12]],
+            &self.row.columns[self.index_mapping[13]],
+            &self.row.columns[self.index_mapping[14]],
+            &self.row.columns[self.index_mapping[15]],
+            &self.row.columns[self.index_mapping[16]],
+            &self.row.columns[self.index_mapping[17]],
         ]
     }
-    pub fn IsHQ<'a>(&'a self) -> [&'a Field; 9] {
+    pub fn IsHQ(&'a self) -> [&'a Field; 9] {
         [
-            &self.columns[18],
-            &self.columns[19],
-            &self.columns[20],
-            &self.columns[21],
-            &self.columns[22],
-            &self.columns[23],
-            &self.columns[24],
-            &self.columns[25],
-            &self.columns[26],
+            &self.row.columns[self.index_mapping[18]],
+            &self.row.columns[self.index_mapping[19]],
+            &self.row.columns[self.index_mapping[20]],
+            &self.row.columns[self.index_mapping[21]],
+            &self.row.columns[self.index_mapping[22]],
+            &self.row.columns[self.index_mapping[23]],
+            &self.row.columns[self.index_mapping[24]],
+            &self.row.columns[self.index_mapping[25]],
+            &self.row.columns[self.index_mapping[26]],
         ]
     }
 }

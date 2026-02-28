@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct EObjSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl EObjSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl EObjSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EObj")?;
         let sheet = resolver.read_excel_sheet(&exh, "EObj", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<EObjRow> {
@@ -36,25 +48,17 @@ impl EObjSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for EObjSheet {
-    type Row = EObjRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for EObjSheet {
+    type Row = EObjRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a EObjSheet {
-    type Item = (u32, Vec<(u16, EObjRow)>);
+    type Item = (u32, Vec<(u16, EObjRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, EObjSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, EObjSheet> {
         StructuredSheetIterator {
@@ -64,68 +68,69 @@ impl<'a> IntoIterator for &'a EObjSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct EObjRow {
-    columns: Vec<Field>,
+pub struct EObjRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl EObjRow {
-    pub fn EventHighAddition<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> EObjRow<'a> {
+    pub fn EventHighAddition(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Data<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Data(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn SgbPath<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn SgbPath(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn PopType<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn PopType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Invisibility<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Invisibility(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn Unknown3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn Unknown4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn Unknown5<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn Unknown5(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn Unknown6<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn Unknown6(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn Unknown7<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn Unknown7(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
-    pub fn Unknown8<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn Unknown8(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn EyeCollision<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn EyeCollision(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn DirectorControl<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn DirectorControl(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn Target<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn Target(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn Unknown9<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn Unknown9(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn AddedIn53<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn AddedIn53(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
-    pub fn Unknown10<'a>(&'a self) -> &'a Field {
-        &self.columns[19]
+    pub fn Unknown10(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[19]]
     }
 }

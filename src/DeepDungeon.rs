@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct DeepDungeonSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl DeepDungeonSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl DeepDungeonSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DeepDungeon")?;
         let sheet = resolver.read_excel_sheet(&exh, "DeepDungeon", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<DeepDungeonRow> {
@@ -36,25 +48,17 @@ impl DeepDungeonSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for DeepDungeonSheet {
-    type Row = DeepDungeonRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for DeepDungeonSheet {
+    type Row = DeepDungeonRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a DeepDungeonSheet {
-    type Item = (u32, Vec<(u16, DeepDungeonRow)>);
+    type Item = (u32, Vec<(u16, DeepDungeonRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, DeepDungeonSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, DeepDungeonSheet> {
         StructuredSheetIterator {
@@ -64,82 +68,88 @@ impl<'a> IntoIterator for &'a DeepDungeonSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct DeepDungeonRow {
-    columns: Vec<Field>,
+pub struct DeepDungeonRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl DeepDungeonRow {
-    pub fn PomanderSlot<'a>(&'a self) -> [&'a Field; 16] {
+impl<'a> DeepDungeonRow<'a> {
+    pub fn PomanderSlot(&'a self) -> [&'a Field; 16] {
         [
-            &self.columns[0],
-            &self.columns[1],
-            &self.columns[2],
-            &self.columns[3],
-            &self.columns[4],
-            &self.columns[5],
-            &self.columns[6],
-            &self.columns[7],
-            &self.columns[8],
-            &self.columns[9],
-            &self.columns[10],
-            &self.columns[11],
-            &self.columns[12],
-            &self.columns[13],
-            &self.columns[14],
-            &self.columns[15],
+            &self.row.columns[self.index_mapping[0]],
+            &self.row.columns[self.index_mapping[1]],
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
+            &self.row.columns[self.index_mapping[4]],
+            &self.row.columns[self.index_mapping[5]],
+            &self.row.columns[self.index_mapping[6]],
+            &self.row.columns[self.index_mapping[7]],
+            &self.row.columns[self.index_mapping[8]],
+            &self.row.columns[self.index_mapping[9]],
+            &self.row.columns[self.index_mapping[10]],
+            &self.row.columns[self.index_mapping[11]],
+            &self.row.columns[self.index_mapping[12]],
+            &self.row.columns[self.index_mapping[13]],
+            &self.row.columns[self.index_mapping[14]],
+            &self.row.columns[self.index_mapping[15]],
         ]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn Unknown3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn Unknown4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
-    pub fn Unknown5<'a>(&'a self) -> &'a Field {
-        &self.columns[19]
+    pub fn Unknown5(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[19]]
     }
-    pub fn Unknown6<'a>(&'a self) -> &'a Field {
-        &self.columns[20]
+    pub fn Unknown6(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[20]]
     }
-    pub fn Unknown7<'a>(&'a self) -> &'a Field {
-        &self.columns[21]
+    pub fn Unknown7(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[21]]
     }
-    pub fn Unknown8<'a>(&'a self) -> &'a Field {
-        &self.columns[22]
+    pub fn Unknown8(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[22]]
     }
-    pub fn Unknown9<'a>(&'a self) -> &'a Field {
-        &self.columns[23]
+    pub fn Unknown9(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[23]]
     }
-    pub fn Unknown10<'a>(&'a self) -> &'a Field {
-        &self.columns[24]
+    pub fn Unknown10(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[24]]
     }
-    pub fn Unknown11<'a>(&'a self) -> &'a Field {
-        &self.columns[25]
+    pub fn Unknown11(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[25]]
     }
-    pub fn Unknown12<'a>(&'a self) -> &'a Field {
-        &self.columns[26]
+    pub fn Unknown12(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[26]]
     }
-    pub fn Unknown13<'a>(&'a self) -> &'a Field {
-        &self.columns[27]
+    pub fn Unknown13(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[27]]
     }
-    pub fn MagiciteSlot<'a>(&'a self) -> [&'a Field; 4] {
-        [&self.columns[28], &self.columns[29], &self.columns[30], &self.columns[31]]
+    pub fn MagiciteSlot(&'a self) -> [&'a Field; 4] {
+        [
+            &self.row.columns[self.index_mapping[28]],
+            &self.row.columns[self.index_mapping[29]],
+            &self.row.columns[self.index_mapping[30]],
+            &self.row.columns[self.index_mapping[31]],
+        ]
     }
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[32]
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[32]]
     }
-    pub fn Unknown14<'a>(&'a self) -> &'a Field {
-        &self.columns[33]
+    pub fn Unknown14(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[33]]
     }
-    pub fn AetherpoolArm<'a>(&'a self) -> &'a Field {
-        &self.columns[34]
+    pub fn AetherpoolArm(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[34]]
     }
-    pub fn AetherpoolArmor<'a>(&'a self) -> &'a Field {
-        &self.columns[35]
+    pub fn AetherpoolArmor(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[35]]
     }
-    pub fn DeepDungeonType<'a>(&'a self) -> &'a Field {
-        &self.columns[36]
+    pub fn DeepDungeonType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[36]]
     }
 }

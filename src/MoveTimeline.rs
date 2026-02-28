@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct MoveTimelineSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl MoveTimelineSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl MoveTimelineSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MoveTimeline")?;
         let sheet = resolver.read_excel_sheet(&exh, "MoveTimeline", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MoveTimelineRow> {
@@ -36,25 +48,17 @@ impl MoveTimelineSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for MoveTimelineSheet {
-    type Row = MoveTimelineRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for MoveTimelineSheet {
+    type Row = MoveTimelineRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a MoveTimelineSheet {
-    type Item = (u32, Vec<(u16, MoveTimelineRow)>);
+    type Item = (u32, Vec<(u16, MoveTimelineRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, MoveTimelineSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, MoveTimelineSheet> {
         StructuredSheetIterator {
@@ -64,38 +68,39 @@ impl<'a> IntoIterator for &'a MoveTimelineSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct MoveTimelineRow {
-    columns: Vec<Field>,
+pub struct MoveTimelineRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl MoveTimelineRow {
-    pub fn Idle<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> MoveTimelineRow<'a> {
+    pub fn Idle(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn MoveForward<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn MoveForward(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn MoveBack<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn MoveBack(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn MoveLeft<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn MoveLeft(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn MoveRight<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn MoveRight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn MoveUp<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn MoveUp(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn MoveDown<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn MoveDown(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn MoveTurnLeft<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn MoveTurnLeft(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn MoveTurnRight<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn MoveTurnRight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn Extra<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn Extra(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
 }

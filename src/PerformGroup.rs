@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct PerformGroupSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl PerformGroupSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl PerformGroupSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PerformGroup")?;
         let sheet = resolver.read_excel_sheet(&exh, "PerformGroup", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<PerformGroupRow> {
@@ -36,25 +48,17 @@ impl PerformGroupSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for PerformGroupSheet {
-    type Row = PerformGroupRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for PerformGroupSheet {
+    type Row = PerformGroupRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a PerformGroupSheet {
-    type Item = (u32, Vec<(u16, PerformGroupRow)>);
+    type Item = (u32, Vec<(u16, PerformGroupRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, PerformGroupSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, PerformGroupSheet> {
         StructuredSheetIterator {
@@ -64,17 +68,18 @@ impl<'a> IntoIterator for &'a PerformGroupSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct PerformGroupRow {
-    columns: Vec<Field>,
+pub struct PerformGroupRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl PerformGroupRow {
-    pub fn Perform<'a>(&'a self) -> [&'a Field; 5] {
+impl<'a> PerformGroupRow<'a> {
+    pub fn Perform(&'a self) -> [&'a Field; 5] {
         [
-            &self.columns[0],
-            &self.columns[1],
-            &self.columns[2],
-            &self.columns[3],
-            &self.columns[4],
+            &self.row.columns[self.index_mapping[0]],
+            &self.row.columns[self.index_mapping[1]],
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
+            &self.row.columns[self.index_mapping[4]],
         ]
     }
 }

@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct VVDNotebookSeriesSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl VVDNotebookSeriesSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl VVDNotebookSeriesSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("VVDNotebookSeries")?;
         let sheet = resolver.read_excel_sheet(&exh, "VVDNotebookSeries", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<VVDNotebookSeriesRow> {
@@ -36,25 +48,17 @@ impl VVDNotebookSeriesSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for VVDNotebookSeriesSheet {
-    type Row = VVDNotebookSeriesRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for VVDNotebookSeriesSheet {
+    type Row = VVDNotebookSeriesRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a VVDNotebookSeriesSheet {
-    type Item = (u32, Vec<(u16, VVDNotebookSeriesRow)>);
+    type Item = (u32, Vec<(u16, VVDNotebookSeriesRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, VVDNotebookSeriesSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, VVDNotebookSeriesSheet> {
         StructuredSheetIterator {
@@ -64,30 +68,31 @@ impl<'a> IntoIterator for &'a VVDNotebookSeriesSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct VVDNotebookSeriesRow {
-    columns: Vec<Field>,
+pub struct VVDNotebookSeriesRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl VVDNotebookSeriesRow {
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> VVDNotebookSeriesRow<'a> {
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Contents<'a>(&'a self) -> [&'a Field; 12] {
+    pub fn Contents(&'a self) -> [&'a Field; 12] {
         [
-            &self.columns[1],
-            &self.columns[2],
-            &self.columns[3],
-            &self.columns[4],
-            &self.columns[5],
-            &self.columns[6],
-            &self.columns[7],
-            &self.columns[8],
-            &self.columns[9],
-            &self.columns[10],
-            &self.columns[11],
-            &self.columns[12],
+            &self.row.columns[self.index_mapping[1]],
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
+            &self.row.columns[self.index_mapping[4]],
+            &self.row.columns[self.index_mapping[5]],
+            &self.row.columns[self.index_mapping[6]],
+            &self.row.columns[self.index_mapping[7]],
+            &self.row.columns[self.index_mapping[8]],
+            &self.row.columns[self.index_mapping[9]],
+            &self.row.columns[self.index_mapping[10]],
+            &self.row.columns[self.index_mapping[11]],
+            &self.row.columns[self.index_mapping[12]],
         ]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
 }

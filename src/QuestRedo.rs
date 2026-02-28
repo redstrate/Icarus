@@ -14,6 +14,7 @@ pub struct QuestRedoParamElement<'a> {
 #[derive(Debug, Clone)]
 pub struct QuestRedoSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl QuestRedoSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -23,7 +24,18 @@ impl QuestRedoSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestRedo")?;
         let sheet = resolver.read_excel_sheet(&exh, "QuestRedo", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<QuestRedoRow> {
@@ -40,25 +52,17 @@ impl QuestRedoSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for QuestRedoSheet {
-    type Row = QuestRedoRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for QuestRedoSheet {
+    type Row = QuestRedoRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a QuestRedoSheet {
-    type Item = (u32, Vec<(u16, QuestRedoRow)>);
+    type Item = (u32, Vec<(u16, QuestRedoRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, QuestRedoSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, QuestRedoSheet> {
         StructuredSheetIterator {
@@ -68,152 +72,153 @@ impl<'a> IntoIterator for &'a QuestRedoSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct QuestRedoRow {
-    columns: Vec<Field>,
+pub struct QuestRedoRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl QuestRedoRow {
-    pub fn QuestRedoParam<'a>(&'a self) -> [QuestRedoParamElement<'a>; 32] {
+impl<'a> QuestRedoRow<'a> {
+    pub fn QuestRedoParam(&'a self) -> [QuestRedoParamElement<'a>; 32] {
         [
             QuestRedoParamElement {
-                Quest: &self.columns[0],
-                UnknownParam: &self.columns[1],
+                Quest: &self.row.columns[self.index_mapping[0]],
+                UnknownParam: &self.row.columns[self.index_mapping[1]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[2],
-                UnknownParam: &self.columns[3],
+                Quest: &self.row.columns[self.index_mapping[2]],
+                UnknownParam: &self.row.columns[self.index_mapping[3]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[4],
-                UnknownParam: &self.columns[5],
+                Quest: &self.row.columns[self.index_mapping[4]],
+                UnknownParam: &self.row.columns[self.index_mapping[5]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[6],
-                UnknownParam: &self.columns[7],
+                Quest: &self.row.columns[self.index_mapping[6]],
+                UnknownParam: &self.row.columns[self.index_mapping[7]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[8],
-                UnknownParam: &self.columns[9],
+                Quest: &self.row.columns[self.index_mapping[8]],
+                UnknownParam: &self.row.columns[self.index_mapping[9]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[10],
-                UnknownParam: &self.columns[11],
+                Quest: &self.row.columns[self.index_mapping[10]],
+                UnknownParam: &self.row.columns[self.index_mapping[11]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[12],
-                UnknownParam: &self.columns[13],
+                Quest: &self.row.columns[self.index_mapping[12]],
+                UnknownParam: &self.row.columns[self.index_mapping[13]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[14],
-                UnknownParam: &self.columns[15],
+                Quest: &self.row.columns[self.index_mapping[14]],
+                UnknownParam: &self.row.columns[self.index_mapping[15]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[16],
-                UnknownParam: &self.columns[17],
+                Quest: &self.row.columns[self.index_mapping[16]],
+                UnknownParam: &self.row.columns[self.index_mapping[17]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[18],
-                UnknownParam: &self.columns[19],
+                Quest: &self.row.columns[self.index_mapping[18]],
+                UnknownParam: &self.row.columns[self.index_mapping[19]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[20],
-                UnknownParam: &self.columns[21],
+                Quest: &self.row.columns[self.index_mapping[20]],
+                UnknownParam: &self.row.columns[self.index_mapping[21]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[22],
-                UnknownParam: &self.columns[23],
+                Quest: &self.row.columns[self.index_mapping[22]],
+                UnknownParam: &self.row.columns[self.index_mapping[23]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[24],
-                UnknownParam: &self.columns[25],
+                Quest: &self.row.columns[self.index_mapping[24]],
+                UnknownParam: &self.row.columns[self.index_mapping[25]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[26],
-                UnknownParam: &self.columns[27],
+                Quest: &self.row.columns[self.index_mapping[26]],
+                UnknownParam: &self.row.columns[self.index_mapping[27]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[28],
-                UnknownParam: &self.columns[29],
+                Quest: &self.row.columns[self.index_mapping[28]],
+                UnknownParam: &self.row.columns[self.index_mapping[29]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[30],
-                UnknownParam: &self.columns[31],
+                Quest: &self.row.columns[self.index_mapping[30]],
+                UnknownParam: &self.row.columns[self.index_mapping[31]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[32],
-                UnknownParam: &self.columns[33],
+                Quest: &self.row.columns[self.index_mapping[32]],
+                UnknownParam: &self.row.columns[self.index_mapping[33]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[34],
-                UnknownParam: &self.columns[35],
+                Quest: &self.row.columns[self.index_mapping[34]],
+                UnknownParam: &self.row.columns[self.index_mapping[35]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[36],
-                UnknownParam: &self.columns[37],
+                Quest: &self.row.columns[self.index_mapping[36]],
+                UnknownParam: &self.row.columns[self.index_mapping[37]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[38],
-                UnknownParam: &self.columns[39],
+                Quest: &self.row.columns[self.index_mapping[38]],
+                UnknownParam: &self.row.columns[self.index_mapping[39]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[40],
-                UnknownParam: &self.columns[41],
+                Quest: &self.row.columns[self.index_mapping[40]],
+                UnknownParam: &self.row.columns[self.index_mapping[41]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[42],
-                UnknownParam: &self.columns[43],
+                Quest: &self.row.columns[self.index_mapping[42]],
+                UnknownParam: &self.row.columns[self.index_mapping[43]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[44],
-                UnknownParam: &self.columns[45],
+                Quest: &self.row.columns[self.index_mapping[44]],
+                UnknownParam: &self.row.columns[self.index_mapping[45]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[46],
-                UnknownParam: &self.columns[47],
+                Quest: &self.row.columns[self.index_mapping[46]],
+                UnknownParam: &self.row.columns[self.index_mapping[47]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[48],
-                UnknownParam: &self.columns[49],
+                Quest: &self.row.columns[self.index_mapping[48]],
+                UnknownParam: &self.row.columns[self.index_mapping[49]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[50],
-                UnknownParam: &self.columns[51],
+                Quest: &self.row.columns[self.index_mapping[50]],
+                UnknownParam: &self.row.columns[self.index_mapping[51]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[52],
-                UnknownParam: &self.columns[53],
+                Quest: &self.row.columns[self.index_mapping[52]],
+                UnknownParam: &self.row.columns[self.index_mapping[53]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[54],
-                UnknownParam: &self.columns[55],
+                Quest: &self.row.columns[self.index_mapping[54]],
+                UnknownParam: &self.row.columns[self.index_mapping[55]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[56],
-                UnknownParam: &self.columns[57],
+                Quest: &self.row.columns[self.index_mapping[56]],
+                UnknownParam: &self.row.columns[self.index_mapping[57]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[58],
-                UnknownParam: &self.columns[59],
+                Quest: &self.row.columns[self.index_mapping[58]],
+                UnknownParam: &self.row.columns[self.index_mapping[59]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[60],
-                UnknownParam: &self.columns[61],
+                Quest: &self.row.columns[self.index_mapping[60]],
+                UnknownParam: &self.row.columns[self.index_mapping[61]],
             },
             QuestRedoParamElement {
-                Quest: &self.columns[62],
-                UnknownParam: &self.columns[63],
+                Quest: &self.row.columns[self.index_mapping[62]],
+                UnknownParam: &self.row.columns[self.index_mapping[63]],
             },
         ]
     }
-    pub fn FinalQuest<'a>(&'a self) -> &'a Field {
-        &self.columns[64]
+    pub fn FinalQuest(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[64]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[65]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[65]]
     }
-    pub fn Chapter<'a>(&'a self) -> &'a Field {
-        &self.columns[66]
+    pub fn Chapter(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[66]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[67]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[67]]
     }
 }

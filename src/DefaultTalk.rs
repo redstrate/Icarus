@@ -18,6 +18,7 @@ pub struct DefaultTalkParamsElement<'a> {
 #[derive(Debug, Clone)]
 pub struct DefaultTalkSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl DefaultTalkSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -27,7 +28,18 @@ impl DefaultTalkSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("DefaultTalk")?;
         let sheet = resolver.read_excel_sheet(&exh, "DefaultTalk", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<DefaultTalkRow> {
@@ -44,25 +56,17 @@ impl DefaultTalkSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for DefaultTalkSheet {
-    type Row = DefaultTalkRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for DefaultTalkSheet {
+    type Row = DefaultTalkRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a DefaultTalkSheet {
-    type Item = (u32, Vec<(u16, DefaultTalkRow)>);
+    type Item = (u32, Vec<(u16, DefaultTalkRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, DefaultTalkSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, DefaultTalkSheet> {
         StructuredSheetIterator {
@@ -72,45 +76,50 @@ impl<'a> IntoIterator for &'a DefaultTalkSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct DefaultTalkRow {
-    columns: Vec<Field>,
+pub struct DefaultTalkRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl DefaultTalkRow {
-    pub fn DefaultTalkParams<'a>(&'a self) -> [DefaultTalkParamsElement<'a>; 3] {
+impl<'a> DefaultTalkRow<'a> {
+    pub fn DefaultTalkParams(&'a self) -> [DefaultTalkParamsElement<'a>; 3] {
         [
             DefaultTalkParamsElement {
-                ActionTimelinePose: &self.columns[0],
-                Unknown0: &self.columns[1],
-                Unknown1: &self.columns[2],
-                Unknown2: &self.columns[3],
-                Unknown3: &self.columns[4],
-                Unknown4: &self.columns[5],
+                ActionTimelinePose: &self.row.columns[self.index_mapping[0]],
+                Unknown0: &self.row.columns[self.index_mapping[1]],
+                Unknown1: &self.row.columns[self.index_mapping[2]],
+                Unknown2: &self.row.columns[self.index_mapping[3]],
+                Unknown3: &self.row.columns[self.index_mapping[4]],
+                Unknown4: &self.row.columns[self.index_mapping[5]],
             },
             DefaultTalkParamsElement {
-                ActionTimelinePose: &self.columns[6],
-                Unknown0: &self.columns[7],
-                Unknown1: &self.columns[8],
-                Unknown2: &self.columns[9],
-                Unknown3: &self.columns[10],
-                Unknown4: &self.columns[11],
+                ActionTimelinePose: &self.row.columns[self.index_mapping[6]],
+                Unknown0: &self.row.columns[self.index_mapping[7]],
+                Unknown1: &self.row.columns[self.index_mapping[8]],
+                Unknown2: &self.row.columns[self.index_mapping[9]],
+                Unknown3: &self.row.columns[self.index_mapping[10]],
+                Unknown4: &self.row.columns[self.index_mapping[11]],
             },
             DefaultTalkParamsElement {
-                ActionTimelinePose: &self.columns[12],
-                Unknown0: &self.columns[13],
-                Unknown1: &self.columns[14],
-                Unknown2: &self.columns[15],
-                Unknown3: &self.columns[16],
-                Unknown4: &self.columns[17],
+                ActionTimelinePose: &self.row.columns[self.index_mapping[12]],
+                Unknown0: &self.row.columns[self.index_mapping[13]],
+                Unknown1: &self.row.columns[self.index_mapping[14]],
+                Unknown2: &self.row.columns[self.index_mapping[15]],
+                Unknown3: &self.row.columns[self.index_mapping[16]],
+                Unknown4: &self.row.columns[self.index_mapping[17]],
             },
         ]
     }
-    pub fn Text<'a>(&'a self) -> [&'a Field; 3] {
-        [&self.columns[18], &self.columns[19], &self.columns[20]]
+    pub fn Text(&'a self) -> [&'a Field; 3] {
+        [
+            &self.row.columns[self.index_mapping[18]],
+            &self.row.columns[self.index_mapping[19]],
+            &self.row.columns[self.index_mapping[20]],
+        ]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[21]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[21]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[22]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[22]]
     }
 }

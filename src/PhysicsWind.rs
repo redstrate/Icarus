@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct PhysicsWindSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl PhysicsWindSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl PhysicsWindSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PhysicsWind")?;
         let sheet = resolver.read_excel_sheet(&exh, "PhysicsWind", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<PhysicsWindRow> {
@@ -36,25 +48,17 @@ impl PhysicsWindSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for PhysicsWindSheet {
-    type Row = PhysicsWindRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for PhysicsWindSheet {
+    type Row = PhysicsWindRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a PhysicsWindSheet {
-    type Item = (u32, Vec<(u16, PhysicsWindRow)>);
+    type Item = (u32, Vec<(u16, PhysicsWindRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, PhysicsWindSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, PhysicsWindSheet> {
         StructuredSheetIterator {
@@ -64,26 +68,27 @@ impl<'a> IntoIterator for &'a PhysicsWindSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct PhysicsWindRow {
-    columns: Vec<Field>,
+pub struct PhysicsWindRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl PhysicsWindRow {
-    pub fn Threshold<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> PhysicsWindRow<'a> {
+    pub fn Threshold(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Amplitude<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Amplitude(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn AmplitudeFrequency<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn AmplitudeFrequency(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn PowerMin<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn PowerMin(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn PowerMax<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn PowerMax(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn PowerFrequency<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn PowerFrequency(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
 }

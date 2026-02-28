@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ExportedGatheringPointSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl ExportedGatheringPointSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl ExportedGatheringPointSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ExportedGatheringPoint")?;
         let sheet = resolver.read_excel_sheet(&exh, "ExportedGatheringPoint", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ExportedGatheringPointRow> {
@@ -40,25 +52,17 @@ impl ExportedGatheringPointSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for ExportedGatheringPointSheet {
-    type Row = ExportedGatheringPointRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for ExportedGatheringPointSheet {
+    type Row = ExportedGatheringPointRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a ExportedGatheringPointSheet {
-    type Item = (u32, Vec<(u16, ExportedGatheringPointRow)>);
+    type Item = (u32, Vec<(u16, ExportedGatheringPointRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, ExportedGatheringPointSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, ExportedGatheringPointSheet> {
         StructuredSheetIterator {
@@ -68,23 +72,24 @@ impl<'a> IntoIterator for &'a ExportedGatheringPointSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct ExportedGatheringPointRow {
-    columns: Vec<Field>,
+pub struct ExportedGatheringPointRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl ExportedGatheringPointRow {
-    pub fn X<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> ExportedGatheringPointRow<'a> {
+    pub fn X(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Y<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Y(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Radius<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Radius(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn GatheringType<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn GatheringType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn GatheringPointType<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn GatheringPointType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
 }

@@ -26,6 +26,7 @@ pub struct HugeCraftworksRewardParamElement<'a> {
 #[derive(Debug, Clone)]
 pub struct HugeCraftworksNpcSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl HugeCraftworksNpcSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -35,7 +36,18 @@ impl HugeCraftworksNpcSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HugeCraftworksNpc")?;
         let sheet = resolver.read_excel_sheet(&exh, "HugeCraftworksNpc", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<HugeCraftworksNpcRow> {
@@ -52,25 +64,17 @@ impl HugeCraftworksNpcSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for HugeCraftworksNpcSheet {
-    type Row = HugeCraftworksNpcRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for HugeCraftworksNpcSheet {
+    type Row = HugeCraftworksNpcRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a HugeCraftworksNpcSheet {
-    type Item = (u32, Vec<(u16, HugeCraftworksNpcRow)>);
+    type Item = (u32, Vec<(u16, HugeCraftworksNpcRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, HugeCraftworksNpcSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, HugeCraftworksNpcSheet> {
         StructuredSheetIterator {
@@ -80,125 +84,180 @@ impl<'a> IntoIterator for &'a HugeCraftworksNpcSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct HugeCraftworksNpcRow {
-    columns: Vec<Field>,
+pub struct HugeCraftworksNpcRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl HugeCraftworksNpcRow {
-    pub fn HugeCraftworksTurnInParam<'a>(
+impl<'a> HugeCraftworksNpcRow<'a> {
+    pub fn HugeCraftworksTurnInParam(
         &'a self,
     ) -> [HugeCraftworksTurnInParamElement<'a>; 6] {
         [
             HugeCraftworksTurnInParamElement {
-                RequestedItem: &self.columns[0],
-                Unknown0: &self.columns[1],
-                RequestedQuantity: &self.columns[2],
-                Unknown1: &self.columns[3],
-                Unknown2: &self.columns[4],
-                Unknown3: &self.columns[5],
-                Unknown4: &self.columns[6],
-                Unknown5: &self.columns[7],
-                Unknown6: &self.columns[8],
+                RequestedItem: &self.row.columns[self.index_mapping[0]],
+                Unknown0: &self.row.columns[self.index_mapping[1]],
+                RequestedQuantity: &self.row.columns[self.index_mapping[2]],
+                Unknown1: &self.row.columns[self.index_mapping[3]],
+                Unknown2: &self.row.columns[self.index_mapping[4]],
+                Unknown3: &self.row.columns[self.index_mapping[5]],
+                Unknown4: &self.row.columns[self.index_mapping[6]],
+                Unknown5: &self.row.columns[self.index_mapping[7]],
+                Unknown6: &self.row.columns[self.index_mapping[8]],
             },
             HugeCraftworksTurnInParamElement {
-                RequestedItem: &self.columns[9],
-                Unknown0: &self.columns[10],
-                RequestedQuantity: &self.columns[11],
-                Unknown1: &self.columns[12],
-                Unknown2: &self.columns[13],
-                Unknown3: &self.columns[14],
-                Unknown4: &self.columns[15],
-                Unknown5: &self.columns[16],
-                Unknown6: &self.columns[17],
+                RequestedItem: &self.row.columns[self.index_mapping[9]],
+                Unknown0: &self.row.columns[self.index_mapping[10]],
+                RequestedQuantity: &self.row.columns[self.index_mapping[11]],
+                Unknown1: &self.row.columns[self.index_mapping[12]],
+                Unknown2: &self.row.columns[self.index_mapping[13]],
+                Unknown3: &self.row.columns[self.index_mapping[14]],
+                Unknown4: &self.row.columns[self.index_mapping[15]],
+                Unknown5: &self.row.columns[self.index_mapping[16]],
+                Unknown6: &self.row.columns[self.index_mapping[17]],
             },
             HugeCraftworksTurnInParamElement {
-                RequestedItem: &self.columns[18],
-                Unknown0: &self.columns[19],
-                RequestedQuantity: &self.columns[20],
-                Unknown1: &self.columns[21],
-                Unknown2: &self.columns[22],
-                Unknown3: &self.columns[23],
-                Unknown4: &self.columns[24],
-                Unknown5: &self.columns[25],
-                Unknown6: &self.columns[26],
+                RequestedItem: &self.row.columns[self.index_mapping[18]],
+                Unknown0: &self.row.columns[self.index_mapping[19]],
+                RequestedQuantity: &self.row.columns[self.index_mapping[20]],
+                Unknown1: &self.row.columns[self.index_mapping[21]],
+                Unknown2: &self.row.columns[self.index_mapping[22]],
+                Unknown3: &self.row.columns[self.index_mapping[23]],
+                Unknown4: &self.row.columns[self.index_mapping[24]],
+                Unknown5: &self.row.columns[self.index_mapping[25]],
+                Unknown6: &self.row.columns[self.index_mapping[26]],
             },
             HugeCraftworksTurnInParamElement {
-                RequestedItem: &self.columns[27],
-                Unknown0: &self.columns[28],
-                RequestedQuantity: &self.columns[29],
-                Unknown1: &self.columns[30],
-                Unknown2: &self.columns[31],
-                Unknown3: &self.columns[32],
-                Unknown4: &self.columns[33],
-                Unknown5: &self.columns[34],
-                Unknown6: &self.columns[35],
+                RequestedItem: &self.row.columns[self.index_mapping[27]],
+                Unknown0: &self.row.columns[self.index_mapping[28]],
+                RequestedQuantity: &self.row.columns[self.index_mapping[29]],
+                Unknown1: &self.row.columns[self.index_mapping[30]],
+                Unknown2: &self.row.columns[self.index_mapping[31]],
+                Unknown3: &self.row.columns[self.index_mapping[32]],
+                Unknown4: &self.row.columns[self.index_mapping[33]],
+                Unknown5: &self.row.columns[self.index_mapping[34]],
+                Unknown6: &self.row.columns[self.index_mapping[35]],
             },
             HugeCraftworksTurnInParamElement {
-                RequestedItem: &self.columns[36],
-                Unknown0: &self.columns[37],
-                RequestedQuantity: &self.columns[38],
-                Unknown1: &self.columns[39],
-                Unknown2: &self.columns[40],
-                Unknown3: &self.columns[41],
-                Unknown4: &self.columns[42],
-                Unknown5: &self.columns[43],
-                Unknown6: &self.columns[44],
+                RequestedItem: &self.row.columns[self.index_mapping[36]],
+                Unknown0: &self.row.columns[self.index_mapping[37]],
+                RequestedQuantity: &self.row.columns[self.index_mapping[38]],
+                Unknown1: &self.row.columns[self.index_mapping[39]],
+                Unknown2: &self.row.columns[self.index_mapping[40]],
+                Unknown3: &self.row.columns[self.index_mapping[41]],
+                Unknown4: &self.row.columns[self.index_mapping[42]],
+                Unknown5: &self.row.columns[self.index_mapping[43]],
+                Unknown6: &self.row.columns[self.index_mapping[44]],
             },
             HugeCraftworksTurnInParamElement {
-                RequestedItem: &self.columns[45],
-                Unknown0: &self.columns[46],
-                RequestedQuantity: &self.columns[47],
-                Unknown1: &self.columns[48],
-                Unknown2: &self.columns[49],
-                Unknown3: &self.columns[50],
-                Unknown4: &self.columns[51],
-                Unknown5: &self.columns[52],
-                Unknown6: &self.columns[53],
+                RequestedItem: &self.row.columns[self.index_mapping[45]],
+                Unknown0: &self.row.columns[self.index_mapping[46]],
+                RequestedQuantity: &self.row.columns[self.index_mapping[47]],
+                Unknown1: &self.row.columns[self.index_mapping[48]],
+                Unknown2: &self.row.columns[self.index_mapping[49]],
+                Unknown3: &self.row.columns[self.index_mapping[50]],
+                Unknown4: &self.row.columns[self.index_mapping[51]],
+                Unknown5: &self.row.columns[self.index_mapping[52]],
+                Unknown6: &self.row.columns[self.index_mapping[53]],
             },
         ]
     }
-    pub fn HugeCraftworksRewardParam<'a>(
+    pub fn HugeCraftworksRewardParam(
         &'a self,
     ) -> [HugeCraftworksRewardParamElement<'a>; 6] {
         [
             HugeCraftworksRewardParamElement {
-                RewardItem: [&self.columns[54], &self.columns[55]],
-                RewardQuantity: [&self.columns[56], &self.columns[57]],
-                RewardHQ: [&self.columns[58], &self.columns[59]],
+                RewardItem: [
+                    &self.row.columns[self.index_mapping[54]],
+                    &self.row.columns[self.index_mapping[55]],
+                ],
+                RewardQuantity: [
+                    &self.row.columns[self.index_mapping[56]],
+                    &self.row.columns[self.index_mapping[57]],
+                ],
+                RewardHQ: [
+                    &self.row.columns[self.index_mapping[58]],
+                    &self.row.columns[self.index_mapping[59]],
+                ],
             },
             HugeCraftworksRewardParamElement {
-                RewardItem: [&self.columns[60], &self.columns[61]],
-                RewardQuantity: [&self.columns[62], &self.columns[63]],
-                RewardHQ: [&self.columns[64], &self.columns[65]],
+                RewardItem: [
+                    &self.row.columns[self.index_mapping[60]],
+                    &self.row.columns[self.index_mapping[61]],
+                ],
+                RewardQuantity: [
+                    &self.row.columns[self.index_mapping[62]],
+                    &self.row.columns[self.index_mapping[63]],
+                ],
+                RewardHQ: [
+                    &self.row.columns[self.index_mapping[64]],
+                    &self.row.columns[self.index_mapping[65]],
+                ],
             },
             HugeCraftworksRewardParamElement {
-                RewardItem: [&self.columns[66], &self.columns[67]],
-                RewardQuantity: [&self.columns[68], &self.columns[69]],
-                RewardHQ: [&self.columns[70], &self.columns[71]],
+                RewardItem: [
+                    &self.row.columns[self.index_mapping[66]],
+                    &self.row.columns[self.index_mapping[67]],
+                ],
+                RewardQuantity: [
+                    &self.row.columns[self.index_mapping[68]],
+                    &self.row.columns[self.index_mapping[69]],
+                ],
+                RewardHQ: [
+                    &self.row.columns[self.index_mapping[70]],
+                    &self.row.columns[self.index_mapping[71]],
+                ],
             },
             HugeCraftworksRewardParamElement {
-                RewardItem: [&self.columns[72], &self.columns[73]],
-                RewardQuantity: [&self.columns[74], &self.columns[75]],
-                RewardHQ: [&self.columns[76], &self.columns[77]],
+                RewardItem: [
+                    &self.row.columns[self.index_mapping[72]],
+                    &self.row.columns[self.index_mapping[73]],
+                ],
+                RewardQuantity: [
+                    &self.row.columns[self.index_mapping[74]],
+                    &self.row.columns[self.index_mapping[75]],
+                ],
+                RewardHQ: [
+                    &self.row.columns[self.index_mapping[76]],
+                    &self.row.columns[self.index_mapping[77]],
+                ],
             },
             HugeCraftworksRewardParamElement {
-                RewardItem: [&self.columns[78], &self.columns[79]],
-                RewardQuantity: [&self.columns[80], &self.columns[81]],
-                RewardHQ: [&self.columns[82], &self.columns[83]],
+                RewardItem: [
+                    &self.row.columns[self.index_mapping[78]],
+                    &self.row.columns[self.index_mapping[79]],
+                ],
+                RewardQuantity: [
+                    &self.row.columns[self.index_mapping[80]],
+                    &self.row.columns[self.index_mapping[81]],
+                ],
+                RewardHQ: [
+                    &self.row.columns[self.index_mapping[82]],
+                    &self.row.columns[self.index_mapping[83]],
+                ],
             },
             HugeCraftworksRewardParamElement {
-                RewardItem: [&self.columns[84], &self.columns[85]],
-                RewardQuantity: [&self.columns[86], &self.columns[87]],
-                RewardHQ: [&self.columns[88], &self.columns[89]],
+                RewardItem: [
+                    &self.row.columns[self.index_mapping[84]],
+                    &self.row.columns[self.index_mapping[85]],
+                ],
+                RewardQuantity: [
+                    &self.row.columns[self.index_mapping[86]],
+                    &self.row.columns[self.index_mapping[87]],
+                ],
+                RewardHQ: [
+                    &self.row.columns[self.index_mapping[88]],
+                    &self.row.columns[self.index_mapping[89]],
+                ],
             },
         ]
     }
-    pub fn Transient<'a>(&'a self) -> &'a Field {
-        &self.columns[90]
+    pub fn Transient(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[90]]
     }
-    pub fn EventNpc<'a>(&'a self) -> &'a Field {
-        &self.columns[91]
+    pub fn EventNpc(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[91]]
     }
-    pub fn ClassJobCategory<'a>(&'a self) -> &'a Field {
-        &self.columns[92]
+    pub fn ClassJobCategory(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[92]]
     }
 }

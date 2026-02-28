@@ -14,6 +14,7 @@ pub struct ScriptElement<'a> {
 #[derive(Debug, Clone)]
 pub struct CustomTalkSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl CustomTalkSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -23,7 +24,18 @@ impl CustomTalkSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CustomTalk")?;
         let sheet = resolver.read_excel_sheet(&exh, "CustomTalk", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<CustomTalkRow> {
@@ -40,25 +52,17 @@ impl CustomTalkSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for CustomTalkSheet {
-    type Row = CustomTalkRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for CustomTalkSheet {
+    type Row = CustomTalkRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a CustomTalkSheet {
-    type Item = (u32, Vec<(u16, CustomTalkRow)>);
+    type Item = (u32, Vec<(u16, CustomTalkRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, CustomTalkSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, CustomTalkSheet> {
         StructuredSheetIterator {
@@ -68,189 +72,190 @@ impl<'a> IntoIterator for &'a CustomTalkSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct CustomTalkRow {
-    columns: Vec<Field>,
+pub struct CustomTalkRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl CustomTalkRow {
-    pub fn Script<'a>(&'a self) -> [ScriptElement<'a>; 30] {
+impl<'a> CustomTalkRow<'a> {
+    pub fn Script(&'a self) -> [ScriptElement<'a>; 30] {
         [
             ScriptElement {
-                ScriptInstruction: &self.columns[0],
-                ScriptArg: &self.columns[1],
+                ScriptInstruction: &self.row.columns[self.index_mapping[0]],
+                ScriptArg: &self.row.columns[self.index_mapping[1]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[2],
-                ScriptArg: &self.columns[3],
+                ScriptInstruction: &self.row.columns[self.index_mapping[2]],
+                ScriptArg: &self.row.columns[self.index_mapping[3]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[4],
-                ScriptArg: &self.columns[5],
+                ScriptInstruction: &self.row.columns[self.index_mapping[4]],
+                ScriptArg: &self.row.columns[self.index_mapping[5]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[6],
-                ScriptArg: &self.columns[7],
+                ScriptInstruction: &self.row.columns[self.index_mapping[6]],
+                ScriptArg: &self.row.columns[self.index_mapping[7]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[8],
-                ScriptArg: &self.columns[9],
+                ScriptInstruction: &self.row.columns[self.index_mapping[8]],
+                ScriptArg: &self.row.columns[self.index_mapping[9]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[10],
-                ScriptArg: &self.columns[11],
+                ScriptInstruction: &self.row.columns[self.index_mapping[10]],
+                ScriptArg: &self.row.columns[self.index_mapping[11]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[12],
-                ScriptArg: &self.columns[13],
+                ScriptInstruction: &self.row.columns[self.index_mapping[12]],
+                ScriptArg: &self.row.columns[self.index_mapping[13]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[14],
-                ScriptArg: &self.columns[15],
+                ScriptInstruction: &self.row.columns[self.index_mapping[14]],
+                ScriptArg: &self.row.columns[self.index_mapping[15]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[16],
-                ScriptArg: &self.columns[17],
+                ScriptInstruction: &self.row.columns[self.index_mapping[16]],
+                ScriptArg: &self.row.columns[self.index_mapping[17]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[18],
-                ScriptArg: &self.columns[19],
+                ScriptInstruction: &self.row.columns[self.index_mapping[18]],
+                ScriptArg: &self.row.columns[self.index_mapping[19]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[20],
-                ScriptArg: &self.columns[21],
+                ScriptInstruction: &self.row.columns[self.index_mapping[20]],
+                ScriptArg: &self.row.columns[self.index_mapping[21]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[22],
-                ScriptArg: &self.columns[23],
+                ScriptInstruction: &self.row.columns[self.index_mapping[22]],
+                ScriptArg: &self.row.columns[self.index_mapping[23]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[24],
-                ScriptArg: &self.columns[25],
+                ScriptInstruction: &self.row.columns[self.index_mapping[24]],
+                ScriptArg: &self.row.columns[self.index_mapping[25]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[26],
-                ScriptArg: &self.columns[27],
+                ScriptInstruction: &self.row.columns[self.index_mapping[26]],
+                ScriptArg: &self.row.columns[self.index_mapping[27]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[28],
-                ScriptArg: &self.columns[29],
+                ScriptInstruction: &self.row.columns[self.index_mapping[28]],
+                ScriptArg: &self.row.columns[self.index_mapping[29]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[30],
-                ScriptArg: &self.columns[31],
+                ScriptInstruction: &self.row.columns[self.index_mapping[30]],
+                ScriptArg: &self.row.columns[self.index_mapping[31]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[32],
-                ScriptArg: &self.columns[33],
+                ScriptInstruction: &self.row.columns[self.index_mapping[32]],
+                ScriptArg: &self.row.columns[self.index_mapping[33]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[34],
-                ScriptArg: &self.columns[35],
+                ScriptInstruction: &self.row.columns[self.index_mapping[34]],
+                ScriptArg: &self.row.columns[self.index_mapping[35]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[36],
-                ScriptArg: &self.columns[37],
+                ScriptInstruction: &self.row.columns[self.index_mapping[36]],
+                ScriptArg: &self.row.columns[self.index_mapping[37]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[38],
-                ScriptArg: &self.columns[39],
+                ScriptInstruction: &self.row.columns[self.index_mapping[38]],
+                ScriptArg: &self.row.columns[self.index_mapping[39]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[40],
-                ScriptArg: &self.columns[41],
+                ScriptInstruction: &self.row.columns[self.index_mapping[40]],
+                ScriptArg: &self.row.columns[self.index_mapping[41]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[42],
-                ScriptArg: &self.columns[43],
+                ScriptInstruction: &self.row.columns[self.index_mapping[42]],
+                ScriptArg: &self.row.columns[self.index_mapping[43]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[44],
-                ScriptArg: &self.columns[45],
+                ScriptInstruction: &self.row.columns[self.index_mapping[44]],
+                ScriptArg: &self.row.columns[self.index_mapping[45]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[46],
-                ScriptArg: &self.columns[47],
+                ScriptInstruction: &self.row.columns[self.index_mapping[46]],
+                ScriptArg: &self.row.columns[self.index_mapping[47]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[48],
-                ScriptArg: &self.columns[49],
+                ScriptInstruction: &self.row.columns[self.index_mapping[48]],
+                ScriptArg: &self.row.columns[self.index_mapping[49]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[50],
-                ScriptArg: &self.columns[51],
+                ScriptInstruction: &self.row.columns[self.index_mapping[50]],
+                ScriptArg: &self.row.columns[self.index_mapping[51]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[52],
-                ScriptArg: &self.columns[53],
+                ScriptInstruction: &self.row.columns[self.index_mapping[52]],
+                ScriptArg: &self.row.columns[self.index_mapping[53]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[54],
-                ScriptArg: &self.columns[55],
+                ScriptInstruction: &self.row.columns[self.index_mapping[54]],
+                ScriptArg: &self.row.columns[self.index_mapping[55]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[56],
-                ScriptArg: &self.columns[57],
+                ScriptInstruction: &self.row.columns[self.index_mapping[56]],
+                ScriptArg: &self.row.columns[self.index_mapping[57]],
             },
             ScriptElement {
-                ScriptInstruction: &self.columns[58],
-                ScriptArg: &self.columns[59],
+                ScriptInstruction: &self.row.columns[self.index_mapping[58]],
+                ScriptArg: &self.row.columns[self.index_mapping[59]],
             },
         ]
     }
-    pub fn MainOption<'a>(&'a self) -> &'a Field {
-        &self.columns[60]
+    pub fn MainOption(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[60]]
     }
-    pub fn SubOption<'a>(&'a self) -> &'a Field {
-        &self.columns[61]
+    pub fn SubOption(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[61]]
     }
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[62]
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[62]]
     }
-    pub fn IconActor<'a>(&'a self) -> &'a Field {
-        &self.columns[63]
+    pub fn IconActor(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[63]]
     }
-    pub fn IconMap<'a>(&'a self) -> &'a Field {
-        &self.columns[64]
+    pub fn IconMap(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[64]]
     }
-    pub fn SpecialLinks<'a>(&'a self) -> &'a Field {
-        &self.columns[65]
+    pub fn SpecialLinks(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[65]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[66]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[66]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[67]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[67]]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[68]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[68]]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a Field {
-        &self.columns[69]
+    pub fn Unknown3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[69]]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a Field {
-        &self.columns[70]
+    pub fn Unknown4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[70]]
     }
-    pub fn Unknown5<'a>(&'a self) -> &'a Field {
-        &self.columns[71]
+    pub fn Unknown5(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[71]]
     }
-    pub fn Unknown6<'a>(&'a self) -> &'a Field {
-        &self.columns[72]
+    pub fn Unknown6(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[72]]
     }
-    pub fn Unknown7<'a>(&'a self) -> &'a Field {
-        &self.columns[73]
+    pub fn Unknown7(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[73]]
     }
-    pub fn Unknown8<'a>(&'a self) -> &'a Field {
-        &self.columns[74]
+    pub fn Unknown8(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[74]]
     }
-    pub fn Unknown9<'a>(&'a self) -> &'a Field {
-        &self.columns[75]
+    pub fn Unknown9(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[75]]
     }
-    pub fn Unknown10<'a>(&'a self) -> &'a Field {
-        &self.columns[76]
+    pub fn Unknown10(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[76]]
     }
-    pub fn Unknown11<'a>(&'a self) -> &'a Field {
-        &self.columns[77]
+    pub fn Unknown11(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[77]]
     }
-    pub fn Unknown12<'a>(&'a self) -> &'a Field {
-        &self.columns[78]
+    pub fn Unknown12(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[78]]
     }
 }

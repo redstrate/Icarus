@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct SnipeElementIdSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl SnipeElementIdSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl SnipeElementIdSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SnipeElementId")?;
         let sheet = resolver.read_excel_sheet(&exh, "SnipeElementId", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<SnipeElementIdRow> {
@@ -36,25 +48,17 @@ impl SnipeElementIdSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for SnipeElementIdSheet {
-    type Row = SnipeElementIdRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for SnipeElementIdSheet {
+    type Row = SnipeElementIdRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a SnipeElementIdSheet {
-    type Item = (u32, Vec<(u16, SnipeElementIdRow)>);
+    type Item = (u32, Vec<(u16, SnipeElementIdRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, SnipeElementIdSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, SnipeElementIdSheet> {
         StructuredSheetIterator {
@@ -64,11 +68,12 @@ impl<'a> IntoIterator for &'a SnipeElementIdSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct SnipeElementIdRow {
-    columns: Vec<Field>,
+pub struct SnipeElementIdRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl SnipeElementIdRow {
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> SnipeElementIdRow<'a> {
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
 }

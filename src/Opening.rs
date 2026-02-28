@@ -14,6 +14,7 @@ pub struct VariablesElement<'a> {
 #[derive(Debug, Clone)]
 pub struct OpeningSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl OpeningSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -23,7 +24,18 @@ impl OpeningSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Opening")?;
         let sheet = resolver.read_excel_sheet(&exh, "Opening", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<OpeningRow> {
@@ -40,25 +52,17 @@ impl OpeningSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for OpeningSheet {
-    type Row = OpeningRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for OpeningSheet {
+    type Row = OpeningRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a OpeningSheet {
-    type Item = (u32, Vec<(u16, OpeningRow)>);
+    type Item = (u32, Vec<(u16, OpeningRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, OpeningSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, OpeningSheet> {
         StructuredSheetIterator {
@@ -68,178 +72,179 @@ impl<'a> IntoIterator for &'a OpeningSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct OpeningRow {
-    columns: Vec<Field>,
+pub struct OpeningRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl OpeningRow {
-    pub fn Variables<'a>(&'a self) -> [VariablesElement<'a>; 40] {
+impl<'a> OpeningRow<'a> {
+    pub fn Variables(&'a self) -> [VariablesElement<'a>; 40] {
         [
             VariablesElement {
-                Name: &self.columns[0],
-                Value: &self.columns[1],
+                Name: &self.row.columns[self.index_mapping[0]],
+                Value: &self.row.columns[self.index_mapping[1]],
             },
             VariablesElement {
-                Name: &self.columns[2],
-                Value: &self.columns[3],
+                Name: &self.row.columns[self.index_mapping[2]],
+                Value: &self.row.columns[self.index_mapping[3]],
             },
             VariablesElement {
-                Name: &self.columns[4],
-                Value: &self.columns[5],
+                Name: &self.row.columns[self.index_mapping[4]],
+                Value: &self.row.columns[self.index_mapping[5]],
             },
             VariablesElement {
-                Name: &self.columns[6],
-                Value: &self.columns[7],
+                Name: &self.row.columns[self.index_mapping[6]],
+                Value: &self.row.columns[self.index_mapping[7]],
             },
             VariablesElement {
-                Name: &self.columns[8],
-                Value: &self.columns[9],
+                Name: &self.row.columns[self.index_mapping[8]],
+                Value: &self.row.columns[self.index_mapping[9]],
             },
             VariablesElement {
-                Name: &self.columns[10],
-                Value: &self.columns[11],
+                Name: &self.row.columns[self.index_mapping[10]],
+                Value: &self.row.columns[self.index_mapping[11]],
             },
             VariablesElement {
-                Name: &self.columns[12],
-                Value: &self.columns[13],
+                Name: &self.row.columns[self.index_mapping[12]],
+                Value: &self.row.columns[self.index_mapping[13]],
             },
             VariablesElement {
-                Name: &self.columns[14],
-                Value: &self.columns[15],
+                Name: &self.row.columns[self.index_mapping[14]],
+                Value: &self.row.columns[self.index_mapping[15]],
             },
             VariablesElement {
-                Name: &self.columns[16],
-                Value: &self.columns[17],
+                Name: &self.row.columns[self.index_mapping[16]],
+                Value: &self.row.columns[self.index_mapping[17]],
             },
             VariablesElement {
-                Name: &self.columns[18],
-                Value: &self.columns[19],
+                Name: &self.row.columns[self.index_mapping[18]],
+                Value: &self.row.columns[self.index_mapping[19]],
             },
             VariablesElement {
-                Name: &self.columns[20],
-                Value: &self.columns[21],
+                Name: &self.row.columns[self.index_mapping[20]],
+                Value: &self.row.columns[self.index_mapping[21]],
             },
             VariablesElement {
-                Name: &self.columns[22],
-                Value: &self.columns[23],
+                Name: &self.row.columns[self.index_mapping[22]],
+                Value: &self.row.columns[self.index_mapping[23]],
             },
             VariablesElement {
-                Name: &self.columns[24],
-                Value: &self.columns[25],
+                Name: &self.row.columns[self.index_mapping[24]],
+                Value: &self.row.columns[self.index_mapping[25]],
             },
             VariablesElement {
-                Name: &self.columns[26],
-                Value: &self.columns[27],
+                Name: &self.row.columns[self.index_mapping[26]],
+                Value: &self.row.columns[self.index_mapping[27]],
             },
             VariablesElement {
-                Name: &self.columns[28],
-                Value: &self.columns[29],
+                Name: &self.row.columns[self.index_mapping[28]],
+                Value: &self.row.columns[self.index_mapping[29]],
             },
             VariablesElement {
-                Name: &self.columns[30],
-                Value: &self.columns[31],
+                Name: &self.row.columns[self.index_mapping[30]],
+                Value: &self.row.columns[self.index_mapping[31]],
             },
             VariablesElement {
-                Name: &self.columns[32],
-                Value: &self.columns[33],
+                Name: &self.row.columns[self.index_mapping[32]],
+                Value: &self.row.columns[self.index_mapping[33]],
             },
             VariablesElement {
-                Name: &self.columns[34],
-                Value: &self.columns[35],
+                Name: &self.row.columns[self.index_mapping[34]],
+                Value: &self.row.columns[self.index_mapping[35]],
             },
             VariablesElement {
-                Name: &self.columns[36],
-                Value: &self.columns[37],
+                Name: &self.row.columns[self.index_mapping[36]],
+                Value: &self.row.columns[self.index_mapping[37]],
             },
             VariablesElement {
-                Name: &self.columns[38],
-                Value: &self.columns[39],
+                Name: &self.row.columns[self.index_mapping[38]],
+                Value: &self.row.columns[self.index_mapping[39]],
             },
             VariablesElement {
-                Name: &self.columns[40],
-                Value: &self.columns[41],
+                Name: &self.row.columns[self.index_mapping[40]],
+                Value: &self.row.columns[self.index_mapping[41]],
             },
             VariablesElement {
-                Name: &self.columns[42],
-                Value: &self.columns[43],
+                Name: &self.row.columns[self.index_mapping[42]],
+                Value: &self.row.columns[self.index_mapping[43]],
             },
             VariablesElement {
-                Name: &self.columns[44],
-                Value: &self.columns[45],
+                Name: &self.row.columns[self.index_mapping[44]],
+                Value: &self.row.columns[self.index_mapping[45]],
             },
             VariablesElement {
-                Name: &self.columns[46],
-                Value: &self.columns[47],
+                Name: &self.row.columns[self.index_mapping[46]],
+                Value: &self.row.columns[self.index_mapping[47]],
             },
             VariablesElement {
-                Name: &self.columns[48],
-                Value: &self.columns[49],
+                Name: &self.row.columns[self.index_mapping[48]],
+                Value: &self.row.columns[self.index_mapping[49]],
             },
             VariablesElement {
-                Name: &self.columns[50],
-                Value: &self.columns[51],
+                Name: &self.row.columns[self.index_mapping[50]],
+                Value: &self.row.columns[self.index_mapping[51]],
             },
             VariablesElement {
-                Name: &self.columns[52],
-                Value: &self.columns[53],
+                Name: &self.row.columns[self.index_mapping[52]],
+                Value: &self.row.columns[self.index_mapping[53]],
             },
             VariablesElement {
-                Name: &self.columns[54],
-                Value: &self.columns[55],
+                Name: &self.row.columns[self.index_mapping[54]],
+                Value: &self.row.columns[self.index_mapping[55]],
             },
             VariablesElement {
-                Name: &self.columns[56],
-                Value: &self.columns[57],
+                Name: &self.row.columns[self.index_mapping[56]],
+                Value: &self.row.columns[self.index_mapping[57]],
             },
             VariablesElement {
-                Name: &self.columns[58],
-                Value: &self.columns[59],
+                Name: &self.row.columns[self.index_mapping[58]],
+                Value: &self.row.columns[self.index_mapping[59]],
             },
             VariablesElement {
-                Name: &self.columns[60],
-                Value: &self.columns[61],
+                Name: &self.row.columns[self.index_mapping[60]],
+                Value: &self.row.columns[self.index_mapping[61]],
             },
             VariablesElement {
-                Name: &self.columns[62],
-                Value: &self.columns[63],
+                Name: &self.row.columns[self.index_mapping[62]],
+                Value: &self.row.columns[self.index_mapping[63]],
             },
             VariablesElement {
-                Name: &self.columns[64],
-                Value: &self.columns[65],
+                Name: &self.row.columns[self.index_mapping[64]],
+                Value: &self.row.columns[self.index_mapping[65]],
             },
             VariablesElement {
-                Name: &self.columns[66],
-                Value: &self.columns[67],
+                Name: &self.row.columns[self.index_mapping[66]],
+                Value: &self.row.columns[self.index_mapping[67]],
             },
             VariablesElement {
-                Name: &self.columns[68],
-                Value: &self.columns[69],
+                Name: &self.row.columns[self.index_mapping[68]],
+                Value: &self.row.columns[self.index_mapping[69]],
             },
             VariablesElement {
-                Name: &self.columns[70],
-                Value: &self.columns[71],
+                Name: &self.row.columns[self.index_mapping[70]],
+                Value: &self.row.columns[self.index_mapping[71]],
             },
             VariablesElement {
-                Name: &self.columns[72],
-                Value: &self.columns[73],
+                Name: &self.row.columns[self.index_mapping[72]],
+                Value: &self.row.columns[self.index_mapping[73]],
             },
             VariablesElement {
-                Name: &self.columns[74],
-                Value: &self.columns[75],
+                Name: &self.row.columns[self.index_mapping[74]],
+                Value: &self.row.columns[self.index_mapping[75]],
             },
             VariablesElement {
-                Name: &self.columns[76],
-                Value: &self.columns[77],
+                Name: &self.row.columns[self.index_mapping[76]],
+                Value: &self.row.columns[self.index_mapping[77]],
             },
             VariablesElement {
-                Name: &self.columns[78],
-                Value: &self.columns[79],
+                Name: &self.row.columns[self.index_mapping[78]],
+                Value: &self.row.columns[self.index_mapping[79]],
             },
         ]
     }
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[80]
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[80]]
     }
-    pub fn Quest<'a>(&'a self) -> &'a Field {
-        &self.columns[81]
+    pub fn Quest(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[81]]
     }
 }

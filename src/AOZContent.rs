@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct AOZContentSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl AOZContentSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl AOZContentSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AOZContent")?;
         let sheet = resolver.read_excel_sheet(&exh, "AOZContent", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<AOZContentRow> {
@@ -36,25 +48,17 @@ impl AOZContentSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for AOZContentSheet {
-    type Row = AOZContentRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for AOZContentSheet {
+    type Row = AOZContentRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a AOZContentSheet {
-    type Item = (u32, Vec<(u16, AOZContentRow)>);
+    type Item = (u32, Vec<(u16, AOZContentRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, AOZContentSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, AOZContentSheet> {
         StructuredSheetIterator {
@@ -64,65 +68,66 @@ impl<'a> IntoIterator for &'a AOZContentSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct AOZContentRow {
-    columns: Vec<Field>,
+pub struct AOZContentRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl AOZContentRow {
-    pub fn GilReward<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> AOZContentRow<'a> {
+    pub fn GilReward(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn AlliedSealsReward<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn AlliedSealsReward(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn TomestonesReward<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn TomestonesReward(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn ContentEntry<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn ContentEntry(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn StandardFinishTime<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn StandardFinishTime(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn IdealFinishTime<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn IdealFinishTime(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Act1<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Act1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Act2<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Act2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn Act3<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn Act3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn Act1FightType<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn Act1FightType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
-    pub fn Act2FightType<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn Act2FightType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn Act3FightType<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn Act3FightType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn ArenaType1<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn ArenaType1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn ArenaType2<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn ArenaType2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn ArenaType3<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn ArenaType3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn Order<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn Order(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
 }

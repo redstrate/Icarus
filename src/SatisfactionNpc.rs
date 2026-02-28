@@ -22,6 +22,7 @@ pub struct RankParamsElement<'a> {
 #[derive(Debug, Clone)]
 pub struct SatisfactionNpcSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl SatisfactionNpcSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -31,7 +32,18 @@ impl SatisfactionNpcSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("SatisfactionNpc")?;
         let sheet = resolver.read_excel_sheet(&exh, "SatisfactionNpc", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<SatisfactionNpcRow> {
@@ -48,25 +60,17 @@ impl SatisfactionNpcSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for SatisfactionNpcSheet {
-    type Row = SatisfactionNpcRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for SatisfactionNpcSheet {
+    type Row = SatisfactionNpcRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a SatisfactionNpcSheet {
-    type Item = (u32, Vec<(u16, SatisfactionNpcRow)>);
+    type Item = (u32, Vec<(u16, SatisfactionNpcRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, SatisfactionNpcSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, SatisfactionNpcSheet> {
         StructuredSheetIterator {
@@ -76,115 +80,188 @@ impl<'a> IntoIterator for &'a SatisfactionNpcSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct SatisfactionNpcRow {
-    columns: Vec<Field>,
+pub struct SatisfactionNpcRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl SatisfactionNpcRow {
-    pub fn SatisfactionNpcParams<'a>(&'a self) -> [SatisfactionNpcParamsElement<'a>; 6] {
+impl<'a> SatisfactionNpcRow<'a> {
+    pub fn SatisfactionNpcParams(&'a self) -> [SatisfactionNpcParamsElement<'a>; 6] {
         [
             SatisfactionNpcParamsElement {
-                SupplyIndex: &self.columns[0],
-                Item: [&self.columns[1], &self.columns[2], &self.columns[3]],
-                SatisfactionRequired: &self.columns[4],
-                ItemCount: [&self.columns[5], &self.columns[6], &self.columns[7]],
-                IsHQ: [&self.columns[8], &self.columns[9], &self.columns[10]],
+                SupplyIndex: &self.row.columns[self.index_mapping[0]],
+                Item: [
+                    &self.row.columns[self.index_mapping[1]],
+                    &self.row.columns[self.index_mapping[2]],
+                    &self.row.columns[self.index_mapping[3]],
+                ],
+                SatisfactionRequired: &self.row.columns[self.index_mapping[4]],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[5]],
+                    &self.row.columns[self.index_mapping[6]],
+                    &self.row.columns[self.index_mapping[7]],
+                ],
+                IsHQ: [
+                    &self.row.columns[self.index_mapping[8]],
+                    &self.row.columns[self.index_mapping[9]],
+                    &self.row.columns[self.index_mapping[10]],
+                ],
             },
             SatisfactionNpcParamsElement {
-                SupplyIndex: &self.columns[11],
-                Item: [&self.columns[12], &self.columns[13], &self.columns[14]],
-                SatisfactionRequired: &self.columns[15],
-                ItemCount: [&self.columns[16], &self.columns[17], &self.columns[18]],
-                IsHQ: [&self.columns[19], &self.columns[20], &self.columns[21]],
+                SupplyIndex: &self.row.columns[self.index_mapping[11]],
+                Item: [
+                    &self.row.columns[self.index_mapping[12]],
+                    &self.row.columns[self.index_mapping[13]],
+                    &self.row.columns[self.index_mapping[14]],
+                ],
+                SatisfactionRequired: &self.row.columns[self.index_mapping[15]],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[16]],
+                    &self.row.columns[self.index_mapping[17]],
+                    &self.row.columns[self.index_mapping[18]],
+                ],
+                IsHQ: [
+                    &self.row.columns[self.index_mapping[19]],
+                    &self.row.columns[self.index_mapping[20]],
+                    &self.row.columns[self.index_mapping[21]],
+                ],
             },
             SatisfactionNpcParamsElement {
-                SupplyIndex: &self.columns[22],
-                Item: [&self.columns[23], &self.columns[24], &self.columns[25]],
-                SatisfactionRequired: &self.columns[26],
-                ItemCount: [&self.columns[27], &self.columns[28], &self.columns[29]],
-                IsHQ: [&self.columns[30], &self.columns[31], &self.columns[32]],
+                SupplyIndex: &self.row.columns[self.index_mapping[22]],
+                Item: [
+                    &self.row.columns[self.index_mapping[23]],
+                    &self.row.columns[self.index_mapping[24]],
+                    &self.row.columns[self.index_mapping[25]],
+                ],
+                SatisfactionRequired: &self.row.columns[self.index_mapping[26]],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[27]],
+                    &self.row.columns[self.index_mapping[28]],
+                    &self.row.columns[self.index_mapping[29]],
+                ],
+                IsHQ: [
+                    &self.row.columns[self.index_mapping[30]],
+                    &self.row.columns[self.index_mapping[31]],
+                    &self.row.columns[self.index_mapping[32]],
+                ],
             },
             SatisfactionNpcParamsElement {
-                SupplyIndex: &self.columns[33],
-                Item: [&self.columns[34], &self.columns[35], &self.columns[36]],
-                SatisfactionRequired: &self.columns[37],
-                ItemCount: [&self.columns[38], &self.columns[39], &self.columns[40]],
-                IsHQ: [&self.columns[41], &self.columns[42], &self.columns[43]],
+                SupplyIndex: &self.row.columns[self.index_mapping[33]],
+                Item: [
+                    &self.row.columns[self.index_mapping[34]],
+                    &self.row.columns[self.index_mapping[35]],
+                    &self.row.columns[self.index_mapping[36]],
+                ],
+                SatisfactionRequired: &self.row.columns[self.index_mapping[37]],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[38]],
+                    &self.row.columns[self.index_mapping[39]],
+                    &self.row.columns[self.index_mapping[40]],
+                ],
+                IsHQ: [
+                    &self.row.columns[self.index_mapping[41]],
+                    &self.row.columns[self.index_mapping[42]],
+                    &self.row.columns[self.index_mapping[43]],
+                ],
             },
             SatisfactionNpcParamsElement {
-                SupplyIndex: &self.columns[44],
-                Item: [&self.columns[45], &self.columns[46], &self.columns[47]],
-                SatisfactionRequired: &self.columns[48],
-                ItemCount: [&self.columns[49], &self.columns[50], &self.columns[51]],
-                IsHQ: [&self.columns[52], &self.columns[53], &self.columns[54]],
+                SupplyIndex: &self.row.columns[self.index_mapping[44]],
+                Item: [
+                    &self.row.columns[self.index_mapping[45]],
+                    &self.row.columns[self.index_mapping[46]],
+                    &self.row.columns[self.index_mapping[47]],
+                ],
+                SatisfactionRequired: &self.row.columns[self.index_mapping[48]],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[49]],
+                    &self.row.columns[self.index_mapping[50]],
+                    &self.row.columns[self.index_mapping[51]],
+                ],
+                IsHQ: [
+                    &self.row.columns[self.index_mapping[52]],
+                    &self.row.columns[self.index_mapping[53]],
+                    &self.row.columns[self.index_mapping[54]],
+                ],
             },
             SatisfactionNpcParamsElement {
-                SupplyIndex: &self.columns[55],
-                Item: [&self.columns[56], &self.columns[57], &self.columns[58]],
-                SatisfactionRequired: &self.columns[59],
-                ItemCount: [&self.columns[60], &self.columns[61], &self.columns[62]],
-                IsHQ: [&self.columns[63], &self.columns[64], &self.columns[65]],
+                SupplyIndex: &self.row.columns[self.index_mapping[55]],
+                Item: [
+                    &self.row.columns[self.index_mapping[56]],
+                    &self.row.columns[self.index_mapping[57]],
+                    &self.row.columns[self.index_mapping[58]],
+                ],
+                SatisfactionRequired: &self.row.columns[self.index_mapping[59]],
+                ItemCount: [
+                    &self.row.columns[self.index_mapping[60]],
+                    &self.row.columns[self.index_mapping[61]],
+                    &self.row.columns[self.index_mapping[62]],
+                ],
+                IsHQ: [
+                    &self.row.columns[self.index_mapping[63]],
+                    &self.row.columns[self.index_mapping[64]],
+                    &self.row.columns[self.index_mapping[65]],
+                ],
             },
         ]
     }
-    pub fn RankParams<'a>(&'a self) -> [RankParamsElement<'a>; 6] {
+    pub fn RankParams(&'a self) -> [RankParamsElement<'a>; 6] {
         [
             RankParamsElement {
-                ImageId: &self.columns[66],
-                Unknown1: &self.columns[67],
-                Quest: &self.columns[68],
+                ImageId: &self.row.columns[self.index_mapping[66]],
+                Unknown1: &self.row.columns[self.index_mapping[67]],
+                Quest: &self.row.columns[self.index_mapping[68]],
             },
             RankParamsElement {
-                ImageId: &self.columns[69],
-                Unknown1: &self.columns[70],
-                Quest: &self.columns[71],
+                ImageId: &self.row.columns[self.index_mapping[69]],
+                Unknown1: &self.row.columns[self.index_mapping[70]],
+                Quest: &self.row.columns[self.index_mapping[71]],
             },
             RankParamsElement {
-                ImageId: &self.columns[72],
-                Unknown1: &self.columns[73],
-                Quest: &self.columns[74],
+                ImageId: &self.row.columns[self.index_mapping[72]],
+                Unknown1: &self.row.columns[self.index_mapping[73]],
+                Quest: &self.row.columns[self.index_mapping[74]],
             },
             RankParamsElement {
-                ImageId: &self.columns[75],
-                Unknown1: &self.columns[76],
-                Quest: &self.columns[77],
+                ImageId: &self.row.columns[self.index_mapping[75]],
+                Unknown1: &self.row.columns[self.index_mapping[76]],
+                Quest: &self.row.columns[self.index_mapping[77]],
             },
             RankParamsElement {
-                ImageId: &self.columns[78],
-                Unknown1: &self.columns[79],
-                Quest: &self.columns[80],
+                ImageId: &self.row.columns[self.index_mapping[78]],
+                Unknown1: &self.row.columns[self.index_mapping[79]],
+                Quest: &self.row.columns[self.index_mapping[80]],
             },
             RankParamsElement {
-                ImageId: &self.columns[81],
-                Unknown1: &self.columns[82],
-                Quest: &self.columns[83],
+                ImageId: &self.row.columns[self.index_mapping[81]],
+                Unknown1: &self.row.columns[self.index_mapping[82]],
+                Quest: &self.row.columns[self.index_mapping[83]],
             },
         ]
     }
-    pub fn Level<'a>(&'a self) -> &'a Field {
-        &self.columns[84]
+    pub fn Level(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[84]]
     }
-    pub fn Npc<'a>(&'a self) -> &'a Field {
-        &self.columns[85]
+    pub fn Npc(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[85]]
     }
-    pub fn QuestRequired<'a>(&'a self) -> &'a Field {
-        &self.columns[86]
+    pub fn QuestRequired(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[86]]
     }
-    pub fn Icon<'a>(&'a self) -> &'a Field {
-        &self.columns[87]
+    pub fn Icon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[87]]
     }
-    pub fn LevelUnlock<'a>(&'a self) -> &'a Field {
-        &self.columns[88]
+    pub fn LevelUnlock(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[88]]
     }
-    pub fn DeliveriesPerWeek<'a>(&'a self) -> &'a Field {
-        &self.columns[89]
+    pub fn DeliveriesPerWeek(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[89]]
     }
-    pub fn GlamourIndex<'a>(&'a self) -> &'a Field {
-        &self.columns[90]
+    pub fn GlamourIndex(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[90]]
     }
-    pub fn Unknown19<'a>(&'a self) -> &'a Field {
-        &self.columns[91]
+    pub fn Unknown19(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[91]]
     }
-    pub fn Unknown20<'a>(&'a self) -> &'a Field {
-        &self.columns[92]
+    pub fn Unknown20(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[92]]
     }
 }

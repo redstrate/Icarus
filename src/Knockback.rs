@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct KnockbackSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl KnockbackSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl KnockbackSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Knockback")?;
         let sheet = resolver.read_excel_sheet(&exh, "Knockback", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<KnockbackRow> {
@@ -36,25 +48,17 @@ impl KnockbackSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for KnockbackSheet {
-    type Row = KnockbackRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for KnockbackSheet {
+    type Row = KnockbackRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a KnockbackSheet {
-    type Item = (u32, Vec<(u16, KnockbackRow)>);
+    type Item = (u32, Vec<(u16, KnockbackRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, KnockbackSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, KnockbackSheet> {
         StructuredSheetIterator {
@@ -64,29 +68,30 @@ impl<'a> IntoIterator for &'a KnockbackSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct KnockbackRow {
-    columns: Vec<Field>,
+pub struct KnockbackRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl KnockbackRow {
-    pub fn Distance<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> KnockbackRow<'a> {
+    pub fn Distance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Speed<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Speed(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn NearDistance<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn NearDistance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Direction<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Direction(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn DirectionArg<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn DirectionArg(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Motion<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Motion(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn CancelMove<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn CancelMove(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
 }

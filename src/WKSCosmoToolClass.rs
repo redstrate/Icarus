@@ -20,6 +20,7 @@ pub struct TypesElement<'a> {
 #[derive(Debug, Clone)]
 pub struct WKSCosmoToolClassSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl WKSCosmoToolClassSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -29,7 +30,18 @@ impl WKSCosmoToolClassSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSCosmoToolClass")?;
         let sheet = resolver.read_excel_sheet(&exh, "WKSCosmoToolClass", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<WKSCosmoToolClassRow> {
@@ -46,25 +58,17 @@ impl WKSCosmoToolClassSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for WKSCosmoToolClassSheet {
-    type Row = WKSCosmoToolClassRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for WKSCosmoToolClassSheet {
+    type Row = WKSCosmoToolClassRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a WKSCosmoToolClassSheet {
-    type Item = (u32, Vec<(u16, WKSCosmoToolClassRow)>);
+    type Item = (u32, Vec<(u16, WKSCosmoToolClassRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, WKSCosmoToolClassSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, WKSCosmoToolClassSheet> {
         StructuredSheetIterator {
@@ -74,137 +78,138 @@ impl<'a> IntoIterator for &'a WKSCosmoToolClassSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct WKSCosmoToolClassRow {
-    columns: Vec<Field>,
+pub struct WKSCosmoToolClassRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl WKSCosmoToolClassRow {
-    pub fn Stages<'a>(&'a self) -> [StagesElement<'a>; 17] {
+impl<'a> WKSCosmoToolClassRow<'a> {
+    pub fn Stages(&'a self) -> [StagesElement<'a>; 17] {
         [
             StagesElement {
-                Unknown0: &self.columns[0],
-                Item: &self.columns[1],
-                Name: &self.columns[2],
+                Unknown0: &self.row.columns[self.index_mapping[0]],
+                Item: &self.row.columns[self.index_mapping[1]],
+                Name: &self.row.columns[self.index_mapping[2]],
             },
             StagesElement {
-                Unknown0: &self.columns[3],
-                Item: &self.columns[4],
-                Name: &self.columns[5],
+                Unknown0: &self.row.columns[self.index_mapping[3]],
+                Item: &self.row.columns[self.index_mapping[4]],
+                Name: &self.row.columns[self.index_mapping[5]],
             },
             StagesElement {
-                Unknown0: &self.columns[6],
-                Item: &self.columns[7],
-                Name: &self.columns[8],
+                Unknown0: &self.row.columns[self.index_mapping[6]],
+                Item: &self.row.columns[self.index_mapping[7]],
+                Name: &self.row.columns[self.index_mapping[8]],
             },
             StagesElement {
-                Unknown0: &self.columns[9],
-                Item: &self.columns[10],
-                Name: &self.columns[11],
+                Unknown0: &self.row.columns[self.index_mapping[9]],
+                Item: &self.row.columns[self.index_mapping[10]],
+                Name: &self.row.columns[self.index_mapping[11]],
             },
             StagesElement {
-                Unknown0: &self.columns[12],
-                Item: &self.columns[13],
-                Name: &self.columns[14],
+                Unknown0: &self.row.columns[self.index_mapping[12]],
+                Item: &self.row.columns[self.index_mapping[13]],
+                Name: &self.row.columns[self.index_mapping[14]],
             },
             StagesElement {
-                Unknown0: &self.columns[15],
-                Item: &self.columns[16],
-                Name: &self.columns[17],
+                Unknown0: &self.row.columns[self.index_mapping[15]],
+                Item: &self.row.columns[self.index_mapping[16]],
+                Name: &self.row.columns[self.index_mapping[17]],
             },
             StagesElement {
-                Unknown0: &self.columns[18],
-                Item: &self.columns[19],
-                Name: &self.columns[20],
+                Unknown0: &self.row.columns[self.index_mapping[18]],
+                Item: &self.row.columns[self.index_mapping[19]],
+                Name: &self.row.columns[self.index_mapping[20]],
             },
             StagesElement {
-                Unknown0: &self.columns[21],
-                Item: &self.columns[22],
-                Name: &self.columns[23],
+                Unknown0: &self.row.columns[self.index_mapping[21]],
+                Item: &self.row.columns[self.index_mapping[22]],
+                Name: &self.row.columns[self.index_mapping[23]],
             },
             StagesElement {
-                Unknown0: &self.columns[24],
-                Item: &self.columns[25],
-                Name: &self.columns[26],
+                Unknown0: &self.row.columns[self.index_mapping[24]],
+                Item: &self.row.columns[self.index_mapping[25]],
+                Name: &self.row.columns[self.index_mapping[26]],
             },
             StagesElement {
-                Unknown0: &self.columns[27],
-                Item: &self.columns[28],
-                Name: &self.columns[29],
+                Unknown0: &self.row.columns[self.index_mapping[27]],
+                Item: &self.row.columns[self.index_mapping[28]],
+                Name: &self.row.columns[self.index_mapping[29]],
             },
             StagesElement {
-                Unknown0: &self.columns[30],
-                Item: &self.columns[31],
-                Name: &self.columns[32],
+                Unknown0: &self.row.columns[self.index_mapping[30]],
+                Item: &self.row.columns[self.index_mapping[31]],
+                Name: &self.row.columns[self.index_mapping[32]],
             },
             StagesElement {
-                Unknown0: &self.columns[33],
-                Item: &self.columns[34],
-                Name: &self.columns[35],
+                Unknown0: &self.row.columns[self.index_mapping[33]],
+                Item: &self.row.columns[self.index_mapping[34]],
+                Name: &self.row.columns[self.index_mapping[35]],
             },
             StagesElement {
-                Unknown0: &self.columns[36],
-                Item: &self.columns[37],
-                Name: &self.columns[38],
+                Unknown0: &self.row.columns[self.index_mapping[36]],
+                Item: &self.row.columns[self.index_mapping[37]],
+                Name: &self.row.columns[self.index_mapping[38]],
             },
             StagesElement {
-                Unknown0: &self.columns[39],
-                Item: &self.columns[40],
-                Name: &self.columns[41],
+                Unknown0: &self.row.columns[self.index_mapping[39]],
+                Item: &self.row.columns[self.index_mapping[40]],
+                Name: &self.row.columns[self.index_mapping[41]],
             },
             StagesElement {
-                Unknown0: &self.columns[42],
-                Item: &self.columns[43],
-                Name: &self.columns[44],
+                Unknown0: &self.row.columns[self.index_mapping[42]],
+                Item: &self.row.columns[self.index_mapping[43]],
+                Name: &self.row.columns[self.index_mapping[44]],
             },
             StagesElement {
-                Unknown0: &self.columns[45],
-                Item: &self.columns[46],
-                Name: &self.columns[47],
+                Unknown0: &self.row.columns[self.index_mapping[45]],
+                Item: &self.row.columns[self.index_mapping[46]],
+                Name: &self.row.columns[self.index_mapping[47]],
             },
             StagesElement {
-                Unknown0: &self.columns[48],
-                Item: &self.columns[49],
-                Name: &self.columns[50],
+                Unknown0: &self.row.columns[self.index_mapping[48]],
+                Item: &self.row.columns[self.index_mapping[49]],
+                Name: &self.row.columns[self.index_mapping[50]],
             },
         ]
     }
-    pub fn Types<'a>(&'a self) -> [TypesElement<'a>; 6] {
+    pub fn Types(&'a self) -> [TypesElement<'a>; 6] {
         [
             TypesElement {
-                Icon: &self.columns[51],
-                Name: &self.columns[52],
-                CosmicName: &self.columns[53],
+                Icon: &self.row.columns[self.index_mapping[51]],
+                Name: &self.row.columns[self.index_mapping[52]],
+                CosmicName: &self.row.columns[self.index_mapping[53]],
             },
             TypesElement {
-                Icon: &self.columns[54],
-                Name: &self.columns[55],
-                CosmicName: &self.columns[56],
+                Icon: &self.row.columns[self.index_mapping[54]],
+                Name: &self.row.columns[self.index_mapping[55]],
+                CosmicName: &self.row.columns[self.index_mapping[56]],
             },
             TypesElement {
-                Icon: &self.columns[57],
-                Name: &self.columns[58],
-                CosmicName: &self.columns[59],
+                Icon: &self.row.columns[self.index_mapping[57]],
+                Name: &self.row.columns[self.index_mapping[58]],
+                CosmicName: &self.row.columns[self.index_mapping[59]],
             },
             TypesElement {
-                Icon: &self.columns[60],
-                Name: &self.columns[61],
-                CosmicName: &self.columns[62],
+                Icon: &self.row.columns[self.index_mapping[60]],
+                Name: &self.row.columns[self.index_mapping[61]],
+                CosmicName: &self.row.columns[self.index_mapping[62]],
             },
             TypesElement {
-                Icon: &self.columns[63],
-                Name: &self.columns[64],
-                CosmicName: &self.columns[65],
+                Icon: &self.row.columns[self.index_mapping[63]],
+                Name: &self.row.columns[self.index_mapping[64]],
+                CosmicName: &self.row.columns[self.index_mapping[65]],
             },
             TypesElement {
-                Icon: &self.columns[66],
-                Name: &self.columns[67],
-                CosmicName: &self.columns[68],
+                Icon: &self.row.columns[self.index_mapping[66]],
+                Name: &self.row.columns[self.index_mapping[67]],
+                CosmicName: &self.row.columns[self.index_mapping[68]],
             },
         ]
     }
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[69]
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[69]]
     }
-    pub fn DataAmount<'a>(&'a self) -> &'a Field {
-        &self.columns[70]
+    pub fn DataAmount(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[70]]
     }
 }

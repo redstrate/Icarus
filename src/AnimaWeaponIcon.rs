@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct AnimaWeaponIconSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl AnimaWeaponIconSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl AnimaWeaponIconSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AnimaWeaponIcon")?;
         let sheet = resolver.read_excel_sheet(&exh, "AnimaWeaponIcon", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<AnimaWeaponIconRow> {
@@ -36,25 +48,17 @@ impl AnimaWeaponIconSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for AnimaWeaponIconSheet {
-    type Row = AnimaWeaponIconRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for AnimaWeaponIconSheet {
+    type Row = AnimaWeaponIconRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a AnimaWeaponIconSheet {
-    type Item = (u32, Vec<(u16, AnimaWeaponIconRow)>);
+    type Item = (u32, Vec<(u16, AnimaWeaponIconRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, AnimaWeaponIconSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, AnimaWeaponIconSheet> {
         StructuredSheetIterator {
@@ -64,23 +68,24 @@ impl<'a> IntoIterator for &'a AnimaWeaponIconSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct AnimaWeaponIconRow {
-    columns: Vec<Field>,
+pub struct AnimaWeaponIconRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl AnimaWeaponIconRow {
-    pub fn Hyperconductive<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> AnimaWeaponIconRow<'a> {
+    pub fn Hyperconductive(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Reborn<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Reborn(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Sharpened<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Sharpened(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Zodiac<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Zodiac(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn ZodiacLux<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn ZodiacLux(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
 }

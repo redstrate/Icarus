@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct PvPTraitSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl PvPTraitSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl PvPTraitSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PvPTrait")?;
         let sheet = resolver.read_excel_sheet(&exh, "PvPTrait", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<PvPTraitRow> {
@@ -36,25 +48,17 @@ impl PvPTraitSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for PvPTraitSheet {
-    type Row = PvPTraitRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for PvPTraitSheet {
+    type Row = PvPTraitRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a PvPTraitSheet {
-    type Item = (u32, Vec<(u16, PvPTraitRow)>);
+    type Item = (u32, Vec<(u16, PvPTraitRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, PvPTraitSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, PvPTraitSheet> {
         StructuredSheetIterator {
@@ -64,17 +68,18 @@ impl<'a> IntoIterator for &'a PvPTraitSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct PvPTraitRow {
-    columns: Vec<Field>,
+pub struct PvPTraitRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl PvPTraitRow {
-    pub fn Trait1<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> PvPTraitRow<'a> {
+    pub fn Trait1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Trait2<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Trait2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Trait3<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Trait3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
 }

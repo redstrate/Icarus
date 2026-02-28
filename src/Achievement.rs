@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct AchievementSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl AchievementSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl AchievementSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Achievement")?;
         let sheet = resolver.read_excel_sheet(&exh, "Achievement", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<AchievementRow> {
@@ -36,25 +48,17 @@ impl AchievementSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for AchievementSheet {
-    type Row = AchievementRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for AchievementSheet {
+    type Row = AchievementRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a AchievementSheet {
-    type Item = (u32, Vec<(u16, AchievementRow)>);
+    type Item = (u32, Vec<(u16, AchievementRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, AchievementSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, AchievementSheet> {
         StructuredSheetIterator {
@@ -64,74 +68,75 @@ impl<'a> IntoIterator for &'a AchievementSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct AchievementRow {
-    columns: Vec<Field>,
+pub struct AchievementRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl AchievementRow {
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> AchievementRow<'a> {
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Description<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Description(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Item<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Item(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Icon<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Icon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Key<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Key(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Data<'a>(&'a self) -> [&'a Field; 8] {
+    pub fn Data(&'a self) -> [&'a Field; 8] {
         [
-            &self.columns[5],
-            &self.columns[6],
-            &self.columns[7],
-            &self.columns[8],
-            &self.columns[9],
-            &self.columns[10],
-            &self.columns[11],
-            &self.columns[12],
+            &self.row.columns[self.index_mapping[5]],
+            &self.row.columns[self.index_mapping[6]],
+            &self.row.columns[self.index_mapping[7]],
+            &self.row.columns[self.index_mapping[8]],
+            &self.row.columns[self.index_mapping[9]],
+            &self.row.columns[self.index_mapping[10]],
+            &self.row.columns[self.index_mapping[11]],
+            &self.row.columns[self.index_mapping[12]],
         ]
     }
-    pub fn Title<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn Title(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn Order<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn Order(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn AchievementCategory<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn AchievementCategory(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn AchievementTarget<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn AchievementTarget(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn Points<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn Points(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[19]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[19]]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[20]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[20]]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a Field {
-        &self.columns[21]
+    pub fn Unknown3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[21]]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a Field {
-        &self.columns[22]
+    pub fn Unknown4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[22]]
     }
-    pub fn Type<'a>(&'a self) -> &'a Field {
-        &self.columns[23]
+    pub fn Type(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[23]]
     }
-    pub fn Unknown5<'a>(&'a self) -> &'a Field {
-        &self.columns[24]
+    pub fn Unknown5(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[24]]
     }
-    pub fn AchievementHideCondition<'a>(&'a self) -> &'a Field {
-        &self.columns[25]
+    pub fn AchievementHideCondition(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[25]]
     }
 }

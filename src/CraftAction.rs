@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct CraftActionSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl CraftActionSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl CraftActionSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CraftAction")?;
         let sheet = resolver.read_excel_sheet(&exh, "CraftAction", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<CraftActionRow> {
@@ -36,25 +48,17 @@ impl CraftActionSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for CraftActionSheet {
-    type Row = CraftActionRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for CraftActionSheet {
+    type Row = CraftActionRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a CraftActionSheet {
-    type Item = (u32, Vec<(u16, CraftActionRow)>);
+    type Item = (u32, Vec<(u16, CraftActionRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, CraftActionSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, CraftActionSheet> {
         StructuredSheetIterator {
@@ -64,68 +68,69 @@ impl<'a> IntoIterator for &'a CraftActionSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct CraftActionRow {
-    columns: Vec<Field>,
+pub struct CraftActionRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl CraftActionRow {
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> CraftActionRow<'a> {
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Description<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Description(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn QuestRequirement<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn QuestRequirement(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn CRP<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn CRP(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn BSM<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn BSM(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn ARM<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn ARM(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn GSM<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn GSM(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn LTW<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn LTW(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn WVR<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn WVR(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn ALC<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn ALC(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn CUL<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn CUL(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn AnimationStart<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn AnimationStart(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn AnimationEnd<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn AnimationEnd(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
-    pub fn Icon<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn Icon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn RequiredStatus<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn RequiredStatus(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn ClassJobCategory<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn ClassJobCategory(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn ClassJobLevel<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn ClassJobLevel(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn Cost<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn Cost(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn ClassJob<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn ClassJob(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
-    pub fn Specialist<'a>(&'a self) -> &'a Field {
-        &self.columns[19]
+    pub fn Specialist(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[19]]
     }
 }

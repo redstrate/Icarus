@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct WKSEmergencyMissionSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl WKSEmergencyMissionSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl WKSEmergencyMissionSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSEmergencyMission")?;
         let sheet = resolver.read_excel_sheet(&exh, "WKSEmergencyMission", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<WKSEmergencyMissionRow> {
@@ -36,25 +48,17 @@ impl WKSEmergencyMissionSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for WKSEmergencyMissionSheet {
-    type Row = WKSEmergencyMissionRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for WKSEmergencyMissionSheet {
+    type Row = WKSEmergencyMissionRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a WKSEmergencyMissionSheet {
-    type Item = (u32, Vec<(u16, WKSEmergencyMissionRow)>);
+    type Item = (u32, Vec<(u16, WKSEmergencyMissionRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, WKSEmergencyMissionSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, WKSEmergencyMissionSheet> {
         StructuredSheetIterator {
@@ -64,12 +68,13 @@ impl<'a> IntoIterator for &'a WKSEmergencyMissionSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct WKSEmergencyMissionRow {
-    columns: Vec<Field>,
+pub struct WKSEmergencyMissionRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl WKSEmergencyMissionRow {
+impl<'a> WKSEmergencyMissionRow<'a> {
     /// As of Patch 7.31 this can always be direct queried with subrow 0 to get the follow chain to WKSMissionUnit from the sheet
-    pub fn WKSEmergencyMissionGroupRowId<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+    pub fn WKSEmergencyMissionGroupRowId(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
 }

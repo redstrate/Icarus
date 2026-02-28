@@ -14,6 +14,7 @@ pub struct OpenContentDataElement<'a> {
 #[derive(Debug, Clone)]
 pub struct OpenContentSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl OpenContentSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -23,7 +24,18 @@ impl OpenContentSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("OpenContent")?;
         let sheet = resolver.read_excel_sheet(&exh, "OpenContent", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<OpenContentRow> {
@@ -40,25 +52,17 @@ impl OpenContentSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for OpenContentSheet {
-    type Row = OpenContentRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for OpenContentSheet {
+    type Row = OpenContentRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a OpenContentSheet {
-    type Item = (u32, Vec<(u16, OpenContentRow)>);
+    type Item = (u32, Vec<(u16, OpenContentRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, OpenContentSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, OpenContentSheet> {
         StructuredSheetIterator {
@@ -68,75 +72,76 @@ impl<'a> IntoIterator for &'a OpenContentSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct OpenContentRow {
-    columns: Vec<Field>,
+pub struct OpenContentRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl OpenContentRow {
-    pub fn OpenContentData<'a>(&'a self) -> [OpenContentDataElement<'a>; 16] {
+impl<'a> OpenContentRow<'a> {
+    pub fn OpenContentData(&'a self) -> [OpenContentDataElement<'a>; 16] {
         [
             OpenContentDataElement {
-                CandidateName: &self.columns[0],
-                Content: &self.columns[1],
+                CandidateName: &self.row.columns[self.index_mapping[0]],
+                Content: &self.row.columns[self.index_mapping[1]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[2],
-                Content: &self.columns[3],
+                CandidateName: &self.row.columns[self.index_mapping[2]],
+                Content: &self.row.columns[self.index_mapping[3]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[4],
-                Content: &self.columns[5],
+                CandidateName: &self.row.columns[self.index_mapping[4]],
+                Content: &self.row.columns[self.index_mapping[5]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[6],
-                Content: &self.columns[7],
+                CandidateName: &self.row.columns[self.index_mapping[6]],
+                Content: &self.row.columns[self.index_mapping[7]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[8],
-                Content: &self.columns[9],
+                CandidateName: &self.row.columns[self.index_mapping[8]],
+                Content: &self.row.columns[self.index_mapping[9]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[10],
-                Content: &self.columns[11],
+                CandidateName: &self.row.columns[self.index_mapping[10]],
+                Content: &self.row.columns[self.index_mapping[11]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[12],
-                Content: &self.columns[13],
+                CandidateName: &self.row.columns[self.index_mapping[12]],
+                Content: &self.row.columns[self.index_mapping[13]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[14],
-                Content: &self.columns[15],
+                CandidateName: &self.row.columns[self.index_mapping[14]],
+                Content: &self.row.columns[self.index_mapping[15]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[16],
-                Content: &self.columns[17],
+                CandidateName: &self.row.columns[self.index_mapping[16]],
+                Content: &self.row.columns[self.index_mapping[17]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[18],
-                Content: &self.columns[19],
+                CandidateName: &self.row.columns[self.index_mapping[18]],
+                Content: &self.row.columns[self.index_mapping[19]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[20],
-                Content: &self.columns[21],
+                CandidateName: &self.row.columns[self.index_mapping[20]],
+                Content: &self.row.columns[self.index_mapping[21]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[22],
-                Content: &self.columns[23],
+                CandidateName: &self.row.columns[self.index_mapping[22]],
+                Content: &self.row.columns[self.index_mapping[23]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[24],
-                Content: &self.columns[25],
+                CandidateName: &self.row.columns[self.index_mapping[24]],
+                Content: &self.row.columns[self.index_mapping[25]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[26],
-                Content: &self.columns[27],
+                CandidateName: &self.row.columns[self.index_mapping[26]],
+                Content: &self.row.columns[self.index_mapping[27]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[28],
-                Content: &self.columns[29],
+                CandidateName: &self.row.columns[self.index_mapping[28]],
+                Content: &self.row.columns[self.index_mapping[29]],
             },
             OpenContentDataElement {
-                CandidateName: &self.columns[30],
-                Content: &self.columns[31],
+                CandidateName: &self.row.columns[self.index_mapping[30]],
+                Content: &self.row.columns[self.index_mapping[31]],
             },
         ]
     }

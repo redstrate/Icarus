@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct WeeklyBingoRewardDataSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl WeeklyBingoRewardDataSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl WeeklyBingoRewardDataSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WeeklyBingoRewardData")?;
         let sheet = resolver.read_excel_sheet(&exh, "WeeklyBingoRewardData", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<WeeklyBingoRewardDataRow> {
@@ -40,25 +52,17 @@ impl WeeklyBingoRewardDataSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for WeeklyBingoRewardDataSheet {
-    type Row = WeeklyBingoRewardDataRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for WeeklyBingoRewardDataSheet {
+    type Row = WeeklyBingoRewardDataRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a WeeklyBingoRewardDataSheet {
-    type Item = (u32, Vec<(u16, WeeklyBingoRewardDataRow)>);
+    type Item = (u32, Vec<(u16, WeeklyBingoRewardDataRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, WeeklyBingoRewardDataSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, WeeklyBingoRewardDataSheet> {
         StructuredSheetIterator {
@@ -68,47 +72,48 @@ impl<'a> IntoIterator for &'a WeeklyBingoRewardDataSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct WeeklyBingoRewardDataRow {
-    columns: Vec<Field>,
+pub struct WeeklyBingoRewardDataRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl WeeklyBingoRewardDataRow {
-    pub fn RewardItem1<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> WeeklyBingoRewardDataRow<'a> {
+    pub fn RewardItem1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn RewardItem2<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn RewardItem2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn RewardItem3<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn RewardItem3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn RewardQuantity1<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn RewardQuantity1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn RewardQuantity2<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn RewardQuantity2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn RewardQuantity3<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn RewardQuantity3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn RewardType1<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn RewardType1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn RewardType2<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn RewardType2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn RewardType3<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn RewardType3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn RewardHq2<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn RewardHq2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn RewardHq3<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn RewardHq3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn RewardHq1<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn RewardHq1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
 }

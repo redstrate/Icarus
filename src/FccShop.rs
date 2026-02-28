@@ -15,6 +15,7 @@ pub struct ItemDataElement<'a> {
 #[derive(Debug, Clone)]
 pub struct FccShopSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl FccShopSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -24,7 +25,18 @@ impl FccShopSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FccShop")?;
         let sheet = resolver.read_excel_sheet(&exh, "FccShop", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<FccShopRow> {
@@ -41,25 +53,17 @@ impl FccShopSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for FccShopSheet {
-    type Row = FccShopRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for FccShopSheet {
+    type Row = FccShopRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a FccShopSheet {
-    type Item = (u32, Vec<(u16, FccShopRow)>);
+    type Item = (u32, Vec<(u16, FccShopRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, FccShopSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, FccShopSheet> {
         StructuredSheetIterator {
@@ -69,64 +73,65 @@ impl<'a> IntoIterator for &'a FccShopSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct FccShopRow {
-    columns: Vec<Field>,
+pub struct FccShopRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl FccShopRow {
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> FccShopRow<'a> {
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn ItemData<'a>(&'a self) -> [ItemDataElement<'a>; 10] {
+    pub fn ItemData(&'a self) -> [ItemDataElement<'a>; 10] {
         [
             ItemDataElement {
-                Item: &self.columns[1],
-                Cost: &self.columns[2],
-                FCRankRequired: &self.columns[3],
+                Item: &self.row.columns[self.index_mapping[1]],
+                Cost: &self.row.columns[self.index_mapping[2]],
+                FCRankRequired: &self.row.columns[self.index_mapping[3]],
             },
             ItemDataElement {
-                Item: &self.columns[4],
-                Cost: &self.columns[5],
-                FCRankRequired: &self.columns[6],
+                Item: &self.row.columns[self.index_mapping[4]],
+                Cost: &self.row.columns[self.index_mapping[5]],
+                FCRankRequired: &self.row.columns[self.index_mapping[6]],
             },
             ItemDataElement {
-                Item: &self.columns[7],
-                Cost: &self.columns[8],
-                FCRankRequired: &self.columns[9],
+                Item: &self.row.columns[self.index_mapping[7]],
+                Cost: &self.row.columns[self.index_mapping[8]],
+                FCRankRequired: &self.row.columns[self.index_mapping[9]],
             },
             ItemDataElement {
-                Item: &self.columns[10],
-                Cost: &self.columns[11],
-                FCRankRequired: &self.columns[12],
+                Item: &self.row.columns[self.index_mapping[10]],
+                Cost: &self.row.columns[self.index_mapping[11]],
+                FCRankRequired: &self.row.columns[self.index_mapping[12]],
             },
             ItemDataElement {
-                Item: &self.columns[13],
-                Cost: &self.columns[14],
-                FCRankRequired: &self.columns[15],
+                Item: &self.row.columns[self.index_mapping[13]],
+                Cost: &self.row.columns[self.index_mapping[14]],
+                FCRankRequired: &self.row.columns[self.index_mapping[15]],
             },
             ItemDataElement {
-                Item: &self.columns[16],
-                Cost: &self.columns[17],
-                FCRankRequired: &self.columns[18],
+                Item: &self.row.columns[self.index_mapping[16]],
+                Cost: &self.row.columns[self.index_mapping[17]],
+                FCRankRequired: &self.row.columns[self.index_mapping[18]],
             },
             ItemDataElement {
-                Item: &self.columns[19],
-                Cost: &self.columns[20],
-                FCRankRequired: &self.columns[21],
+                Item: &self.row.columns[self.index_mapping[19]],
+                Cost: &self.row.columns[self.index_mapping[20]],
+                FCRankRequired: &self.row.columns[self.index_mapping[21]],
             },
             ItemDataElement {
-                Item: &self.columns[22],
-                Cost: &self.columns[23],
-                FCRankRequired: &self.columns[24],
+                Item: &self.row.columns[self.index_mapping[22]],
+                Cost: &self.row.columns[self.index_mapping[23]],
+                FCRankRequired: &self.row.columns[self.index_mapping[24]],
             },
             ItemDataElement {
-                Item: &self.columns[25],
-                Cost: &self.columns[26],
-                FCRankRequired: &self.columns[27],
+                Item: &self.row.columns[self.index_mapping[25]],
+                Cost: &self.row.columns[self.index_mapping[26]],
+                FCRankRequired: &self.row.columns[self.index_mapping[27]],
             },
             ItemDataElement {
-                Item: &self.columns[28],
-                Cost: &self.columns[29],
-                FCRankRequired: &self.columns[30],
+                Item: &self.row.columns[self.index_mapping[28]],
+                Cost: &self.row.columns[self.index_mapping[29]],
+                FCRankRequired: &self.row.columns[self.index_mapping[30]],
             },
         ]
     }

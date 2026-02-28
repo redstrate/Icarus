@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct LeveVfxSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl LeveVfxSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl LeveVfxSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("LeveVfx")?;
         let sheet = resolver.read_excel_sheet(&exh, "LeveVfx", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<LeveVfxRow> {
@@ -36,25 +48,17 @@ impl LeveVfxSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for LeveVfxSheet {
-    type Row = LeveVfxRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for LeveVfxSheet {
+    type Row = LeveVfxRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a LeveVfxSheet {
-    type Item = (u32, Vec<(u16, LeveVfxRow)>);
+    type Item = (u32, Vec<(u16, LeveVfxRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, LeveVfxSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, LeveVfxSheet> {
         StructuredSheetIterator {
@@ -64,14 +68,15 @@ impl<'a> IntoIterator for &'a LeveVfxSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct LeveVfxRow {
-    columns: Vec<Field>,
+pub struct LeveVfxRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl LeveVfxRow {
-    pub fn Effect<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> LeveVfxRow<'a> {
+    pub fn Effect(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Icon<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Icon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
 }

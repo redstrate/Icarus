@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct BuddySheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl BuddySheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl BuddySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Buddy")?;
         let sheet = resolver.read_excel_sheet(&exh, "Buddy", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<BuddyRow> {
@@ -36,25 +48,17 @@ impl BuddySheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for BuddySheet {
-    type Row = BuddyRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for BuddySheet {
+    type Row = BuddyRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a BuddySheet {
-    type Item = (u32, Vec<(u16, BuddyRow)>);
+    type Item = (u32, Vec<(u16, BuddyRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, BuddySheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, BuddySheet> {
         StructuredSheetIterator {
@@ -64,32 +68,33 @@ impl<'a> IntoIterator for &'a BuddySheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct BuddyRow {
-    columns: Vec<Field>,
+pub struct BuddyRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl BuddyRow {
-    pub fn SoundEffect4<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> BuddyRow<'a> {
+    pub fn SoundEffect4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn SoundEffect3<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn SoundEffect3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn SoundEffect2<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn SoundEffect2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn SoundEffect1<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn SoundEffect1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn QuestRequirement2<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn QuestRequirement2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn QuestRequirement1<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn QuestRequirement1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn BaseEquip<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn BaseEquip(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Base<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Base(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
 }

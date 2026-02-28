@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct GCScripShopItemSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl GCScripShopItemSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl GCScripShopItemSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GCScripShopItem")?;
         let sheet = resolver.read_excel_sheet(&exh, "GCScripShopItem", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<GCScripShopItemRow> {
@@ -36,25 +48,17 @@ impl GCScripShopItemSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for GCScripShopItemSheet {
-    type Row = GCScripShopItemRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for GCScripShopItemSheet {
+    type Row = GCScripShopItemRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a GCScripShopItemSheet {
-    type Item = (u32, Vec<(u16, GCScripShopItemRow)>);
+    type Item = (u32, Vec<(u16, GCScripShopItemRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, GCScripShopItemSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, GCScripShopItemSheet> {
         StructuredSheetIterator {
@@ -64,20 +68,21 @@ impl<'a> IntoIterator for &'a GCScripShopItemSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct GCScripShopItemRow {
-    columns: Vec<Field>,
+pub struct GCScripShopItemRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl GCScripShopItemRow {
-    pub fn CostGCSeals<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> GCScripShopItemRow<'a> {
+    pub fn CostGCSeals(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Item<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Item(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn RequiredGrandCompanyRank<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn RequiredGrandCompanyRank(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn SortKey<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn SortKey(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
 }

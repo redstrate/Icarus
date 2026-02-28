@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct MobHuntOrderTypeSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl MobHuntOrderTypeSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl MobHuntOrderTypeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MobHuntOrderType")?;
         let sheet = resolver.read_excel_sheet(&exh, "MobHuntOrderType", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MobHuntOrderTypeRow> {
@@ -36,25 +48,17 @@ impl MobHuntOrderTypeSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for MobHuntOrderTypeSheet {
-    type Row = MobHuntOrderTypeRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for MobHuntOrderTypeSheet {
+    type Row = MobHuntOrderTypeRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a MobHuntOrderTypeSheet {
-    type Item = (u32, Vec<(u16, MobHuntOrderTypeRow)>);
+    type Item = (u32, Vec<(u16, MobHuntOrderTypeRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, MobHuntOrderTypeSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, MobHuntOrderTypeSheet> {
         StructuredSheetIterator {
@@ -64,23 +68,24 @@ impl<'a> IntoIterator for &'a MobHuntOrderTypeSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct MobHuntOrderTypeRow {
-    columns: Vec<Field>,
+pub struct MobHuntOrderTypeRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl MobHuntOrderTypeRow {
-    pub fn Quest<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> MobHuntOrderTypeRow<'a> {
+    pub fn Quest(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn EventItem<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn EventItem(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn OrderStart<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn OrderStart(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Type<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Type(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn OrderAmount<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn OrderAmount(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
 }

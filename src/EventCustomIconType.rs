@@ -17,6 +17,7 @@ pub struct IconsElement<'a> {
 #[derive(Debug, Clone)]
 pub struct EventCustomIconTypeSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl EventCustomIconTypeSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -26,7 +27,18 @@ impl EventCustomIconTypeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EventCustomIconType")?;
         let sheet = resolver.read_excel_sheet(&exh, "EventCustomIconType", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<EventCustomIconTypeRow> {
@@ -43,25 +55,17 @@ impl EventCustomIconTypeSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for EventCustomIconTypeSheet {
-    type Row = EventCustomIconTypeRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for EventCustomIconTypeSheet {
+    type Row = EventCustomIconTypeRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a EventCustomIconTypeSheet {
-    type Item = (u32, Vec<(u16, EventCustomIconTypeRow)>);
+    type Item = (u32, Vec<(u16, EventCustomIconTypeRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, EventCustomIconTypeSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, EventCustomIconTypeSheet> {
         StructuredSheetIterator {
@@ -71,85 +75,86 @@ impl<'a> IntoIterator for &'a EventCustomIconTypeSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct EventCustomIconTypeRow {
-    columns: Vec<Field>,
+pub struct EventCustomIconTypeRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl EventCustomIconTypeRow {
-    pub fn Icons<'a>(&'a self) -> [IconsElement<'a>; 10] {
+impl<'a> EventCustomIconTypeRow<'a> {
+    pub fn Icons(&'a self) -> [IconsElement<'a>; 10] {
         [
             IconsElement {
-                AnnounceQuest: &self.columns[0],
-                AnnounceQuestLocked: &self.columns[1],
-                MapAnnounceQuest1: &self.columns[2],
-                MapAnnounceQuestLocked: &self.columns[3],
-                MapAnnounceQuest2: &self.columns[4],
+                AnnounceQuest: &self.row.columns[self.index_mapping[0]],
+                AnnounceQuestLocked: &self.row.columns[self.index_mapping[1]],
+                MapAnnounceQuest1: &self.row.columns[self.index_mapping[2]],
+                MapAnnounceQuestLocked: &self.row.columns[self.index_mapping[3]],
+                MapAnnounceQuest2: &self.row.columns[self.index_mapping[4]],
             },
             IconsElement {
-                AnnounceQuest: &self.columns[5],
-                AnnounceQuestLocked: &self.columns[6],
-                MapAnnounceQuest1: &self.columns[7],
-                MapAnnounceQuestLocked: &self.columns[8],
-                MapAnnounceQuest2: &self.columns[9],
+                AnnounceQuest: &self.row.columns[self.index_mapping[5]],
+                AnnounceQuestLocked: &self.row.columns[self.index_mapping[6]],
+                MapAnnounceQuest1: &self.row.columns[self.index_mapping[7]],
+                MapAnnounceQuestLocked: &self.row.columns[self.index_mapping[8]],
+                MapAnnounceQuest2: &self.row.columns[self.index_mapping[9]],
             },
             IconsElement {
-                AnnounceQuest: &self.columns[10],
-                AnnounceQuestLocked: &self.columns[11],
-                MapAnnounceQuest1: &self.columns[12],
-                MapAnnounceQuestLocked: &self.columns[13],
-                MapAnnounceQuest2: &self.columns[14],
+                AnnounceQuest: &self.row.columns[self.index_mapping[10]],
+                AnnounceQuestLocked: &self.row.columns[self.index_mapping[11]],
+                MapAnnounceQuest1: &self.row.columns[self.index_mapping[12]],
+                MapAnnounceQuestLocked: &self.row.columns[self.index_mapping[13]],
+                MapAnnounceQuest2: &self.row.columns[self.index_mapping[14]],
             },
             IconsElement {
-                AnnounceQuest: &self.columns[15],
-                AnnounceQuestLocked: &self.columns[16],
-                MapAnnounceQuest1: &self.columns[17],
-                MapAnnounceQuestLocked: &self.columns[18],
-                MapAnnounceQuest2: &self.columns[19],
+                AnnounceQuest: &self.row.columns[self.index_mapping[15]],
+                AnnounceQuestLocked: &self.row.columns[self.index_mapping[16]],
+                MapAnnounceQuest1: &self.row.columns[self.index_mapping[17]],
+                MapAnnounceQuestLocked: &self.row.columns[self.index_mapping[18]],
+                MapAnnounceQuest2: &self.row.columns[self.index_mapping[19]],
             },
             IconsElement {
-                AnnounceQuest: &self.columns[20],
-                AnnounceQuestLocked: &self.columns[21],
-                MapAnnounceQuest1: &self.columns[22],
-                MapAnnounceQuestLocked: &self.columns[23],
-                MapAnnounceQuest2: &self.columns[24],
+                AnnounceQuest: &self.row.columns[self.index_mapping[20]],
+                AnnounceQuestLocked: &self.row.columns[self.index_mapping[21]],
+                MapAnnounceQuest1: &self.row.columns[self.index_mapping[22]],
+                MapAnnounceQuestLocked: &self.row.columns[self.index_mapping[23]],
+                MapAnnounceQuest2: &self.row.columns[self.index_mapping[24]],
             },
             IconsElement {
-                AnnounceQuest: &self.columns[25],
-                AnnounceQuestLocked: &self.columns[26],
-                MapAnnounceQuest1: &self.columns[27],
-                MapAnnounceQuestLocked: &self.columns[28],
-                MapAnnounceQuest2: &self.columns[29],
+                AnnounceQuest: &self.row.columns[self.index_mapping[25]],
+                AnnounceQuestLocked: &self.row.columns[self.index_mapping[26]],
+                MapAnnounceQuest1: &self.row.columns[self.index_mapping[27]],
+                MapAnnounceQuestLocked: &self.row.columns[self.index_mapping[28]],
+                MapAnnounceQuest2: &self.row.columns[self.index_mapping[29]],
             },
             IconsElement {
-                AnnounceQuest: &self.columns[30],
-                AnnounceQuestLocked: &self.columns[31],
-                MapAnnounceQuest1: &self.columns[32],
-                MapAnnounceQuestLocked: &self.columns[33],
-                MapAnnounceQuest2: &self.columns[34],
+                AnnounceQuest: &self.row.columns[self.index_mapping[30]],
+                AnnounceQuestLocked: &self.row.columns[self.index_mapping[31]],
+                MapAnnounceQuest1: &self.row.columns[self.index_mapping[32]],
+                MapAnnounceQuestLocked: &self.row.columns[self.index_mapping[33]],
+                MapAnnounceQuest2: &self.row.columns[self.index_mapping[34]],
             },
             IconsElement {
-                AnnounceQuest: &self.columns[35],
-                AnnounceQuestLocked: &self.columns[36],
-                MapAnnounceQuest1: &self.columns[37],
-                MapAnnounceQuestLocked: &self.columns[38],
-                MapAnnounceQuest2: &self.columns[39],
+                AnnounceQuest: &self.row.columns[self.index_mapping[35]],
+                AnnounceQuestLocked: &self.row.columns[self.index_mapping[36]],
+                MapAnnounceQuest1: &self.row.columns[self.index_mapping[37]],
+                MapAnnounceQuestLocked: &self.row.columns[self.index_mapping[38]],
+                MapAnnounceQuest2: &self.row.columns[self.index_mapping[39]],
             },
             IconsElement {
-                AnnounceQuest: &self.columns[40],
-                AnnounceQuestLocked: &self.columns[41],
-                MapAnnounceQuest1: &self.columns[42],
-                MapAnnounceQuestLocked: &self.columns[43],
-                MapAnnounceQuest2: &self.columns[44],
+                AnnounceQuest: &self.row.columns[self.index_mapping[40]],
+                AnnounceQuestLocked: &self.row.columns[self.index_mapping[41]],
+                MapAnnounceQuest1: &self.row.columns[self.index_mapping[42]],
+                MapAnnounceQuestLocked: &self.row.columns[self.index_mapping[43]],
+                MapAnnounceQuest2: &self.row.columns[self.index_mapping[44]],
             },
             IconsElement {
-                AnnounceQuest: &self.columns[45],
-                AnnounceQuestLocked: &self.columns[46],
-                MapAnnounceQuest1: &self.columns[47],
-                MapAnnounceQuestLocked: &self.columns[48],
-                MapAnnounceQuest2: &self.columns[49],
+                AnnounceQuest: &self.row.columns[self.index_mapping[45]],
+                AnnounceQuestLocked: &self.row.columns[self.index_mapping[46]],
+                MapAnnounceQuest1: &self.row.columns[self.index_mapping[47]],
+                MapAnnounceQuestLocked: &self.row.columns[self.index_mapping[48]],
+                MapAnnounceQuest2: &self.row.columns[self.index_mapping[49]],
             },
         ]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[50]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[50]]
     }
 }

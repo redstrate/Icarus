@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct HouseRetainerPoseSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl HouseRetainerPoseSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl HouseRetainerPoseSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HouseRetainerPose")?;
         let sheet = resolver.read_excel_sheet(&exh, "HouseRetainerPose", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<HouseRetainerPoseRow> {
@@ -36,25 +48,17 @@ impl HouseRetainerPoseSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for HouseRetainerPoseSheet {
-    type Row = HouseRetainerPoseRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for HouseRetainerPoseSheet {
+    type Row = HouseRetainerPoseRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a HouseRetainerPoseSheet {
-    type Item = (u32, Vec<(u16, HouseRetainerPoseRow)>);
+    type Item = (u32, Vec<(u16, HouseRetainerPoseRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, HouseRetainerPoseSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, HouseRetainerPoseSheet> {
         StructuredSheetIterator {
@@ -64,11 +68,12 @@ impl<'a> IntoIterator for &'a HouseRetainerPoseSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct HouseRetainerPoseRow {
-    columns: Vec<Field>,
+pub struct HouseRetainerPoseRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl HouseRetainerPoseRow {
-    pub fn ActionTimeline<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> HouseRetainerPoseRow<'a> {
+    pub fn ActionTimeline(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
 }

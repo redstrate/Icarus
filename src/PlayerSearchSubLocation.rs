@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct PlayerSearchSubLocationSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl PlayerSearchSubLocationSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,18 @@ impl PlayerSearchSubLocationSheet {
         let exh = resolver.read_excel_sheet_header("PlayerSearchSubLocation")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "PlayerSearchSubLocation", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<PlayerSearchSubLocationRow> {
@@ -41,25 +53,17 @@ impl PlayerSearchSubLocationSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for PlayerSearchSubLocationSheet {
-    type Row = PlayerSearchSubLocationRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for PlayerSearchSubLocationSheet {
+    type Row = PlayerSearchSubLocationRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a PlayerSearchSubLocationSheet {
-    type Item = (u32, Vec<(u16, PlayerSearchSubLocationRow)>);
+    type Item = (u32, Vec<(u16, PlayerSearchSubLocationRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, PlayerSearchSubLocationSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, PlayerSearchSubLocationSheet> {
         StructuredSheetIterator {
@@ -69,27 +73,28 @@ impl<'a> IntoIterator for &'a PlayerSearchSubLocationSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct PlayerSearchSubLocationRow {
-    columns: Vec<Field>,
+pub struct PlayerSearchSubLocationRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl PlayerSearchSubLocationRow {
-    pub fn Name0<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> PlayerSearchSubLocationRow<'a> {
+    pub fn Name0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Name1<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Name1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Name2<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Name2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn PlaceName<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn PlaceName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
     /// The UI category this appears in.
-    pub fn Location<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Location(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn SortKey<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn SortKey(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
 }

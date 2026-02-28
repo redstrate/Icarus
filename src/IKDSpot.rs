@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct IKDSpotSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl IKDSpotSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl IKDSpotSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("IKDSpot")?;
         let sheet = resolver.read_excel_sheet(&exh, "IKDSpot", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<IKDSpotRow> {
@@ -36,25 +48,17 @@ impl IKDSpotSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for IKDSpotSheet {
-    type Row = IKDSpotRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for IKDSpotSheet {
+    type Row = IKDSpotRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a IKDSpotSheet {
-    type Item = (u32, Vec<(u16, IKDSpotRow)>);
+    type Item = (u32, Vec<(u16, IKDSpotRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, IKDSpotSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, IKDSpotSheet> {
         StructuredSheetIterator {
@@ -64,17 +68,18 @@ impl<'a> IntoIterator for &'a IKDSpotSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct IKDSpotRow {
-    columns: Vec<Field>,
+pub struct IKDSpotRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl IKDSpotRow {
-    pub fn SpotMain<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> IKDSpotRow<'a> {
+    pub fn SpotMain(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn SpotSub<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn SpotSub(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn PlaceName<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn PlaceName(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
 }

@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct MountCustomizeSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl MountCustomizeSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl MountCustomizeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MountCustomize")?;
         let sheet = resolver.read_excel_sheet(&exh, "MountCustomize", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MountCustomizeRow> {
@@ -36,25 +48,17 @@ impl MountCustomizeSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for MountCustomizeSheet {
-    type Row = MountCustomizeRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for MountCustomizeSheet {
+    type Row = MountCustomizeRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a MountCustomizeSheet {
-    type Item = (u32, Vec<(u16, MountCustomizeRow)>);
+    type Item = (u32, Vec<(u16, MountCustomizeRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, MountCustomizeSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, MountCustomizeSheet> {
         StructuredSheetIterator {
@@ -64,137 +68,138 @@ impl<'a> IntoIterator for &'a MountCustomizeSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct MountCustomizeRow {
-    columns: Vec<Field>,
+pub struct MountCustomizeRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl MountCustomizeRow {
-    pub fn HyurMidlanderMaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> MountCustomizeRow<'a> {
+    pub fn HyurMidlanderMaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn HyurMidlanderFemaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn HyurMidlanderFemaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn HyurHighlanderMaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn HyurHighlanderMaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn HyurHighlanderFemaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn HyurHighlanderFemaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn ElezenMaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn ElezenMaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn ElezenFemaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn ElezenFemaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn LalaMaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn LalaMaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn LalaFemaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn LalaFemaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn MiqoMaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn MiqoMaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn MiqoFemaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn MiqoFemaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn RoeMaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn RoeMaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn RoeFemaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn RoeFemaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn AuRaMaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn AuRaMaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
-    pub fn AuRaFemaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn AuRaFemaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn HrothgarMaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn HrothgarMaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn HrothgarFemaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn HrothgarFemaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn VieraMaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn VieraMaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn VieraFemaleScale<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn VieraFemaleScale(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn HyurMidlanderMaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn HyurMidlanderMaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
-    pub fn HyurMidlanderFemaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[19]
+    pub fn HyurMidlanderFemaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[19]]
     }
-    pub fn HyurHighlanderMaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[20]
+    pub fn HyurHighlanderMaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[20]]
     }
-    pub fn HyurHighlanderFemaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[21]
+    pub fn HyurHighlanderFemaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[21]]
     }
-    pub fn ElezenMaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[22]
+    pub fn ElezenMaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[22]]
     }
-    pub fn ElezenFemaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[23]
+    pub fn ElezenFemaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[23]]
     }
-    pub fn LalaMaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[24]
+    pub fn LalaMaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[24]]
     }
-    pub fn LalaFemaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[25]
+    pub fn LalaFemaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[25]]
     }
-    pub fn MiqoMaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[26]
+    pub fn MiqoMaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[26]]
     }
-    pub fn MiqoFemaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[27]
+    pub fn MiqoFemaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[27]]
     }
-    pub fn RoeMaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[28]
+    pub fn RoeMaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[28]]
     }
-    pub fn RoeFemaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[29]
+    pub fn RoeFemaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[29]]
     }
-    pub fn AuRaMaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[30]
+    pub fn AuRaMaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[30]]
     }
-    pub fn AuRaFemaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[31]
+    pub fn AuRaFemaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[31]]
     }
-    pub fn HrothgarMaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[32]
+    pub fn HrothgarMaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[32]]
     }
-    pub fn HrothgarFemaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[33]
+    pub fn HrothgarFemaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[33]]
     }
-    pub fn VieraMaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[34]
+    pub fn VieraMaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[34]]
     }
-    pub fn VieraFemaleCameraHeight<'a>(&'a self) -> &'a Field {
-        &self.columns[35]
+    pub fn VieraFemaleCameraHeight(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[35]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[36]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[36]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[37]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[37]]
     }
-    pub fn Unknown_70_1<'a>(&'a self) -> &'a Field {
-        &self.columns[38]
+    pub fn Unknown_70_1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[38]]
     }
-    pub fn Unknown_70_2<'a>(&'a self) -> &'a Field {
-        &self.columns[39]
+    pub fn Unknown_70_2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[39]]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[40]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[40]]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a Field {
-        &self.columns[41]
+    pub fn Unknown3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[41]]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a Field {
-        &self.columns[42]
+    pub fn Unknown4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[42]]
     }
 }

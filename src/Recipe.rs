@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct RecipeSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl RecipeSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl RecipeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Recipe")?;
         let sheet = resolver.read_excel_sheet(&exh, "Recipe", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<RecipeRow> {
@@ -36,25 +48,17 @@ impl RecipeSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for RecipeSheet {
-    type Row = RecipeRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for RecipeSheet {
+    type Row = RecipeRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a RecipeSheet {
-    type Item = (u32, Vec<(u16, RecipeRow)>);
+    type Item = (u32, Vec<(u16, RecipeRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, RecipeSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, RecipeSheet> {
         StructuredSheetIterator {
@@ -64,125 +68,126 @@ impl<'a> IntoIterator for &'a RecipeSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct RecipeRow {
-    columns: Vec<Field>,
+pub struct RecipeRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl RecipeRow {
-    pub fn RequiredQuality<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> RecipeRow<'a> {
+    pub fn RequiredQuality(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Quest<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Quest(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Number<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Number(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn CraftType<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn CraftType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn ItemResult<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn ItemResult(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Ingredient<'a>(&'a self) -> [&'a Field; 8] {
+    pub fn Ingredient(&'a self) -> [&'a Field; 8] {
         [
-            &self.columns[5],
-            &self.columns[6],
-            &self.columns[7],
-            &self.columns[8],
-            &self.columns[9],
-            &self.columns[10],
-            &self.columns[11],
-            &self.columns[12],
+            &self.row.columns[self.index_mapping[5]],
+            &self.row.columns[self.index_mapping[6]],
+            &self.row.columns[self.index_mapping[7]],
+            &self.row.columns[self.index_mapping[8]],
+            &self.row.columns[self.index_mapping[9]],
+            &self.row.columns[self.index_mapping[10]],
+            &self.row.columns[self.index_mapping[11]],
+            &self.row.columns[self.index_mapping[12]],
         ]
     }
-    pub fn StatusRequired<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn StatusRequired(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn ItemRequired<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn ItemRequired(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn RecipeLevelTable<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn RecipeLevelTable(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn MaxAdjustableJobLevel<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn MaxAdjustableJobLevel(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn RecipeNotebookList<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn RecipeNotebookList(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn DisplayPriority<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn DisplayPriority(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
-    pub fn DifficultyFactor<'a>(&'a self) -> &'a Field {
-        &self.columns[19]
+    pub fn DifficultyFactor(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[19]]
     }
-    pub fn QualityFactor<'a>(&'a self) -> &'a Field {
-        &self.columns[20]
+    pub fn QualityFactor(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[20]]
     }
-    pub fn DurabilityFactor<'a>(&'a self) -> &'a Field {
-        &self.columns[21]
+    pub fn DurabilityFactor(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[21]]
     }
-    pub fn RequiredCraftsmanship<'a>(&'a self) -> &'a Field {
-        &self.columns[22]
+    pub fn RequiredCraftsmanship(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[22]]
     }
-    pub fn RequiredControl<'a>(&'a self) -> &'a Field {
-        &self.columns[23]
+    pub fn RequiredControl(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[23]]
     }
-    pub fn QuickSynthCraftsmanship<'a>(&'a self) -> &'a Field {
-        &self.columns[24]
+    pub fn QuickSynthCraftsmanship(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[24]]
     }
-    pub fn QuickSynthControl<'a>(&'a self) -> &'a Field {
-        &self.columns[25]
+    pub fn QuickSynthControl(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[25]]
     }
-    pub fn SecretRecipeBook<'a>(&'a self) -> &'a Field {
-        &self.columns[26]
+    pub fn SecretRecipeBook(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[26]]
     }
-    pub fn CollectableMetadata<'a>(&'a self) -> &'a Field {
-        &self.columns[27]
+    pub fn CollectableMetadata(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[27]]
     }
-    pub fn PatchNumber<'a>(&'a self) -> &'a Field {
-        &self.columns[28]
+    pub fn PatchNumber(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[28]]
     }
-    pub fn AmountResult<'a>(&'a self) -> &'a Field {
-        &self.columns[29]
+    pub fn AmountResult(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[29]]
     }
-    pub fn AmountIngredient<'a>(&'a self) -> [&'a Field; 8] {
+    pub fn AmountIngredient(&'a self) -> [&'a Field; 8] {
         [
-            &self.columns[30],
-            &self.columns[31],
-            &self.columns[32],
-            &self.columns[33],
-            &self.columns[34],
-            &self.columns[35],
-            &self.columns[36],
-            &self.columns[37],
+            &self.row.columns[self.index_mapping[30]],
+            &self.row.columns[self.index_mapping[31]],
+            &self.row.columns[self.index_mapping[32]],
+            &self.row.columns[self.index_mapping[33]],
+            &self.row.columns[self.index_mapping[34]],
+            &self.row.columns[self.index_mapping[35]],
+            &self.row.columns[self.index_mapping[36]],
+            &self.row.columns[self.index_mapping[37]],
         ]
     }
-    pub fn MaterialQualityFactor<'a>(&'a self) -> &'a Field {
-        &self.columns[38]
+    pub fn MaterialQualityFactor(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[38]]
     }
-    pub fn CollectableMetadataKey<'a>(&'a self) -> &'a Field {
-        &self.columns[39]
+    pub fn CollectableMetadataKey(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[39]]
     }
-    pub fn IsSecondary<'a>(&'a self) -> &'a Field {
-        &self.columns[40]
+    pub fn IsSecondary(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[40]]
     }
-    pub fn CanQuickSynth<'a>(&'a self) -> &'a Field {
-        &self.columns[41]
+    pub fn CanQuickSynth(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[41]]
     }
-    pub fn CanHq<'a>(&'a self) -> &'a Field {
-        &self.columns[42]
+    pub fn CanHq(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[42]]
     }
-    pub fn ExpRewarded<'a>(&'a self) -> &'a Field {
-        &self.columns[43]
+    pub fn ExpRewarded(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[43]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[44]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[44]]
     }
-    pub fn IsSpecializationRequired<'a>(&'a self) -> &'a Field {
-        &self.columns[45]
+    pub fn IsSpecializationRequired(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[45]]
     }
-    pub fn IsExpert<'a>(&'a self) -> &'a Field {
-        &self.columns[46]
+    pub fn IsExpert(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[46]]
     }
 }

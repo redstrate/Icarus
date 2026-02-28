@@ -15,6 +15,7 @@ pub struct WeeklyLotBonusParamElement<'a> {
 #[derive(Debug, Clone)]
 pub struct WeeklyLotBonusSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl WeeklyLotBonusSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -24,7 +25,18 @@ impl WeeklyLotBonusSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WeeklyLotBonus")?;
         let sheet = resolver.read_excel_sheet(&exh, "WeeklyLotBonus", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<WeeklyLotBonusRow> {
@@ -41,25 +53,17 @@ impl WeeklyLotBonusSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for WeeklyLotBonusSheet {
-    type Row = WeeklyLotBonusRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for WeeklyLotBonusSheet {
+    type Row = WeeklyLotBonusRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a WeeklyLotBonusSheet {
-    type Item = (u32, Vec<(u16, WeeklyLotBonusRow)>);
+    type Item = (u32, Vec<(u16, WeeklyLotBonusRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, WeeklyLotBonusSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, WeeklyLotBonusSheet> {
         StructuredSheetIterator {
@@ -69,171 +73,172 @@ impl<'a> IntoIterator for &'a WeeklyLotBonusSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct WeeklyLotBonusRow {
-    columns: Vec<Field>,
+pub struct WeeklyLotBonusRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl WeeklyLotBonusRow {
-    pub fn WeeklyLotBonusParam<'a>(&'a self) -> [WeeklyLotBonusParamElement<'a>; 32] {
+impl<'a> WeeklyLotBonusRow<'a> {
+    pub fn WeeklyLotBonusParam(&'a self) -> [WeeklyLotBonusParamElement<'a>; 32] {
         [
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[0],
-                WeeklyLotBonusThreshold: &self.columns[1],
-                Unknown1: &self.columns[2],
+                Unknown0: &self.row.columns[self.index_mapping[0]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[1]],
+                Unknown1: &self.row.columns[self.index_mapping[2]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[3],
-                WeeklyLotBonusThreshold: &self.columns[4],
-                Unknown1: &self.columns[5],
+                Unknown0: &self.row.columns[self.index_mapping[3]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[4]],
+                Unknown1: &self.row.columns[self.index_mapping[5]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[6],
-                WeeklyLotBonusThreshold: &self.columns[7],
-                Unknown1: &self.columns[8],
+                Unknown0: &self.row.columns[self.index_mapping[6]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[7]],
+                Unknown1: &self.row.columns[self.index_mapping[8]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[9],
-                WeeklyLotBonusThreshold: &self.columns[10],
-                Unknown1: &self.columns[11],
+                Unknown0: &self.row.columns[self.index_mapping[9]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[10]],
+                Unknown1: &self.row.columns[self.index_mapping[11]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[12],
-                WeeklyLotBonusThreshold: &self.columns[13],
-                Unknown1: &self.columns[14],
+                Unknown0: &self.row.columns[self.index_mapping[12]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[13]],
+                Unknown1: &self.row.columns[self.index_mapping[14]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[15],
-                WeeklyLotBonusThreshold: &self.columns[16],
-                Unknown1: &self.columns[17],
+                Unknown0: &self.row.columns[self.index_mapping[15]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[16]],
+                Unknown1: &self.row.columns[self.index_mapping[17]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[18],
-                WeeklyLotBonusThreshold: &self.columns[19],
-                Unknown1: &self.columns[20],
+                Unknown0: &self.row.columns[self.index_mapping[18]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[19]],
+                Unknown1: &self.row.columns[self.index_mapping[20]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[21],
-                WeeklyLotBonusThreshold: &self.columns[22],
-                Unknown1: &self.columns[23],
+                Unknown0: &self.row.columns[self.index_mapping[21]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[22]],
+                Unknown1: &self.row.columns[self.index_mapping[23]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[24],
-                WeeklyLotBonusThreshold: &self.columns[25],
-                Unknown1: &self.columns[26],
+                Unknown0: &self.row.columns[self.index_mapping[24]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[25]],
+                Unknown1: &self.row.columns[self.index_mapping[26]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[27],
-                WeeklyLotBonusThreshold: &self.columns[28],
-                Unknown1: &self.columns[29],
+                Unknown0: &self.row.columns[self.index_mapping[27]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[28]],
+                Unknown1: &self.row.columns[self.index_mapping[29]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[30],
-                WeeklyLotBonusThreshold: &self.columns[31],
-                Unknown1: &self.columns[32],
+                Unknown0: &self.row.columns[self.index_mapping[30]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[31]],
+                Unknown1: &self.row.columns[self.index_mapping[32]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[33],
-                WeeklyLotBonusThreshold: &self.columns[34],
-                Unknown1: &self.columns[35],
+                Unknown0: &self.row.columns[self.index_mapping[33]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[34]],
+                Unknown1: &self.row.columns[self.index_mapping[35]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[36],
-                WeeklyLotBonusThreshold: &self.columns[37],
-                Unknown1: &self.columns[38],
+                Unknown0: &self.row.columns[self.index_mapping[36]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[37]],
+                Unknown1: &self.row.columns[self.index_mapping[38]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[39],
-                WeeklyLotBonusThreshold: &self.columns[40],
-                Unknown1: &self.columns[41],
+                Unknown0: &self.row.columns[self.index_mapping[39]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[40]],
+                Unknown1: &self.row.columns[self.index_mapping[41]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[42],
-                WeeklyLotBonusThreshold: &self.columns[43],
-                Unknown1: &self.columns[44],
+                Unknown0: &self.row.columns[self.index_mapping[42]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[43]],
+                Unknown1: &self.row.columns[self.index_mapping[44]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[45],
-                WeeklyLotBonusThreshold: &self.columns[46],
-                Unknown1: &self.columns[47],
+                Unknown0: &self.row.columns[self.index_mapping[45]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[46]],
+                Unknown1: &self.row.columns[self.index_mapping[47]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[48],
-                WeeklyLotBonusThreshold: &self.columns[49],
-                Unknown1: &self.columns[50],
+                Unknown0: &self.row.columns[self.index_mapping[48]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[49]],
+                Unknown1: &self.row.columns[self.index_mapping[50]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[51],
-                WeeklyLotBonusThreshold: &self.columns[52],
-                Unknown1: &self.columns[53],
+                Unknown0: &self.row.columns[self.index_mapping[51]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[52]],
+                Unknown1: &self.row.columns[self.index_mapping[53]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[54],
-                WeeklyLotBonusThreshold: &self.columns[55],
-                Unknown1: &self.columns[56],
+                Unknown0: &self.row.columns[self.index_mapping[54]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[55]],
+                Unknown1: &self.row.columns[self.index_mapping[56]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[57],
-                WeeklyLotBonusThreshold: &self.columns[58],
-                Unknown1: &self.columns[59],
+                Unknown0: &self.row.columns[self.index_mapping[57]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[58]],
+                Unknown1: &self.row.columns[self.index_mapping[59]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[60],
-                WeeklyLotBonusThreshold: &self.columns[61],
-                Unknown1: &self.columns[62],
+                Unknown0: &self.row.columns[self.index_mapping[60]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[61]],
+                Unknown1: &self.row.columns[self.index_mapping[62]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[63],
-                WeeklyLotBonusThreshold: &self.columns[64],
-                Unknown1: &self.columns[65],
+                Unknown0: &self.row.columns[self.index_mapping[63]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[64]],
+                Unknown1: &self.row.columns[self.index_mapping[65]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[66],
-                WeeklyLotBonusThreshold: &self.columns[67],
-                Unknown1: &self.columns[68],
+                Unknown0: &self.row.columns[self.index_mapping[66]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[67]],
+                Unknown1: &self.row.columns[self.index_mapping[68]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[69],
-                WeeklyLotBonusThreshold: &self.columns[70],
-                Unknown1: &self.columns[71],
+                Unknown0: &self.row.columns[self.index_mapping[69]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[70]],
+                Unknown1: &self.row.columns[self.index_mapping[71]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[72],
-                WeeklyLotBonusThreshold: &self.columns[73],
-                Unknown1: &self.columns[74],
+                Unknown0: &self.row.columns[self.index_mapping[72]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[73]],
+                Unknown1: &self.row.columns[self.index_mapping[74]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[75],
-                WeeklyLotBonusThreshold: &self.columns[76],
-                Unknown1: &self.columns[77],
+                Unknown0: &self.row.columns[self.index_mapping[75]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[76]],
+                Unknown1: &self.row.columns[self.index_mapping[77]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[78],
-                WeeklyLotBonusThreshold: &self.columns[79],
-                Unknown1: &self.columns[80],
+                Unknown0: &self.row.columns[self.index_mapping[78]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[79]],
+                Unknown1: &self.row.columns[self.index_mapping[80]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[81],
-                WeeklyLotBonusThreshold: &self.columns[82],
-                Unknown1: &self.columns[83],
+                Unknown0: &self.row.columns[self.index_mapping[81]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[82]],
+                Unknown1: &self.row.columns[self.index_mapping[83]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[84],
-                WeeklyLotBonusThreshold: &self.columns[85],
-                Unknown1: &self.columns[86],
+                Unknown0: &self.row.columns[self.index_mapping[84]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[85]],
+                Unknown1: &self.row.columns[self.index_mapping[86]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[87],
-                WeeklyLotBonusThreshold: &self.columns[88],
-                Unknown1: &self.columns[89],
+                Unknown0: &self.row.columns[self.index_mapping[87]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[88]],
+                Unknown1: &self.row.columns[self.index_mapping[89]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[90],
-                WeeklyLotBonusThreshold: &self.columns[91],
-                Unknown1: &self.columns[92],
+                Unknown0: &self.row.columns[self.index_mapping[90]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[91]],
+                Unknown1: &self.row.columns[self.index_mapping[92]],
             },
             WeeklyLotBonusParamElement {
-                Unknown0: &self.columns[93],
-                WeeklyLotBonusThreshold: &self.columns[94],
-                Unknown1: &self.columns[95],
+                Unknown0: &self.row.columns[self.index_mapping[93]],
+                WeeklyLotBonusThreshold: &self.row.columns[self.index_mapping[94]],
+                Unknown1: &self.row.columns[self.index_mapping[95]],
             },
         ]
     }

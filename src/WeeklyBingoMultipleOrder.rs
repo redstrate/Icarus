@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct WeeklyBingoMultipleOrderSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl WeeklyBingoMultipleOrderSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,18 @@ impl WeeklyBingoMultipleOrderSheet {
         let exh = resolver.read_excel_sheet_header("WeeklyBingoMultipleOrder")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "WeeklyBingoMultipleOrder", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<WeeklyBingoMultipleOrderRow> {
@@ -41,25 +53,17 @@ impl WeeklyBingoMultipleOrderSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for WeeklyBingoMultipleOrderSheet {
-    type Row = WeeklyBingoMultipleOrderRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for WeeklyBingoMultipleOrderSheet {
+    type Row = WeeklyBingoMultipleOrderRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a WeeklyBingoMultipleOrderSheet {
-    type Item = (u32, Vec<(u16, WeeklyBingoMultipleOrderRow)>);
+    type Item = (u32, Vec<(u16, WeeklyBingoMultipleOrderRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, WeeklyBingoMultipleOrderSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, WeeklyBingoMultipleOrderSheet> {
         StructuredSheetIterator {
@@ -69,63 +73,64 @@ impl<'a> IntoIterator for &'a WeeklyBingoMultipleOrderSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct WeeklyBingoMultipleOrderRow {
-    columns: Vec<Field>,
+pub struct WeeklyBingoMultipleOrderRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl WeeklyBingoMultipleOrderRow {
+impl<'a> WeeklyBingoMultipleOrderRow<'a> {
     /// I *think* this is correct? You're welcome MidoriKami :3
-    pub fn Content<'a>(&'a self) -> [&'a Field; 5] {
+    pub fn Content(&'a self) -> [&'a Field; 5] {
         [
-            &self.columns[0],
-            &self.columns[1],
-            &self.columns[2],
-            &self.columns[3],
-            &self.columns[4],
+            &self.row.columns[self.index_mapping[0]],
+            &self.row.columns[self.index_mapping[1]],
+            &self.row.columns[self.index_mapping[2]],
+            &self.row.columns[self.index_mapping[3]],
+            &self.row.columns[self.index_mapping[4]],
         ]
     }
-    pub fn Unknown5<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Unknown5(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Unknown6<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Unknown6(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Unknown7<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Unknown7(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn Unknown8<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn Unknown8(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn Unknown9<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn Unknown9(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn Unknown10<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn Unknown10(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn Unknown11<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn Unknown11(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn Unknown12<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn Unknown12(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
-    pub fn Unknown13<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn Unknown13(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn Unknown14<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn Unknown14(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn Unknown15<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn Unknown15(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn Unknown16<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn Unknown16(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn Unknown17<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn Unknown17(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn Unknown18<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn Unknown18(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
-    pub fn Unknown19<'a>(&'a self) -> &'a Field {
-        &self.columns[19]
+    pub fn Unknown19(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[19]]
     }
 }

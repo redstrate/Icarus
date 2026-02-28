@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct TribeSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl TribeSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl TribeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Tribe")?;
         let sheet = resolver.read_excel_sheet(&exh, "Tribe", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<TribeRow> {
@@ -36,25 +48,17 @@ impl TribeSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for TribeSheet {
-    type Row = TribeRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for TribeSheet {
+    type Row = TribeRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a TribeSheet {
-    type Item = (u32, Vec<(u16, TribeRow)>);
+    type Item = (u32, Vec<(u16, TribeRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, TribeSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, TribeSheet> {
         StructuredSheetIterator {
@@ -64,38 +68,39 @@ impl<'a> IntoIterator for &'a TribeSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct TribeRow {
-    columns: Vec<Field>,
+pub struct TribeRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl TribeRow {
-    pub fn Masculine<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> TribeRow<'a> {
+    pub fn Masculine(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Feminine<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Feminine(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Hp<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Hp(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Mp<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Mp(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn STR<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn STR(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn VIT<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn VIT(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn DEX<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn DEX(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn INT<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn INT(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn MND<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn MND(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn PIE<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn PIE(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
 }

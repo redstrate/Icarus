@@ -21,6 +21,7 @@ pub struct ExpeditionParamsElement<'a> {
 #[derive(Debug, Clone)]
 pub struct GcArmyExpeditionSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl GcArmyExpeditionSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -30,7 +31,18 @@ impl GcArmyExpeditionSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GcArmyExpedition")?;
         let sheet = resolver.read_excel_sheet(&exh, "GcArmyExpedition", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<GcArmyExpeditionRow> {
@@ -47,25 +59,17 @@ impl GcArmyExpeditionSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for GcArmyExpeditionSheet {
-    type Row = GcArmyExpeditionRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for GcArmyExpeditionSheet {
+    type Row = GcArmyExpeditionRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a GcArmyExpeditionSheet {
-    type Item = (u32, Vec<(u16, GcArmyExpeditionRow)>);
+    type Item = (u32, Vec<(u16, GcArmyExpeditionRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, GcArmyExpeditionSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, GcArmyExpeditionSheet> {
         StructuredSheetIterator {
@@ -75,108 +79,109 @@ impl<'a> IntoIterator for &'a GcArmyExpeditionSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct GcArmyExpeditionRow {
-    columns: Vec<Field>,
+pub struct GcArmyExpeditionRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl GcArmyExpeditionRow {
-    pub fn Name<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> GcArmyExpeditionRow<'a> {
+    pub fn Name(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Description<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Description(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn ExpeditionParams<'a>(&'a self) -> [ExpeditionParamsElement<'a>; 6] {
+    pub fn ExpeditionParams(&'a self) -> [ExpeditionParamsElement<'a>; 6] {
         [
             ExpeditionParamsElement {
-                RewardItem: &self.columns[2],
-                RequiredPhysical: &self.columns[3],
-                RequiredMental: &self.columns[4],
-                RequiredTactical: &self.columns[5],
-                RewardQuantity: &self.columns[6],
-                PercentPhysicalMet: &self.columns[7],
-                PercentMentalMet: &self.columns[8],
-                PercentTacticalMet: &self.columns[9],
-                PercentAllMet: &self.columns[10],
+                RewardItem: &self.row.columns[self.index_mapping[2]],
+                RequiredPhysical: &self.row.columns[self.index_mapping[3]],
+                RequiredMental: &self.row.columns[self.index_mapping[4]],
+                RequiredTactical: &self.row.columns[self.index_mapping[5]],
+                RewardQuantity: &self.row.columns[self.index_mapping[6]],
+                PercentPhysicalMet: &self.row.columns[self.index_mapping[7]],
+                PercentMentalMet: &self.row.columns[self.index_mapping[8]],
+                PercentTacticalMet: &self.row.columns[self.index_mapping[9]],
+                PercentAllMet: &self.row.columns[self.index_mapping[10]],
             },
             ExpeditionParamsElement {
-                RewardItem: &self.columns[11],
-                RequiredPhysical: &self.columns[12],
-                RequiredMental: &self.columns[13],
-                RequiredTactical: &self.columns[14],
-                RewardQuantity: &self.columns[15],
-                PercentPhysicalMet: &self.columns[16],
-                PercentMentalMet: &self.columns[17],
-                PercentTacticalMet: &self.columns[18],
-                PercentAllMet: &self.columns[19],
+                RewardItem: &self.row.columns[self.index_mapping[11]],
+                RequiredPhysical: &self.row.columns[self.index_mapping[12]],
+                RequiredMental: &self.row.columns[self.index_mapping[13]],
+                RequiredTactical: &self.row.columns[self.index_mapping[14]],
+                RewardQuantity: &self.row.columns[self.index_mapping[15]],
+                PercentPhysicalMet: &self.row.columns[self.index_mapping[16]],
+                PercentMentalMet: &self.row.columns[self.index_mapping[17]],
+                PercentTacticalMet: &self.row.columns[self.index_mapping[18]],
+                PercentAllMet: &self.row.columns[self.index_mapping[19]],
             },
             ExpeditionParamsElement {
-                RewardItem: &self.columns[20],
-                RequiredPhysical: &self.columns[21],
-                RequiredMental: &self.columns[22],
-                RequiredTactical: &self.columns[23],
-                RewardQuantity: &self.columns[24],
-                PercentPhysicalMet: &self.columns[25],
-                PercentMentalMet: &self.columns[26],
-                PercentTacticalMet: &self.columns[27],
-                PercentAllMet: &self.columns[28],
+                RewardItem: &self.row.columns[self.index_mapping[20]],
+                RequiredPhysical: &self.row.columns[self.index_mapping[21]],
+                RequiredMental: &self.row.columns[self.index_mapping[22]],
+                RequiredTactical: &self.row.columns[self.index_mapping[23]],
+                RewardQuantity: &self.row.columns[self.index_mapping[24]],
+                PercentPhysicalMet: &self.row.columns[self.index_mapping[25]],
+                PercentMentalMet: &self.row.columns[self.index_mapping[26]],
+                PercentTacticalMet: &self.row.columns[self.index_mapping[27]],
+                PercentAllMet: &self.row.columns[self.index_mapping[28]],
             },
             ExpeditionParamsElement {
-                RewardItem: &self.columns[29],
-                RequiredPhysical: &self.columns[30],
-                RequiredMental: &self.columns[31],
-                RequiredTactical: &self.columns[32],
-                RewardQuantity: &self.columns[33],
-                PercentPhysicalMet: &self.columns[34],
-                PercentMentalMet: &self.columns[35],
-                PercentTacticalMet: &self.columns[36],
-                PercentAllMet: &self.columns[37],
+                RewardItem: &self.row.columns[self.index_mapping[29]],
+                RequiredPhysical: &self.row.columns[self.index_mapping[30]],
+                RequiredMental: &self.row.columns[self.index_mapping[31]],
+                RequiredTactical: &self.row.columns[self.index_mapping[32]],
+                RewardQuantity: &self.row.columns[self.index_mapping[33]],
+                PercentPhysicalMet: &self.row.columns[self.index_mapping[34]],
+                PercentMentalMet: &self.row.columns[self.index_mapping[35]],
+                PercentTacticalMet: &self.row.columns[self.index_mapping[36]],
+                PercentAllMet: &self.row.columns[self.index_mapping[37]],
             },
             ExpeditionParamsElement {
-                RewardItem: &self.columns[38],
-                RequiredPhysical: &self.columns[39],
-                RequiredMental: &self.columns[40],
-                RequiredTactical: &self.columns[41],
-                RewardQuantity: &self.columns[42],
-                PercentPhysicalMet: &self.columns[43],
-                PercentMentalMet: &self.columns[44],
-                PercentTacticalMet: &self.columns[45],
-                PercentAllMet: &self.columns[46],
+                RewardItem: &self.row.columns[self.index_mapping[38]],
+                RequiredPhysical: &self.row.columns[self.index_mapping[39]],
+                RequiredMental: &self.row.columns[self.index_mapping[40]],
+                RequiredTactical: &self.row.columns[self.index_mapping[41]],
+                RewardQuantity: &self.row.columns[self.index_mapping[42]],
+                PercentPhysicalMet: &self.row.columns[self.index_mapping[43]],
+                PercentMentalMet: &self.row.columns[self.index_mapping[44]],
+                PercentTacticalMet: &self.row.columns[self.index_mapping[45]],
+                PercentAllMet: &self.row.columns[self.index_mapping[46]],
             },
             ExpeditionParamsElement {
-                RewardItem: &self.columns[47],
-                RequiredPhysical: &self.columns[48],
-                RequiredMental: &self.columns[49],
-                RequiredTactical: &self.columns[50],
-                RewardQuantity: &self.columns[51],
-                PercentPhysicalMet: &self.columns[52],
-                PercentMentalMet: &self.columns[53],
-                PercentTacticalMet: &self.columns[54],
-                PercentAllMet: &self.columns[55],
+                RewardItem: &self.row.columns[self.index_mapping[47]],
+                RequiredPhysical: &self.row.columns[self.index_mapping[48]],
+                RequiredMental: &self.row.columns[self.index_mapping[49]],
+                RequiredTactical: &self.row.columns[self.index_mapping[50]],
+                RewardQuantity: &self.row.columns[self.index_mapping[51]],
+                PercentPhysicalMet: &self.row.columns[self.index_mapping[52]],
+                PercentMentalMet: &self.row.columns[self.index_mapping[53]],
+                PercentTacticalMet: &self.row.columns[self.index_mapping[54]],
+                PercentAllMet: &self.row.columns[self.index_mapping[55]],
             },
         ]
     }
-    pub fn RewardExperience<'a>(&'a self) -> &'a Field {
-        &self.columns[56]
+    pub fn RewardExperience(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[56]]
     }
-    pub fn RequiredSeals<'a>(&'a self) -> &'a Field {
-        &self.columns[57]
+    pub fn RequiredSeals(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[57]]
     }
-    pub fn RequiredFlag<'a>(&'a self) -> &'a Field {
-        &self.columns[58]
+    pub fn RequiredFlag(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[58]]
     }
-    pub fn UnlockFlag<'a>(&'a self) -> &'a Field {
-        &self.columns[59]
+    pub fn UnlockFlag(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[59]]
     }
-    pub fn RequiredLevel<'a>(&'a self) -> &'a Field {
-        &self.columns[60]
+    pub fn RequiredLevel(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[60]]
     }
-    pub fn PercentBase<'a>(&'a self) -> &'a Field {
-        &self.columns[61]
+    pub fn PercentBase(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[61]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[62]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[62]]
     }
-    pub fn GcArmyExpeditionType<'a>(&'a self) -> &'a Field {
-        &self.columns[63]
+    pub fn GcArmyExpeditionType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[63]]
     }
 }

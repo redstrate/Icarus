@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ContentAttributeRectSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl ContentAttributeRectSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl ContentAttributeRectSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentAttributeRect")?;
         let sheet = resolver.read_excel_sheet(&exh, "ContentAttributeRect", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ContentAttributeRectRow> {
@@ -40,25 +52,17 @@ impl ContentAttributeRectSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for ContentAttributeRectSheet {
-    type Row = ContentAttributeRectRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for ContentAttributeRectSheet {
+    type Row = ContentAttributeRectRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a ContentAttributeRectSheet {
-    type Item = (u32, Vec<(u16, ContentAttributeRectRow)>);
+    type Item = (u32, Vec<(u16, ContentAttributeRectRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, ContentAttributeRectSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, ContentAttributeRectSheet> {
         StructuredSheetIterator {
@@ -68,392 +72,393 @@ impl<'a> IntoIterator for &'a ContentAttributeRectSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct ContentAttributeRectRow {
-    columns: Vec<Field>,
+pub struct ContentAttributeRectRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl ContentAttributeRectRow {
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> ContentAttributeRectRow<'a> {
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Unknown3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Unknown4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Unknown5<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Unknown5(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Unknown6<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Unknown6(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Unknown7<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Unknown7(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn Unknown8<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn Unknown8(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn Unknown9<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn Unknown9(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn Unknown10<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn Unknown10(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn Unknown11<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn Unknown11(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn Unknown12<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn Unknown12(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
-    pub fn Unknown13<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn Unknown13(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn Unknown14<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn Unknown14(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn Unknown15<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn Unknown15(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn Unknown16<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn Unknown16(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn Unknown17<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn Unknown17(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn Unknown18<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn Unknown18(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
-    pub fn Unknown19<'a>(&'a self) -> &'a Field {
-        &self.columns[19]
+    pub fn Unknown19(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[19]]
     }
-    pub fn Unknown20<'a>(&'a self) -> &'a Field {
-        &self.columns[20]
+    pub fn Unknown20(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[20]]
     }
-    pub fn Unknown21<'a>(&'a self) -> &'a Field {
-        &self.columns[21]
+    pub fn Unknown21(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[21]]
     }
-    pub fn Unknown22<'a>(&'a self) -> &'a Field {
-        &self.columns[22]
+    pub fn Unknown22(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[22]]
     }
-    pub fn Unknown23<'a>(&'a self) -> &'a Field {
-        &self.columns[23]
+    pub fn Unknown23(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[23]]
     }
-    pub fn Unknown24<'a>(&'a self) -> &'a Field {
-        &self.columns[24]
+    pub fn Unknown24(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[24]]
     }
-    pub fn Unknown25<'a>(&'a self) -> &'a Field {
-        &self.columns[25]
+    pub fn Unknown25(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[25]]
     }
-    pub fn Unknown26<'a>(&'a self) -> &'a Field {
-        &self.columns[26]
+    pub fn Unknown26(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[26]]
     }
-    pub fn Unknown27<'a>(&'a self) -> &'a Field {
-        &self.columns[27]
+    pub fn Unknown27(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[27]]
     }
-    pub fn Unknown28<'a>(&'a self) -> &'a Field {
-        &self.columns[28]
+    pub fn Unknown28(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[28]]
     }
-    pub fn Unknown29<'a>(&'a self) -> &'a Field {
-        &self.columns[29]
+    pub fn Unknown29(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[29]]
     }
-    pub fn Unknown30<'a>(&'a self) -> &'a Field {
-        &self.columns[30]
+    pub fn Unknown30(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[30]]
     }
-    pub fn Unknown31<'a>(&'a self) -> &'a Field {
-        &self.columns[31]
+    pub fn Unknown31(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[31]]
     }
-    pub fn Unknown32<'a>(&'a self) -> &'a Field {
-        &self.columns[32]
+    pub fn Unknown32(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[32]]
     }
-    pub fn Unknown33<'a>(&'a self) -> &'a Field {
-        &self.columns[33]
+    pub fn Unknown33(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[33]]
     }
-    pub fn Unknown34<'a>(&'a self) -> &'a Field {
-        &self.columns[34]
+    pub fn Unknown34(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[34]]
     }
-    pub fn Unknown35<'a>(&'a self) -> &'a Field {
-        &self.columns[35]
+    pub fn Unknown35(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[35]]
     }
-    pub fn Unknown36<'a>(&'a self) -> &'a Field {
-        &self.columns[36]
+    pub fn Unknown36(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[36]]
     }
-    pub fn Unknown37<'a>(&'a self) -> &'a Field {
-        &self.columns[37]
+    pub fn Unknown37(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[37]]
     }
-    pub fn Unknown38<'a>(&'a self) -> &'a Field {
-        &self.columns[38]
+    pub fn Unknown38(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[38]]
     }
-    pub fn Unknown39<'a>(&'a self) -> &'a Field {
-        &self.columns[39]
+    pub fn Unknown39(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[39]]
     }
-    pub fn Unknown40<'a>(&'a self) -> &'a Field {
-        &self.columns[40]
+    pub fn Unknown40(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[40]]
     }
-    pub fn Unknown41<'a>(&'a self) -> &'a Field {
-        &self.columns[41]
+    pub fn Unknown41(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[41]]
     }
-    pub fn Unknown42<'a>(&'a self) -> &'a Field {
-        &self.columns[42]
+    pub fn Unknown42(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[42]]
     }
-    pub fn Unknown43<'a>(&'a self) -> &'a Field {
-        &self.columns[43]
+    pub fn Unknown43(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[43]]
     }
-    pub fn Unknown44<'a>(&'a self) -> &'a Field {
-        &self.columns[44]
+    pub fn Unknown44(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[44]]
     }
-    pub fn Unknown45<'a>(&'a self) -> &'a Field {
-        &self.columns[45]
+    pub fn Unknown45(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[45]]
     }
-    pub fn Unknown46<'a>(&'a self) -> &'a Field {
-        &self.columns[46]
+    pub fn Unknown46(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[46]]
     }
-    pub fn Unknown47<'a>(&'a self) -> &'a Field {
-        &self.columns[47]
+    pub fn Unknown47(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[47]]
     }
-    pub fn Unknown48<'a>(&'a self) -> &'a Field {
-        &self.columns[48]
+    pub fn Unknown48(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[48]]
     }
-    pub fn Unknown49<'a>(&'a self) -> &'a Field {
-        &self.columns[49]
+    pub fn Unknown49(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[49]]
     }
-    pub fn Unknown50<'a>(&'a self) -> &'a Field {
-        &self.columns[50]
+    pub fn Unknown50(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[50]]
     }
-    pub fn Unknown51<'a>(&'a self) -> &'a Field {
-        &self.columns[51]
+    pub fn Unknown51(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[51]]
     }
-    pub fn Unknown52<'a>(&'a self) -> &'a Field {
-        &self.columns[52]
+    pub fn Unknown52(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[52]]
     }
-    pub fn Unknown53<'a>(&'a self) -> &'a Field {
-        &self.columns[53]
+    pub fn Unknown53(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[53]]
     }
-    pub fn Unknown54<'a>(&'a self) -> &'a Field {
-        &self.columns[54]
+    pub fn Unknown54(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[54]]
     }
-    pub fn Unknown55<'a>(&'a self) -> &'a Field {
-        &self.columns[55]
+    pub fn Unknown55(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[55]]
     }
-    pub fn Unknown56<'a>(&'a self) -> &'a Field {
-        &self.columns[56]
+    pub fn Unknown56(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[56]]
     }
-    pub fn Unknown57<'a>(&'a self) -> &'a Field {
-        &self.columns[57]
+    pub fn Unknown57(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[57]]
     }
-    pub fn Unknown58<'a>(&'a self) -> &'a Field {
-        &self.columns[58]
+    pub fn Unknown58(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[58]]
     }
-    pub fn Unknown59<'a>(&'a self) -> &'a Field {
-        &self.columns[59]
+    pub fn Unknown59(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[59]]
     }
-    pub fn Unknown60<'a>(&'a self) -> &'a Field {
-        &self.columns[60]
+    pub fn Unknown60(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[60]]
     }
-    pub fn Unknown61<'a>(&'a self) -> &'a Field {
-        &self.columns[61]
+    pub fn Unknown61(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[61]]
     }
-    pub fn Unknown62<'a>(&'a self) -> &'a Field {
-        &self.columns[62]
+    pub fn Unknown62(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[62]]
     }
-    pub fn Unknown63<'a>(&'a self) -> &'a Field {
-        &self.columns[63]
+    pub fn Unknown63(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[63]]
     }
-    pub fn Unknown64<'a>(&'a self) -> &'a Field {
-        &self.columns[64]
+    pub fn Unknown64(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[64]]
     }
-    pub fn Unknown65<'a>(&'a self) -> &'a Field {
-        &self.columns[65]
+    pub fn Unknown65(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[65]]
     }
-    pub fn Unknown66<'a>(&'a self) -> &'a Field {
-        &self.columns[66]
+    pub fn Unknown66(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[66]]
     }
-    pub fn Unknown67<'a>(&'a self) -> &'a Field {
-        &self.columns[67]
+    pub fn Unknown67(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[67]]
     }
-    pub fn Unknown68<'a>(&'a self) -> &'a Field {
-        &self.columns[68]
+    pub fn Unknown68(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[68]]
     }
-    pub fn Unknown69<'a>(&'a self) -> &'a Field {
-        &self.columns[69]
+    pub fn Unknown69(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[69]]
     }
-    pub fn Unknown70<'a>(&'a self) -> &'a Field {
-        &self.columns[70]
+    pub fn Unknown70(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[70]]
     }
-    pub fn Unknown71<'a>(&'a self) -> &'a Field {
-        &self.columns[71]
+    pub fn Unknown71(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[71]]
     }
-    pub fn Unknown72<'a>(&'a self) -> &'a Field {
-        &self.columns[72]
+    pub fn Unknown72(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[72]]
     }
-    pub fn Unknown73<'a>(&'a self) -> &'a Field {
-        &self.columns[73]
+    pub fn Unknown73(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[73]]
     }
-    pub fn Unknown74<'a>(&'a self) -> &'a Field {
-        &self.columns[74]
+    pub fn Unknown74(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[74]]
     }
-    pub fn Unknown75<'a>(&'a self) -> &'a Field {
-        &self.columns[75]
+    pub fn Unknown75(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[75]]
     }
-    pub fn Unknown76<'a>(&'a self) -> &'a Field {
-        &self.columns[76]
+    pub fn Unknown76(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[76]]
     }
-    pub fn Unknown77<'a>(&'a self) -> &'a Field {
-        &self.columns[77]
+    pub fn Unknown77(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[77]]
     }
-    pub fn Unknown78<'a>(&'a self) -> &'a Field {
-        &self.columns[78]
+    pub fn Unknown78(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[78]]
     }
-    pub fn Unknown79<'a>(&'a self) -> &'a Field {
-        &self.columns[79]
+    pub fn Unknown79(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[79]]
     }
-    pub fn Unknown80<'a>(&'a self) -> &'a Field {
-        &self.columns[80]
+    pub fn Unknown80(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[80]]
     }
-    pub fn Unknown81<'a>(&'a self) -> &'a Field {
-        &self.columns[81]
+    pub fn Unknown81(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[81]]
     }
-    pub fn Unknown82<'a>(&'a self) -> &'a Field {
-        &self.columns[82]
+    pub fn Unknown82(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[82]]
     }
-    pub fn Unknown83<'a>(&'a self) -> &'a Field {
-        &self.columns[83]
+    pub fn Unknown83(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[83]]
     }
-    pub fn Unknown84<'a>(&'a self) -> &'a Field {
-        &self.columns[84]
+    pub fn Unknown84(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[84]]
     }
-    pub fn Unknown85<'a>(&'a self) -> &'a Field {
-        &self.columns[85]
+    pub fn Unknown85(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[85]]
     }
-    pub fn Unknown86<'a>(&'a self) -> &'a Field {
-        &self.columns[86]
+    pub fn Unknown86(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[86]]
     }
-    pub fn Unknown87<'a>(&'a self) -> &'a Field {
-        &self.columns[87]
+    pub fn Unknown87(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[87]]
     }
-    pub fn Unknown88<'a>(&'a self) -> &'a Field {
-        &self.columns[88]
+    pub fn Unknown88(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[88]]
     }
-    pub fn Unknown89<'a>(&'a self) -> &'a Field {
-        &self.columns[89]
+    pub fn Unknown89(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[89]]
     }
-    pub fn Unknown90<'a>(&'a self) -> &'a Field {
-        &self.columns[90]
+    pub fn Unknown90(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[90]]
     }
-    pub fn Unknown91<'a>(&'a self) -> &'a Field {
-        &self.columns[91]
+    pub fn Unknown91(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[91]]
     }
-    pub fn Unknown92<'a>(&'a self) -> &'a Field {
-        &self.columns[92]
+    pub fn Unknown92(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[92]]
     }
-    pub fn Unknown93<'a>(&'a self) -> &'a Field {
-        &self.columns[93]
+    pub fn Unknown93(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[93]]
     }
-    pub fn Unknown94<'a>(&'a self) -> &'a Field {
-        &self.columns[94]
+    pub fn Unknown94(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[94]]
     }
-    pub fn Unknown95<'a>(&'a self) -> &'a Field {
-        &self.columns[95]
+    pub fn Unknown95(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[95]]
     }
-    pub fn Unknown96<'a>(&'a self) -> &'a Field {
-        &self.columns[96]
+    pub fn Unknown96(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[96]]
     }
-    pub fn Unknown97<'a>(&'a self) -> &'a Field {
-        &self.columns[97]
+    pub fn Unknown97(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[97]]
     }
-    pub fn Unknown98<'a>(&'a self) -> &'a Field {
-        &self.columns[98]
+    pub fn Unknown98(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[98]]
     }
-    pub fn Unknown99<'a>(&'a self) -> &'a Field {
-        &self.columns[99]
+    pub fn Unknown99(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[99]]
     }
-    pub fn Unknown100<'a>(&'a self) -> &'a Field {
-        &self.columns[100]
+    pub fn Unknown100(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[100]]
     }
-    pub fn Unknown101<'a>(&'a self) -> &'a Field {
-        &self.columns[101]
+    pub fn Unknown101(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[101]]
     }
-    pub fn Unknown102<'a>(&'a self) -> &'a Field {
-        &self.columns[102]
+    pub fn Unknown102(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[102]]
     }
-    pub fn Unknown103<'a>(&'a self) -> &'a Field {
-        &self.columns[103]
+    pub fn Unknown103(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[103]]
     }
-    pub fn Unknown104<'a>(&'a self) -> &'a Field {
-        &self.columns[104]
+    pub fn Unknown104(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[104]]
     }
-    pub fn Unknown105<'a>(&'a self) -> &'a Field {
-        &self.columns[105]
+    pub fn Unknown105(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[105]]
     }
-    pub fn Unknown106<'a>(&'a self) -> &'a Field {
-        &self.columns[106]
+    pub fn Unknown106(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[106]]
     }
-    pub fn Unknown107<'a>(&'a self) -> &'a Field {
-        &self.columns[107]
+    pub fn Unknown107(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[107]]
     }
-    pub fn Unknown108<'a>(&'a self) -> &'a Field {
-        &self.columns[108]
+    pub fn Unknown108(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[108]]
     }
-    pub fn Unknown109<'a>(&'a self) -> &'a Field {
-        &self.columns[109]
+    pub fn Unknown109(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[109]]
     }
-    pub fn Unknown110<'a>(&'a self) -> &'a Field {
-        &self.columns[110]
+    pub fn Unknown110(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[110]]
     }
-    pub fn Unknown111<'a>(&'a self) -> &'a Field {
-        &self.columns[111]
+    pub fn Unknown111(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[111]]
     }
-    pub fn Unknown112<'a>(&'a self) -> &'a Field {
-        &self.columns[112]
+    pub fn Unknown112(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[112]]
     }
-    pub fn Unknown113<'a>(&'a self) -> &'a Field {
-        &self.columns[113]
+    pub fn Unknown113(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[113]]
     }
-    pub fn Unknown114<'a>(&'a self) -> &'a Field {
-        &self.columns[114]
+    pub fn Unknown114(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[114]]
     }
-    pub fn Unknown115<'a>(&'a self) -> &'a Field {
-        &self.columns[115]
+    pub fn Unknown115(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[115]]
     }
-    pub fn Unknown116<'a>(&'a self) -> &'a Field {
-        &self.columns[116]
+    pub fn Unknown116(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[116]]
     }
-    pub fn Unknown117<'a>(&'a self) -> &'a Field {
-        &self.columns[117]
+    pub fn Unknown117(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[117]]
     }
-    pub fn Unknown118<'a>(&'a self) -> &'a Field {
-        &self.columns[118]
+    pub fn Unknown118(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[118]]
     }
-    pub fn Unknown119<'a>(&'a self) -> &'a Field {
-        &self.columns[119]
+    pub fn Unknown119(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[119]]
     }
-    pub fn Unknown120<'a>(&'a self) -> &'a Field {
-        &self.columns[120]
+    pub fn Unknown120(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[120]]
     }
-    pub fn Unknown121<'a>(&'a self) -> &'a Field {
-        &self.columns[121]
+    pub fn Unknown121(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[121]]
     }
-    pub fn Unknown122<'a>(&'a self) -> &'a Field {
-        &self.columns[122]
+    pub fn Unknown122(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[122]]
     }
-    pub fn Unknown123<'a>(&'a self) -> &'a Field {
-        &self.columns[123]
+    pub fn Unknown123(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[123]]
     }
-    pub fn Unknown124<'a>(&'a self) -> &'a Field {
-        &self.columns[124]
+    pub fn Unknown124(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[124]]
     }
-    pub fn Unknown125<'a>(&'a self) -> &'a Field {
-        &self.columns[125]
+    pub fn Unknown125(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[125]]
     }
-    pub fn Unknown126<'a>(&'a self) -> &'a Field {
-        &self.columns[126]
+    pub fn Unknown126(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[126]]
     }
-    pub fn Unknown127<'a>(&'a self) -> &'a Field {
-        &self.columns[127]
+    pub fn Unknown127(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[127]]
     }
 }

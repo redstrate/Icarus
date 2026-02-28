@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ActionTimelineSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl ActionTimelineSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl ActionTimelineSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ActionTimeline")?;
         let sheet = resolver.read_excel_sheet(&exh, "ActionTimeline", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ActionTimelineRow> {
@@ -36,25 +48,17 @@ impl ActionTimelineSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for ActionTimelineSheet {
-    type Row = ActionTimelineRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for ActionTimelineSheet {
+    type Row = ActionTimelineRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a ActionTimelineSheet {
-    type Item = (u32, Vec<(u16, ActionTimelineRow)>);
+    type Item = (u32, Vec<(u16, ActionTimelineRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, ActionTimelineSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, ActionTimelineSheet> {
         StructuredSheetIterator {
@@ -64,74 +68,75 @@ impl<'a> IntoIterator for &'a ActionTimelineSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct ActionTimelineRow {
-    columns: Vec<Field>,
+pub struct ActionTimelineRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl ActionTimelineRow {
-    pub fn Key<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> ActionTimelineRow<'a> {
+    pub fn Key(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn WeaponTimeline<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn WeaponTimeline(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn KillUpper<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn KillUpper(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Unknown_70<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Unknown_70(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Type<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Type(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Priority<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Priority(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Stance<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Stance(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
-    pub fn Slot<'a>(&'a self) -> &'a Field {
-        &self.columns[7]
+    pub fn Slot(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[7]]
     }
-    pub fn LookAtMode<'a>(&'a self) -> &'a Field {
-        &self.columns[8]
+    pub fn LookAtMode(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[8]]
     }
-    pub fn ActionTimelineIDMode<'a>(&'a self) -> &'a Field {
-        &self.columns[9]
+    pub fn ActionTimelineIDMode(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[9]]
     }
-    pub fn LoadType<'a>(&'a self) -> &'a Field {
-        &self.columns[10]
+    pub fn LoadType(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[10]]
     }
-    pub fn StartAttach<'a>(&'a self) -> &'a Field {
-        &self.columns[11]
+    pub fn StartAttach(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[11]]
     }
-    pub fn ResidentPap<'a>(&'a self) -> &'a Field {
-        &self.columns[12]
+    pub fn ResidentPap(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[12]]
     }
-    pub fn Unknown6<'a>(&'a self) -> &'a Field {
-        &self.columns[13]
+    pub fn Unknown6(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[13]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[14]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[14]]
     }
-    pub fn Pause<'a>(&'a self) -> &'a Field {
-        &self.columns[15]
+    pub fn Pause(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[15]]
     }
-    pub fn Resident<'a>(&'a self) -> &'a Field {
-        &self.columns[16]
+    pub fn Resident(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[16]]
     }
-    pub fn IsMotionCanceledByMoving<'a>(&'a self) -> &'a Field {
-        &self.columns[17]
+    pub fn IsMotionCanceledByMoving(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[17]]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[18]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[18]]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a Field {
-        &self.columns[19]
+    pub fn Unknown3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[19]]
     }
-    pub fn IsLoop<'a>(&'a self) -> &'a Field {
-        &self.columns[20]
+    pub fn IsLoop(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[20]]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a Field {
-        &self.columns[21]
+    pub fn Unknown4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[21]]
     }
 }

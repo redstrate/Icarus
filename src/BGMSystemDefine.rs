@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct BGMSystemDefineSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl BGMSystemDefineSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl BGMSystemDefineSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BGMSystemDefine")?;
         let sheet = resolver.read_excel_sheet(&exh, "BGMSystemDefine", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<BGMSystemDefineRow> {
@@ -36,25 +48,17 @@ impl BGMSystemDefineSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for BGMSystemDefineSheet {
-    type Row = BGMSystemDefineRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for BGMSystemDefineSheet {
+    type Row = BGMSystemDefineRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a BGMSystemDefineSheet {
-    type Item = (u32, Vec<(u16, BGMSystemDefineRow)>);
+    type Item = (u32, Vec<(u16, BGMSystemDefineRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, BGMSystemDefineSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, BGMSystemDefineSheet> {
         StructuredSheetIterator {
@@ -64,11 +68,12 @@ impl<'a> IntoIterator for &'a BGMSystemDefineSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct BGMSystemDefineRow {
-    columns: Vec<Field>,
+pub struct BGMSystemDefineRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl BGMSystemDefineRow {
-    pub fn Define<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> BGMSystemDefineRow<'a> {
+    pub fn Define(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
 }

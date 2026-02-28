@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ContentTodoSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl ContentTodoSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl ContentTodoSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentTodo")?;
         let sheet = resolver.read_excel_sheet(&exh, "ContentTodo", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ContentTodoRow> {
@@ -36,25 +48,17 @@ impl ContentTodoSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for ContentTodoSheet {
-    type Row = ContentTodoRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for ContentTodoSheet {
+    type Row = ContentTodoRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a ContentTodoSheet {
-    type Item = (u32, Vec<(u16, ContentTodoRow)>);
+    type Item = (u32, Vec<(u16, ContentTodoRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, ContentTodoSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, ContentTodoSheet> {
         StructuredSheetIterator {
@@ -64,23 +68,24 @@ impl<'a> IntoIterator for &'a ContentTodoSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct ContentTodoRow {
-    columns: Vec<Field>,
+pub struct ContentTodoRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl ContentTodoRow {
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> ContentTodoRow<'a> {
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Text<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn Text(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn Unknown2<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn Unknown2(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn Unknown3<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Unknown3(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Unknown4<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Unknown4(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
 }

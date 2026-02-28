@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct MJIAnimalsSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl MJIAnimalsSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -19,7 +20,18 @@ impl MJIAnimalsSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJIAnimals")?;
         let sheet = resolver.read_excel_sheet(&exh, "MJIAnimals", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MJIAnimalsRow> {
@@ -36,25 +48,17 @@ impl MJIAnimalsSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for MJIAnimalsSheet {
-    type Row = MJIAnimalsRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for MJIAnimalsSheet {
+    type Row = MJIAnimalsRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a MJIAnimalsSheet {
-    type Item = (u32, Vec<(u16, MJIAnimalsRow)>);
+    type Item = (u32, Vec<(u16, MJIAnimalsRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, MJIAnimalsSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, MJIAnimalsSheet> {
         StructuredSheetIterator {
@@ -64,26 +68,30 @@ impl<'a> IntoIterator for &'a MJIAnimalsSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct MJIAnimalsRow {
-    columns: Vec<Field>,
+pub struct MJIAnimalsRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl MJIAnimalsRow {
-    pub fn BNpcBase<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> MJIAnimalsRow<'a> {
+    pub fn BNpcBase(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn Reward<'a>(&'a self) -> [&'a Field; 2] {
-        [&self.columns[1], &self.columns[2]]
+    pub fn Reward(&'a self) -> [&'a Field; 2] {
+        [
+            &self.row.columns[self.index_mapping[1]],
+            &self.row.columns[self.index_mapping[2]],
+        ]
     }
-    pub fn Icon<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn Icon(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn Size<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn Size(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn Unknown0<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn Unknown0(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn Unknown1<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn Unknown1(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
 }

@@ -10,6 +10,7 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct CollectablesShopRewardScripSheet {
     sheet: Sheet,
+    index_mapping: Vec<usize>,
 }
 impl CollectablesShopRewardScripSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,7 +21,18 @@ impl CollectablesShopRewardScripSheet {
         let exh = resolver.read_excel_sheet_header("CollectablesShopRewardScrip")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "CollectablesShopRewardScrip", language)?;
-        Ok(Self { sheet })
+        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
+            .exh
+            .column_definitions
+            .iter()
+            .enumerate()
+            .collect();
+        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
+        let index_mapping: Vec<usize> = index_mapping
+            .iter()
+            .map(|(index, _)| *index)
+            .collect();
+        Ok(Self { sheet, index_mapping })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<CollectablesShopRewardScripRow> {
@@ -41,25 +53,17 @@ impl CollectablesShopRewardScripSheet {
         self.sheet.exh.header.row_count
     }
 }
-impl StructuredSheet for CollectablesShopRewardScripSheet {
-    type Row = CollectablesShopRewardScripRow;
-    fn read_row(&self, row: &Row) -> Option<Self::Row> {
-        let column_defs = &self.sheet.exh.column_definitions;
-        let mut zipped: Vec<_> = row
-            .columns
-            .clone()
-            .into_iter()
-            .zip(column_defs)
-            .collect();
-        zipped.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let (columns, _): (Vec<Field>, Vec<ExcelColumnDefinition>) = zipped
-            .into_iter()
-            .unzip();
-        Some(Self::Row { columns })
+impl<'a> StructuredSheet<'a> for CollectablesShopRewardScripSheet {
+    type Row = CollectablesShopRewardScripRow<'a>;
+    fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            row,
+            index_mapping: self.index_mapping.clone(),
+        })
     }
 }
 impl<'a> IntoIterator for &'a CollectablesShopRewardScripSheet {
-    type Item = (u32, Vec<(u16, CollectablesShopRewardScripRow)>);
+    type Item = (u32, Vec<(u16, CollectablesShopRewardScripRow<'a>)>);
     type IntoIter = StructuredSheetIterator<'a, CollectablesShopRewardScripSheet>;
     fn into_iter(self) -> StructuredSheetIterator<'a, CollectablesShopRewardScripSheet> {
         StructuredSheetIterator {
@@ -69,29 +73,30 @@ impl<'a> IntoIterator for &'a CollectablesShopRewardScripSheet {
     }
 }
 #[derive(Debug, Clone)]
-pub struct CollectablesShopRewardScripRow {
-    columns: Vec<Field>,
+pub struct CollectablesShopRewardScripRow<'a> {
+    row: &'a Row,
+    index_mapping: Vec<usize>,
 }
-impl CollectablesShopRewardScripRow {
-    pub fn Currency<'a>(&'a self) -> &'a Field {
-        &self.columns[0]
+impl<'a> CollectablesShopRewardScripRow<'a> {
+    pub fn Currency(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[0]]
     }
-    pub fn LowReward<'a>(&'a self) -> &'a Field {
-        &self.columns[1]
+    pub fn LowReward(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[1]]
     }
-    pub fn MidReward<'a>(&'a self) -> &'a Field {
-        &self.columns[2]
+    pub fn MidReward(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[2]]
     }
-    pub fn HighReward<'a>(&'a self) -> &'a Field {
-        &self.columns[3]
+    pub fn HighReward(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[3]]
     }
-    pub fn ExpRatioLow<'a>(&'a self) -> &'a Field {
-        &self.columns[4]
+    pub fn ExpRatioLow(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[4]]
     }
-    pub fn ExpRatioMid<'a>(&'a self) -> &'a Field {
-        &self.columns[5]
+    pub fn ExpRatioMid(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[5]]
     }
-    pub fn ExpRatioHigh<'a>(&'a self) -> &'a Field {
-        &self.columns[6]
+    pub fn ExpRatioHigh(&'a self) -> &'a Field {
+        &self.row.columns[self.index_mapping[6]]
     }
 }
