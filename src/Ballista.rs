@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct BallistaSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl BallistaSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl BallistaSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Ballista")?;
         let sheet = resolver.read_excel_sheet(&exh, "Ballista", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<BallistaRow> {
@@ -51,10 +39,7 @@ impl BallistaSheet {
 impl<'a> StructuredSheet<'a> for BallistaSheet {
     type Row = BallistaRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a BallistaSheet {
@@ -70,40 +55,39 @@ impl<'a> IntoIterator for &'a BallistaSheet {
 #[derive(Debug, Clone)]
 pub struct BallistaRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> BallistaRow<'a> {
-    pub fn BNPC(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn BNPC(&'a self) -> u16 {
+        self.row.columns[0].into_u16().copied().unwrap()
     }
-    pub fn Angle(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Angle(&'a self) -> u16 {
+        self.row.columns[3].into_u16().copied().unwrap()
     }
-    pub fn Action0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Action0(&'a self) -> u16 {
+        self.row.columns[7].into_u16().copied().unwrap()
     }
-    pub fn Action1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn Action1(&'a self) -> u16 {
+        self.row.columns[8].into_u16().copied().unwrap()
     }
-    pub fn Action2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn Action2(&'a self) -> u16 {
+        self.row.columns[9].into_u16().copied().unwrap()
     }
-    pub fn Action3(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn Action3(&'a self) -> u16 {
+        self.row.columns[10].into_u16().copied().unwrap()
     }
-    pub fn Bullet(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn Bullet(&'a self) -> u8 {
+        self.row.columns[4].into_u8().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn Unknown0(&'a self) -> u8 {
+        self.row.columns[5].into_u8().copied().unwrap()
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn Unknown1(&'a self) -> u8 {
+        self.row.columns[6].into_u8().copied().unwrap()
     }
-    pub fn Near(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn Near(&'a self) -> i8 {
+        self.row.columns[1].into_i8().copied().unwrap()
     }
-    pub fn Far(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn Far(&'a self) -> i8 {
+        self.row.columns[2].into_i8().copied().unwrap()
     }
 }

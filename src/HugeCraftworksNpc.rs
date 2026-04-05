@@ -7,26 +7,25 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct HugeCraftworksTurnInParamElement<'a> {
-    pub RequestedItem: &'a Field,
-    pub Unknown0: &'a Field,
-    pub RequestedQuantity: &'a Field,
-    pub Unknown1: &'a Field,
-    pub Unknown2: &'a Field,
-    pub Unknown3: &'a Field,
-    pub Unknown4: &'a Field,
-    pub Unknown5: &'a Field,
-    pub Unknown6: &'a Field,
+pub struct HugeCraftworksTurnInParamElement {
+    pub RequestedItem: u32,
+    pub Unknown0: u16,
+    pub RequestedQuantity: u8,
+    pub Unknown1: u8,
+    pub Unknown2: u8,
+    pub Unknown3: u8,
+    pub Unknown4: u8,
+    pub Unknown5: u8,
+    pub Unknown6: bool,
 }
-pub struct HugeCraftworksRewardParamElement<'a> {
-    pub RewardItem: [&'a Field; 2],
-    pub RewardQuantity: [&'a Field; 2],
-    pub RewardHQ: [&'a Field; 2],
+pub struct HugeCraftworksRewardParamElement {
+    pub RewardItem: [u32; 2],
+    pub RewardQuantity: [u8; 2],
+    pub RewardHQ: [bool; 2],
 }
 #[derive(Debug, Clone)]
 pub struct HugeCraftworksNpcSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl HugeCraftworksNpcSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -36,18 +35,7 @@ impl HugeCraftworksNpcSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HugeCraftworksNpc")?;
         let sheet = resolver.read_excel_sheet(&exh, "HugeCraftworksNpc", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<HugeCraftworksNpcRow> {
@@ -67,10 +55,7 @@ impl HugeCraftworksNpcSheet {
 impl<'a> StructuredSheet<'a> for HugeCraftworksNpcSheet {
     type Row = HugeCraftworksNpcRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a HugeCraftworksNpcSheet {
@@ -86,178 +71,173 @@ impl<'a> IntoIterator for &'a HugeCraftworksNpcSheet {
 #[derive(Debug, Clone)]
 pub struct HugeCraftworksNpcRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> HugeCraftworksNpcRow<'a> {
-    pub fn HugeCraftworksTurnInParam(
-        &'a self,
-    ) -> [HugeCraftworksTurnInParamElement<'a>; 6] {
+    pub fn HugeCraftworksTurnInParam(&'a self) -> [HugeCraftworksTurnInParamElement; 6] {
         [
             HugeCraftworksTurnInParamElement {
-                RequestedItem: &self.row.columns[self.index_mapping[0]],
-                Unknown0: &self.row.columns[self.index_mapping[1]],
-                RequestedQuantity: &self.row.columns[self.index_mapping[2]],
-                Unknown1: &self.row.columns[self.index_mapping[3]],
-                Unknown2: &self.row.columns[self.index_mapping[4]],
-                Unknown3: &self.row.columns[self.index_mapping[5]],
-                Unknown4: &self.row.columns[self.index_mapping[6]],
-                Unknown5: &self.row.columns[self.index_mapping[7]],
-                Unknown6: &self.row.columns[self.index_mapping[8]],
+                RequestedItem: self.row.columns[2].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[38].into_u16().copied().unwrap(),
+                RequestedQuantity: self.row.columns[8].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[20].into_u8().copied().unwrap(),
+                Unknown2: self.row.columns[26].into_u8().copied().unwrap(),
+                Unknown3: self.row.columns[32].into_u8().copied().unwrap(),
+                Unknown4: self.row.columns[44].into_u8().copied().unwrap(),
+                Unknown5: self.row.columns[50].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[14].into_bool().copied().unwrap(),
             },
             HugeCraftworksTurnInParamElement {
-                RequestedItem: &self.row.columns[self.index_mapping[9]],
-                Unknown0: &self.row.columns[self.index_mapping[10]],
-                RequestedQuantity: &self.row.columns[self.index_mapping[11]],
-                Unknown1: &self.row.columns[self.index_mapping[12]],
-                Unknown2: &self.row.columns[self.index_mapping[13]],
-                Unknown3: &self.row.columns[self.index_mapping[14]],
-                Unknown4: &self.row.columns[self.index_mapping[15]],
-                Unknown5: &self.row.columns[self.index_mapping[16]],
-                Unknown6: &self.row.columns[self.index_mapping[17]],
+                RequestedItem: self.row.columns[3].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[39].into_u16().copied().unwrap(),
+                RequestedQuantity: self.row.columns[9].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[21].into_u8().copied().unwrap(),
+                Unknown2: self.row.columns[27].into_u8().copied().unwrap(),
+                Unknown3: self.row.columns[33].into_u8().copied().unwrap(),
+                Unknown4: self.row.columns[45].into_u8().copied().unwrap(),
+                Unknown5: self.row.columns[51].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[15].into_bool().copied().unwrap(),
             },
             HugeCraftworksTurnInParamElement {
-                RequestedItem: &self.row.columns[self.index_mapping[18]],
-                Unknown0: &self.row.columns[self.index_mapping[19]],
-                RequestedQuantity: &self.row.columns[self.index_mapping[20]],
-                Unknown1: &self.row.columns[self.index_mapping[21]],
-                Unknown2: &self.row.columns[self.index_mapping[22]],
-                Unknown3: &self.row.columns[self.index_mapping[23]],
-                Unknown4: &self.row.columns[self.index_mapping[24]],
-                Unknown5: &self.row.columns[self.index_mapping[25]],
-                Unknown6: &self.row.columns[self.index_mapping[26]],
+                RequestedItem: self.row.columns[4].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[40].into_u16().copied().unwrap(),
+                RequestedQuantity: self.row.columns[10].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[22].into_u8().copied().unwrap(),
+                Unknown2: self.row.columns[28].into_u8().copied().unwrap(),
+                Unknown3: self.row.columns[34].into_u8().copied().unwrap(),
+                Unknown4: self.row.columns[46].into_u8().copied().unwrap(),
+                Unknown5: self.row.columns[52].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[16].into_bool().copied().unwrap(),
             },
             HugeCraftworksTurnInParamElement {
-                RequestedItem: &self.row.columns[self.index_mapping[27]],
-                Unknown0: &self.row.columns[self.index_mapping[28]],
-                RequestedQuantity: &self.row.columns[self.index_mapping[29]],
-                Unknown1: &self.row.columns[self.index_mapping[30]],
-                Unknown2: &self.row.columns[self.index_mapping[31]],
-                Unknown3: &self.row.columns[self.index_mapping[32]],
-                Unknown4: &self.row.columns[self.index_mapping[33]],
-                Unknown5: &self.row.columns[self.index_mapping[34]],
-                Unknown6: &self.row.columns[self.index_mapping[35]],
+                RequestedItem: self.row.columns[5].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[41].into_u16().copied().unwrap(),
+                RequestedQuantity: self.row.columns[11].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[23].into_u8().copied().unwrap(),
+                Unknown2: self.row.columns[29].into_u8().copied().unwrap(),
+                Unknown3: self.row.columns[35].into_u8().copied().unwrap(),
+                Unknown4: self.row.columns[47].into_u8().copied().unwrap(),
+                Unknown5: self.row.columns[53].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[17].into_bool().copied().unwrap(),
             },
             HugeCraftworksTurnInParamElement {
-                RequestedItem: &self.row.columns[self.index_mapping[36]],
-                Unknown0: &self.row.columns[self.index_mapping[37]],
-                RequestedQuantity: &self.row.columns[self.index_mapping[38]],
-                Unknown1: &self.row.columns[self.index_mapping[39]],
-                Unknown2: &self.row.columns[self.index_mapping[40]],
-                Unknown3: &self.row.columns[self.index_mapping[41]],
-                Unknown4: &self.row.columns[self.index_mapping[42]],
-                Unknown5: &self.row.columns[self.index_mapping[43]],
-                Unknown6: &self.row.columns[self.index_mapping[44]],
+                RequestedItem: self.row.columns[6].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[42].into_u16().copied().unwrap(),
+                RequestedQuantity: self.row.columns[12].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[24].into_u8().copied().unwrap(),
+                Unknown2: self.row.columns[30].into_u8().copied().unwrap(),
+                Unknown3: self.row.columns[36].into_u8().copied().unwrap(),
+                Unknown4: self.row.columns[48].into_u8().copied().unwrap(),
+                Unknown5: self.row.columns[54].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[18].into_bool().copied().unwrap(),
             },
             HugeCraftworksTurnInParamElement {
-                RequestedItem: &self.row.columns[self.index_mapping[45]],
-                Unknown0: &self.row.columns[self.index_mapping[46]],
-                RequestedQuantity: &self.row.columns[self.index_mapping[47]],
-                Unknown1: &self.row.columns[self.index_mapping[48]],
-                Unknown2: &self.row.columns[self.index_mapping[49]],
-                Unknown3: &self.row.columns[self.index_mapping[50]],
-                Unknown4: &self.row.columns[self.index_mapping[51]],
-                Unknown5: &self.row.columns[self.index_mapping[52]],
-                Unknown6: &self.row.columns[self.index_mapping[53]],
+                RequestedItem: self.row.columns[7].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[43].into_u16().copied().unwrap(),
+                RequestedQuantity: self.row.columns[13].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[25].into_u8().copied().unwrap(),
+                Unknown2: self.row.columns[31].into_u8().copied().unwrap(),
+                Unknown3: self.row.columns[37].into_u8().copied().unwrap(),
+                Unknown4: self.row.columns[49].into_u8().copied().unwrap(),
+                Unknown5: self.row.columns[55].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[19].into_bool().copied().unwrap(),
             },
         ]
     }
-    pub fn HugeCraftworksRewardParam(
-        &'a self,
-    ) -> [HugeCraftworksRewardParamElement<'a>; 6] {
+    pub fn HugeCraftworksRewardParam(&'a self) -> [HugeCraftworksRewardParamElement; 6] {
         [
             HugeCraftworksRewardParamElement {
                 RewardItem: [
-                    &self.row.columns[self.index_mapping[54]],
-                    &self.row.columns[self.index_mapping[55]],
+                    self.row.columns[56].into_u32().copied().unwrap(),
+                    self.row.columns[74].into_u32().copied().unwrap(),
                 ],
                 RewardQuantity: [
-                    &self.row.columns[self.index_mapping[56]],
-                    &self.row.columns[self.index_mapping[57]],
+                    self.row.columns[68].into_u8().copied().unwrap(),
+                    self.row.columns[86].into_u8().copied().unwrap(),
                 ],
                 RewardHQ: [
-                    &self.row.columns[self.index_mapping[58]],
-                    &self.row.columns[self.index_mapping[59]],
+                    self.row.columns[62].into_bool().copied().unwrap(),
+                    self.row.columns[80].into_bool().copied().unwrap(),
                 ],
             },
             HugeCraftworksRewardParamElement {
                 RewardItem: [
-                    &self.row.columns[self.index_mapping[60]],
-                    &self.row.columns[self.index_mapping[61]],
+                    self.row.columns[57].into_u32().copied().unwrap(),
+                    self.row.columns[75].into_u32().copied().unwrap(),
                 ],
                 RewardQuantity: [
-                    &self.row.columns[self.index_mapping[62]],
-                    &self.row.columns[self.index_mapping[63]],
+                    self.row.columns[69].into_u8().copied().unwrap(),
+                    self.row.columns[87].into_u8().copied().unwrap(),
                 ],
                 RewardHQ: [
-                    &self.row.columns[self.index_mapping[64]],
-                    &self.row.columns[self.index_mapping[65]],
+                    self.row.columns[63].into_bool().copied().unwrap(),
+                    self.row.columns[81].into_bool().copied().unwrap(),
                 ],
             },
             HugeCraftworksRewardParamElement {
                 RewardItem: [
-                    &self.row.columns[self.index_mapping[66]],
-                    &self.row.columns[self.index_mapping[67]],
+                    self.row.columns[58].into_u32().copied().unwrap(),
+                    self.row.columns[76].into_u32().copied().unwrap(),
                 ],
                 RewardQuantity: [
-                    &self.row.columns[self.index_mapping[68]],
-                    &self.row.columns[self.index_mapping[69]],
+                    self.row.columns[70].into_u8().copied().unwrap(),
+                    self.row.columns[88].into_u8().copied().unwrap(),
                 ],
                 RewardHQ: [
-                    &self.row.columns[self.index_mapping[70]],
-                    &self.row.columns[self.index_mapping[71]],
+                    self.row.columns[64].into_bool().copied().unwrap(),
+                    self.row.columns[82].into_bool().copied().unwrap(),
                 ],
             },
             HugeCraftworksRewardParamElement {
                 RewardItem: [
-                    &self.row.columns[self.index_mapping[72]],
-                    &self.row.columns[self.index_mapping[73]],
+                    self.row.columns[59].into_u32().copied().unwrap(),
+                    self.row.columns[77].into_u32().copied().unwrap(),
                 ],
                 RewardQuantity: [
-                    &self.row.columns[self.index_mapping[74]],
-                    &self.row.columns[self.index_mapping[75]],
+                    self.row.columns[71].into_u8().copied().unwrap(),
+                    self.row.columns[89].into_u8().copied().unwrap(),
                 ],
                 RewardHQ: [
-                    &self.row.columns[self.index_mapping[76]],
-                    &self.row.columns[self.index_mapping[77]],
+                    self.row.columns[65].into_bool().copied().unwrap(),
+                    self.row.columns[83].into_bool().copied().unwrap(),
                 ],
             },
             HugeCraftworksRewardParamElement {
                 RewardItem: [
-                    &self.row.columns[self.index_mapping[78]],
-                    &self.row.columns[self.index_mapping[79]],
+                    self.row.columns[60].into_u32().copied().unwrap(),
+                    self.row.columns[78].into_u32().copied().unwrap(),
                 ],
                 RewardQuantity: [
-                    &self.row.columns[self.index_mapping[80]],
-                    &self.row.columns[self.index_mapping[81]],
+                    self.row.columns[72].into_u8().copied().unwrap(),
+                    self.row.columns[90].into_u8().copied().unwrap(),
                 ],
                 RewardHQ: [
-                    &self.row.columns[self.index_mapping[82]],
-                    &self.row.columns[self.index_mapping[83]],
+                    self.row.columns[66].into_bool().copied().unwrap(),
+                    self.row.columns[84].into_bool().copied().unwrap(),
                 ],
             },
             HugeCraftworksRewardParamElement {
                 RewardItem: [
-                    &self.row.columns[self.index_mapping[84]],
-                    &self.row.columns[self.index_mapping[85]],
+                    self.row.columns[61].into_u32().copied().unwrap(),
+                    self.row.columns[79].into_u32().copied().unwrap(),
                 ],
                 RewardQuantity: [
-                    &self.row.columns[self.index_mapping[86]],
-                    &self.row.columns[self.index_mapping[87]],
+                    self.row.columns[73].into_u8().copied().unwrap(),
+                    self.row.columns[91].into_u8().copied().unwrap(),
                 ],
                 RewardHQ: [
-                    &self.row.columns[self.index_mapping[88]],
-                    &self.row.columns[self.index_mapping[89]],
+                    self.row.columns[67].into_bool().copied().unwrap(),
+                    self.row.columns[85].into_bool().copied().unwrap(),
                 ],
             },
         ]
     }
-    pub fn Transient(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[90]]
+    pub fn Transient(&'a self) -> &'a str {
+        self.row.columns[92].into_string().unwrap()
     }
-    pub fn EventNpc(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[91]]
+    pub fn EventNpc(&'a self) -> u32 {
+        self.row.columns[0].into_u32().copied().unwrap()
     }
-    pub fn ClassJobCategory(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[92]]
+    pub fn ClassJobCategory(&'a self) -> u16 {
+        self.row.columns[1].into_u16().copied().unwrap()
     }
 }

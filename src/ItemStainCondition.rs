@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ItemStainConditionSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl ItemStainConditionSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl ItemStainConditionSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ItemStainCondition")?;
         let sheet = resolver.read_excel_sheet(&exh, "ItemStainCondition", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ItemStainConditionRow> {
@@ -51,10 +39,7 @@ impl ItemStainConditionSheet {
 impl<'a> StructuredSheet<'a> for ItemStainConditionSheet {
     type Row = ItemStainConditionRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a ItemStainConditionSheet {
@@ -70,10 +55,9 @@ impl<'a> IntoIterator for &'a ItemStainConditionSheet {
 #[derive(Debug, Clone)]
 pub struct ItemStainConditionRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> ItemStainConditionRow<'a> {
-    pub fn UnlockQuest(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn UnlockQuest(&'a self) -> u32 {
+        self.row.columns[0].into_u32().copied().unwrap()
     }
 }

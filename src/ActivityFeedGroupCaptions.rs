@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ActivityFeedGroupCaptionsSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl ActivityFeedGroupCaptionsSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -21,18 +20,7 @@ impl ActivityFeedGroupCaptionsSheet {
         let exh = resolver.read_excel_sheet_header("ActivityFeedGroupCaptions")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "ActivityFeedGroupCaptions", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ActivityFeedGroupCaptionsRow> {
@@ -56,10 +44,7 @@ impl ActivityFeedGroupCaptionsSheet {
 impl<'a> StructuredSheet<'a> for ActivityFeedGroupCaptionsSheet {
     type Row = ActivityFeedGroupCaptionsRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a ActivityFeedGroupCaptionsSheet {
@@ -75,19 +60,18 @@ impl<'a> IntoIterator for &'a ActivityFeedGroupCaptionsSheet {
 #[derive(Debug, Clone)]
 pub struct ActivityFeedGroupCaptionsRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> ActivityFeedGroupCaptionsRow<'a> {
-    pub fn JA(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn JA(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn EN(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn EN(&'a self) -> &'a str {
+        self.row.columns[1].into_string().unwrap()
     }
-    pub fn DE(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn DE(&'a self) -> &'a str {
+        self.row.columns[2].into_string().unwrap()
     }
-    pub fn FR(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn FR(&'a self) -> &'a str {
+        self.row.columns[3].into_string().unwrap()
     }
 }

@@ -8,13 +8,12 @@ use physis::{
     Language,
 };
 pub struct VariablesElement<'a> {
-    pub Name: &'a Field,
-    pub Value: &'a Field,
+    pub Name: &'a str,
+    pub Value: u32,
 }
 #[derive(Debug, Clone)]
 pub struct OpeningSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl OpeningSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -24,18 +23,7 @@ impl OpeningSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Opening")?;
         let sheet = resolver.read_excel_sheet(&exh, "Opening", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<OpeningRow> {
@@ -55,10 +43,7 @@ impl OpeningSheet {
 impl<'a> StructuredSheet<'a> for OpeningSheet {
     type Row = OpeningRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a OpeningSheet {
@@ -74,177 +59,176 @@ impl<'a> IntoIterator for &'a OpeningSheet {
 #[derive(Debug, Clone)]
 pub struct OpeningRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> OpeningRow<'a> {
     pub fn Variables(&'a self) -> [VariablesElement<'a>; 40] {
         [
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[0]],
-                Value: &self.row.columns[self.index_mapping[1]],
+                Name: self.row.columns[2].into_string().unwrap(),
+                Value: self.row.columns[42].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[2]],
-                Value: &self.row.columns[self.index_mapping[3]],
+                Name: self.row.columns[3].into_string().unwrap(),
+                Value: self.row.columns[43].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[4]],
-                Value: &self.row.columns[self.index_mapping[5]],
+                Name: self.row.columns[4].into_string().unwrap(),
+                Value: self.row.columns[44].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[6]],
-                Value: &self.row.columns[self.index_mapping[7]],
+                Name: self.row.columns[5].into_string().unwrap(),
+                Value: self.row.columns[45].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[8]],
-                Value: &self.row.columns[self.index_mapping[9]],
+                Name: self.row.columns[6].into_string().unwrap(),
+                Value: self.row.columns[46].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[10]],
-                Value: &self.row.columns[self.index_mapping[11]],
+                Name: self.row.columns[7].into_string().unwrap(),
+                Value: self.row.columns[47].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[12]],
-                Value: &self.row.columns[self.index_mapping[13]],
+                Name: self.row.columns[8].into_string().unwrap(),
+                Value: self.row.columns[48].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[14]],
-                Value: &self.row.columns[self.index_mapping[15]],
+                Name: self.row.columns[9].into_string().unwrap(),
+                Value: self.row.columns[49].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[16]],
-                Value: &self.row.columns[self.index_mapping[17]],
+                Name: self.row.columns[10].into_string().unwrap(),
+                Value: self.row.columns[50].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[18]],
-                Value: &self.row.columns[self.index_mapping[19]],
+                Name: self.row.columns[11].into_string().unwrap(),
+                Value: self.row.columns[51].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[20]],
-                Value: &self.row.columns[self.index_mapping[21]],
+                Name: self.row.columns[12].into_string().unwrap(),
+                Value: self.row.columns[52].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[22]],
-                Value: &self.row.columns[self.index_mapping[23]],
+                Name: self.row.columns[13].into_string().unwrap(),
+                Value: self.row.columns[53].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[24]],
-                Value: &self.row.columns[self.index_mapping[25]],
+                Name: self.row.columns[14].into_string().unwrap(),
+                Value: self.row.columns[54].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[26]],
-                Value: &self.row.columns[self.index_mapping[27]],
+                Name: self.row.columns[15].into_string().unwrap(),
+                Value: self.row.columns[55].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[28]],
-                Value: &self.row.columns[self.index_mapping[29]],
+                Name: self.row.columns[16].into_string().unwrap(),
+                Value: self.row.columns[56].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[30]],
-                Value: &self.row.columns[self.index_mapping[31]],
+                Name: self.row.columns[17].into_string().unwrap(),
+                Value: self.row.columns[57].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[32]],
-                Value: &self.row.columns[self.index_mapping[33]],
+                Name: self.row.columns[18].into_string().unwrap(),
+                Value: self.row.columns[58].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[34]],
-                Value: &self.row.columns[self.index_mapping[35]],
+                Name: self.row.columns[19].into_string().unwrap(),
+                Value: self.row.columns[59].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[36]],
-                Value: &self.row.columns[self.index_mapping[37]],
+                Name: self.row.columns[20].into_string().unwrap(),
+                Value: self.row.columns[60].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[38]],
-                Value: &self.row.columns[self.index_mapping[39]],
+                Name: self.row.columns[21].into_string().unwrap(),
+                Value: self.row.columns[61].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[40]],
-                Value: &self.row.columns[self.index_mapping[41]],
+                Name: self.row.columns[22].into_string().unwrap(),
+                Value: self.row.columns[62].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[42]],
-                Value: &self.row.columns[self.index_mapping[43]],
+                Name: self.row.columns[23].into_string().unwrap(),
+                Value: self.row.columns[63].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[44]],
-                Value: &self.row.columns[self.index_mapping[45]],
+                Name: self.row.columns[24].into_string().unwrap(),
+                Value: self.row.columns[64].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[46]],
-                Value: &self.row.columns[self.index_mapping[47]],
+                Name: self.row.columns[25].into_string().unwrap(),
+                Value: self.row.columns[65].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[48]],
-                Value: &self.row.columns[self.index_mapping[49]],
+                Name: self.row.columns[26].into_string().unwrap(),
+                Value: self.row.columns[66].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[50]],
-                Value: &self.row.columns[self.index_mapping[51]],
+                Name: self.row.columns[27].into_string().unwrap(),
+                Value: self.row.columns[67].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[52]],
-                Value: &self.row.columns[self.index_mapping[53]],
+                Name: self.row.columns[28].into_string().unwrap(),
+                Value: self.row.columns[68].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[54]],
-                Value: &self.row.columns[self.index_mapping[55]],
+                Name: self.row.columns[29].into_string().unwrap(),
+                Value: self.row.columns[69].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[56]],
-                Value: &self.row.columns[self.index_mapping[57]],
+                Name: self.row.columns[30].into_string().unwrap(),
+                Value: self.row.columns[70].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[58]],
-                Value: &self.row.columns[self.index_mapping[59]],
+                Name: self.row.columns[31].into_string().unwrap(),
+                Value: self.row.columns[71].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[60]],
-                Value: &self.row.columns[self.index_mapping[61]],
+                Name: self.row.columns[32].into_string().unwrap(),
+                Value: self.row.columns[72].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[62]],
-                Value: &self.row.columns[self.index_mapping[63]],
+                Name: self.row.columns[33].into_string().unwrap(),
+                Value: self.row.columns[73].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[64]],
-                Value: &self.row.columns[self.index_mapping[65]],
+                Name: self.row.columns[34].into_string().unwrap(),
+                Value: self.row.columns[74].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[66]],
-                Value: &self.row.columns[self.index_mapping[67]],
+                Name: self.row.columns[35].into_string().unwrap(),
+                Value: self.row.columns[75].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[68]],
-                Value: &self.row.columns[self.index_mapping[69]],
+                Name: self.row.columns[36].into_string().unwrap(),
+                Value: self.row.columns[76].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[70]],
-                Value: &self.row.columns[self.index_mapping[71]],
+                Name: self.row.columns[37].into_string().unwrap(),
+                Value: self.row.columns[77].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[72]],
-                Value: &self.row.columns[self.index_mapping[73]],
+                Name: self.row.columns[38].into_string().unwrap(),
+                Value: self.row.columns[78].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[74]],
-                Value: &self.row.columns[self.index_mapping[75]],
+                Name: self.row.columns[39].into_string().unwrap(),
+                Value: self.row.columns[79].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[76]],
-                Value: &self.row.columns[self.index_mapping[77]],
+                Name: self.row.columns[40].into_string().unwrap(),
+                Value: self.row.columns[80].into_u32().copied().unwrap(),
             },
             VariablesElement {
-                Name: &self.row.columns[self.index_mapping[78]],
-                Value: &self.row.columns[self.index_mapping[79]],
+                Name: self.row.columns[41].into_string().unwrap(),
+                Value: self.row.columns[81].into_u32().copied().unwrap(),
             },
         ]
     }
-    pub fn Name(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[80]]
+    pub fn Name(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn Quest(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[81]]
+    pub fn Quest(&'a self) -> u32 {
+        self.row.columns[1].into_u32().copied().unwrap()
     }
 }

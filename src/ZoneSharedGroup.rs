@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ZoneSharedGroupSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl ZoneSharedGroupSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl ZoneSharedGroupSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ZoneSharedGroup")?;
         let sheet = resolver.read_excel_sheet(&exh, "ZoneSharedGroup", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ZoneSharedGroupRow> {
@@ -51,10 +39,7 @@ impl ZoneSharedGroupSheet {
 impl<'a> StructuredSheet<'a> for ZoneSharedGroupSheet {
     type Row = ZoneSharedGroupRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a ZoneSharedGroupSheet {
@@ -70,37 +55,36 @@ impl<'a> IntoIterator for &'a ZoneSharedGroupSheet {
 #[derive(Debug, Clone)]
 pub struct ZoneSharedGroupRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> ZoneSharedGroupRow<'a> {
-    pub fn LGBSharedGroup(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn LGBSharedGroup(&'a self) -> u32 {
+        self.row.columns[0].into_u32().copied().unwrap()
     }
-    pub fn RequirementRow(&'a self) -> [&'a Field; 6] {
+    pub fn RequirementRow(&'a self) -> [u32; 6] {
         [
-            &self.row.columns[self.index_mapping[1]],
-            &self.row.columns[self.index_mapping[2]],
-            &self.row.columns[self.index_mapping[3]],
-            &self.row.columns[self.index_mapping[4]],
-            &self.row.columns[self.index_mapping[5]],
-            &self.row.columns[self.index_mapping[6]],
+            self.row.columns[2].into_u32().copied().unwrap(),
+            self.row.columns[6].into_u32().copied().unwrap(),
+            self.row.columns[10].into_u32().copied().unwrap(),
+            self.row.columns[14].into_u32().copied().unwrap(),
+            self.row.columns[18].into_u32().copied().unwrap(),
+            self.row.columns[22].into_u32().copied().unwrap(),
         ]
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn Unknown0(&'a self) -> u32 {
+        self.row.columns[26].into_u32().copied().unwrap()
     }
-    pub fn RequirementQuestSequence(&'a self) -> [&'a Field; 6] {
+    pub fn RequirementQuestSequence(&'a self) -> [u32; 6] {
         [
-            &self.row.columns[self.index_mapping[8]],
-            &self.row.columns[self.index_mapping[9]],
-            &self.row.columns[self.index_mapping[10]],
-            &self.row.columns[self.index_mapping[11]],
-            &self.row.columns[self.index_mapping[12]],
-            &self.row.columns[self.index_mapping[13]],
+            self.row.columns[3].into_u32().copied().unwrap(),
+            self.row.columns[7].into_u32().copied().unwrap(),
+            self.row.columns[11].into_u32().copied().unwrap(),
+            self.row.columns[15].into_u32().copied().unwrap(),
+            self.row.columns[19].into_u32().copied().unwrap(),
+            self.row.columns[23].into_u32().copied().unwrap(),
         ]
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn Unknown1(&'a self) -> u32 {
+        self.row.columns[27].into_u32().copied().unwrap()
     }
     /// 1 = Quest
     /// 2 = Quest with specific Sequence
@@ -108,38 +92,38 @@ impl<'a> ZoneSharedGroupRow<'a> {
     /// 4 = EurekaStoryProgress
     /// 5 = DomaStoryProgress
     ///
-    pub fn RequirementType(&'a self) -> [&'a Field; 6] {
+    pub fn RequirementType(&'a self) -> [u8; 6] {
         [
-            &self.row.columns[self.index_mapping[15]],
-            &self.row.columns[self.index_mapping[16]],
-            &self.row.columns[self.index_mapping[17]],
-            &self.row.columns[self.index_mapping[18]],
-            &self.row.columns[self.index_mapping[19]],
-            &self.row.columns[self.index_mapping[20]],
+            self.row.columns[1].into_u8().copied().unwrap(),
+            self.row.columns[5].into_u8().copied().unwrap(),
+            self.row.columns[9].into_u8().copied().unwrap(),
+            self.row.columns[13].into_u8().copied().unwrap(),
+            self.row.columns[17].into_u8().copied().unwrap(),
+            self.row.columns[21].into_u8().copied().unwrap(),
         ]
     }
-    pub fn Unknown8(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[21]]
+    pub fn Unknown8(&'a self) -> u8 {
+        self.row.columns[25].into_u8().copied().unwrap()
     }
-    pub fn Unknown9(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[22]]
+    pub fn Unknown9(&'a self) -> bool {
+        self.row.columns[4].into_bool().copied().unwrap()
     }
-    pub fn Unknown10(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[23]]
+    pub fn Unknown10(&'a self) -> bool {
+        self.row.columns[8].into_bool().copied().unwrap()
     }
-    pub fn Unknown11(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[24]]
+    pub fn Unknown11(&'a self) -> bool {
+        self.row.columns[12].into_bool().copied().unwrap()
     }
-    pub fn Unknown12(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[25]]
+    pub fn Unknown12(&'a self) -> bool {
+        self.row.columns[16].into_bool().copied().unwrap()
     }
-    pub fn Unknown13(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[26]]
+    pub fn Unknown13(&'a self) -> bool {
+        self.row.columns[20].into_bool().copied().unwrap()
     }
-    pub fn Unknown14(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[27]]
+    pub fn Unknown14(&'a self) -> bool {
+        self.row.columns[24].into_bool().copied().unwrap()
     }
-    pub fn Unknown15(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[28]]
+    pub fn Unknown15(&'a self) -> bool {
+        self.row.columns[28].into_bool().copied().unwrap()
     }
 }

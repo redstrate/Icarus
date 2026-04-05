@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct PatchMarkSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl PatchMarkSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl PatchMarkSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PatchMark")?;
         let sheet = resolver.read_excel_sheet(&exh, "PatchMark", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<PatchMarkRow> {
@@ -51,10 +39,7 @@ impl PatchMarkSheet {
 impl<'a> StructuredSheet<'a> for PatchMarkSheet {
     type Row = PatchMarkRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a PatchMarkSheet {
@@ -70,23 +55,22 @@ impl<'a> IntoIterator for &'a PatchMarkSheet {
 #[derive(Debug, Clone)]
 pub struct PatchMarkRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> PatchMarkRow<'a> {
-    pub fn Requirement(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Requirement(&'a self) -> u32 {
+        self.row.columns[4].into_u32().copied().unwrap()
     }
-    pub fn MarkID(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn MarkID(&'a self) -> u32 {
+        self.row.columns[5].into_u32().copied().unwrap()
     }
-    pub fn SubCategory(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn SubCategory(&'a self) -> u16 {
+        self.row.columns[2].into_u16().copied().unwrap()
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn Unknown1(&'a self) -> u16 {
+        self.row.columns[7].into_u16().copied().unwrap()
     }
-    pub fn SubCategoryType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn SubCategoryType(&'a self) -> u8 {
+        self.row.columns[1].into_u8().copied().unwrap()
     }
     /// 1 = Some Housing Permission 1
     /// 2 = Some Housing Permission 2
@@ -95,13 +79,13 @@ impl<'a> PatchMarkRow<'a> {
     /// 5 = InstanceContent 50001 unlocked, but 50003 not
     /// 6 = LocalPlayer has a FreeCompanyTag
     ///
-    pub fn RequirementType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn RequirementType(&'a self) -> u8 {
+        self.row.columns[3].into_u8().copied().unwrap()
     }
-    pub fn Version(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn Version(&'a self) -> u8 {
+        self.row.columns[6].into_u8().copied().unwrap()
     }
-    pub fn Category(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn Category(&'a self) -> i8 {
+        self.row.columns[0].into_i8().copied().unwrap()
     }
 }

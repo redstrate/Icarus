@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct AnimaWeaponFUITalkSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl AnimaWeaponFUITalkSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl AnimaWeaponFUITalkSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AnimaWeaponFUITalk")?;
         let sheet = resolver.read_excel_sheet(&exh, "AnimaWeaponFUITalk", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<AnimaWeaponFUITalkRow> {
@@ -51,10 +39,7 @@ impl AnimaWeaponFUITalkSheet {
 impl<'a> StructuredSheet<'a> for AnimaWeaponFUITalkSheet {
     type Row = AnimaWeaponFUITalkRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a AnimaWeaponFUITalkSheet {
@@ -70,10 +55,9 @@ impl<'a> IntoIterator for &'a AnimaWeaponFUITalkSheet {
 #[derive(Debug, Clone)]
 pub struct AnimaWeaponFUITalkRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> AnimaWeaponFUITalkRow<'a> {
-    pub fn Dialogue(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Dialogue(&'a self) -> i32 {
+        self.row.columns[0].into_i32().copied().unwrap()
     }
 }

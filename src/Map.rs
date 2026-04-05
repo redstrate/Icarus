@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct MapSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl MapSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl MapSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Map")?;
         let sheet = resolver.read_excel_sheet(&exh, "Map", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MapRow> {
@@ -51,10 +39,7 @@ impl MapSheet {
 impl<'a> StructuredSheet<'a> for MapSheet {
     type Row = MapRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a MapSheet {
@@ -70,70 +55,69 @@ impl<'a> IntoIterator for &'a MapSheet {
 #[derive(Debug, Clone)]
 pub struct MapRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> MapRow<'a> {
-    pub fn Id(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Id(&'a self) -> &'a str {
+        self.row.columns[6].into_string().unwrap()
     }
-    pub fn DiscoveryFlag(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn DiscoveryFlag(&'a self) -> u32 {
+        self.row.columns[15].into_u32().copied().unwrap()
     }
-    pub fn MapMarkerRange(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn MapMarkerRange(&'a self) -> u16 {
+        self.row.columns[5].into_u16().copied().unwrap()
     }
-    pub fn SizeFactor(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn SizeFactor(&'a self) -> u16 {
+        self.row.columns[7].into_u16().copied().unwrap()
     }
-    pub fn PlaceNameRegion(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn PlaceNameRegion(&'a self) -> u16 {
+        self.row.columns[10].into_u16().copied().unwrap()
     }
-    pub fn PlaceName(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn PlaceName(&'a self) -> u16 {
+        self.row.columns[11].into_u16().copied().unwrap()
     }
-    pub fn PlaceNameSub(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn PlaceNameSub(&'a self) -> u16 {
+        self.row.columns[12].into_u16().copied().unwrap()
     }
-    pub fn TerritoryType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn TerritoryType(&'a self) -> u16 {
+        self.row.columns[16].into_u16().copied().unwrap()
     }
-    pub fn OffsetX(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn OffsetX(&'a self) -> i16 {
+        self.row.columns[8].into_i16().copied().unwrap()
     }
-    pub fn OffsetY(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn OffsetY(&'a self) -> i16 {
+        self.row.columns[9].into_i16().copied().unwrap()
     }
-    pub fn DiscoveryIndex(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn DiscoveryIndex(&'a self) -> i16 {
+        self.row.columns[14].into_i16().copied().unwrap()
     }
-    pub fn MapCondition(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn MapCondition(&'a self) -> u8 {
+        self.row.columns[0].into_u8().copied().unwrap()
     }
-    pub fn PriorityCategoryUI(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn PriorityCategoryUI(&'a self) -> u8 {
+        self.row.columns[1].into_u8().copied().unwrap()
     }
-    pub fn PriorityUI(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn PriorityUI(&'a self) -> u8 {
+        self.row.columns[2].into_u8().copied().unwrap()
     }
-    pub fn MapType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn MapType(&'a self) -> u8 {
+        self.row.columns[4].into_u8().copied().unwrap()
     }
-    pub fn Unknown2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn Unknown2(&'a self) -> u8 {
+        self.row.columns[13].into_u8().copied().unwrap()
     }
-    pub fn MapReplace(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn MapReplace(&'a self) -> u8 {
+        self.row.columns[20].into_u8().copied().unwrap()
     }
-    pub fn MapIndex(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn MapIndex(&'a self) -> i8 {
+        self.row.columns[3].into_i8().copied().unwrap()
     }
-    pub fn DiscoveryArrayByte(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn DiscoveryArrayByte(&'a self) -> bool {
+        self.row.columns[17].into_bool().copied().unwrap()
     }
-    pub fn IsEvent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[19]]
+    pub fn IsEvent(&'a self) -> bool {
+        self.row.columns[18].into_bool().copied().unwrap()
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[20]]
+    pub fn Unknown1(&'a self) -> bool {
+        self.row.columns[19].into_bool().copied().unwrap()
     }
 }

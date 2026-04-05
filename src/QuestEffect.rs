@@ -7,15 +7,14 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct UnknownStructElement<'a> {
-    pub Unknown1: &'a Field,
-    pub Unknown_70: &'a Field,
-    pub Unknown2: &'a Field,
+pub struct UnknownStructElement {
+    pub Unknown1: u32,
+    pub Unknown_70: u32,
+    pub Unknown2: u8,
 }
 #[derive(Debug, Clone)]
 pub struct QuestEffectSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl QuestEffectSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -25,18 +24,7 @@ impl QuestEffectSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestEffect")?;
         let sheet = resolver.read_excel_sheet(&exh, "QuestEffect", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<QuestEffectRow> {
@@ -56,10 +44,7 @@ impl QuestEffectSheet {
 impl<'a> StructuredSheet<'a> for QuestEffectSheet {
     type Row = QuestEffectRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a QuestEffectSheet {
@@ -75,40 +60,39 @@ impl<'a> IntoIterator for &'a QuestEffectSheet {
 #[derive(Debug, Clone)]
 pub struct QuestEffectRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> QuestEffectRow<'a> {
-    pub fn UnknownStruct(&'a self) -> [UnknownStructElement<'a>; 4] {
+    pub fn UnknownStruct(&'a self) -> [UnknownStructElement; 4] {
         [
             UnknownStructElement {
-                Unknown1: &self.row.columns[self.index_mapping[0]],
-                Unknown_70: &self.row.columns[self.index_mapping[1]],
-                Unknown2: &self.row.columns[self.index_mapping[2]],
+                Unknown1: self.row.columns[4].into_u32().copied().unwrap(),
+                Unknown_70: self.row.columns[8].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[0].into_u8().copied().unwrap(),
             },
             UnknownStructElement {
-                Unknown1: &self.row.columns[self.index_mapping[3]],
-                Unknown_70: &self.row.columns[self.index_mapping[4]],
-                Unknown2: &self.row.columns[self.index_mapping[5]],
+                Unknown1: self.row.columns[5].into_u32().copied().unwrap(),
+                Unknown_70: self.row.columns[9].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[1].into_u8().copied().unwrap(),
             },
             UnknownStructElement {
-                Unknown1: &self.row.columns[self.index_mapping[6]],
-                Unknown_70: &self.row.columns[self.index_mapping[7]],
-                Unknown2: &self.row.columns[self.index_mapping[8]],
+                Unknown1: self.row.columns[6].into_u32().copied().unwrap(),
+                Unknown_70: self.row.columns[10].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[2].into_u8().copied().unwrap(),
             },
             UnknownStructElement {
-                Unknown1: &self.row.columns[self.index_mapping[9]],
-                Unknown_70: &self.row.columns[self.index_mapping[10]],
-                Unknown2: &self.row.columns[self.index_mapping[11]],
+                Unknown1: self.row.columns[7].into_u32().copied().unwrap(),
+                Unknown_70: self.row.columns[11].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[3].into_u8().copied().unwrap(),
             },
         ]
     }
-    pub fn Unknown8(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn Unknown8(&'a self) -> u32 {
+        self.row.columns[12].into_u32().copied().unwrap()
     }
-    pub fn Unknown9(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn Unknown9(&'a self) -> u32 {
+        self.row.columns[13].into_u32().copied().unwrap()
     }
-    pub fn Unknown_70(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn Unknown_70(&'a self) -> bool {
+        self.row.columns[14].into_bool().copied().unwrap()
     }
 }

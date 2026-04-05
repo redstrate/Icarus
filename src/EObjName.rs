@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct EObjNameSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl EObjNameSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl EObjNameSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EObjName")?;
         let sheet = resolver.read_excel_sheet(&exh, "EObjName", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<EObjNameRow> {
@@ -51,10 +39,7 @@ impl EObjNameSheet {
 impl<'a> StructuredSheet<'a> for EObjNameSheet {
     type Row = EObjNameRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a EObjNameSheet {
@@ -70,31 +55,30 @@ impl<'a> IntoIterator for &'a EObjNameSheet {
 #[derive(Debug, Clone)]
 pub struct EObjNameRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> EObjNameRow<'a> {
-    pub fn Singular(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Singular(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn Plural(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Plural(&'a self) -> &'a str {
+        self.row.columns[2].into_string().unwrap()
     }
-    pub fn Adjective(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Adjective(&'a self) -> i8 {
+        self.row.columns[1].into_i8().copied().unwrap()
     }
-    pub fn PossessivePronoun(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn PossessivePronoun(&'a self) -> i8 {
+        self.row.columns[3].into_i8().copied().unwrap()
     }
-    pub fn StartsWithVowel(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn StartsWithVowel(&'a self) -> i8 {
+        self.row.columns[4].into_i8().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn Unknown0(&'a self) -> i8 {
+        self.row.columns[5].into_i8().copied().unwrap()
     }
-    pub fn Pronoun(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn Pronoun(&'a self) -> i8 {
+        self.row.columns[6].into_i8().copied().unwrap()
     }
-    pub fn Article(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn Article(&'a self) -> i8 {
+        self.row.columns[7].into_i8().copied().unwrap()
     }
 }

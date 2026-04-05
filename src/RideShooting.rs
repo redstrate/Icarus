@@ -7,26 +7,25 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct RideShootingParamsElement<'a> {
-    pub Unknown0: &'a Field,
-    pub PopRange: &'a Field,
-    pub ENpc: &'a Field,
-    pub Unknown1: &'a Field,
-    pub Unknown2: &'a Field,
-    pub Unknown3: &'a Field,
-    pub Unknown4: &'a Field,
-    pub Unknown5: &'a Field,
-    pub ENpcScale: &'a Field,
-    pub Unknown6: &'a Field,
-    pub Unknown7: &'a Field,
-    pub Unknown8: &'a Field,
-    pub Unknown9: &'a Field,
-    pub Unknown10: &'a Field,
+pub struct RideShootingParamsElement {
+    pub Unknown0: u32,
+    pub PopRange: u32,
+    pub ENpc: u32,
+    pub Unknown1: u32,
+    pub Unknown2: u32,
+    pub Unknown3: u32,
+    pub Unknown4: u32,
+    pub Unknown5: u32,
+    pub ENpcScale: u8,
+    pub Unknown6: u8,
+    pub Unknown7: u8,
+    pub Unknown8: u8,
+    pub Unknown9: u8,
+    pub Unknown10: u8,
 }
 #[derive(Debug, Clone)]
 pub struct RideShootingSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl RideShootingSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -36,18 +35,7 @@ impl RideShootingSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RideShooting")?;
         let sheet = resolver.read_excel_sheet(&exh, "RideShooting", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<RideShootingRow> {
@@ -67,10 +55,7 @@ impl RideShootingSheet {
 impl<'a> StructuredSheet<'a> for RideShootingSheet {
     type Row = RideShootingRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a RideShootingSheet {
@@ -86,157 +71,156 @@ impl<'a> IntoIterator for &'a RideShootingSheet {
 #[derive(Debug, Clone)]
 pub struct RideShootingRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> RideShootingRow<'a> {
-    pub fn RideShootingParams(&'a self) -> [RideShootingParamsElement<'a>; 8] {
+    pub fn RideShootingParams(&'a self) -> [RideShootingParamsElement; 8] {
         [
             RideShootingParamsElement {
-                Unknown0: &self.row.columns[self.index_mapping[0]],
-                PopRange: &self.row.columns[self.index_mapping[1]],
-                ENpc: &self.row.columns[self.index_mapping[2]],
-                Unknown1: &self.row.columns[self.index_mapping[3]],
-                Unknown2: &self.row.columns[self.index_mapping[4]],
-                Unknown3: &self.row.columns[self.index_mapping[5]],
-                Unknown4: &self.row.columns[self.index_mapping[6]],
-                Unknown5: &self.row.columns[self.index_mapping[7]],
-                ENpcScale: &self.row.columns[self.index_mapping[8]],
-                Unknown6: &self.row.columns[self.index_mapping[9]],
-                Unknown7: &self.row.columns[self.index_mapping[10]],
-                Unknown8: &self.row.columns[self.index_mapping[11]],
-                Unknown9: &self.row.columns[self.index_mapping[12]],
-                Unknown10: &self.row.columns[self.index_mapping[13]],
+                Unknown0: self.row.columns[6].into_u32().copied().unwrap(),
+                PopRange: self.row.columns[14].into_u32().copied().unwrap(),
+                ENpc: self.row.columns[22].into_u32().copied().unwrap(),
+                Unknown1: self.row.columns[38].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[54].into_u32().copied().unwrap(),
+                Unknown3: self.row.columns[70].into_u32().copied().unwrap(),
+                Unknown4: self.row.columns[86].into_u32().copied().unwrap(),
+                Unknown5: self.row.columns[102].into_u32().copied().unwrap(),
+                ENpcScale: self.row.columns[30].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[46].into_u8().copied().unwrap(),
+                Unknown7: self.row.columns[62].into_u8().copied().unwrap(),
+                Unknown8: self.row.columns[78].into_u8().copied().unwrap(),
+                Unknown9: self.row.columns[94].into_u8().copied().unwrap(),
+                Unknown10: self.row.columns[110].into_u8().copied().unwrap(),
             },
             RideShootingParamsElement {
-                Unknown0: &self.row.columns[self.index_mapping[14]],
-                PopRange: &self.row.columns[self.index_mapping[15]],
-                ENpc: &self.row.columns[self.index_mapping[16]],
-                Unknown1: &self.row.columns[self.index_mapping[17]],
-                Unknown2: &self.row.columns[self.index_mapping[18]],
-                Unknown3: &self.row.columns[self.index_mapping[19]],
-                Unknown4: &self.row.columns[self.index_mapping[20]],
-                Unknown5: &self.row.columns[self.index_mapping[21]],
-                ENpcScale: &self.row.columns[self.index_mapping[22]],
-                Unknown6: &self.row.columns[self.index_mapping[23]],
-                Unknown7: &self.row.columns[self.index_mapping[24]],
-                Unknown8: &self.row.columns[self.index_mapping[25]],
-                Unknown9: &self.row.columns[self.index_mapping[26]],
-                Unknown10: &self.row.columns[self.index_mapping[27]],
+                Unknown0: self.row.columns[7].into_u32().copied().unwrap(),
+                PopRange: self.row.columns[15].into_u32().copied().unwrap(),
+                ENpc: self.row.columns[23].into_u32().copied().unwrap(),
+                Unknown1: self.row.columns[39].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[55].into_u32().copied().unwrap(),
+                Unknown3: self.row.columns[71].into_u32().copied().unwrap(),
+                Unknown4: self.row.columns[87].into_u32().copied().unwrap(),
+                Unknown5: self.row.columns[103].into_u32().copied().unwrap(),
+                ENpcScale: self.row.columns[31].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[47].into_u8().copied().unwrap(),
+                Unknown7: self.row.columns[63].into_u8().copied().unwrap(),
+                Unknown8: self.row.columns[79].into_u8().copied().unwrap(),
+                Unknown9: self.row.columns[95].into_u8().copied().unwrap(),
+                Unknown10: self.row.columns[111].into_u8().copied().unwrap(),
             },
             RideShootingParamsElement {
-                Unknown0: &self.row.columns[self.index_mapping[28]],
-                PopRange: &self.row.columns[self.index_mapping[29]],
-                ENpc: &self.row.columns[self.index_mapping[30]],
-                Unknown1: &self.row.columns[self.index_mapping[31]],
-                Unknown2: &self.row.columns[self.index_mapping[32]],
-                Unknown3: &self.row.columns[self.index_mapping[33]],
-                Unknown4: &self.row.columns[self.index_mapping[34]],
-                Unknown5: &self.row.columns[self.index_mapping[35]],
-                ENpcScale: &self.row.columns[self.index_mapping[36]],
-                Unknown6: &self.row.columns[self.index_mapping[37]],
-                Unknown7: &self.row.columns[self.index_mapping[38]],
-                Unknown8: &self.row.columns[self.index_mapping[39]],
-                Unknown9: &self.row.columns[self.index_mapping[40]],
-                Unknown10: &self.row.columns[self.index_mapping[41]],
+                Unknown0: self.row.columns[8].into_u32().copied().unwrap(),
+                PopRange: self.row.columns[16].into_u32().copied().unwrap(),
+                ENpc: self.row.columns[24].into_u32().copied().unwrap(),
+                Unknown1: self.row.columns[40].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[56].into_u32().copied().unwrap(),
+                Unknown3: self.row.columns[72].into_u32().copied().unwrap(),
+                Unknown4: self.row.columns[88].into_u32().copied().unwrap(),
+                Unknown5: self.row.columns[104].into_u32().copied().unwrap(),
+                ENpcScale: self.row.columns[32].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[48].into_u8().copied().unwrap(),
+                Unknown7: self.row.columns[64].into_u8().copied().unwrap(),
+                Unknown8: self.row.columns[80].into_u8().copied().unwrap(),
+                Unknown9: self.row.columns[96].into_u8().copied().unwrap(),
+                Unknown10: self.row.columns[112].into_u8().copied().unwrap(),
             },
             RideShootingParamsElement {
-                Unknown0: &self.row.columns[self.index_mapping[42]],
-                PopRange: &self.row.columns[self.index_mapping[43]],
-                ENpc: &self.row.columns[self.index_mapping[44]],
-                Unknown1: &self.row.columns[self.index_mapping[45]],
-                Unknown2: &self.row.columns[self.index_mapping[46]],
-                Unknown3: &self.row.columns[self.index_mapping[47]],
-                Unknown4: &self.row.columns[self.index_mapping[48]],
-                Unknown5: &self.row.columns[self.index_mapping[49]],
-                ENpcScale: &self.row.columns[self.index_mapping[50]],
-                Unknown6: &self.row.columns[self.index_mapping[51]],
-                Unknown7: &self.row.columns[self.index_mapping[52]],
-                Unknown8: &self.row.columns[self.index_mapping[53]],
-                Unknown9: &self.row.columns[self.index_mapping[54]],
-                Unknown10: &self.row.columns[self.index_mapping[55]],
+                Unknown0: self.row.columns[9].into_u32().copied().unwrap(),
+                PopRange: self.row.columns[17].into_u32().copied().unwrap(),
+                ENpc: self.row.columns[25].into_u32().copied().unwrap(),
+                Unknown1: self.row.columns[41].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[57].into_u32().copied().unwrap(),
+                Unknown3: self.row.columns[73].into_u32().copied().unwrap(),
+                Unknown4: self.row.columns[89].into_u32().copied().unwrap(),
+                Unknown5: self.row.columns[105].into_u32().copied().unwrap(),
+                ENpcScale: self.row.columns[33].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[49].into_u8().copied().unwrap(),
+                Unknown7: self.row.columns[65].into_u8().copied().unwrap(),
+                Unknown8: self.row.columns[81].into_u8().copied().unwrap(),
+                Unknown9: self.row.columns[97].into_u8().copied().unwrap(),
+                Unknown10: self.row.columns[113].into_u8().copied().unwrap(),
             },
             RideShootingParamsElement {
-                Unknown0: &self.row.columns[self.index_mapping[56]],
-                PopRange: &self.row.columns[self.index_mapping[57]],
-                ENpc: &self.row.columns[self.index_mapping[58]],
-                Unknown1: &self.row.columns[self.index_mapping[59]],
-                Unknown2: &self.row.columns[self.index_mapping[60]],
-                Unknown3: &self.row.columns[self.index_mapping[61]],
-                Unknown4: &self.row.columns[self.index_mapping[62]],
-                Unknown5: &self.row.columns[self.index_mapping[63]],
-                ENpcScale: &self.row.columns[self.index_mapping[64]],
-                Unknown6: &self.row.columns[self.index_mapping[65]],
-                Unknown7: &self.row.columns[self.index_mapping[66]],
-                Unknown8: &self.row.columns[self.index_mapping[67]],
-                Unknown9: &self.row.columns[self.index_mapping[68]],
-                Unknown10: &self.row.columns[self.index_mapping[69]],
+                Unknown0: self.row.columns[10].into_u32().copied().unwrap(),
+                PopRange: self.row.columns[18].into_u32().copied().unwrap(),
+                ENpc: self.row.columns[26].into_u32().copied().unwrap(),
+                Unknown1: self.row.columns[42].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[58].into_u32().copied().unwrap(),
+                Unknown3: self.row.columns[74].into_u32().copied().unwrap(),
+                Unknown4: self.row.columns[90].into_u32().copied().unwrap(),
+                Unknown5: self.row.columns[106].into_u32().copied().unwrap(),
+                ENpcScale: self.row.columns[34].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[50].into_u8().copied().unwrap(),
+                Unknown7: self.row.columns[66].into_u8().copied().unwrap(),
+                Unknown8: self.row.columns[82].into_u8().copied().unwrap(),
+                Unknown9: self.row.columns[98].into_u8().copied().unwrap(),
+                Unknown10: self.row.columns[114].into_u8().copied().unwrap(),
             },
             RideShootingParamsElement {
-                Unknown0: &self.row.columns[self.index_mapping[70]],
-                PopRange: &self.row.columns[self.index_mapping[71]],
-                ENpc: &self.row.columns[self.index_mapping[72]],
-                Unknown1: &self.row.columns[self.index_mapping[73]],
-                Unknown2: &self.row.columns[self.index_mapping[74]],
-                Unknown3: &self.row.columns[self.index_mapping[75]],
-                Unknown4: &self.row.columns[self.index_mapping[76]],
-                Unknown5: &self.row.columns[self.index_mapping[77]],
-                ENpcScale: &self.row.columns[self.index_mapping[78]],
-                Unknown6: &self.row.columns[self.index_mapping[79]],
-                Unknown7: &self.row.columns[self.index_mapping[80]],
-                Unknown8: &self.row.columns[self.index_mapping[81]],
-                Unknown9: &self.row.columns[self.index_mapping[82]],
-                Unknown10: &self.row.columns[self.index_mapping[83]],
+                Unknown0: self.row.columns[11].into_u32().copied().unwrap(),
+                PopRange: self.row.columns[19].into_u32().copied().unwrap(),
+                ENpc: self.row.columns[27].into_u32().copied().unwrap(),
+                Unknown1: self.row.columns[43].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[59].into_u32().copied().unwrap(),
+                Unknown3: self.row.columns[75].into_u32().copied().unwrap(),
+                Unknown4: self.row.columns[91].into_u32().copied().unwrap(),
+                Unknown5: self.row.columns[107].into_u32().copied().unwrap(),
+                ENpcScale: self.row.columns[35].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[51].into_u8().copied().unwrap(),
+                Unknown7: self.row.columns[67].into_u8().copied().unwrap(),
+                Unknown8: self.row.columns[83].into_u8().copied().unwrap(),
+                Unknown9: self.row.columns[99].into_u8().copied().unwrap(),
+                Unknown10: self.row.columns[115].into_u8().copied().unwrap(),
             },
             RideShootingParamsElement {
-                Unknown0: &self.row.columns[self.index_mapping[84]],
-                PopRange: &self.row.columns[self.index_mapping[85]],
-                ENpc: &self.row.columns[self.index_mapping[86]],
-                Unknown1: &self.row.columns[self.index_mapping[87]],
-                Unknown2: &self.row.columns[self.index_mapping[88]],
-                Unknown3: &self.row.columns[self.index_mapping[89]],
-                Unknown4: &self.row.columns[self.index_mapping[90]],
-                Unknown5: &self.row.columns[self.index_mapping[91]],
-                ENpcScale: &self.row.columns[self.index_mapping[92]],
-                Unknown6: &self.row.columns[self.index_mapping[93]],
-                Unknown7: &self.row.columns[self.index_mapping[94]],
-                Unknown8: &self.row.columns[self.index_mapping[95]],
-                Unknown9: &self.row.columns[self.index_mapping[96]],
-                Unknown10: &self.row.columns[self.index_mapping[97]],
+                Unknown0: self.row.columns[12].into_u32().copied().unwrap(),
+                PopRange: self.row.columns[20].into_u32().copied().unwrap(),
+                ENpc: self.row.columns[28].into_u32().copied().unwrap(),
+                Unknown1: self.row.columns[44].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[60].into_u32().copied().unwrap(),
+                Unknown3: self.row.columns[76].into_u32().copied().unwrap(),
+                Unknown4: self.row.columns[92].into_u32().copied().unwrap(),
+                Unknown5: self.row.columns[108].into_u32().copied().unwrap(),
+                ENpcScale: self.row.columns[36].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[52].into_u8().copied().unwrap(),
+                Unknown7: self.row.columns[68].into_u8().copied().unwrap(),
+                Unknown8: self.row.columns[84].into_u8().copied().unwrap(),
+                Unknown9: self.row.columns[100].into_u8().copied().unwrap(),
+                Unknown10: self.row.columns[116].into_u8().copied().unwrap(),
             },
             RideShootingParamsElement {
-                Unknown0: &self.row.columns[self.index_mapping[98]],
-                PopRange: &self.row.columns[self.index_mapping[99]],
-                ENpc: &self.row.columns[self.index_mapping[100]],
-                Unknown1: &self.row.columns[self.index_mapping[101]],
-                Unknown2: &self.row.columns[self.index_mapping[102]],
-                Unknown3: &self.row.columns[self.index_mapping[103]],
-                Unknown4: &self.row.columns[self.index_mapping[104]],
-                Unknown5: &self.row.columns[self.index_mapping[105]],
-                ENpcScale: &self.row.columns[self.index_mapping[106]],
-                Unknown6: &self.row.columns[self.index_mapping[107]],
-                Unknown7: &self.row.columns[self.index_mapping[108]],
-                Unknown8: &self.row.columns[self.index_mapping[109]],
-                Unknown9: &self.row.columns[self.index_mapping[110]],
-                Unknown10: &self.row.columns[self.index_mapping[111]],
+                Unknown0: self.row.columns[13].into_u32().copied().unwrap(),
+                PopRange: self.row.columns[21].into_u32().copied().unwrap(),
+                ENpc: self.row.columns[29].into_u32().copied().unwrap(),
+                Unknown1: self.row.columns[45].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[61].into_u32().copied().unwrap(),
+                Unknown3: self.row.columns[77].into_u32().copied().unwrap(),
+                Unknown4: self.row.columns[93].into_u32().copied().unwrap(),
+                Unknown5: self.row.columns[109].into_u32().copied().unwrap(),
+                ENpcScale: self.row.columns[37].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[53].into_u8().copied().unwrap(),
+                Unknown7: self.row.columns[69].into_u8().copied().unwrap(),
+                Unknown8: self.row.columns[85].into_u8().copied().unwrap(),
+                Unknown9: self.row.columns[101].into_u8().copied().unwrap(),
+                Unknown10: self.row.columns[117].into_u8().copied().unwrap(),
             },
         ]
     }
-    pub fn GFateRideShooting(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[112]]
+    pub fn GFateRideShooting(&'a self) -> u16 {
+        self.row.columns[0].into_u16().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[113]]
+    pub fn Unknown0(&'a self) -> u16 {
+        self.row.columns[3].into_u16().copied().unwrap()
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[114]]
+    pub fn Unknown1(&'a self) -> u16 {
+        self.row.columns[4].into_u16().copied().unwrap()
     }
-    pub fn StartText(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[115]]
+    pub fn StartText(&'a self) -> u16 {
+        self.row.columns[5].into_u16().copied().unwrap()
     }
-    pub fn Unknown2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[116]]
+    pub fn Unknown2(&'a self) -> i16 {
+        self.row.columns[1].into_i16().copied().unwrap()
     }
-    pub fn Unknown3(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[117]]
+    pub fn Unknown3(&'a self) -> i16 {
+        self.row.columns[2].into_i16().copied().unwrap()
     }
 }

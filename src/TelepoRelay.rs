@@ -7,15 +7,14 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct RelaysElement<'a> {
-    pub EnterTerritory: &'a Field,
-    pub ExitTerritory: &'a Field,
-    pub Cost: &'a Field,
+pub struct RelaysElement {
+    pub EnterTerritory: u16,
+    pub ExitTerritory: u16,
+    pub Cost: u16,
 }
 #[derive(Debug, Clone)]
 pub struct TelepoRelaySheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl TelepoRelaySheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -25,18 +24,7 @@ impl TelepoRelaySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TelepoRelay")?;
         let sheet = resolver.read_excel_sheet(&exh, "TelepoRelay", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<TelepoRelayRow> {
@@ -56,10 +44,7 @@ impl TelepoRelaySheet {
 impl<'a> StructuredSheet<'a> for TelepoRelaySheet {
     type Row = TelepoRelayRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a TelepoRelaySheet {
@@ -75,59 +60,58 @@ impl<'a> IntoIterator for &'a TelepoRelaySheet {
 #[derive(Debug, Clone)]
 pub struct TelepoRelayRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> TelepoRelayRow<'a> {
-    pub fn Relays(&'a self) -> [RelaysElement<'a>; 9] {
+    pub fn Relays(&'a self) -> [RelaysElement; 9] {
         [
             RelaysElement {
-                EnterTerritory: &self.row.columns[self.index_mapping[0]],
-                ExitTerritory: &self.row.columns[self.index_mapping[1]],
-                Cost: &self.row.columns[self.index_mapping[2]],
+                EnterTerritory: self.row.columns[0].into_u16().copied().unwrap(),
+                ExitTerritory: self.row.columns[9].into_u16().copied().unwrap(),
+                Cost: self.row.columns[18].into_u16().copied().unwrap(),
             },
             RelaysElement {
-                EnterTerritory: &self.row.columns[self.index_mapping[3]],
-                ExitTerritory: &self.row.columns[self.index_mapping[4]],
-                Cost: &self.row.columns[self.index_mapping[5]],
+                EnterTerritory: self.row.columns[1].into_u16().copied().unwrap(),
+                ExitTerritory: self.row.columns[10].into_u16().copied().unwrap(),
+                Cost: self.row.columns[19].into_u16().copied().unwrap(),
             },
             RelaysElement {
-                EnterTerritory: &self.row.columns[self.index_mapping[6]],
-                ExitTerritory: &self.row.columns[self.index_mapping[7]],
-                Cost: &self.row.columns[self.index_mapping[8]],
+                EnterTerritory: self.row.columns[2].into_u16().copied().unwrap(),
+                ExitTerritory: self.row.columns[11].into_u16().copied().unwrap(),
+                Cost: self.row.columns[20].into_u16().copied().unwrap(),
             },
             RelaysElement {
-                EnterTerritory: &self.row.columns[self.index_mapping[9]],
-                ExitTerritory: &self.row.columns[self.index_mapping[10]],
-                Cost: &self.row.columns[self.index_mapping[11]],
+                EnterTerritory: self.row.columns[3].into_u16().copied().unwrap(),
+                ExitTerritory: self.row.columns[12].into_u16().copied().unwrap(),
+                Cost: self.row.columns[21].into_u16().copied().unwrap(),
             },
             RelaysElement {
-                EnterTerritory: &self.row.columns[self.index_mapping[12]],
-                ExitTerritory: &self.row.columns[self.index_mapping[13]],
-                Cost: &self.row.columns[self.index_mapping[14]],
+                EnterTerritory: self.row.columns[4].into_u16().copied().unwrap(),
+                ExitTerritory: self.row.columns[13].into_u16().copied().unwrap(),
+                Cost: self.row.columns[22].into_u16().copied().unwrap(),
             },
             RelaysElement {
-                EnterTerritory: &self.row.columns[self.index_mapping[15]],
-                ExitTerritory: &self.row.columns[self.index_mapping[16]],
-                Cost: &self.row.columns[self.index_mapping[17]],
+                EnterTerritory: self.row.columns[5].into_u16().copied().unwrap(),
+                ExitTerritory: self.row.columns[14].into_u16().copied().unwrap(),
+                Cost: self.row.columns[23].into_u16().copied().unwrap(),
             },
             RelaysElement {
-                EnterTerritory: &self.row.columns[self.index_mapping[18]],
-                ExitTerritory: &self.row.columns[self.index_mapping[19]],
-                Cost: &self.row.columns[self.index_mapping[20]],
+                EnterTerritory: self.row.columns[6].into_u16().copied().unwrap(),
+                ExitTerritory: self.row.columns[15].into_u16().copied().unwrap(),
+                Cost: self.row.columns[24].into_u16().copied().unwrap(),
             },
             RelaysElement {
-                EnterTerritory: &self.row.columns[self.index_mapping[21]],
-                ExitTerritory: &self.row.columns[self.index_mapping[22]],
-                Cost: &self.row.columns[self.index_mapping[23]],
+                EnterTerritory: self.row.columns[7].into_u16().copied().unwrap(),
+                ExitTerritory: self.row.columns[16].into_u16().copied().unwrap(),
+                Cost: self.row.columns[25].into_u16().copied().unwrap(),
             },
             RelaysElement {
-                EnterTerritory: &self.row.columns[self.index_mapping[24]],
-                ExitTerritory: &self.row.columns[self.index_mapping[25]],
-                Cost: &self.row.columns[self.index_mapping[26]],
+                EnterTerritory: self.row.columns[8].into_u16().copied().unwrap(),
+                ExitTerritory: self.row.columns[17].into_u16().copied().unwrap(),
+                Cost: self.row.columns[26].into_u16().copied().unwrap(),
             },
         ]
     }
-    pub fn Unknown_70(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[27]]
+    pub fn Unknown_70(&'a self) -> u32 {
+        self.row.columns[27].into_u32().copied().unwrap()
     }
 }

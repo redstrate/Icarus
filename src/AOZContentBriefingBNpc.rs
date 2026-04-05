@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct AOZContentBriefingBNpcSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl AOZContentBriefingBNpcSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl AOZContentBriefingBNpcSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AOZContentBriefingBNpc")?;
         let sheet = resolver.read_excel_sheet(&exh, "AOZContentBriefingBNpc", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<AOZContentBriefingBNpcRow> {
@@ -55,10 +43,7 @@ impl AOZContentBriefingBNpcSheet {
 impl<'a> StructuredSheet<'a> for AOZContentBriefingBNpcSheet {
     type Row = AOZContentBriefingBNpcRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a AOZContentBriefingBNpcSheet {
@@ -74,82 +59,81 @@ impl<'a> IntoIterator for &'a AOZContentBriefingBNpcSheet {
 #[derive(Debug, Clone)]
 pub struct AOZContentBriefingBNpcRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> AOZContentBriefingBNpcRow<'a> {
-    pub fn BNpcName(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn BNpcName(&'a self) -> u32 {
+        self.row.columns[0].into_u32().copied().unwrap()
     }
-    pub fn TargetSmall(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn TargetSmall(&'a self) -> u32 {
+        self.row.columns[1].into_u32().copied().unwrap()
     }
-    pub fn TargetLarge(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn TargetLarge(&'a self) -> u32 {
+        self.row.columns[2].into_u32().copied().unwrap()
     }
-    pub fn Endurance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn Endurance(&'a self) -> u8 {
+        self.row.columns[4].into_u8().copied().unwrap()
     }
-    pub fn Fire(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn Fire(&'a self) -> u8 {
+        self.row.columns[5].into_u8().copied().unwrap()
     }
-    pub fn Ice(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn Ice(&'a self) -> u8 {
+        self.row.columns[6].into_u8().copied().unwrap()
     }
-    pub fn Wind(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn Wind(&'a self) -> u8 {
+        self.row.columns[7].into_u8().copied().unwrap()
     }
-    pub fn Earth(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn Earth(&'a self) -> u8 {
+        self.row.columns[8].into_u8().copied().unwrap()
     }
-    pub fn Thunder(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn Thunder(&'a self) -> u8 {
+        self.row.columns[9].into_u8().copied().unwrap()
     }
-    pub fn Water(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn Water(&'a self) -> u8 {
+        self.row.columns[10].into_u8().copied().unwrap()
     }
-    pub fn Slashing(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn Slashing(&'a self) -> u8 {
+        self.row.columns[11].into_u8().copied().unwrap()
     }
-    pub fn Piercing(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn Piercing(&'a self) -> u8 {
+        self.row.columns[12].into_u8().copied().unwrap()
     }
-    pub fn Blunt(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn Blunt(&'a self) -> u8 {
+        self.row.columns[13].into_u8().copied().unwrap()
     }
-    pub fn Magic(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn Magic(&'a self) -> u8 {
+        self.row.columns[14].into_u8().copied().unwrap()
     }
-    pub fn HideStats(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn HideStats(&'a self) -> bool {
+        self.row.columns[3].into_bool().copied().unwrap()
     }
-    pub fn SlowVuln(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn SlowVuln(&'a self) -> bool {
+        self.row.columns[15].into_bool().copied().unwrap()
     }
-    pub fn PetrificationVuln(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn PetrificationVuln(&'a self) -> bool {
+        self.row.columns[16].into_bool().copied().unwrap()
     }
-    pub fn ParalysisVuln(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn ParalysisVuln(&'a self) -> bool {
+        self.row.columns[17].into_bool().copied().unwrap()
     }
-    pub fn InterruptionVuln(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn InterruptionVuln(&'a self) -> bool {
+        self.row.columns[18].into_bool().copied().unwrap()
     }
-    pub fn BlindVuln(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[19]]
+    pub fn BlindVuln(&'a self) -> bool {
+        self.row.columns[19].into_bool().copied().unwrap()
     }
-    pub fn StunVuln(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[20]]
+    pub fn StunVuln(&'a self) -> bool {
+        self.row.columns[20].into_bool().copied().unwrap()
     }
-    pub fn SleepVuln(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[21]]
+    pub fn SleepVuln(&'a self) -> bool {
+        self.row.columns[21].into_bool().copied().unwrap()
     }
-    pub fn BindVuln(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[22]]
+    pub fn BindVuln(&'a self) -> bool {
+        self.row.columns[22].into_bool().copied().unwrap()
     }
-    pub fn HeavyVuln(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[23]]
+    pub fn HeavyVuln(&'a self) -> bool {
+        self.row.columns[23].into_bool().copied().unwrap()
     }
-    pub fn FlatOrDeathVuln(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[24]]
+    pub fn FlatOrDeathVuln(&'a self) -> bool {
+        self.row.columns[24].into_bool().copied().unwrap()
     }
 }

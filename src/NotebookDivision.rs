@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct NotebookDivisionSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl NotebookDivisionSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl NotebookDivisionSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("NotebookDivision")?;
         let sheet = resolver.read_excel_sheet(&exh, "NotebookDivision", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<NotebookDivisionRow> {
@@ -51,10 +39,7 @@ impl NotebookDivisionSheet {
 impl<'a> StructuredSheet<'a> for NotebookDivisionSheet {
     type Row = NotebookDivisionRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a NotebookDivisionSheet {
@@ -70,47 +55,46 @@ impl<'a> IntoIterator for &'a NotebookDivisionSheet {
 #[derive(Debug, Clone)]
 pub struct NotebookDivisionRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> NotebookDivisionRow<'a> {
-    pub fn Name(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Name(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn QuestUnlock(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn QuestUnlock(&'a self) -> u32 {
+        self.row.columns[4].into_u32().copied().unwrap()
     }
-    pub fn NotebookDivisionCategory(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn NotebookDivisionCategory(&'a self) -> u8 {
+        self.row.columns[1].into_u8().copied().unwrap()
     }
-    pub fn CraftOpeningLevel(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn CraftOpeningLevel(&'a self) -> u8 {
+        self.row.columns[2].into_u8().copied().unwrap()
     }
-    pub fn GatheringOpeningLevel(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn GatheringOpeningLevel(&'a self) -> u8 {
+        self.row.columns[3].into_u8().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn Unknown0(&'a self) -> u8 {
+        self.row.columns[5].into_u8().copied().unwrap()
     }
-    pub fn SecretRecipeBookGroups(&'a self) -> [&'a Field; 2] {
+    pub fn SecretRecipeBookGroups(&'a self) -> [u8; 2] {
         [
-            &self.row.columns[self.index_mapping[6]],
-            &self.row.columns[self.index_mapping[7]],
+            self.row.columns[7].into_u8().copied().unwrap(),
+            self.row.columns[8].into_u8().copied().unwrap(),
         ]
     }
     /// Index is CraftType
-    pub fn AllowedCraftTypes(&'a self) -> [&'a Field; 8] {
+    pub fn AllowedCraftTypes(&'a self) -> [bool; 8] {
         [
-            &self.row.columns[self.index_mapping[8]],
-            &self.row.columns[self.index_mapping[9]],
-            &self.row.columns[self.index_mapping[10]],
-            &self.row.columns[self.index_mapping[11]],
-            &self.row.columns[self.index_mapping[12]],
-            &self.row.columns[self.index_mapping[13]],
-            &self.row.columns[self.index_mapping[14]],
-            &self.row.columns[self.index_mapping[15]],
+            self.row.columns[9].into_bool().copied().unwrap(),
+            self.row.columns[10].into_bool().copied().unwrap(),
+            self.row.columns[11].into_bool().copied().unwrap(),
+            self.row.columns[12].into_bool().copied().unwrap(),
+            self.row.columns[13].into_bool().copied().unwrap(),
+            self.row.columns[14].into_bool().copied().unwrap(),
+            self.row.columns[15].into_bool().copied().unwrap(),
+            self.row.columns[16].into_bool().copied().unwrap(),
         ]
     }
-    pub fn RequiresSecretRecipeBookGroupUnlock(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn RequiresSecretRecipeBookGroupUnlock(&'a self) -> bool {
+        self.row.columns[6].into_bool().copied().unwrap()
     }
 }

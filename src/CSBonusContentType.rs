@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct CSBonusContentTypeSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl CSBonusContentTypeSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl CSBonusContentTypeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CSBonusContentType")?;
         let sheet = resolver.read_excel_sheet(&exh, "CSBonusContentType", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<CSBonusContentTypeRow> {
@@ -51,10 +39,7 @@ impl CSBonusContentTypeSheet {
 impl<'a> StructuredSheet<'a> for CSBonusContentTypeSheet {
     type Row = CSBonusContentTypeRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a CSBonusContentTypeSheet {
@@ -70,36 +55,35 @@ impl<'a> IntoIterator for &'a CSBonusContentTypeSheet {
 #[derive(Debug, Clone)]
 pub struct CSBonusContentTypeRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> CSBonusContentTypeRow<'a> {
-    pub fn Dialogue(&'a self) -> [&'a Field; 4] {
+    pub fn Dialogue(&'a self) -> [u32; 4] {
         [
-            &self.row.columns[self.index_mapping[0]],
-            &self.row.columns[self.index_mapping[1]],
-            &self.row.columns[self.index_mapping[2]],
-            &self.row.columns[self.index_mapping[3]],
+            self.row.columns[1].into_u32().copied().unwrap(),
+            self.row.columns[2].into_u32().copied().unwrap(),
+            self.row.columns[3].into_u32().copied().unwrap(),
+            self.row.columns[4].into_u32().copied().unwrap(),
         ]
     }
-    pub fn Image(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn Image(&'a self) -> u32 {
+        self.row.columns[5].into_u32().copied().unwrap()
     }
-    pub fn Level(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn Level(&'a self) -> u32 {
+        self.row.columns[6].into_u32().copied().unwrap()
     }
-    pub fn UnlockQuest(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn UnlockQuest(&'a self) -> u32 {
+        self.row.columns[8].into_u32().copied().unwrap()
     }
-    pub fn UnlockLink(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn UnlockLink(&'a self) -> u32 {
+        self.row.columns[9].into_u32().copied().unwrap()
     }
-    pub fn ContentFinderCondition(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn ContentFinderCondition(&'a self) -> u32 {
+        self.row.columns[10].into_u32().copied().unwrap()
     }
-    pub fn ContentType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn ContentType(&'a self) -> u8 {
+        self.row.columns[0].into_u8().copied().unwrap()
     }
-    pub fn Unknown6(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn Unknown6(&'a self) -> bool {
+        self.row.columns[7].into_bool().copied().unwrap()
     }
 }

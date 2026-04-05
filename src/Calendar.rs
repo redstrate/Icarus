@@ -7,14 +7,13 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct CalendarStructElement<'a> {
-    pub Month: &'a Field,
-    pub Day: &'a Field,
+pub struct CalendarStructElement {
+    pub Month: u8,
+    pub Day: u8,
 }
 #[derive(Debug, Clone)]
 pub struct CalendarSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl CalendarSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -24,18 +23,7 @@ impl CalendarSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Calendar")?;
         let sheet = resolver.read_excel_sheet(&exh, "Calendar", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<CalendarRow> {
@@ -55,10 +43,7 @@ impl CalendarSheet {
 impl<'a> StructuredSheet<'a> for CalendarSheet {
     type Row = CalendarRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a CalendarSheet {
@@ -74,138 +59,137 @@ impl<'a> IntoIterator for &'a CalendarSheet {
 #[derive(Debug, Clone)]
 pub struct CalendarRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> CalendarRow<'a> {
-    pub fn CalendarStruct(&'a self) -> [CalendarStructElement<'a>; 32] {
+    pub fn CalendarStruct(&'a self) -> [CalendarStructElement; 32] {
         [
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[0]],
-                Day: &self.row.columns[self.index_mapping[1]],
+                Month: self.row.columns[0].into_u8().copied().unwrap(),
+                Day: self.row.columns[32].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[2]],
-                Day: &self.row.columns[self.index_mapping[3]],
+                Month: self.row.columns[1].into_u8().copied().unwrap(),
+                Day: self.row.columns[33].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[4]],
-                Day: &self.row.columns[self.index_mapping[5]],
+                Month: self.row.columns[2].into_u8().copied().unwrap(),
+                Day: self.row.columns[34].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[6]],
-                Day: &self.row.columns[self.index_mapping[7]],
+                Month: self.row.columns[3].into_u8().copied().unwrap(),
+                Day: self.row.columns[35].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[8]],
-                Day: &self.row.columns[self.index_mapping[9]],
+                Month: self.row.columns[4].into_u8().copied().unwrap(),
+                Day: self.row.columns[36].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[10]],
-                Day: &self.row.columns[self.index_mapping[11]],
+                Month: self.row.columns[5].into_u8().copied().unwrap(),
+                Day: self.row.columns[37].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[12]],
-                Day: &self.row.columns[self.index_mapping[13]],
+                Month: self.row.columns[6].into_u8().copied().unwrap(),
+                Day: self.row.columns[38].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[14]],
-                Day: &self.row.columns[self.index_mapping[15]],
+                Month: self.row.columns[7].into_u8().copied().unwrap(),
+                Day: self.row.columns[39].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[16]],
-                Day: &self.row.columns[self.index_mapping[17]],
+                Month: self.row.columns[8].into_u8().copied().unwrap(),
+                Day: self.row.columns[40].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[18]],
-                Day: &self.row.columns[self.index_mapping[19]],
+                Month: self.row.columns[9].into_u8().copied().unwrap(),
+                Day: self.row.columns[41].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[20]],
-                Day: &self.row.columns[self.index_mapping[21]],
+                Month: self.row.columns[10].into_u8().copied().unwrap(),
+                Day: self.row.columns[42].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[22]],
-                Day: &self.row.columns[self.index_mapping[23]],
+                Month: self.row.columns[11].into_u8().copied().unwrap(),
+                Day: self.row.columns[43].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[24]],
-                Day: &self.row.columns[self.index_mapping[25]],
+                Month: self.row.columns[12].into_u8().copied().unwrap(),
+                Day: self.row.columns[44].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[26]],
-                Day: &self.row.columns[self.index_mapping[27]],
+                Month: self.row.columns[13].into_u8().copied().unwrap(),
+                Day: self.row.columns[45].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[28]],
-                Day: &self.row.columns[self.index_mapping[29]],
+                Month: self.row.columns[14].into_u8().copied().unwrap(),
+                Day: self.row.columns[46].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[30]],
-                Day: &self.row.columns[self.index_mapping[31]],
+                Month: self.row.columns[15].into_u8().copied().unwrap(),
+                Day: self.row.columns[47].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[32]],
-                Day: &self.row.columns[self.index_mapping[33]],
+                Month: self.row.columns[16].into_u8().copied().unwrap(),
+                Day: self.row.columns[48].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[34]],
-                Day: &self.row.columns[self.index_mapping[35]],
+                Month: self.row.columns[17].into_u8().copied().unwrap(),
+                Day: self.row.columns[49].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[36]],
-                Day: &self.row.columns[self.index_mapping[37]],
+                Month: self.row.columns[18].into_u8().copied().unwrap(),
+                Day: self.row.columns[50].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[38]],
-                Day: &self.row.columns[self.index_mapping[39]],
+                Month: self.row.columns[19].into_u8().copied().unwrap(),
+                Day: self.row.columns[51].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[40]],
-                Day: &self.row.columns[self.index_mapping[41]],
+                Month: self.row.columns[20].into_u8().copied().unwrap(),
+                Day: self.row.columns[52].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[42]],
-                Day: &self.row.columns[self.index_mapping[43]],
+                Month: self.row.columns[21].into_u8().copied().unwrap(),
+                Day: self.row.columns[53].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[44]],
-                Day: &self.row.columns[self.index_mapping[45]],
+                Month: self.row.columns[22].into_u8().copied().unwrap(),
+                Day: self.row.columns[54].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[46]],
-                Day: &self.row.columns[self.index_mapping[47]],
+                Month: self.row.columns[23].into_u8().copied().unwrap(),
+                Day: self.row.columns[55].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[48]],
-                Day: &self.row.columns[self.index_mapping[49]],
+                Month: self.row.columns[24].into_u8().copied().unwrap(),
+                Day: self.row.columns[56].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[50]],
-                Day: &self.row.columns[self.index_mapping[51]],
+                Month: self.row.columns[25].into_u8().copied().unwrap(),
+                Day: self.row.columns[57].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[52]],
-                Day: &self.row.columns[self.index_mapping[53]],
+                Month: self.row.columns[26].into_u8().copied().unwrap(),
+                Day: self.row.columns[58].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[54]],
-                Day: &self.row.columns[self.index_mapping[55]],
+                Month: self.row.columns[27].into_u8().copied().unwrap(),
+                Day: self.row.columns[59].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[56]],
-                Day: &self.row.columns[self.index_mapping[57]],
+                Month: self.row.columns[28].into_u8().copied().unwrap(),
+                Day: self.row.columns[60].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[58]],
-                Day: &self.row.columns[self.index_mapping[59]],
+                Month: self.row.columns[29].into_u8().copied().unwrap(),
+                Day: self.row.columns[61].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[60]],
-                Day: &self.row.columns[self.index_mapping[61]],
+                Month: self.row.columns[30].into_u8().copied().unwrap(),
+                Day: self.row.columns[62].into_u8().copied().unwrap(),
             },
             CalendarStructElement {
-                Month: &self.row.columns[self.index_mapping[62]],
-                Day: &self.row.columns[self.index_mapping[63]],
+                Month: self.row.columns[31].into_u8().copied().unwrap(),
+                Day: self.row.columns[63].into_u8().copied().unwrap(),
             },
         ]
     }

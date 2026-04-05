@@ -7,21 +7,20 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct RankDataElement<'a> {
-    pub SGB: [&'a Field; 4],
-    pub Unknown0: &'a Field,
-    pub Unknown1: &'a Field,
-    pub Unknown2: &'a Field,
-    pub Unknown3: &'a Field,
-    pub Unknown4: &'a Field,
-    pub Unknown5: &'a Field,
-    pub Unknown6: &'a Field,
-    pub Unknown7: &'a Field,
+pub struct RankDataElement {
+    pub SGB: [u32; 4],
+    pub Unknown0: u32,
+    pub Unknown1: u32,
+    pub Unknown2: u16,
+    pub Unknown3: u16,
+    pub Unknown4: u8,
+    pub Unknown5: u8,
+    pub Unknown6: u8,
+    pub Unknown7: u8,
 }
 #[derive(Debug, Clone)]
 pub struct MJIFarmPastureRankSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl MJIFarmPastureRankSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -31,18 +30,7 @@ impl MJIFarmPastureRankSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJIFarmPastureRank")?;
         let sheet = resolver.read_excel_sheet(&exh, "MJIFarmPastureRank", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MJIFarmPastureRankRow> {
@@ -62,10 +50,7 @@ impl MJIFarmPastureRankSheet {
 impl<'a> StructuredSheet<'a> for MJIFarmPastureRankSheet {
     type Row = MJIFarmPastureRankRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a MJIFarmPastureRankSheet {
@@ -81,74 +66,73 @@ impl<'a> IntoIterator for &'a MJIFarmPastureRankSheet {
 #[derive(Debug, Clone)]
 pub struct MJIFarmPastureRankRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> MJIFarmPastureRankRow<'a> {
-    pub fn RankData(&'a self) -> [RankDataElement<'a>; 4] {
+    pub fn RankData(&'a self) -> [RankDataElement; 4] {
         [
             RankDataElement {
                 SGB: [
-                    &self.row.columns[self.index_mapping[0]],
-                    &self.row.columns[self.index_mapping[1]],
-                    &self.row.columns[self.index_mapping[2]],
-                    &self.row.columns[self.index_mapping[3]],
+                    self.row.columns[0].into_u32().copied().unwrap(),
+                    self.row.columns[4].into_u32().copied().unwrap(),
+                    self.row.columns[8].into_u32().copied().unwrap(),
+                    self.row.columns[12].into_u32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[4]],
-                Unknown1: &self.row.columns[self.index_mapping[5]],
-                Unknown2: &self.row.columns[self.index_mapping[6]],
-                Unknown3: &self.row.columns[self.index_mapping[7]],
-                Unknown4: &self.row.columns[self.index_mapping[8]],
-                Unknown5: &self.row.columns[self.index_mapping[9]],
-                Unknown6: &self.row.columns[self.index_mapping[10]],
-                Unknown7: &self.row.columns[self.index_mapping[11]],
+                Unknown0: self.row.columns[28].into_u32().copied().unwrap(),
+                Unknown1: self.row.columns[32].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[40].into_u16().copied().unwrap(),
+                Unknown3: self.row.columns[44].into_u16().copied().unwrap(),
+                Unknown4: self.row.columns[16].into_u8().copied().unwrap(),
+                Unknown5: self.row.columns[20].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[24].into_u8().copied().unwrap(),
+                Unknown7: self.row.columns[36].into_u8().copied().unwrap(),
             },
             RankDataElement {
                 SGB: [
-                    &self.row.columns[self.index_mapping[12]],
-                    &self.row.columns[self.index_mapping[13]],
-                    &self.row.columns[self.index_mapping[14]],
-                    &self.row.columns[self.index_mapping[15]],
+                    self.row.columns[1].into_u32().copied().unwrap(),
+                    self.row.columns[5].into_u32().copied().unwrap(),
+                    self.row.columns[9].into_u32().copied().unwrap(),
+                    self.row.columns[13].into_u32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[16]],
-                Unknown1: &self.row.columns[self.index_mapping[17]],
-                Unknown2: &self.row.columns[self.index_mapping[18]],
-                Unknown3: &self.row.columns[self.index_mapping[19]],
-                Unknown4: &self.row.columns[self.index_mapping[20]],
-                Unknown5: &self.row.columns[self.index_mapping[21]],
-                Unknown6: &self.row.columns[self.index_mapping[22]],
-                Unknown7: &self.row.columns[self.index_mapping[23]],
+                Unknown0: self.row.columns[29].into_u32().copied().unwrap(),
+                Unknown1: self.row.columns[33].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[41].into_u16().copied().unwrap(),
+                Unknown3: self.row.columns[45].into_u16().copied().unwrap(),
+                Unknown4: self.row.columns[17].into_u8().copied().unwrap(),
+                Unknown5: self.row.columns[21].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[25].into_u8().copied().unwrap(),
+                Unknown7: self.row.columns[37].into_u8().copied().unwrap(),
             },
             RankDataElement {
                 SGB: [
-                    &self.row.columns[self.index_mapping[24]],
-                    &self.row.columns[self.index_mapping[25]],
-                    &self.row.columns[self.index_mapping[26]],
-                    &self.row.columns[self.index_mapping[27]],
+                    self.row.columns[2].into_u32().copied().unwrap(),
+                    self.row.columns[6].into_u32().copied().unwrap(),
+                    self.row.columns[10].into_u32().copied().unwrap(),
+                    self.row.columns[14].into_u32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[28]],
-                Unknown1: &self.row.columns[self.index_mapping[29]],
-                Unknown2: &self.row.columns[self.index_mapping[30]],
-                Unknown3: &self.row.columns[self.index_mapping[31]],
-                Unknown4: &self.row.columns[self.index_mapping[32]],
-                Unknown5: &self.row.columns[self.index_mapping[33]],
-                Unknown6: &self.row.columns[self.index_mapping[34]],
-                Unknown7: &self.row.columns[self.index_mapping[35]],
+                Unknown0: self.row.columns[30].into_u32().copied().unwrap(),
+                Unknown1: self.row.columns[34].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[42].into_u16().copied().unwrap(),
+                Unknown3: self.row.columns[46].into_u16().copied().unwrap(),
+                Unknown4: self.row.columns[18].into_u8().copied().unwrap(),
+                Unknown5: self.row.columns[22].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[26].into_u8().copied().unwrap(),
+                Unknown7: self.row.columns[38].into_u8().copied().unwrap(),
             },
             RankDataElement {
                 SGB: [
-                    &self.row.columns[self.index_mapping[36]],
-                    &self.row.columns[self.index_mapping[37]],
-                    &self.row.columns[self.index_mapping[38]],
-                    &self.row.columns[self.index_mapping[39]],
+                    self.row.columns[3].into_u32().copied().unwrap(),
+                    self.row.columns[7].into_u32().copied().unwrap(),
+                    self.row.columns[11].into_u32().copied().unwrap(),
+                    self.row.columns[15].into_u32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[40]],
-                Unknown1: &self.row.columns[self.index_mapping[41]],
-                Unknown2: &self.row.columns[self.index_mapping[42]],
-                Unknown3: &self.row.columns[self.index_mapping[43]],
-                Unknown4: &self.row.columns[self.index_mapping[44]],
-                Unknown5: &self.row.columns[self.index_mapping[45]],
-                Unknown6: &self.row.columns[self.index_mapping[46]],
-                Unknown7: &self.row.columns[self.index_mapping[47]],
+                Unknown0: self.row.columns[31].into_u32().copied().unwrap(),
+                Unknown1: self.row.columns[35].into_u32().copied().unwrap(),
+                Unknown2: self.row.columns[43].into_u16().copied().unwrap(),
+                Unknown3: self.row.columns[47].into_u16().copied().unwrap(),
+                Unknown4: self.row.columns[19].into_u8().copied().unwrap(),
+                Unknown5: self.row.columns[23].into_u8().copied().unwrap(),
+                Unknown6: self.row.columns[27].into_u8().copied().unwrap(),
+                Unknown7: self.row.columns[39].into_u8().copied().unwrap(),
             },
         ]
     }

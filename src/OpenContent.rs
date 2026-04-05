@@ -7,14 +7,13 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct OpenContentDataElement<'a> {
-    pub CandidateName: &'a Field,
-    pub Content: &'a Field,
+pub struct OpenContentDataElement {
+    pub CandidateName: u32,
+    pub Content: u16,
 }
 #[derive(Debug, Clone)]
 pub struct OpenContentSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl OpenContentSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -24,18 +23,7 @@ impl OpenContentSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("OpenContent")?;
         let sheet = resolver.read_excel_sheet(&exh, "OpenContent", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<OpenContentRow> {
@@ -55,10 +43,7 @@ impl OpenContentSheet {
 impl<'a> StructuredSheet<'a> for OpenContentSheet {
     type Row = OpenContentRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a OpenContentSheet {
@@ -74,74 +59,73 @@ impl<'a> IntoIterator for &'a OpenContentSheet {
 #[derive(Debug, Clone)]
 pub struct OpenContentRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> OpenContentRow<'a> {
-    pub fn OpenContentData(&'a self) -> [OpenContentDataElement<'a>; 16] {
+    pub fn OpenContentData(&'a self) -> [OpenContentDataElement; 16] {
         [
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[0]],
-                Content: &self.row.columns[self.index_mapping[1]],
+                CandidateName: self.row.columns[16].into_u32().copied().unwrap(),
+                Content: self.row.columns[0].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[2]],
-                Content: &self.row.columns[self.index_mapping[3]],
+                CandidateName: self.row.columns[17].into_u32().copied().unwrap(),
+                Content: self.row.columns[1].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[4]],
-                Content: &self.row.columns[self.index_mapping[5]],
+                CandidateName: self.row.columns[18].into_u32().copied().unwrap(),
+                Content: self.row.columns[2].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[6]],
-                Content: &self.row.columns[self.index_mapping[7]],
+                CandidateName: self.row.columns[19].into_u32().copied().unwrap(),
+                Content: self.row.columns[3].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[8]],
-                Content: &self.row.columns[self.index_mapping[9]],
+                CandidateName: self.row.columns[20].into_u32().copied().unwrap(),
+                Content: self.row.columns[4].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[10]],
-                Content: &self.row.columns[self.index_mapping[11]],
+                CandidateName: self.row.columns[21].into_u32().copied().unwrap(),
+                Content: self.row.columns[5].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[12]],
-                Content: &self.row.columns[self.index_mapping[13]],
+                CandidateName: self.row.columns[22].into_u32().copied().unwrap(),
+                Content: self.row.columns[6].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[14]],
-                Content: &self.row.columns[self.index_mapping[15]],
+                CandidateName: self.row.columns[23].into_u32().copied().unwrap(),
+                Content: self.row.columns[7].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[16]],
-                Content: &self.row.columns[self.index_mapping[17]],
+                CandidateName: self.row.columns[24].into_u32().copied().unwrap(),
+                Content: self.row.columns[8].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[18]],
-                Content: &self.row.columns[self.index_mapping[19]],
+                CandidateName: self.row.columns[25].into_u32().copied().unwrap(),
+                Content: self.row.columns[9].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[20]],
-                Content: &self.row.columns[self.index_mapping[21]],
+                CandidateName: self.row.columns[26].into_u32().copied().unwrap(),
+                Content: self.row.columns[10].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[22]],
-                Content: &self.row.columns[self.index_mapping[23]],
+                CandidateName: self.row.columns[27].into_u32().copied().unwrap(),
+                Content: self.row.columns[11].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[24]],
-                Content: &self.row.columns[self.index_mapping[25]],
+                CandidateName: self.row.columns[28].into_u32().copied().unwrap(),
+                Content: self.row.columns[12].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[26]],
-                Content: &self.row.columns[self.index_mapping[27]],
+                CandidateName: self.row.columns[29].into_u32().copied().unwrap(),
+                Content: self.row.columns[13].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[28]],
-                Content: &self.row.columns[self.index_mapping[29]],
+                CandidateName: self.row.columns[30].into_u32().copied().unwrap(),
+                Content: self.row.columns[14].into_u16().copied().unwrap(),
             },
             OpenContentDataElement {
-                CandidateName: &self.row.columns[self.index_mapping[30]],
-                Content: &self.row.columns[self.index_mapping[31]],
+                CandidateName: self.row.columns[31].into_u32().copied().unwrap(),
+                Content: self.row.columns[15].into_u16().copied().unwrap(),
             },
         ]
     }

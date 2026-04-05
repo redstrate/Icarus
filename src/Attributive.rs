@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct AttributiveSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl AttributiveSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl AttributiveSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Attributive")?;
         let sheet = resolver.read_excel_sheet(&exh, "Attributive", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<AttributiveRow> {
@@ -51,10 +39,7 @@ impl AttributiveSheet {
 impl<'a> StructuredSheet<'a> for AttributiveSheet {
     type Row = AttributiveRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a AttributiveSheet {
@@ -70,130 +55,129 @@ impl<'a> IntoIterator for &'a AttributiveSheet {
 #[derive(Debug, Clone)]
 pub struct AttributiveRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> AttributiveRow<'a> {
-    pub fn JapaneseSingularDemonstrative(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn JapaneseSingularDemonstrative(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn JapanesePluralDemonstrative(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn JapanesePluralDemonstrative(&'a self) -> &'a str {
+        self.row.columns[1].into_string().unwrap()
     }
-    pub fn EnglishArticleSingularConsonant(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn EnglishArticleSingularConsonant(&'a self) -> &'a str {
+        self.row.columns[2].into_string().unwrap()
     }
-    pub fn EnglishArticleGenericConsonant(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn EnglishArticleGenericConsonant(&'a self) -> &'a str {
+        self.row.columns[3].into_string().unwrap()
     }
-    pub fn EnglishArticlePluralConsonant(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn EnglishArticlePluralConsonant(&'a self) -> &'a str {
+        self.row.columns[4].into_string().unwrap()
     }
-    pub fn EnglishArticleSingularVowel(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn EnglishArticleSingularVowel(&'a self) -> &'a str {
+        self.row.columns[5].into_string().unwrap()
     }
-    pub fn EnglishArticleGenericVowel(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn EnglishArticleGenericVowel(&'a self) -> &'a str {
+        self.row.columns[6].into_string().unwrap()
     }
-    pub fn EnglishArticlePluralVowel(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn EnglishArticlePluralVowel(&'a self) -> &'a str {
+        self.row.columns[7].into_string().unwrap()
     }
-    pub fn GermanNominativeMasculine(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn GermanNominativeMasculine(&'a self) -> &'a str {
+        self.row.columns[8].into_string().unwrap()
     }
-    pub fn GermanNominativeFeminine(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn GermanNominativeFeminine(&'a self) -> &'a str {
+        self.row.columns[9].into_string().unwrap()
     }
-    pub fn GermanNominativeNeutral(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn GermanNominativeNeutral(&'a self) -> &'a str {
+        self.row.columns[10].into_string().unwrap()
     }
-    pub fn GermanNominativePlural(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn GermanNominativePlural(&'a self) -> &'a str {
+        self.row.columns[11].into_string().unwrap()
     }
-    pub fn GermanGenitiveMasculine(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn GermanGenitiveMasculine(&'a self) -> &'a str {
+        self.row.columns[12].into_string().unwrap()
     }
-    pub fn GermanGenitiveFeminine(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn GermanGenitiveFeminine(&'a self) -> &'a str {
+        self.row.columns[13].into_string().unwrap()
     }
-    pub fn GermanGenitiveNeutral(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn GermanGenitiveNeutral(&'a self) -> &'a str {
+        self.row.columns[14].into_string().unwrap()
     }
-    pub fn GermanGenitivePlural(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn GermanGenitivePlural(&'a self) -> &'a str {
+        self.row.columns[15].into_string().unwrap()
     }
-    pub fn GermanDativeMasculine(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn GermanDativeMasculine(&'a self) -> &'a str {
+        self.row.columns[16].into_string().unwrap()
     }
-    pub fn GermanDativeFeminine(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn GermanDativeFeminine(&'a self) -> &'a str {
+        self.row.columns[17].into_string().unwrap()
     }
-    pub fn GermanDativeNeutral(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn GermanDativeNeutral(&'a self) -> &'a str {
+        self.row.columns[18].into_string().unwrap()
     }
-    pub fn GermanDativePlural(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[19]]
+    pub fn GermanDativePlural(&'a self) -> &'a str {
+        self.row.columns[19].into_string().unwrap()
     }
-    pub fn GermanAccusativeMasculine(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[20]]
+    pub fn GermanAccusativeMasculine(&'a self) -> &'a str {
+        self.row.columns[20].into_string().unwrap()
     }
-    pub fn GermanAccusativeFeminine(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[21]]
+    pub fn GermanAccusativeFeminine(&'a self) -> &'a str {
+        self.row.columns[21].into_string().unwrap()
     }
-    pub fn GermanAccusativeNeutral(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[22]]
+    pub fn GermanAccusativeNeutral(&'a self) -> &'a str {
+        self.row.columns[22].into_string().unwrap()
     }
-    pub fn GermanAccusativePlural(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[23]]
+    pub fn GermanAccusativePlural(&'a self) -> &'a str {
+        self.row.columns[23].into_string().unwrap()
     }
-    pub fn FrenchArticleSingular(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[24]]
+    pub fn FrenchArticleSingular(&'a self) -> &'a str {
+        self.row.columns[24].into_string().unwrap()
     }
-    pub fn FrenchArticleSingularMasculine(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[25]]
+    pub fn FrenchArticleSingularMasculine(&'a self) -> &'a str {
+        self.row.columns[25].into_string().unwrap()
     }
-    pub fn FrenchArticlePluralMasculine(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[26]]
+    pub fn FrenchArticlePluralMasculine(&'a self) -> &'a str {
+        self.row.columns[26].into_string().unwrap()
     }
-    pub fn FrenchArticleSingularMasculineElided(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[27]]
+    pub fn FrenchArticleSingularMasculineElided(&'a self) -> &'a str {
+        self.row.columns[27].into_string().unwrap()
     }
-    pub fn FrenchArticlePluralMasculineElided(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[28]]
+    pub fn FrenchArticlePluralMasculineElided(&'a self) -> &'a str {
+        self.row.columns[28].into_string().unwrap()
     }
-    pub fn FrenchArticleSingularElided(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[29]]
+    pub fn FrenchArticleSingularElided(&'a self) -> &'a str {
+        self.row.columns[29].into_string().unwrap()
     }
-    pub fn FrenchArticlePluralElided(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[30]]
+    pub fn FrenchArticlePluralElided(&'a self) -> &'a str {
+        self.row.columns[30].into_string().unwrap()
     }
-    pub fn FrenchArticleSingularMasculineContracted(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[31]]
+    pub fn FrenchArticleSingularMasculineContracted(&'a self) -> &'a str {
+        self.row.columns[31].into_string().unwrap()
     }
-    pub fn FrenchArticlePluralMasculineContracted(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[32]]
+    pub fn FrenchArticlePluralMasculineContracted(&'a self) -> &'a str {
+        self.row.columns[32].into_string().unwrap()
     }
-    pub fn FrenchArticleSingularFeminine(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[33]]
+    pub fn FrenchArticleSingularFeminine(&'a self) -> &'a str {
+        self.row.columns[33].into_string().unwrap()
     }
-    pub fn FrenchArticlePluralFeminine(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[34]]
+    pub fn FrenchArticlePluralFeminine(&'a self) -> &'a str {
+        self.row.columns[34].into_string().unwrap()
     }
-    pub fn FrenchArticleSingularFeminineElided(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[35]]
+    pub fn FrenchArticleSingularFeminineElided(&'a self) -> &'a str {
+        self.row.columns[35].into_string().unwrap()
     }
-    pub fn FrenchArticlePluralFeminineElided(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[36]]
+    pub fn FrenchArticlePluralFeminineElided(&'a self) -> &'a str {
+        self.row.columns[36].into_string().unwrap()
     }
-    pub fn FrenchArticleSingularElidedAlt(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[37]]
+    pub fn FrenchArticleSingularElidedAlt(&'a self) -> &'a str {
+        self.row.columns[37].into_string().unwrap()
     }
-    pub fn FrenchArticlePluralElidedAlt(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[38]]
+    pub fn FrenchArticlePluralElidedAlt(&'a self) -> &'a str {
+        self.row.columns[38].into_string().unwrap()
     }
-    pub fn FrenchArticleSingularNeutral(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[39]]
+    pub fn FrenchArticleSingularNeutral(&'a self) -> &'a str {
+        self.row.columns[39].into_string().unwrap()
     }
-    pub fn FrenchArticlePluralNeutral(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[40]]
+    pub fn FrenchArticlePluralNeutral(&'a self) -> &'a str {
+        self.row.columns[40].into_string().unwrap()
     }
 }

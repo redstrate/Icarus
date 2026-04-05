@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ContentRouletteSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl ContentRouletteSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl ContentRouletteSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentRoulette")?;
         let sheet = resolver.read_excel_sheet(&exh, "ContentRoulette", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ContentRouletteRow> {
@@ -51,10 +39,7 @@ impl ContentRouletteSheet {
 impl<'a> StructuredSheet<'a> for ContentRouletteSheet {
     type Row = ContentRouletteRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a ContentRouletteSheet {
@@ -70,161 +55,160 @@ impl<'a> IntoIterator for &'a ContentRouletteSheet {
 #[derive(Debug, Clone)]
 pub struct ContentRouletteRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> ContentRouletteRow<'a> {
-    pub fn Name(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Name(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn Category(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Category(&'a self) -> &'a str {
+        self.row.columns[1].into_string().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Unknown0(&'a self) -> &'a str {
+        self.row.columns[2].into_string().unwrap()
     }
-    pub fn Description(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn Description(&'a self) -> &'a str {
+        self.row.columns[3].into_string().unwrap()
     }
-    pub fn DutyType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn DutyType(&'a self) -> &'a str {
+        self.row.columns[4].into_string().unwrap()
     }
     /// This would show Addon#102618, but the row is empty.
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn Unknown1(&'a self) -> u32 {
+        self.row.columns[6].into_u32().copied().unwrap()
     }
-    pub fn Image(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn Image(&'a self) -> u32 {
+        self.row.columns[16].into_u32().copied().unwrap()
     }
-    pub fn Unknown2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn Unknown2(&'a self) -> u32 {
+        self.row.columns[21].into_u32().copied().unwrap()
     }
-    pub fn Unknown3(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn Unknown3(&'a self) -> u32 {
+        self.row.columns[23].into_u32().copied().unwrap()
     }
-    pub fn Unknown6(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn Unknown6(&'a self) -> i32 {
+        self.row.columns[47].into_i32().copied().unwrap()
     }
-    pub fn ItemLevelRequired(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn ItemLevelRequired(&'a self) -> u16 {
+        self.row.columns[13].into_u16().copied().unwrap()
     }
-    pub fn ItemLevelSync(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn ItemLevelSync(&'a self) -> u16 {
+        self.row.columns[15].into_u16().copied().unwrap()
     }
-    pub fn RewardTomeA(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn RewardTomeA(&'a self) -> u16 {
+        self.row.columns[18].into_u16().copied().unwrap()
     }
-    pub fn RewardTomeB(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn RewardTomeB(&'a self) -> u16 {
+        self.row.columns[19].into_u16().copied().unwrap()
     }
-    pub fn RewardTomeC(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn RewardTomeC(&'a self) -> u16 {
+        self.row.columns[20].into_u16().copied().unwrap()
     }
-    pub fn Unknown5(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn Unknown5(&'a self) -> u16 {
+        self.row.columns[22].into_u16().copied().unwrap()
     }
-    pub fn InstanceContent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn InstanceContent(&'a self) -> u16 {
+        self.row.columns[41].into_u16().copied().unwrap()
     }
-    pub fn RequiredExVersion(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn RequiredExVersion(&'a self) -> u8 {
+        self.row.columns[5].into_u8().copied().unwrap()
     }
-    pub fn OpenRule(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn OpenRule(&'a self) -> u8 {
+        self.row.columns[9].into_u8().copied().unwrap()
     }
-    pub fn RequiredLevel(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[19]]
+    pub fn RequiredLevel(&'a self) -> u8 {
+        self.row.columns[11].into_u8().copied().unwrap()
     }
-    pub fn SyncedFromLevel(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[20]]
+    pub fn SyncedFromLevel(&'a self) -> u8 {
+        self.row.columns[12].into_u8().copied().unwrap()
     }
-    pub fn ContentRouletteRoleBonus(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[21]]
+    pub fn ContentRouletteRoleBonus(&'a self) -> u8 {
+        self.row.columns[17].into_u8().copied().unwrap()
     }
-    pub fn SortKey(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[22]]
+    pub fn SortKey(&'a self) -> u8 {
+        self.row.columns[24].into_u8().copied().unwrap()
     }
-    pub fn ClassJobCategory(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[23]]
+    pub fn ClassJobCategory(&'a self) -> u8 {
+        self.row.columns[25].into_u8().copied().unwrap()
     }
-    pub fn ContentMemberType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[24]]
+    pub fn ContentMemberType(&'a self) -> u8 {
+        self.row.columns[26].into_u8().copied().unwrap()
     }
-    pub fn Unknown9(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[25]]
+    pub fn Unknown9(&'a self) -> u8 {
+        self.row.columns[27].into_u8().copied().unwrap()
     }
-    pub fn QueueMaxPlayers(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[26]]
+    pub fn QueueMaxPlayers(&'a self) -> u8 {
+        self.row.columns[28].into_u8().copied().unwrap()
     }
-    pub fn ContentType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[27]]
+    pub fn ContentType(&'a self) -> u8 {
+        self.row.columns[31].into_u8().copied().unwrap()
     }
-    pub fn Unknown12(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[28]]
+    pub fn Unknown12(&'a self) -> u8 {
+        self.row.columns[32].into_u8().copied().unwrap()
     }
     /// In minutes.
-    pub fn TimeLimit(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[29]]
+    pub fn TimeLimit(&'a self) -> u8 {
+        self.row.columns[33].into_u8().copied().unwrap()
     }
     /// In minutes. If 0, only TimeLimit is displayed.
-    pub fn TimeLimitMax(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[30]]
+    pub fn TimeLimitMax(&'a self) -> u8 {
+        self.row.columns[34].into_u8().copied().unwrap()
     }
-    pub fn LootModeType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[31]]
+    pub fn LootModeType(&'a self) -> u8 {
+        self.row.columns[40].into_u8().copied().unwrap()
     }
-    pub fn Unknown15(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[32]]
+    pub fn Unknown15(&'a self) -> u8 {
+        self.row.columns[43].into_u8().copied().unwrap()
     }
     /// Index in PlayerState.PenaltyTimestamps
-    pub fn PenaltyTimestampArrayIndex(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[33]]
+    pub fn PenaltyTimestampArrayIndex(&'a self) -> u8 {
+        self.row.columns[48].into_u8().copied().unwrap()
     }
     /// Index in PlayerState.ContentRouletteCompletion
-    pub fn CompletionArrayIndex(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[34]]
+    pub fn CompletionArrayIndex(&'a self) -> i8 {
+        self.row.columns[29].into_i8().copied().unwrap()
     }
-    pub fn IsGoldSaucer(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[35]]
+    pub fn IsGoldSaucer(&'a self) -> bool {
+        self.row.columns[7].into_bool().copied().unwrap()
     }
-    pub fn IsInDutyFinder(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[36]]
+    pub fn IsInDutyFinder(&'a self) -> bool {
+        self.row.columns[8].into_bool().copied().unwrap()
     }
-    pub fn IsPvP(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[37]]
+    pub fn IsPvP(&'a self) -> bool {
+        self.row.columns[10].into_bool().copied().unwrap()
     }
     /// Displays Addon#2828.
-    pub fn AppliesHighestAverageDutyItemLevel(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[38]]
+    pub fn AppliesHighestAverageDutyItemLevel(&'a self) -> bool {
+        self.row.columns[14].into_bool().copied().unwrap()
     }
-    pub fn Unknown18(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[39]]
+    pub fn Unknown18(&'a self) -> bool {
+        self.row.columns[30].into_bool().copied().unwrap()
     }
-    pub fn AllowConsumableItems(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[40]]
+    pub fn AllowConsumableItems(&'a self) -> bool {
+        self.row.columns[35].into_bool().copied().unwrap()
     }
-    pub fn AllowPhoenixDown(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[41]]
+    pub fn AllowPhoenixDown(&'a self) -> bool {
+        self.row.columns[36].into_bool().copied().unwrap()
     }
-    pub fn AllowReplacement(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[42]]
+    pub fn AllowReplacement(&'a self) -> bool {
+        self.row.columns[37].into_bool().copied().unwrap()
     }
-    pub fn RatedMatch(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[43]]
+    pub fn RatedMatch(&'a self) -> bool {
+        self.row.columns[38].into_bool().copied().unwrap()
     }
-    pub fn Rated(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[44]]
+    pub fn Rated(&'a self) -> bool {
+        self.row.columns[39].into_bool().copied().unwrap()
     }
     /// This would show Addon#10833, but the row does not exist.
-    pub fn Unknown22(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[45]]
+    pub fn Unknown22(&'a self) -> bool {
+        self.row.columns[42].into_bool().copied().unwrap()
     }
-    pub fn Unknown23(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[46]]
+    pub fn Unknown23(&'a self) -> bool {
+        self.row.columns[44].into_bool().copied().unwrap()
     }
-    pub fn Unknown24(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[47]]
+    pub fn Unknown24(&'a self) -> bool {
+        self.row.columns[45].into_bool().copied().unwrap()
     }
-    pub fn IsRegistrationAllowedFromAnyDataCenter(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[48]]
+    pub fn IsRegistrationAllowedFromAnyDataCenter(&'a self) -> bool {
+        self.row.columns[46].into_bool().copied().unwrap()
     }
 }

@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct WKSMissionToDoSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl WKSMissionToDoSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl WKSMissionToDoSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSMissionToDo")?;
         let sheet = resolver.read_excel_sheet(&exh, "WKSMissionToDo", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<WKSMissionToDoRow> {
@@ -51,10 +39,7 @@ impl WKSMissionToDoSheet {
 impl<'a> StructuredSheet<'a> for WKSMissionToDoSheet {
     type Row = WKSMissionToDoRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a WKSMissionToDoSheet {
@@ -70,63 +55,62 @@ impl<'a> IntoIterator for &'a WKSMissionToDoSheet {
 #[derive(Debug, Clone)]
 pub struct WKSMissionToDoRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> WKSMissionToDoRow<'a> {
-    pub fn TemporaryAction(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn TemporaryAction(&'a self) -> u32 {
+        self.row.columns[0].into_u32().copied().unwrap()
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Unknown1(&'a self) -> u32 {
+        self.row.columns[13].into_u32().copied().unwrap()
     }
-    pub fn Unknown2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Unknown2(&'a self) -> u16 {
+        self.row.columns[3].into_u16().copied().unwrap()
     }
-    pub fn RequiredItem(&'a self) -> [&'a Field; 3] {
+    pub fn RequiredItem(&'a self) -> [u16; 3] {
         [
-            &self.row.columns[self.index_mapping[3]],
-            &self.row.columns[self.index_mapping[4]],
-            &self.row.columns[self.index_mapping[5]],
+            self.row.columns[4].into_u16().copied().unwrap(),
+            self.row.columns[6].into_u16().copied().unwrap(),
+            self.row.columns[8].into_u16().copied().unwrap(),
         ]
     }
-    pub fn RequiredItemQuantity(&'a self) -> [&'a Field; 3] {
+    pub fn RequiredItemQuantity(&'a self) -> [u16; 3] {
         [
-            &self.row.columns[self.index_mapping[6]],
-            &self.row.columns[self.index_mapping[7]],
-            &self.row.columns[self.index_mapping[8]],
+            self.row.columns[5].into_u16().copied().unwrap(),
+            self.row.columns[7].into_u16().copied().unwrap(),
+            self.row.columns[9].into_u16().copied().unwrap(),
         ]
     }
-    pub fn Unknown9(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn Unknown9(&'a self) -> u16 {
+        self.row.columns[11].into_u16().copied().unwrap()
     }
-    pub fn Unknown10(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn Unknown10(&'a self) -> u16 {
+        self.row.columns[15].into_u16().copied().unwrap()
     }
-    pub fn Unknown11(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn Unknown11(&'a self) -> u16 {
+        self.row.columns[16].into_u16().copied().unwrap()
     }
-    pub fn Unknown12(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn Unknown12(&'a self) -> u16 {
+        self.row.columns[17].into_u16().copied().unwrap()
     }
-    pub fn Unknown13(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn Unknown13(&'a self) -> u16 {
+        self.row.columns[18].into_u16().copied().unwrap()
     }
-    pub fn WKSMissionText(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn WKSMissionText(&'a self) -> u16 {
+        self.row.columns[19].into_u16().copied().unwrap()
     }
-    pub fn Unknown14(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn Unknown14(&'a self) -> u8 {
+        self.row.columns[1].into_u8().copied().unwrap()
     }
-    pub fn Unknown15(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn Unknown15(&'a self) -> u8 {
+        self.row.columns[2].into_u8().copied().unwrap()
     }
-    pub fn Unknown16(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn Unknown16(&'a self) -> u8 {
+        self.row.columns[10].into_u8().copied().unwrap()
     }
-    pub fn Unknown17(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn Unknown17(&'a self) -> u8 {
+        self.row.columns[12].into_u8().copied().unwrap()
     }
-    pub fn MissionType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[19]]
+    pub fn MissionType(&'a self) -> u8 {
+        self.row.columns[14].into_u8().copied().unwrap()
     }
 }

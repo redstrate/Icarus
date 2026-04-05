@@ -7,19 +7,18 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct OvooDataElement<'a> {
-    pub EmptyIcon: &'a Field,
-    pub MaelstromIcon: &'a Field,
-    pub TwinAdderIcon: &'a Field,
-    pub ImmortalFlamesIcon: &'a Field,
-    pub Unknown0: &'a Field,
-    pub Unknown1: &'a Field,
-    pub Unknown2: &'a Field,
+pub struct OvooDataElement {
+    pub EmptyIcon: u32,
+    pub MaelstromIcon: u32,
+    pub TwinAdderIcon: u32,
+    pub ImmortalFlamesIcon: u32,
+    pub Unknown0: u8,
+    pub Unknown1: u8,
+    pub Unknown2: u8,
 }
 #[derive(Debug, Clone)]
 pub struct Frontline03Sheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl Frontline03Sheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -29,18 +28,7 @@ impl Frontline03Sheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Frontline03")?;
         let sheet = resolver.read_excel_sheet(&exh, "Frontline03", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<Frontline03Row> {
@@ -60,10 +48,7 @@ impl Frontline03Sheet {
 impl<'a> StructuredSheet<'a> for Frontline03Sheet {
     type Row = Frontline03Row<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a Frontline03Sheet {
@@ -79,37 +64,36 @@ impl<'a> IntoIterator for &'a Frontline03Sheet {
 #[derive(Debug, Clone)]
 pub struct Frontline03Row<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> Frontline03Row<'a> {
-    pub fn OvooData(&'a self) -> [OvooDataElement<'a>; 3] {
+    pub fn OvooData(&'a self) -> [OvooDataElement; 3] {
         [
             OvooDataElement {
-                EmptyIcon: &self.row.columns[self.index_mapping[0]],
-                MaelstromIcon: &self.row.columns[self.index_mapping[1]],
-                TwinAdderIcon: &self.row.columns[self.index_mapping[2]],
-                ImmortalFlamesIcon: &self.row.columns[self.index_mapping[3]],
-                Unknown0: &self.row.columns[self.index_mapping[4]],
-                Unknown1: &self.row.columns[self.index_mapping[5]],
-                Unknown2: &self.row.columns[self.index_mapping[6]],
+                EmptyIcon: self.row.columns[9].into_u32().copied().unwrap(),
+                MaelstromIcon: self.row.columns[12].into_u32().copied().unwrap(),
+                TwinAdderIcon: self.row.columns[15].into_u32().copied().unwrap(),
+                ImmortalFlamesIcon: self.row.columns[18].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[0].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[3].into_u8().copied().unwrap(),
+                Unknown2: self.row.columns[6].into_u8().copied().unwrap(),
             },
             OvooDataElement {
-                EmptyIcon: &self.row.columns[self.index_mapping[7]],
-                MaelstromIcon: &self.row.columns[self.index_mapping[8]],
-                TwinAdderIcon: &self.row.columns[self.index_mapping[9]],
-                ImmortalFlamesIcon: &self.row.columns[self.index_mapping[10]],
-                Unknown0: &self.row.columns[self.index_mapping[11]],
-                Unknown1: &self.row.columns[self.index_mapping[12]],
-                Unknown2: &self.row.columns[self.index_mapping[13]],
+                EmptyIcon: self.row.columns[10].into_u32().copied().unwrap(),
+                MaelstromIcon: self.row.columns[13].into_u32().copied().unwrap(),
+                TwinAdderIcon: self.row.columns[16].into_u32().copied().unwrap(),
+                ImmortalFlamesIcon: self.row.columns[19].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[1].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[4].into_u8().copied().unwrap(),
+                Unknown2: self.row.columns[7].into_u8().copied().unwrap(),
             },
             OvooDataElement {
-                EmptyIcon: &self.row.columns[self.index_mapping[14]],
-                MaelstromIcon: &self.row.columns[self.index_mapping[15]],
-                TwinAdderIcon: &self.row.columns[self.index_mapping[16]],
-                ImmortalFlamesIcon: &self.row.columns[self.index_mapping[17]],
-                Unknown0: &self.row.columns[self.index_mapping[18]],
-                Unknown1: &self.row.columns[self.index_mapping[19]],
-                Unknown2: &self.row.columns[self.index_mapping[20]],
+                EmptyIcon: self.row.columns[11].into_u32().copied().unwrap(),
+                MaelstromIcon: self.row.columns[14].into_u32().copied().unwrap(),
+                TwinAdderIcon: self.row.columns[17].into_u32().copied().unwrap(),
+                ImmortalFlamesIcon: self.row.columns[20].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[2].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[5].into_u8().copied().unwrap(),
+                Unknown2: self.row.columns[8].into_u8().copied().unwrap(),
             },
         ]
     }

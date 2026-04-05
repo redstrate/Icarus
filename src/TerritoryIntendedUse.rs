@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct TerritoryIntendedUseSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl TerritoryIntendedUseSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl TerritoryIntendedUseSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TerritoryIntendedUse")?;
         let sheet = resolver.read_excel_sheet(&exh, "TerritoryIntendedUse", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<TerritoryIntendedUseRow> {
@@ -55,10 +43,7 @@ impl TerritoryIntendedUseSheet {
 impl<'a> StructuredSheet<'a> for TerritoryIntendedUseSheet {
     type Row = TerritoryIntendedUseRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a TerritoryIntendedUseSheet {
@@ -74,143 +59,142 @@ impl<'a> IntoIterator for &'a TerritoryIntendedUseSheet {
 #[derive(Debug, Clone)]
 pub struct TerritoryIntendedUseRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> TerritoryIntendedUseRow<'a> {
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Unknown0(&'a self) -> u16 {
+        self.row.columns[19].into_u16().copied().unwrap()
     }
     /// Ambient noise of people talking in a crowd. Values: 0 = None, 1 = sound/strm/GAYA_LestArea_01.scd, 2 = sound/strm/GAYA_Village_01.scd
-    pub fn GayaSoundId(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn GayaSoundId(&'a self) -> u8 {
+        self.row.columns[20].into_u8().copied().unwrap()
     }
-    pub fn ChatRule(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn ChatRule(&'a self) -> u8 {
+        self.row.columns[33].into_u8().copied().unwrap()
     }
-    pub fn Unknown3(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn Unknown3(&'a self) -> u8 {
+        self.row.columns[36].into_u8().copied().unwrap()
     }
-    pub fn EnableCrafting(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn EnableCrafting(&'a self) -> bool {
+        self.row.columns[0].into_bool().copied().unwrap()
     }
-    pub fn EnableGathering(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn EnableGathering(&'a self) -> bool {
+        self.row.columns[1].into_bool().copied().unwrap()
     }
-    pub fn EnableRepairs(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn EnableRepairs(&'a self) -> bool {
+        self.row.columns[2].into_bool().copied().unwrap()
     }
-    pub fn Unknown7(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn Unknown7(&'a self) -> bool {
+        self.row.columns[3].into_bool().copied().unwrap()
     }
-    pub fn Unknown8(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn Unknown8(&'a self) -> bool {
+        self.row.columns[4].into_bool().copied().unwrap()
     }
-    pub fn EnableJobChangeToLimitedJob(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn EnableJobChangeToLimitedJob(&'a self) -> bool {
+        self.row.columns[5].into_bool().copied().unwrap()
     }
     /// Enables summoning Chocobo Companion
-    pub fn EnableCompanion(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn EnableCompanion(&'a self) -> bool {
+        self.row.columns[6].into_bool().copied().unwrap()
     }
     /// Enables summoning Summoner/Scholar pets
-    pub fn EnablePets(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn EnablePets(&'a self) -> bool {
+        self.row.columns[7].into_bool().copied().unwrap()
     }
-    pub fn EnableRidePillion(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn EnableRidePillion(&'a self) -> bool {
+        self.row.columns[8].into_bool().copied().unwrap()
     }
-    pub fn DisableLogoutTimer(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn DisableLogoutTimer(&'a self) -> bool {
+        self.row.columns[9].into_bool().copied().unwrap()
     }
-    pub fn EnableTeleport(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn EnableTeleport(&'a self) -> bool {
+        self.row.columns[10].into_bool().copied().unwrap()
     }
-    pub fn EnableReturn(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn EnableReturn(&'a self) -> bool {
+        self.row.columns[11].into_bool().copied().unwrap()
     }
-    pub fn Unknown16(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn Unknown16(&'a self) -> bool {
+        self.row.columns[12].into_bool().copied().unwrap()
     }
-    pub fn Unknown17(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn Unknown17(&'a self) -> bool {
+        self.row.columns[13].into_bool().copied().unwrap()
     }
-    pub fn EnableRecommendList(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn EnableRecommendList(&'a self) -> bool {
+        self.row.columns[14].into_bool().copied().unwrap()
     }
-    pub fn Unknown19(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[19]]
+    pub fn Unknown19(&'a self) -> bool {
+        self.row.columns[15].into_bool().copied().unwrap()
     }
-    pub fn Unknown20(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[20]]
+    pub fn Unknown20(&'a self) -> bool {
+        self.row.columns[16].into_bool().copied().unwrap()
     }
     /// Related to Map in Island Sanctuary, Cosmic Exploration
-    pub fn Unknown21(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[21]]
+    pub fn Unknown21(&'a self) -> bool {
+        self.row.columns[17].into_bool().copied().unwrap()
     }
-    pub fn DisableFieldMarkers(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[22]]
+    pub fn DisableFieldMarkers(&'a self) -> bool {
+        self.row.columns[18].into_bool().copied().unwrap()
     }
-    pub fn Unknown23(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[23]]
+    pub fn Unknown23(&'a self) -> bool {
+        self.row.columns[21].into_bool().copied().unwrap()
     }
-    pub fn EnableActions(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[24]]
+    pub fn EnableActions(&'a self) -> bool {
+        self.row.columns[22].into_bool().copied().unwrap()
     }
-    pub fn EnableConsumableItems(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[25]]
+    pub fn EnableConsumableItems(&'a self) -> bool {
+        self.row.columns[23].into_bool().copied().unwrap()
     }
-    pub fn Unknown26(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[26]]
+    pub fn Unknown26(&'a self) -> bool {
+        self.row.columns[24].into_bool().copied().unwrap()
     }
-    pub fn EnableTripleTriadMatches(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[27]]
+    pub fn EnableTripleTriadMatches(&'a self) -> bool {
+        self.row.columns[25].into_bool().copied().unwrap()
     }
-    pub fn EnableTripleTriadMatchesAnywhere(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[28]]
+    pub fn EnableTripleTriadMatchesAnywhere(&'a self) -> bool {
+        self.row.columns[26].into_bool().copied().unwrap()
     }
-    pub fn Unknown29(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[29]]
+    pub fn Unknown29(&'a self) -> bool {
+        self.row.columns[27].into_bool().copied().unwrap()
     }
-    pub fn Unknown30(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[30]]
+    pub fn Unknown30(&'a self) -> bool {
+        self.row.columns[28].into_bool().copied().unwrap()
     }
     /// Related to Idle Cam
-    pub fn Unknown31(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[31]]
+    pub fn Unknown31(&'a self) -> bool {
+        self.row.columns[29].into_bool().copied().unwrap()
     }
-    pub fn CanPauseTimeWeather(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[32]]
+    pub fn CanPauseTimeWeather(&'a self) -> bool {
+        self.row.columns[30].into_bool().copied().unwrap()
     }
-    pub fn Unknown33(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[33]]
+    pub fn Unknown33(&'a self) -> bool {
+        self.row.columns[31].into_bool().copied().unwrap()
     }
-    pub fn EnablePvPQuickChat(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[34]]
+    pub fn EnablePvPQuickChat(&'a self) -> bool {
+        self.row.columns[32].into_bool().copied().unwrap()
     }
-    pub fn Unknown35(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[35]]
+    pub fn Unknown35(&'a self) -> bool {
+        self.row.columns[34].into_bool().copied().unwrap()
     }
-    pub fn Unknown36(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[36]]
+    pub fn Unknown36(&'a self) -> bool {
+        self.row.columns[35].into_bool().copied().unwrap()
     }
-    pub fn CanApplyGlamourPlatesAnywhere(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[37]]
+    pub fn CanApplyGlamourPlatesAnywhere(&'a self) -> bool {
+        self.row.columns[37].into_bool().copied().unwrap()
     }
     /// Related to idle timer
-    pub fn Unknown38(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[38]]
+    pub fn Unknown38(&'a self) -> bool {
+        self.row.columns[38].into_bool().copied().unwrap()
     }
-    pub fn EnableFieldMarkerPresets(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[39]]
+    pub fn EnableFieldMarkerPresets(&'a self) -> bool {
+        self.row.columns[39].into_bool().copied().unwrap()
     }
-    pub fn IgnoreCombatFlagForMarkers(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[40]]
+    pub fn IgnoreCombatFlagForMarkers(&'a self) -> bool {
+        self.row.columns[40].into_bool().copied().unwrap()
     }
     /// Related to blocking Say/Yell/Shout of a muted player in Eureka/Bozja/OccultCrescent
-    pub fn Unknown41(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[41]]
+    pub fn Unknown41(&'a self) -> bool {
+        self.row.columns[41].into_bool().copied().unwrap()
     }
-    pub fn Unknown42(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[42]]
+    pub fn Unknown42(&'a self) -> bool {
+        self.row.columns[42].into_bool().copied().unwrap()
     }
 }

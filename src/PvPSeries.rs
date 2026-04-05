@@ -7,15 +7,14 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct LevelRewardsElement<'a> {
-    pub LevelRewardItem: [&'a Field; 2],
-    pub Unknown0: &'a Field,
-    pub LevelRewardCount: [&'a Field; 2],
+pub struct LevelRewardsElement {
+    pub LevelRewardItem: [i32; 2],
+    pub Unknown0: i32,
+    pub LevelRewardCount: [u16; 2],
 }
 #[derive(Debug, Clone)]
 pub struct PvPSeriesSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl PvPSeriesSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -25,18 +24,7 @@ impl PvPSeriesSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PvPSeries")?;
         let sheet = resolver.read_excel_sheet(&exh, "PvPSeries", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<PvPSeriesRow> {
@@ -56,10 +44,7 @@ impl PvPSeriesSheet {
 impl<'a> StructuredSheet<'a> for PvPSeriesSheet {
     type Row = PvPSeriesRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a PvPSeriesSheet {
@@ -75,366 +60,365 @@ impl<'a> IntoIterator for &'a PvPSeriesSheet {
 #[derive(Debug, Clone)]
 pub struct PvPSeriesRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> PvPSeriesRow<'a> {
-    pub fn LevelRewards(&'a self) -> [LevelRewardsElement<'a>; 32] {
+    pub fn LevelRewards(&'a self) -> [LevelRewardsElement; 32] {
         [
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[0]],
-                    &self.row.columns[self.index_mapping[1]],
+                    self.row.columns[1].into_i32().copied().unwrap(),
+                    self.row.columns[33].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[2]],
+                Unknown0: self.row.columns[129].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[3]],
-                    &self.row.columns[self.index_mapping[4]],
+                    self.row.columns[65].into_u16().copied().unwrap(),
+                    self.row.columns[97].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[5]],
-                    &self.row.columns[self.index_mapping[6]],
+                    self.row.columns[2].into_i32().copied().unwrap(),
+                    self.row.columns[34].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[7]],
+                Unknown0: self.row.columns[130].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[8]],
-                    &self.row.columns[self.index_mapping[9]],
+                    self.row.columns[66].into_u16().copied().unwrap(),
+                    self.row.columns[98].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[10]],
-                    &self.row.columns[self.index_mapping[11]],
+                    self.row.columns[3].into_i32().copied().unwrap(),
+                    self.row.columns[35].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[12]],
+                Unknown0: self.row.columns[131].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[13]],
-                    &self.row.columns[self.index_mapping[14]],
+                    self.row.columns[67].into_u16().copied().unwrap(),
+                    self.row.columns[99].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[15]],
-                    &self.row.columns[self.index_mapping[16]],
+                    self.row.columns[4].into_i32().copied().unwrap(),
+                    self.row.columns[36].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[17]],
+                Unknown0: self.row.columns[132].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[18]],
-                    &self.row.columns[self.index_mapping[19]],
+                    self.row.columns[68].into_u16().copied().unwrap(),
+                    self.row.columns[100].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[20]],
-                    &self.row.columns[self.index_mapping[21]],
+                    self.row.columns[5].into_i32().copied().unwrap(),
+                    self.row.columns[37].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[22]],
+                Unknown0: self.row.columns[133].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[23]],
-                    &self.row.columns[self.index_mapping[24]],
+                    self.row.columns[69].into_u16().copied().unwrap(),
+                    self.row.columns[101].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[25]],
-                    &self.row.columns[self.index_mapping[26]],
+                    self.row.columns[6].into_i32().copied().unwrap(),
+                    self.row.columns[38].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[27]],
+                Unknown0: self.row.columns[134].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[28]],
-                    &self.row.columns[self.index_mapping[29]],
+                    self.row.columns[70].into_u16().copied().unwrap(),
+                    self.row.columns[102].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[30]],
-                    &self.row.columns[self.index_mapping[31]],
+                    self.row.columns[7].into_i32().copied().unwrap(),
+                    self.row.columns[39].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[32]],
+                Unknown0: self.row.columns[135].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[33]],
-                    &self.row.columns[self.index_mapping[34]],
+                    self.row.columns[71].into_u16().copied().unwrap(),
+                    self.row.columns[103].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[35]],
-                    &self.row.columns[self.index_mapping[36]],
+                    self.row.columns[8].into_i32().copied().unwrap(),
+                    self.row.columns[40].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[37]],
+                Unknown0: self.row.columns[136].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[38]],
-                    &self.row.columns[self.index_mapping[39]],
+                    self.row.columns[72].into_u16().copied().unwrap(),
+                    self.row.columns[104].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[40]],
-                    &self.row.columns[self.index_mapping[41]],
+                    self.row.columns[9].into_i32().copied().unwrap(),
+                    self.row.columns[41].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[42]],
+                Unknown0: self.row.columns[137].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[43]],
-                    &self.row.columns[self.index_mapping[44]],
+                    self.row.columns[73].into_u16().copied().unwrap(),
+                    self.row.columns[105].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[45]],
-                    &self.row.columns[self.index_mapping[46]],
+                    self.row.columns[10].into_i32().copied().unwrap(),
+                    self.row.columns[42].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[47]],
+                Unknown0: self.row.columns[138].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[48]],
-                    &self.row.columns[self.index_mapping[49]],
+                    self.row.columns[74].into_u16().copied().unwrap(),
+                    self.row.columns[106].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[50]],
-                    &self.row.columns[self.index_mapping[51]],
+                    self.row.columns[11].into_i32().copied().unwrap(),
+                    self.row.columns[43].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[52]],
+                Unknown0: self.row.columns[139].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[53]],
-                    &self.row.columns[self.index_mapping[54]],
+                    self.row.columns[75].into_u16().copied().unwrap(),
+                    self.row.columns[107].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[55]],
-                    &self.row.columns[self.index_mapping[56]],
+                    self.row.columns[12].into_i32().copied().unwrap(),
+                    self.row.columns[44].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[57]],
+                Unknown0: self.row.columns[140].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[58]],
-                    &self.row.columns[self.index_mapping[59]],
+                    self.row.columns[76].into_u16().copied().unwrap(),
+                    self.row.columns[108].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[60]],
-                    &self.row.columns[self.index_mapping[61]],
+                    self.row.columns[13].into_i32().copied().unwrap(),
+                    self.row.columns[45].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[62]],
+                Unknown0: self.row.columns[141].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[63]],
-                    &self.row.columns[self.index_mapping[64]],
+                    self.row.columns[77].into_u16().copied().unwrap(),
+                    self.row.columns[109].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[65]],
-                    &self.row.columns[self.index_mapping[66]],
+                    self.row.columns[14].into_i32().copied().unwrap(),
+                    self.row.columns[46].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[67]],
+                Unknown0: self.row.columns[142].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[68]],
-                    &self.row.columns[self.index_mapping[69]],
+                    self.row.columns[78].into_u16().copied().unwrap(),
+                    self.row.columns[110].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[70]],
-                    &self.row.columns[self.index_mapping[71]],
+                    self.row.columns[15].into_i32().copied().unwrap(),
+                    self.row.columns[47].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[72]],
+                Unknown0: self.row.columns[143].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[73]],
-                    &self.row.columns[self.index_mapping[74]],
+                    self.row.columns[79].into_u16().copied().unwrap(),
+                    self.row.columns[111].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[75]],
-                    &self.row.columns[self.index_mapping[76]],
+                    self.row.columns[16].into_i32().copied().unwrap(),
+                    self.row.columns[48].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[77]],
+                Unknown0: self.row.columns[144].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[78]],
-                    &self.row.columns[self.index_mapping[79]],
+                    self.row.columns[80].into_u16().copied().unwrap(),
+                    self.row.columns[112].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[80]],
-                    &self.row.columns[self.index_mapping[81]],
+                    self.row.columns[17].into_i32().copied().unwrap(),
+                    self.row.columns[49].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[82]],
+                Unknown0: self.row.columns[145].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[83]],
-                    &self.row.columns[self.index_mapping[84]],
+                    self.row.columns[81].into_u16().copied().unwrap(),
+                    self.row.columns[113].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[85]],
-                    &self.row.columns[self.index_mapping[86]],
+                    self.row.columns[18].into_i32().copied().unwrap(),
+                    self.row.columns[50].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[87]],
+                Unknown0: self.row.columns[146].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[88]],
-                    &self.row.columns[self.index_mapping[89]],
+                    self.row.columns[82].into_u16().copied().unwrap(),
+                    self.row.columns[114].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[90]],
-                    &self.row.columns[self.index_mapping[91]],
+                    self.row.columns[19].into_i32().copied().unwrap(),
+                    self.row.columns[51].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[92]],
+                Unknown0: self.row.columns[147].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[93]],
-                    &self.row.columns[self.index_mapping[94]],
+                    self.row.columns[83].into_u16().copied().unwrap(),
+                    self.row.columns[115].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[95]],
-                    &self.row.columns[self.index_mapping[96]],
+                    self.row.columns[20].into_i32().copied().unwrap(),
+                    self.row.columns[52].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[97]],
+                Unknown0: self.row.columns[148].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[98]],
-                    &self.row.columns[self.index_mapping[99]],
+                    self.row.columns[84].into_u16().copied().unwrap(),
+                    self.row.columns[116].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[100]],
-                    &self.row.columns[self.index_mapping[101]],
+                    self.row.columns[21].into_i32().copied().unwrap(),
+                    self.row.columns[53].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[102]],
+                Unknown0: self.row.columns[149].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[103]],
-                    &self.row.columns[self.index_mapping[104]],
+                    self.row.columns[85].into_u16().copied().unwrap(),
+                    self.row.columns[117].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[105]],
-                    &self.row.columns[self.index_mapping[106]],
+                    self.row.columns[22].into_i32().copied().unwrap(),
+                    self.row.columns[54].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[107]],
+                Unknown0: self.row.columns[150].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[108]],
-                    &self.row.columns[self.index_mapping[109]],
+                    self.row.columns[86].into_u16().copied().unwrap(),
+                    self.row.columns[118].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[110]],
-                    &self.row.columns[self.index_mapping[111]],
+                    self.row.columns[23].into_i32().copied().unwrap(),
+                    self.row.columns[55].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[112]],
+                Unknown0: self.row.columns[151].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[113]],
-                    &self.row.columns[self.index_mapping[114]],
+                    self.row.columns[87].into_u16().copied().unwrap(),
+                    self.row.columns[119].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[115]],
-                    &self.row.columns[self.index_mapping[116]],
+                    self.row.columns[24].into_i32().copied().unwrap(),
+                    self.row.columns[56].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[117]],
+                Unknown0: self.row.columns[152].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[118]],
-                    &self.row.columns[self.index_mapping[119]],
+                    self.row.columns[88].into_u16().copied().unwrap(),
+                    self.row.columns[120].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[120]],
-                    &self.row.columns[self.index_mapping[121]],
+                    self.row.columns[25].into_i32().copied().unwrap(),
+                    self.row.columns[57].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[122]],
+                Unknown0: self.row.columns[153].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[123]],
-                    &self.row.columns[self.index_mapping[124]],
+                    self.row.columns[89].into_u16().copied().unwrap(),
+                    self.row.columns[121].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[125]],
-                    &self.row.columns[self.index_mapping[126]],
+                    self.row.columns[26].into_i32().copied().unwrap(),
+                    self.row.columns[58].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[127]],
+                Unknown0: self.row.columns[154].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[128]],
-                    &self.row.columns[self.index_mapping[129]],
+                    self.row.columns[90].into_u16().copied().unwrap(),
+                    self.row.columns[122].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[130]],
-                    &self.row.columns[self.index_mapping[131]],
+                    self.row.columns[27].into_i32().copied().unwrap(),
+                    self.row.columns[59].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[132]],
+                Unknown0: self.row.columns[155].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[133]],
-                    &self.row.columns[self.index_mapping[134]],
+                    self.row.columns[91].into_u16().copied().unwrap(),
+                    self.row.columns[123].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[135]],
-                    &self.row.columns[self.index_mapping[136]],
+                    self.row.columns[28].into_i32().copied().unwrap(),
+                    self.row.columns[60].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[137]],
+                Unknown0: self.row.columns[156].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[138]],
-                    &self.row.columns[self.index_mapping[139]],
+                    self.row.columns[92].into_u16().copied().unwrap(),
+                    self.row.columns[124].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[140]],
-                    &self.row.columns[self.index_mapping[141]],
+                    self.row.columns[29].into_i32().copied().unwrap(),
+                    self.row.columns[61].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[142]],
+                Unknown0: self.row.columns[157].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[143]],
-                    &self.row.columns[self.index_mapping[144]],
+                    self.row.columns[93].into_u16().copied().unwrap(),
+                    self.row.columns[125].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[145]],
-                    &self.row.columns[self.index_mapping[146]],
+                    self.row.columns[30].into_i32().copied().unwrap(),
+                    self.row.columns[62].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[147]],
+                Unknown0: self.row.columns[158].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[148]],
-                    &self.row.columns[self.index_mapping[149]],
+                    self.row.columns[94].into_u16().copied().unwrap(),
+                    self.row.columns[126].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[150]],
-                    &self.row.columns[self.index_mapping[151]],
+                    self.row.columns[31].into_i32().copied().unwrap(),
+                    self.row.columns[63].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[152]],
+                Unknown0: self.row.columns[159].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[153]],
-                    &self.row.columns[self.index_mapping[154]],
+                    self.row.columns[95].into_u16().copied().unwrap(),
+                    self.row.columns[127].into_u16().copied().unwrap(),
                 ],
             },
             LevelRewardsElement {
                 LevelRewardItem: [
-                    &self.row.columns[self.index_mapping[155]],
-                    &self.row.columns[self.index_mapping[156]],
+                    self.row.columns[32].into_i32().copied().unwrap(),
+                    self.row.columns[64].into_i32().copied().unwrap(),
                 ],
-                Unknown0: &self.row.columns[self.index_mapping[157]],
+                Unknown0: self.row.columns[160].into_i32().copied().unwrap(),
                 LevelRewardCount: [
-                    &self.row.columns[self.index_mapping[158]],
-                    &self.row.columns[self.index_mapping[159]],
+                    self.row.columns[96].into_u16().copied().unwrap(),
+                    self.row.columns[128].into_u16().copied().unwrap(),
                 ],
             },
         ]
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[160]]
+    pub fn Unknown0(&'a self) -> u8 {
+        self.row.columns[0].into_u8().copied().unwrap()
     }
 }

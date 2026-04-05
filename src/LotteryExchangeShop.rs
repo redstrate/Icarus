@@ -7,16 +7,15 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct LotteryExchangeParamsElement<'a> {
-    pub AmountAccepted: &'a Field,
-    pub ItemAccepted: &'a Field,
-    pub Unknown0: &'a Field,
-    pub Unknown1: &'a Field,
+pub struct LotteryExchangeParamsElement {
+    pub AmountAccepted: u32,
+    pub ItemAccepted: i32,
+    pub Unknown0: u8,
+    pub Unknown1: u8,
 }
 #[derive(Debug, Clone)]
 pub struct LotteryExchangeShopSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl LotteryExchangeShopSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -26,18 +25,7 @@ impl LotteryExchangeShopSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("LotteryExchangeShop")?;
         let sheet = resolver.read_excel_sheet(&exh, "LotteryExchangeShop", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<LotteryExchangeShopRow> {
@@ -57,10 +45,7 @@ impl LotteryExchangeShopSheet {
 impl<'a> StructuredSheet<'a> for LotteryExchangeShopSheet {
     type Row = LotteryExchangeShopRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a LotteryExchangeShopSheet {
@@ -76,219 +61,218 @@ impl<'a> IntoIterator for &'a LotteryExchangeShopSheet {
 #[derive(Debug, Clone)]
 pub struct LotteryExchangeShopRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> LotteryExchangeShopRow<'a> {
-    pub fn Name(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Name(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn LotteryExchangeParams(&'a self) -> [LotteryExchangeParamsElement<'a>; 32] {
+    pub fn LotteryExchangeParams(&'a self) -> [LotteryExchangeParamsElement; 32] {
         [
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[1]],
-                ItemAccepted: &self.row.columns[self.index_mapping[2]],
-                Unknown0: &self.row.columns[self.index_mapping[3]],
-                Unknown1: &self.row.columns[self.index_mapping[4]],
+                AmountAccepted: self.row.columns[33].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[1].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[65].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[97].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[5]],
-                ItemAccepted: &self.row.columns[self.index_mapping[6]],
-                Unknown0: &self.row.columns[self.index_mapping[7]],
-                Unknown1: &self.row.columns[self.index_mapping[8]],
+                AmountAccepted: self.row.columns[34].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[2].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[66].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[98].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[9]],
-                ItemAccepted: &self.row.columns[self.index_mapping[10]],
-                Unknown0: &self.row.columns[self.index_mapping[11]],
-                Unknown1: &self.row.columns[self.index_mapping[12]],
+                AmountAccepted: self.row.columns[35].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[3].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[67].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[99].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[13]],
-                ItemAccepted: &self.row.columns[self.index_mapping[14]],
-                Unknown0: &self.row.columns[self.index_mapping[15]],
-                Unknown1: &self.row.columns[self.index_mapping[16]],
+                AmountAccepted: self.row.columns[36].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[4].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[68].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[100].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[17]],
-                ItemAccepted: &self.row.columns[self.index_mapping[18]],
-                Unknown0: &self.row.columns[self.index_mapping[19]],
-                Unknown1: &self.row.columns[self.index_mapping[20]],
+                AmountAccepted: self.row.columns[37].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[5].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[69].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[101].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[21]],
-                ItemAccepted: &self.row.columns[self.index_mapping[22]],
-                Unknown0: &self.row.columns[self.index_mapping[23]],
-                Unknown1: &self.row.columns[self.index_mapping[24]],
+                AmountAccepted: self.row.columns[38].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[6].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[70].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[102].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[25]],
-                ItemAccepted: &self.row.columns[self.index_mapping[26]],
-                Unknown0: &self.row.columns[self.index_mapping[27]],
-                Unknown1: &self.row.columns[self.index_mapping[28]],
+                AmountAccepted: self.row.columns[39].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[7].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[71].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[103].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[29]],
-                ItemAccepted: &self.row.columns[self.index_mapping[30]],
-                Unknown0: &self.row.columns[self.index_mapping[31]],
-                Unknown1: &self.row.columns[self.index_mapping[32]],
+                AmountAccepted: self.row.columns[40].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[8].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[72].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[104].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[33]],
-                ItemAccepted: &self.row.columns[self.index_mapping[34]],
-                Unknown0: &self.row.columns[self.index_mapping[35]],
-                Unknown1: &self.row.columns[self.index_mapping[36]],
+                AmountAccepted: self.row.columns[41].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[9].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[73].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[105].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[37]],
-                ItemAccepted: &self.row.columns[self.index_mapping[38]],
-                Unknown0: &self.row.columns[self.index_mapping[39]],
-                Unknown1: &self.row.columns[self.index_mapping[40]],
+                AmountAccepted: self.row.columns[42].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[10].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[74].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[106].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[41]],
-                ItemAccepted: &self.row.columns[self.index_mapping[42]],
-                Unknown0: &self.row.columns[self.index_mapping[43]],
-                Unknown1: &self.row.columns[self.index_mapping[44]],
+                AmountAccepted: self.row.columns[43].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[11].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[75].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[107].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[45]],
-                ItemAccepted: &self.row.columns[self.index_mapping[46]],
-                Unknown0: &self.row.columns[self.index_mapping[47]],
-                Unknown1: &self.row.columns[self.index_mapping[48]],
+                AmountAccepted: self.row.columns[44].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[12].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[76].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[108].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[49]],
-                ItemAccepted: &self.row.columns[self.index_mapping[50]],
-                Unknown0: &self.row.columns[self.index_mapping[51]],
-                Unknown1: &self.row.columns[self.index_mapping[52]],
+                AmountAccepted: self.row.columns[45].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[13].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[77].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[109].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[53]],
-                ItemAccepted: &self.row.columns[self.index_mapping[54]],
-                Unknown0: &self.row.columns[self.index_mapping[55]],
-                Unknown1: &self.row.columns[self.index_mapping[56]],
+                AmountAccepted: self.row.columns[46].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[14].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[78].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[110].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[57]],
-                ItemAccepted: &self.row.columns[self.index_mapping[58]],
-                Unknown0: &self.row.columns[self.index_mapping[59]],
-                Unknown1: &self.row.columns[self.index_mapping[60]],
+                AmountAccepted: self.row.columns[47].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[15].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[79].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[111].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[61]],
-                ItemAccepted: &self.row.columns[self.index_mapping[62]],
-                Unknown0: &self.row.columns[self.index_mapping[63]],
-                Unknown1: &self.row.columns[self.index_mapping[64]],
+                AmountAccepted: self.row.columns[48].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[16].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[80].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[112].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[65]],
-                ItemAccepted: &self.row.columns[self.index_mapping[66]],
-                Unknown0: &self.row.columns[self.index_mapping[67]],
-                Unknown1: &self.row.columns[self.index_mapping[68]],
+                AmountAccepted: self.row.columns[49].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[17].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[81].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[113].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[69]],
-                ItemAccepted: &self.row.columns[self.index_mapping[70]],
-                Unknown0: &self.row.columns[self.index_mapping[71]],
-                Unknown1: &self.row.columns[self.index_mapping[72]],
+                AmountAccepted: self.row.columns[50].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[18].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[82].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[114].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[73]],
-                ItemAccepted: &self.row.columns[self.index_mapping[74]],
-                Unknown0: &self.row.columns[self.index_mapping[75]],
-                Unknown1: &self.row.columns[self.index_mapping[76]],
+                AmountAccepted: self.row.columns[51].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[19].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[83].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[115].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[77]],
-                ItemAccepted: &self.row.columns[self.index_mapping[78]],
-                Unknown0: &self.row.columns[self.index_mapping[79]],
-                Unknown1: &self.row.columns[self.index_mapping[80]],
+                AmountAccepted: self.row.columns[52].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[20].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[84].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[116].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[81]],
-                ItemAccepted: &self.row.columns[self.index_mapping[82]],
-                Unknown0: &self.row.columns[self.index_mapping[83]],
-                Unknown1: &self.row.columns[self.index_mapping[84]],
+                AmountAccepted: self.row.columns[53].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[21].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[85].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[117].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[85]],
-                ItemAccepted: &self.row.columns[self.index_mapping[86]],
-                Unknown0: &self.row.columns[self.index_mapping[87]],
-                Unknown1: &self.row.columns[self.index_mapping[88]],
+                AmountAccepted: self.row.columns[54].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[22].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[86].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[118].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[89]],
-                ItemAccepted: &self.row.columns[self.index_mapping[90]],
-                Unknown0: &self.row.columns[self.index_mapping[91]],
-                Unknown1: &self.row.columns[self.index_mapping[92]],
+                AmountAccepted: self.row.columns[55].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[23].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[87].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[119].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[93]],
-                ItemAccepted: &self.row.columns[self.index_mapping[94]],
-                Unknown0: &self.row.columns[self.index_mapping[95]],
-                Unknown1: &self.row.columns[self.index_mapping[96]],
+                AmountAccepted: self.row.columns[56].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[24].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[88].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[120].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[97]],
-                ItemAccepted: &self.row.columns[self.index_mapping[98]],
-                Unknown0: &self.row.columns[self.index_mapping[99]],
-                Unknown1: &self.row.columns[self.index_mapping[100]],
+                AmountAccepted: self.row.columns[57].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[25].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[89].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[121].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[101]],
-                ItemAccepted: &self.row.columns[self.index_mapping[102]],
-                Unknown0: &self.row.columns[self.index_mapping[103]],
-                Unknown1: &self.row.columns[self.index_mapping[104]],
+                AmountAccepted: self.row.columns[58].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[26].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[90].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[122].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[105]],
-                ItemAccepted: &self.row.columns[self.index_mapping[106]],
-                Unknown0: &self.row.columns[self.index_mapping[107]],
-                Unknown1: &self.row.columns[self.index_mapping[108]],
+                AmountAccepted: self.row.columns[59].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[27].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[91].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[123].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[109]],
-                ItemAccepted: &self.row.columns[self.index_mapping[110]],
-                Unknown0: &self.row.columns[self.index_mapping[111]],
-                Unknown1: &self.row.columns[self.index_mapping[112]],
+                AmountAccepted: self.row.columns[60].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[28].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[92].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[124].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[113]],
-                ItemAccepted: &self.row.columns[self.index_mapping[114]],
-                Unknown0: &self.row.columns[self.index_mapping[115]],
-                Unknown1: &self.row.columns[self.index_mapping[116]],
+                AmountAccepted: self.row.columns[61].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[29].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[93].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[125].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[117]],
-                ItemAccepted: &self.row.columns[self.index_mapping[118]],
-                Unknown0: &self.row.columns[self.index_mapping[119]],
-                Unknown1: &self.row.columns[self.index_mapping[120]],
+                AmountAccepted: self.row.columns[62].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[30].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[94].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[126].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[121]],
-                ItemAccepted: &self.row.columns[self.index_mapping[122]],
-                Unknown0: &self.row.columns[self.index_mapping[123]],
-                Unknown1: &self.row.columns[self.index_mapping[124]],
+                AmountAccepted: self.row.columns[63].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[31].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[95].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[127].into_u8().copied().unwrap(),
             },
             LotteryExchangeParamsElement {
-                AmountAccepted: &self.row.columns[self.index_mapping[125]],
-                ItemAccepted: &self.row.columns[self.index_mapping[126]],
-                Unknown0: &self.row.columns[self.index_mapping[127]],
-                Unknown1: &self.row.columns[self.index_mapping[128]],
+                AmountAccepted: self.row.columns[64].into_u32().copied().unwrap(),
+                ItemAccepted: self.row.columns[32].into_i32().copied().unwrap(),
+                Unknown0: self.row.columns[96].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[128].into_u8().copied().unwrap(),
             },
         ]
     }
-    pub fn Script(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[129]]
+    pub fn Script(&'a self) -> &'a str {
+        self.row.columns[129].into_string().unwrap()
     }
-    pub fn LogMessage(&'a self) -> [&'a Field; 3] {
+    pub fn LogMessage(&'a self) -> [u32; 3] {
         [
-            &self.row.columns[self.index_mapping[130]],
-            &self.row.columns[self.index_mapping[131]],
-            &self.row.columns[self.index_mapping[132]],
+            self.row.columns[130].into_u32().copied().unwrap(),
+            self.row.columns[131].into_u32().copied().unwrap(),
+            self.row.columns[132].into_u32().copied().unwrap(),
         ]
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[133]]
+    pub fn Unknown0(&'a self) -> bool {
+        self.row.columns[133].into_bool().copied().unwrap()
     }
 }

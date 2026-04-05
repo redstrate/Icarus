@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct LockonSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl LockonSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl LockonSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Lockon")?;
         let sheet = resolver.read_excel_sheet(&exh, "Lockon", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<LockonRow> {
@@ -51,10 +39,7 @@ impl LockonSheet {
 impl<'a> StructuredSheet<'a> for LockonSheet {
     type Row = LockonRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a LockonSheet {
@@ -70,13 +55,12 @@ impl<'a> IntoIterator for &'a LockonSheet {
 #[derive(Debug, Clone)]
 pub struct LockonRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> LockonRow<'a> {
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Unknown0(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Unknown1(&'a self) -> bool {
+        self.row.columns[1].into_bool().copied().unwrap()
     }
 }

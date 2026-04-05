@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct AnimaWeaponIconSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl AnimaWeaponIconSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl AnimaWeaponIconSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("AnimaWeaponIcon")?;
         let sheet = resolver.read_excel_sheet(&exh, "AnimaWeaponIcon", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<AnimaWeaponIconRow> {
@@ -51,10 +39,7 @@ impl AnimaWeaponIconSheet {
 impl<'a> StructuredSheet<'a> for AnimaWeaponIconSheet {
     type Row = AnimaWeaponIconRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a AnimaWeaponIconSheet {
@@ -70,22 +55,21 @@ impl<'a> IntoIterator for &'a AnimaWeaponIconSheet {
 #[derive(Debug, Clone)]
 pub struct AnimaWeaponIconRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> AnimaWeaponIconRow<'a> {
-    pub fn Hyperconductive(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Hyperconductive(&'a self) -> i32 {
+        self.row.columns[0].into_i32().copied().unwrap()
     }
-    pub fn Reborn(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Reborn(&'a self) -> i32 {
+        self.row.columns[1].into_i32().copied().unwrap()
     }
-    pub fn Sharpened(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Sharpened(&'a self) -> i32 {
+        self.row.columns[2].into_i32().copied().unwrap()
     }
-    pub fn Zodiac(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn Zodiac(&'a self) -> i32 {
+        self.row.columns[3].into_i32().copied().unwrap()
     }
-    pub fn ZodiacLux(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn ZodiacLux(&'a self) -> i32 {
+        self.row.columns[4].into_i32().copied().unwrap()
     }
 }

@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct EmoteCategorySheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl EmoteCategorySheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl EmoteCategorySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("EmoteCategory")?;
         let sheet = resolver.read_excel_sheet(&exh, "EmoteCategory", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<EmoteCategoryRow> {
@@ -51,10 +39,7 @@ impl EmoteCategorySheet {
 impl<'a> StructuredSheet<'a> for EmoteCategorySheet {
     type Row = EmoteCategoryRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a EmoteCategorySheet {
@@ -70,10 +55,9 @@ impl<'a> IntoIterator for &'a EmoteCategorySheet {
 #[derive(Debug, Clone)]
 pub struct EmoteCategoryRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> EmoteCategoryRow<'a> {
-    pub fn Name(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Name(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
 }

@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct MountSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl MountSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl MountSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Mount")?;
         let sheet = resolver.read_excel_sheet(&exh, "Mount", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MountRow> {
@@ -51,10 +39,7 @@ impl MountSheet {
 impl<'a> StructuredSheet<'a> for MountSheet {
     type Row = MountRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a MountSheet {
@@ -70,169 +55,168 @@ impl<'a> IntoIterator for &'a MountSheet {
 #[derive(Debug, Clone)]
 pub struct MountRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> MountRow<'a> {
-    pub fn Singular(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Singular(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn Plural(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Plural(&'a self) -> &'a str {
+        self.row.columns[2].into_string().unwrap()
     }
-    pub fn Adjective(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Adjective(&'a self) -> i8 {
+        self.row.columns[1].into_i8().copied().unwrap()
     }
-    pub fn PossessivePronoun(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn PossessivePronoun(&'a self) -> i8 {
+        self.row.columns[3].into_i8().copied().unwrap()
     }
-    pub fn StartsWithVowel(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn StartsWithVowel(&'a self) -> i8 {
+        self.row.columns[4].into_i8().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn Unknown0(&'a self) -> i8 {
+        self.row.columns[5].into_i8().copied().unwrap()
     }
-    pub fn Pronoun(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn Pronoun(&'a self) -> i8 {
+        self.row.columns[6].into_i8().copied().unwrap()
     }
-    pub fn Article(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn Article(&'a self) -> i8 {
+        self.row.columns[7].into_i8().copied().unwrap()
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn Unknown1(&'a self) -> &'a str {
+        self.row.columns[18].into_string().unwrap()
     }
-    pub fn Unknown2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn Unknown2(&'a self) -> &'a str {
+        self.row.columns[19].into_string().unwrap()
     }
-    pub fn Unknown3(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn Unknown3(&'a self) -> &'a str {
+        self.row.columns[20].into_string().unwrap()
     }
-    pub fn ModelChara(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn ModelChara(&'a self) -> i32 {
+        self.row.columns[8].into_i32().copied().unwrap()
     }
-    pub fn EquipHead(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn EquipHead(&'a self) -> i32 {
+        self.row.columns[25].into_i32().copied().unwrap()
     }
-    pub fn EquipBody(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn EquipBody(&'a self) -> i32 {
+        self.row.columns[26].into_i32().copied().unwrap()
     }
-    pub fn EquipLeg(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn EquipLeg(&'a self) -> i32 {
+        self.row.columns[27].into_i32().copied().unwrap()
     }
-    pub fn EquipFoot(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn EquipFoot(&'a self) -> i32 {
+        self.row.columns[28].into_i32().copied().unwrap()
     }
-    pub fn MoveControl(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn MoveControl(&'a self) -> u16 {
+        self.row.columns[9].into_u16().copied().unwrap()
     }
-    pub fn RideBGM(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn RideBGM(&'a self) -> u16 {
+        self.row.columns[17].into_u16().copied().unwrap()
     }
-    pub fn Icon(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn Icon(&'a self) -> u16 {
+        self.row.columns[30].into_u16().copied().unwrap()
     }
-    pub fn UIPriority(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[19]]
+    pub fn UIPriority(&'a self) -> u16 {
+        self.row.columns[31].into_u16().copied().unwrap()
     }
-    pub fn MountAction(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[20]]
+    pub fn MountAction(&'a self) -> u16 {
+        self.row.columns[38].into_u16().copied().unwrap()
     }
-    pub fn Unknown_70_1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[21]]
+    pub fn Unknown_70_1(&'a self) -> u16 {
+        self.row.columns[48].into_u16().copied().unwrap()
     }
-    pub fn Unknown_70_2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[22]]
+    pub fn Unknown_70_2(&'a self) -> u16 {
+        self.row.columns[49].into_u16().copied().unwrap()
     }
-    pub fn Unknown16(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[23]]
+    pub fn Unknown16(&'a self) -> u16 {
+        self.row.columns[50].into_u16().copied().unwrap()
     }
-    pub fn Unknown17(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[24]]
+    pub fn Unknown17(&'a self) -> u16 {
+        self.row.columns[52].into_u16().copied().unwrap()
     }
-    pub fn Order(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[25]]
+    pub fn Order(&'a self) -> i16 {
+        self.row.columns[29].into_i16().copied().unwrap()
     }
-    pub fn FlyingCondition(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[26]]
+    pub fn FlyingCondition(&'a self) -> u8 {
+        self.row.columns[10].into_u8().copied().unwrap()
     }
-    pub fn Unknown5(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[27]]
+    pub fn Unknown5(&'a self) -> u8 {
+        self.row.columns[11].into_u8().copied().unwrap()
     }
-    pub fn Unknown6(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[28]]
+    pub fn Unknown6(&'a self) -> u8 {
+        self.row.columns[12].into_u8().copied().unwrap()
     }
-    pub fn Unknown7(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[29]]
+    pub fn Unknown7(&'a self) -> u8 {
+        self.row.columns[13].into_u8().copied().unwrap()
     }
-    pub fn IsFlying(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[30]]
+    pub fn IsFlying(&'a self) -> u8 {
+        self.row.columns[14].into_u8().copied().unwrap()
     }
-    pub fn Unknown8(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[31]]
+    pub fn Unknown8(&'a self) -> u8 {
+        self.row.columns[15].into_u8().copied().unwrap()
     }
-    pub fn MountCustomize(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[32]]
+    pub fn MountCustomize(&'a self) -> u8 {
+        self.row.columns[16].into_u8().copied().unwrap()
     }
-    pub fn ExitMoveDist(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[33]]
+    pub fn ExitMoveDist(&'a self) -> u8 {
+        self.row.columns[21].into_u8().copied().unwrap()
     }
-    pub fn ExitMoveSpeed(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[34]]
+    pub fn ExitMoveSpeed(&'a self) -> u8 {
+        self.row.columns[22].into_u8().copied().unwrap()
     }
-    pub fn RadiusRate(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[35]]
+    pub fn RadiusRate(&'a self) -> u8 {
+        self.row.columns[32].into_u8().copied().unwrap()
     }
-    pub fn BaseMotionSpeed_Run(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[36]]
+    pub fn BaseMotionSpeed_Run(&'a self) -> u8 {
+        self.row.columns[34].into_u8().copied().unwrap()
     }
-    pub fn BaseMotionSpeed_Walk(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[37]]
+    pub fn BaseMotionSpeed_Walk(&'a self) -> u8 {
+        self.row.columns[35].into_u8().copied().unwrap()
     }
-    pub fn Unknown9(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[38]]
+    pub fn Unknown9(&'a self) -> u8 {
+        self.row.columns[36].into_u8().copied().unwrap()
     }
-    pub fn ExtraSeats(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[39]]
+    pub fn ExtraSeats(&'a self) -> u8 {
+        self.row.columns[37].into_u8().copied().unwrap()
     }
-    pub fn Unknown10(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[40]]
+    pub fn Unknown10(&'a self) -> u8 {
+        self.row.columns[44].into_u8().copied().unwrap()
     }
-    pub fn Unknown11(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[41]]
+    pub fn Unknown11(&'a self) -> u8 {
+        self.row.columns[45].into_u8().copied().unwrap()
     }
-    pub fn Unknown12(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[42]]
+    pub fn Unknown12(&'a self) -> bool {
+        self.row.columns[23].into_bool().copied().unwrap()
     }
-    pub fn IsEmote(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[43]]
+    pub fn IsEmote(&'a self) -> bool {
+        self.row.columns[24].into_bool().copied().unwrap()
     }
-    pub fn Unknown20(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[44]]
+    pub fn Unknown20(&'a self) -> bool {
+        self.row.columns[33].into_bool().copied().unwrap()
     }
-    pub fn IsAirborne(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[45]]
+    pub fn IsAirborne(&'a self) -> bool {
+        self.row.columns[39].into_bool().copied().unwrap()
     }
-    pub fn ExHotbarEnableConfig(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[46]]
+    pub fn ExHotbarEnableConfig(&'a self) -> bool {
+        self.row.columns[40].into_bool().copied().unwrap()
     }
-    pub fn UseEP(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[47]]
+    pub fn UseEP(&'a self) -> bool {
+        self.row.columns[41].into_bool().copied().unwrap()
     }
-    pub fn Unknown13(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[48]]
+    pub fn Unknown13(&'a self) -> bool {
+        self.row.columns[42].into_bool().copied().unwrap()
     }
-    pub fn IsImmobile(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[49]]
+    pub fn IsImmobile(&'a self) -> bool {
+        self.row.columns[43].into_bool().copied().unwrap()
     }
-    pub fn Unknown14(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[50]]
+    pub fn Unknown14(&'a self) -> bool {
+        self.row.columns[46].into_bool().copied().unwrap()
     }
-    pub fn HideHeadgear(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[51]]
+    pub fn HideHeadgear(&'a self) -> bool {
+        self.row.columns[47].into_bool().copied().unwrap()
     }
-    pub fn Unknown18(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[52]]
+    pub fn Unknown18(&'a self) -> bool {
+        self.row.columns[51].into_bool().copied().unwrap()
     }
-    pub fn Unknown19(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[53]]
+    pub fn Unknown19(&'a self) -> bool {
+        self.row.columns[53].into_bool().copied().unwrap()
     }
 }

@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct HowToSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl HowToSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl HowToSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HowTo")?;
         let sheet = resolver.read_excel_sheet(&exh, "HowTo", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<HowToRow> {
@@ -51,10 +39,7 @@ impl HowToSheet {
 impl<'a> StructuredSheet<'a> for HowToSheet {
     type Row = HowToRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a HowToSheet {
@@ -70,37 +55,36 @@ impl<'a> IntoIterator for &'a HowToSheet {
 #[derive(Debug, Clone)]
 pub struct HowToRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> HowToRow<'a> {
-    pub fn Name(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Name(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn HowToPagePC(&'a self) -> [&'a Field; 5] {
+    pub fn HowToPagePC(&'a self) -> [i16; 5] {
         [
-            &self.row.columns[self.index_mapping[1]],
-            &self.row.columns[self.index_mapping[2]],
-            &self.row.columns[self.index_mapping[3]],
-            &self.row.columns[self.index_mapping[4]],
-            &self.row.columns[self.index_mapping[5]],
+            self.row.columns[2].into_i16().copied().unwrap(),
+            self.row.columns[3].into_i16().copied().unwrap(),
+            self.row.columns[4].into_i16().copied().unwrap(),
+            self.row.columns[5].into_i16().copied().unwrap(),
+            self.row.columns[6].into_i16().copied().unwrap(),
         ]
     }
-    pub fn HowToPageController(&'a self) -> [&'a Field; 5] {
+    pub fn HowToPageController(&'a self) -> [i16; 5] {
         [
-            &self.row.columns[self.index_mapping[6]],
-            &self.row.columns[self.index_mapping[7]],
-            &self.row.columns[self.index_mapping[8]],
-            &self.row.columns[self.index_mapping[9]],
-            &self.row.columns[self.index_mapping[10]],
+            self.row.columns[7].into_i16().copied().unwrap(),
+            self.row.columns[8].into_i16().copied().unwrap(),
+            self.row.columns[9].into_i16().copied().unwrap(),
+            self.row.columns[10].into_i16().copied().unwrap(),
+            self.row.columns[11].into_i16().copied().unwrap(),
         ]
     }
-    pub fn Sort(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn Sort(&'a self) -> u8 {
+        self.row.columns[13].into_u8().copied().unwrap()
     }
-    pub fn Category(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn Category(&'a self) -> i8 {
+        self.row.columns[12].into_i8().copied().unwrap()
     }
-    pub fn Announce(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn Announce(&'a self) -> bool {
+        self.row.columns[1].into_bool().copied().unwrap()
     }
 }

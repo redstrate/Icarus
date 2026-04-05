@@ -7,16 +7,15 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct IndividualWeatherDataElement<'a> {
-    pub Quest: &'a Field,
-    pub Unknown0: &'a Field,
-    pub Weather: &'a Field,
-    pub Unknown1: &'a Field,
+pub struct IndividualWeatherDataElement {
+    pub Quest: u32,
+    pub Unknown0: u32,
+    pub Weather: u8,
+    pub Unknown1: u8,
 }
 #[derive(Debug, Clone)]
 pub struct IndividualWeatherSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl IndividualWeatherSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -26,18 +25,7 @@ impl IndividualWeatherSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("IndividualWeather")?;
         let sheet = resolver.read_excel_sheet(&exh, "IndividualWeather", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<IndividualWeatherRow> {
@@ -57,10 +45,7 @@ impl IndividualWeatherSheet {
 impl<'a> StructuredSheet<'a> for IndividualWeatherSheet {
     type Row = IndividualWeatherRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a IndividualWeatherSheet {
@@ -76,52 +61,51 @@ impl<'a> IntoIterator for &'a IndividualWeatherSheet {
 #[derive(Debug, Clone)]
 pub struct IndividualWeatherRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> IndividualWeatherRow<'a> {
-    pub fn IndividualWeatherData(&'a self) -> [IndividualWeatherDataElement<'a>; 7] {
+    pub fn IndividualWeatherData(&'a self) -> [IndividualWeatherDataElement; 7] {
         [
             IndividualWeatherDataElement {
-                Quest: &self.row.columns[self.index_mapping[0]],
-                Unknown0: &self.row.columns[self.index_mapping[1]],
-                Weather: &self.row.columns[self.index_mapping[2]],
-                Unknown1: &self.row.columns[self.index_mapping[3]],
+                Quest: self.row.columns[14].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[21].into_u32().copied().unwrap(),
+                Weather: self.row.columns[0].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[7].into_u8().copied().unwrap(),
             },
             IndividualWeatherDataElement {
-                Quest: &self.row.columns[self.index_mapping[4]],
-                Unknown0: &self.row.columns[self.index_mapping[5]],
-                Weather: &self.row.columns[self.index_mapping[6]],
-                Unknown1: &self.row.columns[self.index_mapping[7]],
+                Quest: self.row.columns[15].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[22].into_u32().copied().unwrap(),
+                Weather: self.row.columns[1].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[8].into_u8().copied().unwrap(),
             },
             IndividualWeatherDataElement {
-                Quest: &self.row.columns[self.index_mapping[8]],
-                Unknown0: &self.row.columns[self.index_mapping[9]],
-                Weather: &self.row.columns[self.index_mapping[10]],
-                Unknown1: &self.row.columns[self.index_mapping[11]],
+                Quest: self.row.columns[16].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[23].into_u32().copied().unwrap(),
+                Weather: self.row.columns[2].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[9].into_u8().copied().unwrap(),
             },
             IndividualWeatherDataElement {
-                Quest: &self.row.columns[self.index_mapping[12]],
-                Unknown0: &self.row.columns[self.index_mapping[13]],
-                Weather: &self.row.columns[self.index_mapping[14]],
-                Unknown1: &self.row.columns[self.index_mapping[15]],
+                Quest: self.row.columns[17].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[24].into_u32().copied().unwrap(),
+                Weather: self.row.columns[3].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[10].into_u8().copied().unwrap(),
             },
             IndividualWeatherDataElement {
-                Quest: &self.row.columns[self.index_mapping[16]],
-                Unknown0: &self.row.columns[self.index_mapping[17]],
-                Weather: &self.row.columns[self.index_mapping[18]],
-                Unknown1: &self.row.columns[self.index_mapping[19]],
+                Quest: self.row.columns[18].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[25].into_u32().copied().unwrap(),
+                Weather: self.row.columns[4].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[11].into_u8().copied().unwrap(),
             },
             IndividualWeatherDataElement {
-                Quest: &self.row.columns[self.index_mapping[20]],
-                Unknown0: &self.row.columns[self.index_mapping[21]],
-                Weather: &self.row.columns[self.index_mapping[22]],
-                Unknown1: &self.row.columns[self.index_mapping[23]],
+                Quest: self.row.columns[19].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[26].into_u32().copied().unwrap(),
+                Weather: self.row.columns[5].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[12].into_u8().copied().unwrap(),
             },
             IndividualWeatherDataElement {
-                Quest: &self.row.columns[self.index_mapping[24]],
-                Unknown0: &self.row.columns[self.index_mapping[25]],
-                Weather: &self.row.columns[self.index_mapping[26]],
-                Unknown1: &self.row.columns[self.index_mapping[27]],
+                Quest: self.row.columns[20].into_u32().copied().unwrap(),
+                Unknown0: self.row.columns[27].into_u32().copied().unwrap(),
+                Weather: self.row.columns[6].into_u8().copied().unwrap(),
+                Unknown1: self.row.columns[13].into_u8().copied().unwrap(),
             },
         ]
     }

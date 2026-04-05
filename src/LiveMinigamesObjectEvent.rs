@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct LiveMinigamesObjectEventSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl LiveMinigamesObjectEventSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -21,18 +20,7 @@ impl LiveMinigamesObjectEventSheet {
         let exh = resolver.read_excel_sheet_header("LiveMinigamesObjectEvent")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "LiveMinigamesObjectEvent", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<LiveMinigamesObjectEventRow> {
@@ -56,10 +44,7 @@ impl LiveMinigamesObjectEventSheet {
 impl<'a> StructuredSheet<'a> for LiveMinigamesObjectEventSheet {
     type Row = LiveMinigamesObjectEventRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a LiveMinigamesObjectEventSheet {
@@ -75,166 +60,165 @@ impl<'a> IntoIterator for &'a LiveMinigamesObjectEventSheet {
 #[derive(Debug, Clone)]
 pub struct LiveMinigamesObjectEventRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> LiveMinigamesObjectEventRow<'a> {
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Unknown0(&'a self) -> f32 {
+        self.row.columns[19].into_f32().copied().unwrap()
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Unknown1(&'a self) -> f32 {
+        self.row.columns[24].into_f32().copied().unwrap()
     }
-    pub fn Unknown2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Unknown2(&'a self) -> f32 {
+        self.row.columns[29].into_f32().copied().unwrap()
     }
-    pub fn Unknown3(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn Unknown3(&'a self) -> f32 {
+        self.row.columns[34].into_f32().copied().unwrap()
     }
-    pub fn Unknown4(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn Unknown4(&'a self) -> f32 {
+        self.row.columns[39].into_f32().copied().unwrap()
     }
-    pub fn Unknown5(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn Unknown5(&'a self) -> f32 {
+        self.row.columns[44].into_f32().copied().unwrap()
     }
-    pub fn Unknown6(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn Unknown6(&'a self) -> f32 {
+        self.row.columns[49].into_f32().copied().unwrap()
     }
-    pub fn Unknown7(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn Unknown7(&'a self) -> u32 {
+        self.row.columns[0].into_u32().copied().unwrap()
     }
-    pub fn Unknown8(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn Unknown8(&'a self) -> u32 {
+        self.row.columns[2].into_u32().copied().unwrap()
     }
-    pub fn Unknown9(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn Unknown9(&'a self) -> u32 {
+        self.row.columns[3].into_u32().copied().unwrap()
     }
-    pub fn Unknown10(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn Unknown10(&'a self) -> u32 {
+        self.row.columns[8].into_u32().copied().unwrap()
     }
-    pub fn Unknown11(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn Unknown11(&'a self) -> u32 {
+        self.row.columns[13].into_u32().copied().unwrap()
     }
-    pub fn Unknown12(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn Unknown12(&'a self) -> u32 {
+        self.row.columns[5].into_u32().copied().unwrap()
     }
-    pub fn Unknown13(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn Unknown13(&'a self) -> u32 {
+        self.row.columns[10].into_u32().copied().unwrap()
     }
-    pub fn Unknown14(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn Unknown14(&'a self) -> u32 {
+        self.row.columns[15].into_u32().copied().unwrap()
     }
-    pub fn Unknown15(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn Unknown15(&'a self) -> u32 {
+        self.row.columns[7].into_u32().copied().unwrap()
     }
-    pub fn Unknown16(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn Unknown16(&'a self) -> u32 {
+        self.row.columns[12].into_u32().copied().unwrap()
     }
-    pub fn Unknown17(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn Unknown17(&'a self) -> u32 {
+        self.row.columns[17].into_u32().copied().unwrap()
     }
-    pub fn Unknown18(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn Unknown18(&'a self) -> u32 {
+        self.row.columns[18].into_u32().copied().unwrap()
     }
-    pub fn Unknown19(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[19]]
+    pub fn Unknown19(&'a self) -> u32 {
+        self.row.columns[23].into_u32().copied().unwrap()
     }
-    pub fn Unknown20(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[20]]
+    pub fn Unknown20(&'a self) -> u32 {
+        self.row.columns[28].into_u32().copied().unwrap()
     }
-    pub fn Unknown21(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[21]]
+    pub fn Unknown21(&'a self) -> u32 {
+        self.row.columns[33].into_u32().copied().unwrap()
     }
-    pub fn Unknown22(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[22]]
+    pub fn Unknown22(&'a self) -> u32 {
+        self.row.columns[38].into_u32().copied().unwrap()
     }
-    pub fn Unknown23(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[23]]
+    pub fn Unknown23(&'a self) -> u32 {
+        self.row.columns[43].into_u32().copied().unwrap()
     }
-    pub fn Unknown24(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[24]]
+    pub fn Unknown24(&'a self) -> u32 {
+        self.row.columns[48].into_u32().copied().unwrap()
     }
-    pub fn Unknown25(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[25]]
+    pub fn Unknown25(&'a self) -> u32 {
+        self.row.columns[20].into_u32().copied().unwrap()
     }
-    pub fn Unknown26(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[26]]
+    pub fn Unknown26(&'a self) -> u32 {
+        self.row.columns[25].into_u32().copied().unwrap()
     }
-    pub fn Unknown27(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[27]]
+    pub fn Unknown27(&'a self) -> u32 {
+        self.row.columns[30].into_u32().copied().unwrap()
     }
-    pub fn Unknown28(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[28]]
+    pub fn Unknown28(&'a self) -> u32 {
+        self.row.columns[35].into_u32().copied().unwrap()
     }
-    pub fn Unknown29(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[29]]
+    pub fn Unknown29(&'a self) -> u32 {
+        self.row.columns[40].into_u32().copied().unwrap()
     }
-    pub fn Unknown30(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[30]]
+    pub fn Unknown30(&'a self) -> u32 {
+        self.row.columns[45].into_u32().copied().unwrap()
     }
-    pub fn Unknown31(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[31]]
+    pub fn Unknown31(&'a self) -> u32 {
+        self.row.columns[50].into_u32().copied().unwrap()
     }
-    pub fn Unknown32(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[32]]
+    pub fn Unknown32(&'a self) -> u32 {
+        self.row.columns[21].into_u32().copied().unwrap()
     }
-    pub fn Unknown33(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[33]]
+    pub fn Unknown33(&'a self) -> u32 {
+        self.row.columns[26].into_u32().copied().unwrap()
     }
-    pub fn Unknown34(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[34]]
+    pub fn Unknown34(&'a self) -> u32 {
+        self.row.columns[31].into_u32().copied().unwrap()
     }
-    pub fn Unknown35(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[35]]
+    pub fn Unknown35(&'a self) -> u32 {
+        self.row.columns[36].into_u32().copied().unwrap()
     }
-    pub fn Unknown36(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[36]]
+    pub fn Unknown36(&'a self) -> u32 {
+        self.row.columns[41].into_u32().copied().unwrap()
     }
-    pub fn Unknown37(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[37]]
+    pub fn Unknown37(&'a self) -> u32 {
+        self.row.columns[46].into_u32().copied().unwrap()
     }
-    pub fn Unknown38(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[38]]
+    pub fn Unknown38(&'a self) -> u32 {
+        self.row.columns[51].into_u32().copied().unwrap()
     }
-    pub fn Unknown39(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[39]]
+    pub fn Unknown39(&'a self) -> i32 {
+        self.row.columns[1].into_i32().copied().unwrap()
     }
-    pub fn Unknown40(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[40]]
+    pub fn Unknown40(&'a self) -> i32 {
+        self.row.columns[4].into_i32().copied().unwrap()
     }
-    pub fn Unknown41(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[41]]
+    pub fn Unknown41(&'a self) -> i32 {
+        self.row.columns[9].into_i32().copied().unwrap()
     }
-    pub fn Unknown42(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[42]]
+    pub fn Unknown42(&'a self) -> i32 {
+        self.row.columns[14].into_i32().copied().unwrap()
     }
-    pub fn Unknown43(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[43]]
+    pub fn Unknown43(&'a self) -> i32 {
+        self.row.columns[6].into_i32().copied().unwrap()
     }
-    pub fn Unknown44(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[44]]
+    pub fn Unknown44(&'a self) -> i32 {
+        self.row.columns[11].into_i32().copied().unwrap()
     }
-    pub fn Unknown45(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[45]]
+    pub fn Unknown45(&'a self) -> i32 {
+        self.row.columns[16].into_i32().copied().unwrap()
     }
-    pub fn Unknown46(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[46]]
+    pub fn Unknown46(&'a self) -> i32 {
+        self.row.columns[22].into_i32().copied().unwrap()
     }
-    pub fn Unknown47(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[47]]
+    pub fn Unknown47(&'a self) -> i32 {
+        self.row.columns[27].into_i32().copied().unwrap()
     }
-    pub fn Unknown48(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[48]]
+    pub fn Unknown48(&'a self) -> i32 {
+        self.row.columns[32].into_i32().copied().unwrap()
     }
-    pub fn Unknown49(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[49]]
+    pub fn Unknown49(&'a self) -> i32 {
+        self.row.columns[37].into_i32().copied().unwrap()
     }
-    pub fn Unknown50(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[50]]
+    pub fn Unknown50(&'a self) -> i32 {
+        self.row.columns[42].into_i32().copied().unwrap()
     }
-    pub fn Unknown51(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[51]]
+    pub fn Unknown51(&'a self) -> i32 {
+        self.row.columns[47].into_i32().copied().unwrap()
     }
-    pub fn Unknown52(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[52]]
+    pub fn Unknown52(&'a self) -> i32 {
+        self.row.columns[52].into_i32().copied().unwrap()
     }
 }

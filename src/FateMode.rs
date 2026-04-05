@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct FateModeSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl FateModeSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl FateModeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FateMode")?;
         let sheet = resolver.read_excel_sheet(&exh, "FateMode", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<FateModeRow> {
@@ -51,10 +39,7 @@ impl FateModeSheet {
 impl<'a> StructuredSheet<'a> for FateModeSheet {
     type Row = FateModeRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a FateModeSheet {
@@ -70,22 +55,21 @@ impl<'a> IntoIterator for &'a FateModeSheet {
 #[derive(Debug, Clone)]
 pub struct FateModeRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> FateModeRow<'a> {
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Unknown0(&'a self) -> u32 {
+        self.row.columns[0].into_u32().copied().unwrap()
     }
-    pub fn MotivationIcon(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn MotivationIcon(&'a self) -> u32 {
+        self.row.columns[1].into_u32().copied().unwrap()
     }
-    pub fn MotivationMapMarker(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn MotivationMapMarker(&'a self) -> u32 {
+        self.row.columns[2].into_u32().copied().unwrap()
     }
-    pub fn ObjectiveIcon(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn ObjectiveIcon(&'a self) -> u32 {
+        self.row.columns[3].into_u32().copied().unwrap()
     }
-    pub fn ObjectiveMapMarker(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn ObjectiveMapMarker(&'a self) -> u32 {
+        self.row.columns[4].into_u32().copied().unwrap()
     }
 }

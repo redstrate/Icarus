@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct PresetCameraSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl PresetCameraSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl PresetCameraSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PresetCamera")?;
         let sheet = resolver.read_excel_sheet(&exh, "PresetCamera", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<PresetCameraRow> {
@@ -51,10 +39,7 @@ impl PresetCameraSheet {
 impl<'a> StructuredSheet<'a> for PresetCameraSheet {
     type Row = PresetCameraRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a PresetCameraSheet {
@@ -70,64 +55,63 @@ impl<'a> IntoIterator for &'a PresetCameraSheet {
 #[derive(Debug, Clone)]
 pub struct PresetCameraRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> PresetCameraRow<'a> {
-    pub fn PosX(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn PosX(&'a self) -> f32 {
+        self.row.columns[1].into_f32().copied().unwrap()
     }
-    pub fn PosY(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn PosY(&'a self) -> f32 {
+        self.row.columns[2].into_f32().copied().unwrap()
     }
-    pub fn PosZ(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn PosZ(&'a self) -> f32 {
+        self.row.columns[3].into_f32().copied().unwrap()
     }
-    pub fn Elezen(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn Elezen(&'a self) -> f32 {
+        self.row.columns[4].into_f32().copied().unwrap()
     }
-    pub fn Lalafell(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn Lalafell(&'a self) -> f32 {
+        self.row.columns[5].into_f32().copied().unwrap()
     }
-    pub fn Miqote(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn Miqote(&'a self) -> f32 {
+        self.row.columns[6].into_f32().copied().unwrap()
     }
-    pub fn Roe(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn Roe(&'a self) -> f32 {
+        self.row.columns[7].into_f32().copied().unwrap()
     }
-    pub fn Hrothgar(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn Hrothgar(&'a self) -> f32 {
+        self.row.columns[8].into_f32().copied().unwrap()
     }
-    pub fn Viera(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn Viera(&'a self) -> f32 {
+        self.row.columns[9].into_f32().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn Unknown0(&'a self) -> f32 {
+        self.row.columns[10].into_f32().copied().unwrap()
     }
-    pub fn Hyur_F(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn Hyur_F(&'a self) -> f32 {
+        self.row.columns[11].into_f32().copied().unwrap()
     }
-    pub fn Elezen_F(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn Elezen_F(&'a self) -> f32 {
+        self.row.columns[12].into_f32().copied().unwrap()
     }
-    pub fn Lalafell_F(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn Lalafell_F(&'a self) -> f32 {
+        self.row.columns[13].into_f32().copied().unwrap()
     }
-    pub fn Miqote_F(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn Miqote_F(&'a self) -> f32 {
+        self.row.columns[14].into_f32().copied().unwrap()
     }
-    pub fn Roe_F(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn Roe_F(&'a self) -> f32 {
+        self.row.columns[15].into_f32().copied().unwrap()
     }
-    pub fn Hrothgar_F(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn Hrothgar_F(&'a self) -> f32 {
+        self.row.columns[16].into_f32().copied().unwrap()
     }
-    pub fn Viera_F(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn Viera_F(&'a self) -> f32 {
+        self.row.columns[17].into_f32().copied().unwrap()
     }
-    pub fn Unknown_70(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn Unknown_70(&'a self) -> f32 {
+        self.row.columns[18].into_f32().copied().unwrap()
     }
-    pub fn EID(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn EID(&'a self) -> u16 {
+        self.row.columns[0].into_u16().copied().unwrap()
     }
 }

@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct VVDDataSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl VVDDataSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl VVDDataSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("VVDData")?;
         let sheet = resolver.read_excel_sheet(&exh, "VVDData", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<VVDDataRow> {
@@ -51,10 +39,7 @@ impl VVDDataSheet {
 impl<'a> StructuredSheet<'a> for VVDDataSheet {
     type Row = VVDDataRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a VVDDataSheet {
@@ -70,29 +55,28 @@ impl<'a> IntoIterator for &'a VVDDataSheet {
 #[derive(Debug, Clone)]
 pub struct VVDDataRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> VVDDataRow<'a> {
-    pub fn ContentFinderCondition(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn ContentFinderCondition(&'a self) -> u32 {
+        self.row.columns[2].into_u32().copied().unwrap()
     }
-    pub fn CurrencyItem(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn CurrencyItem(&'a self) -> u32 {
+        self.row.columns[3].into_u32().copied().unwrap()
     }
-    pub fn ContentExAction(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn ContentExAction(&'a self) -> u32 {
+        self.row.columns[4].into_u32().copied().unwrap()
     }
-    pub fn UnlockQuest(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn UnlockQuest(&'a self) -> u32 {
+        self.row.columns[5].into_u32().copied().unwrap()
     }
     /// RowId of VVDRouteData and VVDNotebookSeries
-    pub fn Series(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn Series(&'a self) -> u8 {
+        self.row.columns[0].into_u8().copied().unwrap()
     }
-    pub fn Unknown5(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn Unknown5(&'a self) -> u8 {
+        self.row.columns[1].into_u8().copied().unwrap()
     }
-    pub fn Unknown6(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn Unknown6(&'a self) -> u8 {
+        self.row.columns[6].into_u8().copied().unwrap()
     }
 }

@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct GrandCompanyRankSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl GrandCompanyRankSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl GrandCompanyRankSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("GrandCompanyRank")?;
         let sheet = resolver.read_excel_sheet(&exh, "GrandCompanyRank", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<GrandCompanyRankRow> {
@@ -51,10 +39,7 @@ impl GrandCompanyRankSheet {
 impl<'a> StructuredSheet<'a> for GrandCompanyRankSheet {
     type Row = GrandCompanyRankRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a GrandCompanyRankSheet {
@@ -70,40 +55,39 @@ impl<'a> IntoIterator for &'a GrandCompanyRankSheet {
 #[derive(Debug, Clone)]
 pub struct GrandCompanyRankRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> GrandCompanyRankRow<'a> {
-    pub fn MaxSeals(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn MaxSeals(&'a self) -> u32 {
+        self.row.columns[2].into_u32().copied().unwrap()
     }
-    pub fn RequiredSeals(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn RequiredSeals(&'a self) -> u32 {
+        self.row.columns[3].into_u32().copied().unwrap()
     }
-    pub fn IconMaelstrom(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn IconMaelstrom(&'a self) -> i32 {
+        self.row.columns[4].into_i32().copied().unwrap()
     }
-    pub fn IconSerpents(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn IconSerpents(&'a self) -> i32 {
+        self.row.columns[5].into_i32().copied().unwrap()
     }
-    pub fn IconFlames(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn IconFlames(&'a self) -> i32 {
+        self.row.columns[6].into_i32().copied().unwrap()
     }
-    pub fn QuestMaelstrom(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn QuestMaelstrom(&'a self) -> i32 {
+        self.row.columns[7].into_i32().copied().unwrap()
     }
-    pub fn QuestSerpents(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn QuestSerpents(&'a self) -> i32 {
+        self.row.columns[8].into_i32().copied().unwrap()
     }
-    pub fn QuestFlames(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn QuestFlames(&'a self) -> i32 {
+        self.row.columns[9].into_i32().copied().unwrap()
     }
-    pub fn Tier(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn Tier(&'a self) -> u8 {
+        self.row.columns[0].into_u8().copied().unwrap()
     }
-    pub fn Order(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn Order(&'a self) -> u8 {
+        self.row.columns[1].into_u8().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn Unknown0(&'a self) -> u8 {
+        self.row.columns[10].into_u8().copied().unwrap()
     }
 }

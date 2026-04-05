@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct TribeSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl TribeSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl TribeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Tribe")?;
         let sheet = resolver.read_excel_sheet(&exh, "Tribe", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<TribeRow> {
@@ -51,10 +39,7 @@ impl TribeSheet {
 impl<'a> StructuredSheet<'a> for TribeSheet {
     type Row = TribeRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a TribeSheet {
@@ -70,37 +55,36 @@ impl<'a> IntoIterator for &'a TribeSheet {
 #[derive(Debug, Clone)]
 pub struct TribeRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> TribeRow<'a> {
-    pub fn Masculine(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Masculine(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn Feminine(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Feminine(&'a self) -> &'a str {
+        self.row.columns[1].into_string().unwrap()
     }
-    pub fn Hp(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Hp(&'a self) -> i8 {
+        self.row.columns[2].into_i8().copied().unwrap()
     }
-    pub fn Mp(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn Mp(&'a self) -> i8 {
+        self.row.columns[3].into_i8().copied().unwrap()
     }
-    pub fn STR(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn STR(&'a self) -> i8 {
+        self.row.columns[4].into_i8().copied().unwrap()
     }
-    pub fn VIT(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn VIT(&'a self) -> i8 {
+        self.row.columns[5].into_i8().copied().unwrap()
     }
-    pub fn DEX(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn DEX(&'a self) -> i8 {
+        self.row.columns[6].into_i8().copied().unwrap()
     }
-    pub fn INT(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn INT(&'a self) -> i8 {
+        self.row.columns[7].into_i8().copied().unwrap()
     }
-    pub fn MND(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn MND(&'a self) -> i8 {
+        self.row.columns[8].into_i8().copied().unwrap()
     }
-    pub fn PIE(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn PIE(&'a self) -> i8 {
+        self.row.columns[9].into_i8().copied().unwrap()
     }
 }

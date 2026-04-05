@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ClassJobSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl ClassJobSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl ClassJobSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ClassJob")?;
         let sheet = resolver.read_excel_sheet(&exh, "ClassJob", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ClassJobRow> {
@@ -51,10 +39,7 @@ impl ClassJobSheet {
 impl<'a> StructuredSheet<'a> for ClassJobSheet {
     type Row = ClassJobRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a ClassJobSheet {
@@ -70,140 +55,139 @@ impl<'a> IntoIterator for &'a ClassJobSheet {
 #[derive(Debug, Clone)]
 pub struct ClassJobRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> ClassJobRow<'a> {
-    pub fn Name(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Name(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn Abbreviation(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Abbreviation(&'a self) -> &'a str {
+        self.row.columns[1].into_string().unwrap()
     }
-    pub fn NameFemale(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn NameFemale(&'a self) -> &'a str {
+        self.row.columns[2].into_string().unwrap()
     }
-    pub fn CanQueueForDuty(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn CanQueueForDuty(&'a self) -> bool {
+        self.row.columns[50].into_bool().copied().unwrap()
     }
-    pub fn NameEnglish(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn NameEnglish(&'a self) -> &'a str {
+        self.row.columns[30].into_string().unwrap()
     }
-    pub fn ItemSoulCrystal(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn ItemSoulCrystal(&'a self) -> u32 {
+        self.row.columns[41].into_u32().copied().unwrap()
     }
-    pub fn UnlockQuest(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn UnlockQuest(&'a self) -> u32 {
+        self.row.columns[42].into_u32().copied().unwrap()
     }
-    pub fn RelicQuest(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn RelicQuest(&'a self) -> u32 {
+        self.row.columns[43].into_u32().copied().unwrap()
     }
-    pub fn Prerequisite(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn Prerequisite(&'a self) -> u32 {
+        self.row.columns[44].into_u32().copied().unwrap()
     }
-    pub fn Unknown_70_1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn Unknown_70_1(&'a self) -> i32 {
+        self.row.columns[23].into_i32().copied().unwrap()
     }
-    pub fn Unknown_70_2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn Unknown_70_2(&'a self) -> i32 {
+        self.row.columns[24].into_i32().copied().unwrap()
     }
-    pub fn Unknown9(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn Unknown9(&'a self) -> i32 {
+        self.row.columns[25].into_i32().copied().unwrap()
     }
-    pub fn ItemStartingWeaponMainHand(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn ItemStartingWeaponMainHand(&'a self) -> i32 {
+        self.row.columns[31].into_i32().copied().unwrap()
     }
-    pub fn ItemStartingWeaponOffHand(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn ItemStartingWeaponOffHand(&'a self) -> i32 {
+        self.row.columns[32].into_i32().copied().unwrap()
     }
-    pub fn ModifierHitPoints(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn ModifierHitPoints(&'a self) -> u16 {
+        self.row.columns[9].into_u16().copied().unwrap()
     }
-    pub fn ModifierManaPoints(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn ModifierManaPoints(&'a self) -> u16 {
+        self.row.columns[10].into_u16().copied().unwrap()
     }
-    pub fn ModifierStrength(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn ModifierStrength(&'a self) -> u16 {
+        self.row.columns[11].into_u16().copied().unwrap()
     }
-    pub fn ModifierVitality(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn ModifierVitality(&'a self) -> u16 {
+        self.row.columns[12].into_u16().copied().unwrap()
     }
-    pub fn ModifierDexterity(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn ModifierDexterity(&'a self) -> u16 {
+        self.row.columns[13].into_u16().copied().unwrap()
     }
-    pub fn ModifierIntelligence(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[19]]
+    pub fn ModifierIntelligence(&'a self) -> u16 {
+        self.row.columns[14].into_u16().copied().unwrap()
     }
-    pub fn ModifierMind(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[20]]
+    pub fn ModifierMind(&'a self) -> u16 {
+        self.row.columns[15].into_u16().copied().unwrap()
     }
-    pub fn ModifierPiety(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[21]]
+    pub fn ModifierPiety(&'a self) -> u16 {
+        self.row.columns[16].into_u16().copied().unwrap()
     }
-    pub fn Unknown2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[22]]
+    pub fn Unknown2(&'a self) -> u16 {
+        self.row.columns[17].into_u16().copied().unwrap()
     }
-    pub fn Unknown3(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[23]]
+    pub fn Unknown3(&'a self) -> u16 {
+        self.row.columns[18].into_u16().copied().unwrap()
     }
-    pub fn Unknown4(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[24]]
+    pub fn Unknown4(&'a self) -> u16 {
+        self.row.columns[19].into_u16().copied().unwrap()
     }
-    pub fn Unknown5(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[25]]
+    pub fn Unknown5(&'a self) -> u16 {
+        self.row.columns[20].into_u16().copied().unwrap()
     }
-    pub fn Unknown6(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[26]]
+    pub fn Unknown6(&'a self) -> u16 {
+        self.row.columns[21].into_u16().copied().unwrap()
     }
-    pub fn Unknown7(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[27]]
+    pub fn Unknown7(&'a self) -> u16 {
+        self.row.columns[22].into_u16().copied().unwrap()
     }
-    pub fn LimitBreak1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[28]]
+    pub fn LimitBreak1(&'a self) -> u16 {
+        self.row.columns[37].into_u16().copied().unwrap()
     }
-    pub fn LimitBreak2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[29]]
+    pub fn LimitBreak2(&'a self) -> u16 {
+        self.row.columns[38].into_u16().copied().unwrap()
     }
-    pub fn LimitBreak3(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[30]]
+    pub fn LimitBreak3(&'a self) -> u16 {
+        self.row.columns[39].into_u16().copied().unwrap()
     }
-    pub fn ClassJobCategory(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[31]]
+    pub fn ClassJobCategory(&'a self) -> u8 {
+        self.row.columns[3].into_u8().copied().unwrap()
     }
-    pub fn Unknown8(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[32]]
+    pub fn Unknown8(&'a self) -> u8 {
+        self.row.columns[6].into_u8().copied().unwrap()
     }
-    pub fn JobIndex(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[33]]
+    pub fn JobIndex(&'a self) -> u8 {
+        self.row.columns[7].into_u8().copied().unwrap()
     }
-    pub fn PvPBaseParamValue(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[34]]
+    pub fn PvPBaseParamValue(&'a self) -> u8 {
+        self.row.columns[26].into_u8().copied().unwrap()
     }
-    pub fn PvPActionSortRow(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[35]]
+    pub fn PvPActionSortRow(&'a self) -> u8 {
+        self.row.columns[27].into_u8().copied().unwrap()
     }
-    pub fn PvPInitialSelectActionTrait(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[36]]
+    pub fn PvPInitialSelectActionTrait(&'a self) -> u8 {
+        self.row.columns[28].into_u8().copied().unwrap()
     }
-    pub fn ClassJobParent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[37]]
+    pub fn ClassJobParent(&'a self) -> u8 {
+        self.row.columns[29].into_u8().copied().unwrap()
     }
-    pub fn Role(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[38]]
+    pub fn Role(&'a self) -> u8 {
+        self.row.columns[33].into_u8().copied().unwrap()
     }
-    pub fn StartingTown(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[39]]
+    pub fn StartingTown(&'a self) -> u8 {
+        self.row.columns[34].into_u8().copied().unwrap()
     }
-    pub fn PrimaryStat(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[40]]
+    pub fn PrimaryStat(&'a self) -> u8 {
+        self.row.columns[36].into_u8().copied().unwrap()
     }
-    pub fn UIPriority(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[41]]
+    pub fn UIPriority(&'a self) -> u8 {
+        self.row.columns[40].into_u8().copied().unwrap()
     }
-    pub fn StartingLevel(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[42]]
+    pub fn StartingLevel(&'a self) -> u8 {
+        self.row.columns[45].into_u8().copied().unwrap()
     }
-    pub fn PartyBonus(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[43]]
+    pub fn PartyBonus(&'a self) -> u8 {
+        self.row.columns[46].into_u8().copied().unwrap()
     }
     /// 1 = Tank
     /// 2 = Pure Healer
@@ -212,25 +196,25 @@ impl<'a> ClassJobRow<'a> {
     /// 5 = Magical Ranged
     /// 6 = Barrier Healer
     ///
-    pub fn JobType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[44]]
+    pub fn JobType(&'a self) -> u8 {
+        self.row.columns[47].into_u8().copied().unwrap()
     }
-    pub fn ExpArrayIndex(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[45]]
+    pub fn ExpArrayIndex(&'a self) -> i8 {
+        self.row.columns[4].into_i8().copied().unwrap()
     }
-    pub fn BattleClassIndex(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[46]]
+    pub fn BattleClassIndex(&'a self) -> i8 {
+        self.row.columns[5].into_i8().copied().unwrap()
     }
-    pub fn DohDolJobIndex(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[47]]
+    pub fn DohDolJobIndex(&'a self) -> i8 {
+        self.row.columns[8].into_i8().copied().unwrap()
     }
-    pub fn MonsterNote(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[48]]
+    pub fn MonsterNote(&'a self) -> i8 {
+        self.row.columns[35].into_i8().copied().unwrap()
     }
-    pub fn IsLimitedJob(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[49]]
+    pub fn IsLimitedJob(&'a self) -> bool {
+        self.row.columns[48].into_bool().copied().unwrap()
     }
-    pub fn Unknown10(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[50]]
+    pub fn Unknown10(&'a self) -> bool {
+        self.row.columns[49].into_bool().copied().unwrap()
     }
 }

@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct UDS_ObjectSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl UDS_ObjectSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl UDS_ObjectSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("UDS_Object")?;
         let sheet = resolver.read_excel_sheet(&exh, "UDS_Object", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<UDS_ObjectRow> {
@@ -51,10 +39,7 @@ impl UDS_ObjectSheet {
 impl<'a> StructuredSheet<'a> for UDS_ObjectSheet {
     type Row = UDS_ObjectRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a UDS_ObjectSheet {
@@ -70,10 +55,9 @@ impl<'a> IntoIterator for &'a UDS_ObjectSheet {
 #[derive(Debug, Clone)]
 pub struct UDS_ObjectRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> UDS_ObjectRow<'a> {
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Unknown0(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
 }

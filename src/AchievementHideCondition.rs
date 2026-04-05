@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct AchievementHideConditionSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl AchievementHideConditionSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -21,18 +20,7 @@ impl AchievementHideConditionSheet {
         let exh = resolver.read_excel_sheet_header("AchievementHideCondition")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "AchievementHideCondition", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<AchievementHideConditionRow> {
@@ -56,10 +44,7 @@ impl AchievementHideConditionSheet {
 impl<'a> StructuredSheet<'a> for AchievementHideConditionSheet {
     type Row = AchievementHideConditionRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a AchievementHideConditionSheet {
@@ -75,16 +60,15 @@ impl<'a> IntoIterator for &'a AchievementHideConditionSheet {
 #[derive(Debug, Clone)]
 pub struct AchievementHideConditionRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> AchievementHideConditionRow<'a> {
-    pub fn HideAchievement(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn HideAchievement(&'a self) -> bool {
+        self.row.columns[0].into_bool().copied().unwrap()
     }
-    pub fn HideName(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn HideName(&'a self) -> bool {
+        self.row.columns[1].into_bool().copied().unwrap()
     }
-    pub fn HideConditions(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn HideConditions(&'a self) -> bool {
+        self.row.columns[2].into_bool().copied().unwrap()
     }
 }

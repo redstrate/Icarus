@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct CollectablesShopRewardScripSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl CollectablesShopRewardScripSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -21,18 +20,7 @@ impl CollectablesShopRewardScripSheet {
         let exh = resolver.read_excel_sheet_header("CollectablesShopRewardScrip")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "CollectablesShopRewardScrip", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<CollectablesShopRewardScripRow> {
@@ -56,10 +44,7 @@ impl CollectablesShopRewardScripSheet {
 impl<'a> StructuredSheet<'a> for CollectablesShopRewardScripSheet {
     type Row = CollectablesShopRewardScripRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a CollectablesShopRewardScripSheet {
@@ -75,28 +60,27 @@ impl<'a> IntoIterator for &'a CollectablesShopRewardScripSheet {
 #[derive(Debug, Clone)]
 pub struct CollectablesShopRewardScripRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> CollectablesShopRewardScripRow<'a> {
-    pub fn Currency(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Currency(&'a self) -> u16 {
+        self.row.columns[0].into_u16().copied().unwrap()
     }
-    pub fn LowReward(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn LowReward(&'a self) -> u16 {
+        self.row.columns[1].into_u16().copied().unwrap()
     }
-    pub fn MidReward(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn MidReward(&'a self) -> u16 {
+        self.row.columns[2].into_u16().copied().unwrap()
     }
-    pub fn HighReward(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn HighReward(&'a self) -> u16 {
+        self.row.columns[3].into_u16().copied().unwrap()
     }
-    pub fn ExpRatioLow(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn ExpRatioLow(&'a self) -> u16 {
+        self.row.columns[4].into_u16().copied().unwrap()
     }
-    pub fn ExpRatioMid(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn ExpRatioMid(&'a self) -> u16 {
+        self.row.columns[5].into_u16().copied().unwrap()
     }
-    pub fn ExpRatioHigh(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn ExpRatioHigh(&'a self) -> u16 {
+        self.row.columns[6].into_u16().copied().unwrap()
     }
 }

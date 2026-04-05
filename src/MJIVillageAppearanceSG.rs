@@ -7,14 +7,13 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct VillageAppearanceDataElement<'a> {
-    pub UnknownParam: &'a Field,
-    pub SGB: &'a Field,
+pub struct VillageAppearanceDataElement {
+    pub UnknownParam: u32,
+    pub SGB: u16,
 }
 #[derive(Debug, Clone)]
 pub struct MJIVillageAppearanceSGSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl MJIVillageAppearanceSGSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -24,18 +23,7 @@ impl MJIVillageAppearanceSGSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("MJIVillageAppearanceSG")?;
         let sheet = resolver.read_excel_sheet(&exh, "MJIVillageAppearanceSG", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MJIVillageAppearanceSGRow> {
@@ -59,10 +47,7 @@ impl MJIVillageAppearanceSGSheet {
 impl<'a> StructuredSheet<'a> for MJIVillageAppearanceSGSheet {
     type Row = MJIVillageAppearanceSGRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a MJIVillageAppearanceSGSheet {
@@ -78,30 +63,29 @@ impl<'a> IntoIterator for &'a MJIVillageAppearanceSGSheet {
 #[derive(Debug, Clone)]
 pub struct MJIVillageAppearanceSGRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> MJIVillageAppearanceSGRow<'a> {
-    pub fn VillageAppearanceData(&'a self) -> [VillageAppearanceDataElement<'a>; 5] {
+    pub fn VillageAppearanceData(&'a self) -> [VillageAppearanceDataElement; 5] {
         [
             VillageAppearanceDataElement {
-                UnknownParam: &self.row.columns[self.index_mapping[0]],
-                SGB: &self.row.columns[self.index_mapping[1]],
+                UnknownParam: self.row.columns[5].into_u32().copied().unwrap(),
+                SGB: self.row.columns[0].into_u16().copied().unwrap(),
             },
             VillageAppearanceDataElement {
-                UnknownParam: &self.row.columns[self.index_mapping[2]],
-                SGB: &self.row.columns[self.index_mapping[3]],
+                UnknownParam: self.row.columns[6].into_u32().copied().unwrap(),
+                SGB: self.row.columns[1].into_u16().copied().unwrap(),
             },
             VillageAppearanceDataElement {
-                UnknownParam: &self.row.columns[self.index_mapping[4]],
-                SGB: &self.row.columns[self.index_mapping[5]],
+                UnknownParam: self.row.columns[7].into_u32().copied().unwrap(),
+                SGB: self.row.columns[2].into_u16().copied().unwrap(),
             },
             VillageAppearanceDataElement {
-                UnknownParam: &self.row.columns[self.index_mapping[6]],
-                SGB: &self.row.columns[self.index_mapping[7]],
+                UnknownParam: self.row.columns[8].into_u32().copied().unwrap(),
+                SGB: self.row.columns[3].into_u16().copied().unwrap(),
             },
             VillageAppearanceDataElement {
-                UnknownParam: &self.row.columns[self.index_mapping[8]],
-                SGB: &self.row.columns[self.index_mapping[9]],
+                UnknownParam: self.row.columns[9].into_u32().copied().unwrap(),
+                SGB: self.row.columns[4].into_u16().copied().unwrap(),
             },
         ]
     }

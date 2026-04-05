@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ActivityFeedImagesSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl ActivityFeedImagesSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl ActivityFeedImagesSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ActivityFeedImages")?;
         let sheet = resolver.read_excel_sheet(&exh, "ActivityFeedImages", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ActivityFeedImagesRow> {
@@ -51,10 +39,7 @@ impl ActivityFeedImagesSheet {
 impl<'a> StructuredSheet<'a> for ActivityFeedImagesSheet {
     type Row = ActivityFeedImagesRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a ActivityFeedImagesSheet {
@@ -70,22 +55,21 @@ impl<'a> IntoIterator for &'a ActivityFeedImagesSheet {
 #[derive(Debug, Clone)]
 pub struct ActivityFeedImagesRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> ActivityFeedImagesRow<'a> {
-    pub fn ExpansionImage(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn ExpansionImage(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn ActivityFeedJA(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn ActivityFeedJA(&'a self) -> &'a str {
+        self.row.columns[1].into_string().unwrap()
     }
-    pub fn ActivityFeedEN(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn ActivityFeedEN(&'a self) -> &'a str {
+        self.row.columns[2].into_string().unwrap()
     }
-    pub fn ActivityFeedDE(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn ActivityFeedDE(&'a self) -> &'a str {
+        self.row.columns[3].into_string().unwrap()
     }
-    pub fn ActivityFeedFR(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn ActivityFeedFR(&'a self) -> &'a str {
+        self.row.columns[4].into_string().unwrap()
     }
 }

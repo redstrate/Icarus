@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct BaseParamSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl BaseParamSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl BaseParamSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BaseParam")?;
         let sheet = resolver.read_excel_sheet(&exh, "BaseParam", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<BaseParamRow> {
@@ -51,10 +39,7 @@ impl BaseParamSheet {
 impl<'a> StructuredSheet<'a> for BaseParamSheet {
     type Row = BaseParamRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a BaseParamSheet {
@@ -70,108 +55,107 @@ impl<'a> IntoIterator for &'a BaseParamSheet {
 #[derive(Debug, Clone)]
 pub struct BaseParamRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> BaseParamRow<'a> {
-    pub fn Name(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Name(&'a self) -> &'a str {
+        self.row.columns[1].into_string().unwrap()
     }
-    pub fn Description(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Description(&'a self) -> &'a str {
+        self.row.columns[2].into_string().unwrap()
     }
-    pub fn OneHandWeaponPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn OneHandWeaponPercent(&'a self) -> u16 {
+        self.row.columns[4].into_u16().copied().unwrap()
     }
-    pub fn OffHandPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn OffHandPercent(&'a self) -> u16 {
+        self.row.columns[5].into_u16().copied().unwrap()
     }
-    pub fn HeadPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn HeadPercent(&'a self) -> u16 {
+        self.row.columns[6].into_u16().copied().unwrap()
     }
-    pub fn ChestPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn ChestPercent(&'a self) -> u16 {
+        self.row.columns[7].into_u16().copied().unwrap()
     }
-    pub fn HandsPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn HandsPercent(&'a self) -> u16 {
+        self.row.columns[8].into_u16().copied().unwrap()
     }
-    pub fn WaistPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn WaistPercent(&'a self) -> u16 {
+        self.row.columns[9].into_u16().copied().unwrap()
     }
-    pub fn LegsPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn LegsPercent(&'a self) -> u16 {
+        self.row.columns[10].into_u16().copied().unwrap()
     }
-    pub fn FeetPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn FeetPercent(&'a self) -> u16 {
+        self.row.columns[11].into_u16().copied().unwrap()
     }
-    pub fn EarringPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn EarringPercent(&'a self) -> u16 {
+        self.row.columns[12].into_u16().copied().unwrap()
     }
-    pub fn NecklacePercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn NecklacePercent(&'a self) -> u16 {
+        self.row.columns[13].into_u16().copied().unwrap()
     }
-    pub fn BraceletPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn BraceletPercent(&'a self) -> u16 {
+        self.row.columns[14].into_u16().copied().unwrap()
     }
-    pub fn RingPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn RingPercent(&'a self) -> u16 {
+        self.row.columns[15].into_u16().copied().unwrap()
     }
-    pub fn TwoHandWeaponPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn TwoHandWeaponPercent(&'a self) -> u16 {
+        self.row.columns[16].into_u16().copied().unwrap()
     }
-    pub fn UnderArmorPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn UnderArmorPercent(&'a self) -> u16 {
+        self.row.columns[17].into_u16().copied().unwrap()
     }
-    pub fn ChestHeadPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn ChestHeadPercent(&'a self) -> u16 {
+        self.row.columns[18].into_u16().copied().unwrap()
     }
-    pub fn ChestHeadLegsFeetPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn ChestHeadLegsFeetPercent(&'a self) -> u16 {
+        self.row.columns[19].into_u16().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn Unknown0(&'a self) -> u16 {
+        self.row.columns[20].into_u16().copied().unwrap()
     }
-    pub fn LegsFeetPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[19]]
+    pub fn LegsFeetPercent(&'a self) -> u16 {
+        self.row.columns[21].into_u16().copied().unwrap()
     }
-    pub fn HeadChestHandsLegsFeetPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[20]]
+    pub fn HeadChestHandsLegsFeetPercent(&'a self) -> u16 {
+        self.row.columns[22].into_u16().copied().unwrap()
     }
-    pub fn ChestLegsGlovesPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[21]]
+    pub fn ChestLegsGlovesPercent(&'a self) -> u16 {
+        self.row.columns[23].into_u16().copied().unwrap()
     }
-    pub fn ChestLegsFeetPercent(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[22]]
+    pub fn ChestLegsFeetPercent(&'a self) -> u16 {
+        self.row.columns[24].into_u16().copied().unwrap()
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[23]]
+    pub fn Unknown1(&'a self) -> u16 {
+        self.row.columns[25].into_u16().copied().unwrap()
     }
-    pub fn Unknown3(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[24]]
+    pub fn Unknown3(&'a self) -> u16 {
+        self.row.columns[26].into_u16().copied().unwrap()
     }
-    pub fn OrderPriority(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[25]]
+    pub fn OrderPriority(&'a self) -> u8 {
+        self.row.columns[3].into_u8().copied().unwrap()
     }
-    pub fn MeldParam(&'a self) -> [&'a Field; 13] {
+    pub fn MeldParam(&'a self) -> [u8; 13] {
         [
-            &self.row.columns[self.index_mapping[26]],
-            &self.row.columns[self.index_mapping[27]],
-            &self.row.columns[self.index_mapping[28]],
-            &self.row.columns[self.index_mapping[29]],
-            &self.row.columns[self.index_mapping[30]],
-            &self.row.columns[self.index_mapping[31]],
-            &self.row.columns[self.index_mapping[32]],
-            &self.row.columns[self.index_mapping[33]],
-            &self.row.columns[self.index_mapping[34]],
-            &self.row.columns[self.index_mapping[35]],
-            &self.row.columns[self.index_mapping[36]],
-            &self.row.columns[self.index_mapping[37]],
-            &self.row.columns[self.index_mapping[38]],
+            self.row.columns[27].into_u8().copied().unwrap(),
+            self.row.columns[28].into_u8().copied().unwrap(),
+            self.row.columns[29].into_u8().copied().unwrap(),
+            self.row.columns[30].into_u8().copied().unwrap(),
+            self.row.columns[31].into_u8().copied().unwrap(),
+            self.row.columns[32].into_u8().copied().unwrap(),
+            self.row.columns[33].into_u8().copied().unwrap(),
+            self.row.columns[34].into_u8().copied().unwrap(),
+            self.row.columns[35].into_u8().copied().unwrap(),
+            self.row.columns[36].into_u8().copied().unwrap(),
+            self.row.columns[37].into_u8().copied().unwrap(),
+            self.row.columns[38].into_u8().copied().unwrap(),
+            self.row.columns[39].into_u8().copied().unwrap(),
         ]
     }
-    pub fn PacketIndex(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[39]]
+    pub fn PacketIndex(&'a self) -> i8 {
+        self.row.columns[0].into_i8().copied().unwrap()
     }
-    pub fn Unknown2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[40]]
+    pub fn Unknown2(&'a self) -> bool {
+        self.row.columns[40].into_bool().copied().unwrap()
     }
 }

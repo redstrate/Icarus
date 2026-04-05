@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct VVDVoteRouteLabelSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl VVDVoteRouteLabelSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl VVDVoteRouteLabelSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("VVDVoteRouteLabel")?;
         let sheet = resolver.read_excel_sheet(&exh, "VVDVoteRouteLabel", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<VVDVoteRouteLabelRow> {
@@ -51,10 +39,7 @@ impl VVDVoteRouteLabelSheet {
 impl<'a> StructuredSheet<'a> for VVDVoteRouteLabelSheet {
     type Row = VVDVoteRouteLabelRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a VVDVoteRouteLabelSheet {
@@ -70,10 +55,9 @@ impl<'a> IntoIterator for &'a VVDVoteRouteLabelSheet {
 #[derive(Debug, Clone)]
 pub struct VVDVoteRouteLabelRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> VVDVoteRouteLabelRow<'a> {
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Unknown0(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
 }

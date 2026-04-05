@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct MateriaSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl MateriaSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl MateriaSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("Materia")?;
         let sheet = resolver.read_excel_sheet(&exh, "Materia", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<MateriaRow> {
@@ -51,10 +39,7 @@ impl MateriaSheet {
 impl<'a> StructuredSheet<'a> for MateriaSheet {
     type Row = MateriaRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a MateriaSheet {
@@ -70,50 +55,49 @@ impl<'a> IntoIterator for &'a MateriaSheet {
 #[derive(Debug, Clone)]
 pub struct MateriaRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> MateriaRow<'a> {
-    pub fn Item(&'a self) -> [&'a Field; 16] {
+    pub fn Item(&'a self) -> [i32; 16] {
         [
-            &self.row.columns[self.index_mapping[0]],
-            &self.row.columns[self.index_mapping[1]],
-            &self.row.columns[self.index_mapping[2]],
-            &self.row.columns[self.index_mapping[3]],
-            &self.row.columns[self.index_mapping[4]],
-            &self.row.columns[self.index_mapping[5]],
-            &self.row.columns[self.index_mapping[6]],
-            &self.row.columns[self.index_mapping[7]],
-            &self.row.columns[self.index_mapping[8]],
-            &self.row.columns[self.index_mapping[9]],
-            &self.row.columns[self.index_mapping[10]],
-            &self.row.columns[self.index_mapping[11]],
-            &self.row.columns[self.index_mapping[12]],
-            &self.row.columns[self.index_mapping[13]],
-            &self.row.columns[self.index_mapping[14]],
-            &self.row.columns[self.index_mapping[15]],
+            self.row.columns[0].into_i32().copied().unwrap(),
+            self.row.columns[1].into_i32().copied().unwrap(),
+            self.row.columns[2].into_i32().copied().unwrap(),
+            self.row.columns[3].into_i32().copied().unwrap(),
+            self.row.columns[4].into_i32().copied().unwrap(),
+            self.row.columns[5].into_i32().copied().unwrap(),
+            self.row.columns[6].into_i32().copied().unwrap(),
+            self.row.columns[7].into_i32().copied().unwrap(),
+            self.row.columns[8].into_i32().copied().unwrap(),
+            self.row.columns[9].into_i32().copied().unwrap(),
+            self.row.columns[10].into_i32().copied().unwrap(),
+            self.row.columns[11].into_i32().copied().unwrap(),
+            self.row.columns[12].into_i32().copied().unwrap(),
+            self.row.columns[13].into_i32().copied().unwrap(),
+            self.row.columns[14].into_i32().copied().unwrap(),
+            self.row.columns[15].into_i32().copied().unwrap(),
         ]
     }
-    pub fn Value(&'a self) -> [&'a Field; 16] {
+    pub fn Value(&'a self) -> [i16; 16] {
         [
-            &self.row.columns[self.index_mapping[16]],
-            &self.row.columns[self.index_mapping[17]],
-            &self.row.columns[self.index_mapping[18]],
-            &self.row.columns[self.index_mapping[19]],
-            &self.row.columns[self.index_mapping[20]],
-            &self.row.columns[self.index_mapping[21]],
-            &self.row.columns[self.index_mapping[22]],
-            &self.row.columns[self.index_mapping[23]],
-            &self.row.columns[self.index_mapping[24]],
-            &self.row.columns[self.index_mapping[25]],
-            &self.row.columns[self.index_mapping[26]],
-            &self.row.columns[self.index_mapping[27]],
-            &self.row.columns[self.index_mapping[28]],
-            &self.row.columns[self.index_mapping[29]],
-            &self.row.columns[self.index_mapping[30]],
-            &self.row.columns[self.index_mapping[31]],
+            self.row.columns[17].into_i16().copied().unwrap(),
+            self.row.columns[18].into_i16().copied().unwrap(),
+            self.row.columns[19].into_i16().copied().unwrap(),
+            self.row.columns[20].into_i16().copied().unwrap(),
+            self.row.columns[21].into_i16().copied().unwrap(),
+            self.row.columns[22].into_i16().copied().unwrap(),
+            self.row.columns[23].into_i16().copied().unwrap(),
+            self.row.columns[24].into_i16().copied().unwrap(),
+            self.row.columns[25].into_i16().copied().unwrap(),
+            self.row.columns[26].into_i16().copied().unwrap(),
+            self.row.columns[27].into_i16().copied().unwrap(),
+            self.row.columns[28].into_i16().copied().unwrap(),
+            self.row.columns[29].into_i16().copied().unwrap(),
+            self.row.columns[30].into_i16().copied().unwrap(),
+            self.row.columns[31].into_i16().copied().unwrap(),
+            self.row.columns[32].into_i16().copied().unwrap(),
         ]
     }
-    pub fn BaseParam(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[32]]
+    pub fn BaseParam(&'a self) -> u8 {
+        self.row.columns[16].into_u8().copied().unwrap()
     }
 }

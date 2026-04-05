@@ -8,13 +8,12 @@ use physis::{
     Language,
 };
 pub struct ScriptElement<'a> {
-    pub ScriptInstruction: &'a Field,
-    pub ScriptArg: &'a Field,
+    pub ScriptInstruction: &'a str,
+    pub ScriptArg: u32,
 }
 #[derive(Debug, Clone)]
 pub struct CustomTalkSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl CustomTalkSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -24,18 +23,7 @@ impl CustomTalkSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CustomTalk")?;
         let sheet = resolver.read_excel_sheet(&exh, "CustomTalk", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<CustomTalkRow> {
@@ -55,10 +43,7 @@ impl CustomTalkSheet {
 impl<'a> StructuredSheet<'a> for CustomTalkSheet {
     type Row = CustomTalkRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a CustomTalkSheet {
@@ -74,188 +59,187 @@ impl<'a> IntoIterator for &'a CustomTalkSheet {
 #[derive(Debug, Clone)]
 pub struct CustomTalkRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> CustomTalkRow<'a> {
     pub fn Script(&'a self) -> [ScriptElement<'a>; 30] {
         [
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[0]],
-                ScriptArg: &self.row.columns[self.index_mapping[1]],
+                ScriptInstruction: self.row.columns[3].into_string().unwrap(),
+                ScriptArg: self.row.columns[33].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[2]],
-                ScriptArg: &self.row.columns[self.index_mapping[3]],
+                ScriptInstruction: self.row.columns[4].into_string().unwrap(),
+                ScriptArg: self.row.columns[34].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[4]],
-                ScriptArg: &self.row.columns[self.index_mapping[5]],
+                ScriptInstruction: self.row.columns[5].into_string().unwrap(),
+                ScriptArg: self.row.columns[35].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[6]],
-                ScriptArg: &self.row.columns[self.index_mapping[7]],
+                ScriptInstruction: self.row.columns[6].into_string().unwrap(),
+                ScriptArg: self.row.columns[36].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[8]],
-                ScriptArg: &self.row.columns[self.index_mapping[9]],
+                ScriptInstruction: self.row.columns[7].into_string().unwrap(),
+                ScriptArg: self.row.columns[37].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[10]],
-                ScriptArg: &self.row.columns[self.index_mapping[11]],
+                ScriptInstruction: self.row.columns[8].into_string().unwrap(),
+                ScriptArg: self.row.columns[38].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[12]],
-                ScriptArg: &self.row.columns[self.index_mapping[13]],
+                ScriptInstruction: self.row.columns[9].into_string().unwrap(),
+                ScriptArg: self.row.columns[39].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[14]],
-                ScriptArg: &self.row.columns[self.index_mapping[15]],
+                ScriptInstruction: self.row.columns[10].into_string().unwrap(),
+                ScriptArg: self.row.columns[40].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[16]],
-                ScriptArg: &self.row.columns[self.index_mapping[17]],
+                ScriptInstruction: self.row.columns[11].into_string().unwrap(),
+                ScriptArg: self.row.columns[41].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[18]],
-                ScriptArg: &self.row.columns[self.index_mapping[19]],
+                ScriptInstruction: self.row.columns[12].into_string().unwrap(),
+                ScriptArg: self.row.columns[42].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[20]],
-                ScriptArg: &self.row.columns[self.index_mapping[21]],
+                ScriptInstruction: self.row.columns[13].into_string().unwrap(),
+                ScriptArg: self.row.columns[43].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[22]],
-                ScriptArg: &self.row.columns[self.index_mapping[23]],
+                ScriptInstruction: self.row.columns[14].into_string().unwrap(),
+                ScriptArg: self.row.columns[44].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[24]],
-                ScriptArg: &self.row.columns[self.index_mapping[25]],
+                ScriptInstruction: self.row.columns[15].into_string().unwrap(),
+                ScriptArg: self.row.columns[45].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[26]],
-                ScriptArg: &self.row.columns[self.index_mapping[27]],
+                ScriptInstruction: self.row.columns[16].into_string().unwrap(),
+                ScriptArg: self.row.columns[46].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[28]],
-                ScriptArg: &self.row.columns[self.index_mapping[29]],
+                ScriptInstruction: self.row.columns[17].into_string().unwrap(),
+                ScriptArg: self.row.columns[47].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[30]],
-                ScriptArg: &self.row.columns[self.index_mapping[31]],
+                ScriptInstruction: self.row.columns[18].into_string().unwrap(),
+                ScriptArg: self.row.columns[48].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[32]],
-                ScriptArg: &self.row.columns[self.index_mapping[33]],
+                ScriptInstruction: self.row.columns[19].into_string().unwrap(),
+                ScriptArg: self.row.columns[49].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[34]],
-                ScriptArg: &self.row.columns[self.index_mapping[35]],
+                ScriptInstruction: self.row.columns[20].into_string().unwrap(),
+                ScriptArg: self.row.columns[50].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[36]],
-                ScriptArg: &self.row.columns[self.index_mapping[37]],
+                ScriptInstruction: self.row.columns[21].into_string().unwrap(),
+                ScriptArg: self.row.columns[51].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[38]],
-                ScriptArg: &self.row.columns[self.index_mapping[39]],
+                ScriptInstruction: self.row.columns[22].into_string().unwrap(),
+                ScriptArg: self.row.columns[52].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[40]],
-                ScriptArg: &self.row.columns[self.index_mapping[41]],
+                ScriptInstruction: self.row.columns[23].into_string().unwrap(),
+                ScriptArg: self.row.columns[53].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[42]],
-                ScriptArg: &self.row.columns[self.index_mapping[43]],
+                ScriptInstruction: self.row.columns[24].into_string().unwrap(),
+                ScriptArg: self.row.columns[54].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[44]],
-                ScriptArg: &self.row.columns[self.index_mapping[45]],
+                ScriptInstruction: self.row.columns[25].into_string().unwrap(),
+                ScriptArg: self.row.columns[55].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[46]],
-                ScriptArg: &self.row.columns[self.index_mapping[47]],
+                ScriptInstruction: self.row.columns[26].into_string().unwrap(),
+                ScriptArg: self.row.columns[56].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[48]],
-                ScriptArg: &self.row.columns[self.index_mapping[49]],
+                ScriptInstruction: self.row.columns[27].into_string().unwrap(),
+                ScriptArg: self.row.columns[57].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[50]],
-                ScriptArg: &self.row.columns[self.index_mapping[51]],
+                ScriptInstruction: self.row.columns[28].into_string().unwrap(),
+                ScriptArg: self.row.columns[58].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[52]],
-                ScriptArg: &self.row.columns[self.index_mapping[53]],
+                ScriptInstruction: self.row.columns[29].into_string().unwrap(),
+                ScriptArg: self.row.columns[59].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[54]],
-                ScriptArg: &self.row.columns[self.index_mapping[55]],
+                ScriptInstruction: self.row.columns[30].into_string().unwrap(),
+                ScriptArg: self.row.columns[60].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[56]],
-                ScriptArg: &self.row.columns[self.index_mapping[57]],
+                ScriptInstruction: self.row.columns[31].into_string().unwrap(),
+                ScriptArg: self.row.columns[61].into_u32().copied().unwrap(),
             },
             ScriptElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[58]],
-                ScriptArg: &self.row.columns[self.index_mapping[59]],
+                ScriptInstruction: self.row.columns[32].into_string().unwrap(),
+                ScriptArg: self.row.columns[62].into_u32().copied().unwrap(),
             },
         ]
     }
-    pub fn MainOption(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[60]]
+    pub fn MainOption(&'a self) -> &'a str {
+        self.row.columns[64].into_string().unwrap()
     }
-    pub fn SubOption(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[61]]
+    pub fn SubOption(&'a self) -> &'a str {
+        self.row.columns[65].into_string().unwrap()
     }
-    pub fn Name(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[62]]
+    pub fn Name(&'a self) -> &'a str {
+        self.row.columns[2].into_string().unwrap()
     }
-    pub fn IconActor(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[63]]
+    pub fn IconActor(&'a self) -> u32 {
+        self.row.columns[0].into_u32().copied().unwrap()
     }
-    pub fn IconMap(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[64]]
+    pub fn IconMap(&'a self) -> u32 {
+        self.row.columns[1].into_u32().copied().unwrap()
     }
-    pub fn SpecialLinks(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[65]]
+    pub fn SpecialLinks(&'a self) -> u32 {
+        self.row.columns[75].into_u32().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[66]]
+    pub fn Unknown0(&'a self) -> u8 {
+        self.row.columns[76].into_u8().copied().unwrap()
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[67]]
+    pub fn Unknown1(&'a self) -> u8 {
+        self.row.columns[77].into_u8().copied().unwrap()
     }
-    pub fn Unknown2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[68]]
+    pub fn Unknown2(&'a self) -> bool {
+        self.row.columns[63].into_bool().copied().unwrap()
     }
-    pub fn Unknown3(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[69]]
+    pub fn Unknown3(&'a self) -> bool {
+        self.row.columns[66].into_bool().copied().unwrap()
     }
-    pub fn Unknown4(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[70]]
+    pub fn Unknown4(&'a self) -> bool {
+        self.row.columns[67].into_bool().copied().unwrap()
     }
-    pub fn Unknown5(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[71]]
+    pub fn Unknown5(&'a self) -> bool {
+        self.row.columns[68].into_bool().copied().unwrap()
     }
-    pub fn Unknown6(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[72]]
+    pub fn Unknown6(&'a self) -> bool {
+        self.row.columns[69].into_bool().copied().unwrap()
     }
-    pub fn Unknown7(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[73]]
+    pub fn Unknown7(&'a self) -> bool {
+        self.row.columns[70].into_bool().copied().unwrap()
     }
-    pub fn Unknown8(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[74]]
+    pub fn Unknown8(&'a self) -> bool {
+        self.row.columns[71].into_bool().copied().unwrap()
     }
-    pub fn Unknown9(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[75]]
+    pub fn Unknown9(&'a self) -> bool {
+        self.row.columns[72].into_bool().copied().unwrap()
     }
-    pub fn Unknown10(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[76]]
+    pub fn Unknown10(&'a self) -> bool {
+        self.row.columns[73].into_bool().copied().unwrap()
     }
-    pub fn Unknown11(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[77]]
+    pub fn Unknown11(&'a self) -> bool {
+        self.row.columns[74].into_bool().copied().unwrap()
     }
-    pub fn Unknown12(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[78]]
+    pub fn Unknown12(&'a self) -> bool {
+        self.row.columns[78].into_bool().copied().unwrap()
     }
 }

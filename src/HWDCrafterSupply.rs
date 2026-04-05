@@ -7,26 +7,25 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct HWDCrafterSupplyParamsElement<'a> {
-    pub ItemTradeIn: &'a Field,
-    pub BaseCollectableRating: &'a Field,
-    pub MidCollectableRating: &'a Field,
-    pub HighCollectableRating: &'a Field,
-    pub BaseCollectableReward: &'a Field,
-    pub MidCollectableReward: &'a Field,
-    pub HighCollectableReward: &'a Field,
-    pub BaseCollectableRewardPostPhase: &'a Field,
-    pub MidCollectableRewardPostPhase: &'a Field,
-    pub HighCollectableRewardPostPhase: &'a Field,
-    pub Level: &'a Field,
-    pub LevelMax: &'a Field,
-    pub Unknown0: &'a Field,
-    pub TermName: &'a Field,
+pub struct HWDCrafterSupplyParamsElement {
+    pub ItemTradeIn: u32,
+    pub BaseCollectableRating: u16,
+    pub MidCollectableRating: u16,
+    pub HighCollectableRating: u16,
+    pub BaseCollectableReward: u16,
+    pub MidCollectableReward: u16,
+    pub HighCollectableReward: u16,
+    pub BaseCollectableRewardPostPhase: u16,
+    pub MidCollectableRewardPostPhase: u16,
+    pub HighCollectableRewardPostPhase: u16,
+    pub Level: u8,
+    pub LevelMax: u8,
+    pub Unknown0: u8,
+    pub TermName: u8,
 }
 #[derive(Debug, Clone)]
 pub struct HWDCrafterSupplySheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl HWDCrafterSupplySheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -36,18 +35,7 @@ impl HWDCrafterSupplySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HWDCrafterSupply")?;
         let sheet = resolver.read_excel_sheet(&exh, "HWDCrafterSupply", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<HWDCrafterSupplyRow> {
@@ -67,10 +55,7 @@ impl HWDCrafterSupplySheet {
 impl<'a> StructuredSheet<'a> for HWDCrafterSupplySheet {
     type Row = HWDCrafterSupplyRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a HWDCrafterSupplySheet {
@@ -86,498 +71,1142 @@ impl<'a> IntoIterator for &'a HWDCrafterSupplySheet {
 #[derive(Debug, Clone)]
 pub struct HWDCrafterSupplyRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> HWDCrafterSupplyRow<'a> {
-    pub fn HWDCrafterSupplyParams(&'a self) -> [HWDCrafterSupplyParamsElement<'a>; 23] {
+    pub fn HWDCrafterSupplyParams(&'a self) -> [HWDCrafterSupplyParamsElement; 23] {
         [
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[0]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[1]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[2]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[3]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[4]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[5]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[6]],
-                BaseCollectableRewardPostPhase: &self.row.columns[self.index_mapping[7]],
-                MidCollectableRewardPostPhase: &self.row.columns[self.index_mapping[8]],
-                HighCollectableRewardPostPhase: &self.row.columns[self.index_mapping[9]],
-                Level: &self.row.columns[self.index_mapping[10]],
-                LevelMax: &self.row.columns[self.index_mapping[11]],
-                Unknown0: &self.row.columns[self.index_mapping[12]],
-                TermName: &self.row.columns[self.index_mapping[13]],
+                ItemTradeIn: self.row.columns[0].into_u32().copied().unwrap(),
+                BaseCollectableRating: self.row.columns[92].into_u16().copied().unwrap(),
+                MidCollectableRating: self.row.columns[115].into_u16().copied().unwrap(),
+                HighCollectableRating: self
+                    .row
+                    .columns[138]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
+                    .row
+                    .columns[161]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[184].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[207]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[230]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[253]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[276]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[23].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[46].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[69].into_u8().copied().unwrap(),
+                TermName: self.row.columns[299].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[14]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[15]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[16]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[17]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[18]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[19]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[20]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[1].into_u32().copied().unwrap(),
+                BaseCollectableRating: self.row.columns[93].into_u16().copied().unwrap(),
+                MidCollectableRating: self.row.columns[116].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[21]],
-                MidCollectableRewardPostPhase: &self.row.columns[self.index_mapping[22]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[139]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[23]],
-                Level: &self.row.columns[self.index_mapping[24]],
-                LevelMax: &self.row.columns[self.index_mapping[25]],
-                Unknown0: &self.row.columns[self.index_mapping[26]],
-                TermName: &self.row.columns[self.index_mapping[27]],
+                    .columns[162]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[185].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[208]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[231]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[254]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[277]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[24].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[47].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[70].into_u8().copied().unwrap(),
+                TermName: self.row.columns[300].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[28]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[29]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[30]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[31]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[32]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[33]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[34]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[2].into_u32().copied().unwrap(),
+                BaseCollectableRating: self.row.columns[94].into_u16().copied().unwrap(),
+                MidCollectableRating: self.row.columns[117].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[35]],
-                MidCollectableRewardPostPhase: &self.row.columns[self.index_mapping[36]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[140]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[37]],
-                Level: &self.row.columns[self.index_mapping[38]],
-                LevelMax: &self.row.columns[self.index_mapping[39]],
-                Unknown0: &self.row.columns[self.index_mapping[40]],
-                TermName: &self.row.columns[self.index_mapping[41]],
+                    .columns[163]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[186].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[209]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[232]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[255]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[278]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[25].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[48].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[71].into_u8().copied().unwrap(),
+                TermName: self.row.columns[301].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[42]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[43]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[44]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[45]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[46]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[47]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[48]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[3].into_u32().copied().unwrap(),
+                BaseCollectableRating: self.row.columns[95].into_u16().copied().unwrap(),
+                MidCollectableRating: self.row.columns[118].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[49]],
-                MidCollectableRewardPostPhase: &self.row.columns[self.index_mapping[50]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[141]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[51]],
-                Level: &self.row.columns[self.index_mapping[52]],
-                LevelMax: &self.row.columns[self.index_mapping[53]],
-                Unknown0: &self.row.columns[self.index_mapping[54]],
-                TermName: &self.row.columns[self.index_mapping[55]],
+                    .columns[164]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[187].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[210]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[233]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[256]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[279]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[26].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[49].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[72].into_u8().copied().unwrap(),
+                TermName: self.row.columns[302].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[56]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[57]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[58]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[59]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[60]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[61]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[62]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[4].into_u32().copied().unwrap(),
+                BaseCollectableRating: self.row.columns[96].into_u16().copied().unwrap(),
+                MidCollectableRating: self.row.columns[119].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[63]],
-                MidCollectableRewardPostPhase: &self.row.columns[self.index_mapping[64]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[142]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[65]],
-                Level: &self.row.columns[self.index_mapping[66]],
-                LevelMax: &self.row.columns[self.index_mapping[67]],
-                Unknown0: &self.row.columns[self.index_mapping[68]],
-                TermName: &self.row.columns[self.index_mapping[69]],
+                    .columns[165]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[188].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[211]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[234]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[257]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[280]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[27].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[50].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[73].into_u8().copied().unwrap(),
+                TermName: self.row.columns[303].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[70]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[71]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[72]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[73]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[74]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[75]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[76]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[5].into_u32().copied().unwrap(),
+                BaseCollectableRating: self.row.columns[97].into_u16().copied().unwrap(),
+                MidCollectableRating: self.row.columns[120].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[77]],
-                MidCollectableRewardPostPhase: &self.row.columns[self.index_mapping[78]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[143]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[79]],
-                Level: &self.row.columns[self.index_mapping[80]],
-                LevelMax: &self.row.columns[self.index_mapping[81]],
-                Unknown0: &self.row.columns[self.index_mapping[82]],
-                TermName: &self.row.columns[self.index_mapping[83]],
+                    .columns[166]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[189].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[212]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[235]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[258]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[281]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[28].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[51].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[74].into_u8().copied().unwrap(),
+                TermName: self.row.columns[304].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[84]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[85]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[86]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[87]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[88]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[89]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[90]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[6].into_u32().copied().unwrap(),
+                BaseCollectableRating: self.row.columns[98].into_u16().copied().unwrap(),
+                MidCollectableRating: self.row.columns[121].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[91]],
-                MidCollectableRewardPostPhase: &self.row.columns[self.index_mapping[92]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[144]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[93]],
-                Level: &self.row.columns[self.index_mapping[94]],
-                LevelMax: &self.row.columns[self.index_mapping[95]],
-                Unknown0: &self.row.columns[self.index_mapping[96]],
-                TermName: &self.row.columns[self.index_mapping[97]],
+                    .columns[167]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[190].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[213]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[236]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[259]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[282]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[29].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[52].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[75].into_u8().copied().unwrap(),
+                TermName: self.row.columns[305].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[98]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[99]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[100]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[101]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[102]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[103]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[104]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[7].into_u32().copied().unwrap(),
+                BaseCollectableRating: self.row.columns[99].into_u16().copied().unwrap(),
+                MidCollectableRating: self.row.columns[122].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[105]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[145]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[106]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[168]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[191].into_u16().copied().unwrap(),
+                HighCollectableReward: self
                     .row
-                    .columns[self.index_mapping[107]],
-                Level: &self.row.columns[self.index_mapping[108]],
-                LevelMax: &self.row.columns[self.index_mapping[109]],
-                Unknown0: &self.row.columns[self.index_mapping[110]],
-                TermName: &self.row.columns[self.index_mapping[111]],
+                    .columns[214]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[237]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[260]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[283]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[30].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[53].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[76].into_u8().copied().unwrap(),
+                TermName: self.row.columns[306].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[112]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[113]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[114]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[115]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[116]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[117]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[118]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[8].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[119]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[100]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[123].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[120]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[146]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[121]],
-                Level: &self.row.columns[self.index_mapping[122]],
-                LevelMax: &self.row.columns[self.index_mapping[123]],
-                Unknown0: &self.row.columns[self.index_mapping[124]],
-                TermName: &self.row.columns[self.index_mapping[125]],
+                    .columns[169]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[192].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[215]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[238]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[261]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[284]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[31].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[54].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[77].into_u8().copied().unwrap(),
+                TermName: self.row.columns[307].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[126]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[127]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[128]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[129]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[130]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[131]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[132]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[9].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[133]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[101]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[124].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[134]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[147]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[135]],
-                Level: &self.row.columns[self.index_mapping[136]],
-                LevelMax: &self.row.columns[self.index_mapping[137]],
-                Unknown0: &self.row.columns[self.index_mapping[138]],
-                TermName: &self.row.columns[self.index_mapping[139]],
+                    .columns[170]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[193].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[216]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[239]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[262]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[285]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[32].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[55].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[78].into_u8().copied().unwrap(),
+                TermName: self.row.columns[308].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[140]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[141]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[142]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[143]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[144]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[145]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[146]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[10].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[147]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[102]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[125].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[148]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[148]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[149]],
-                Level: &self.row.columns[self.index_mapping[150]],
-                LevelMax: &self.row.columns[self.index_mapping[151]],
-                Unknown0: &self.row.columns[self.index_mapping[152]],
-                TermName: &self.row.columns[self.index_mapping[153]],
+                    .columns[171]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[194].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[217]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[240]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[263]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[286]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[33].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[56].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[79].into_u8().copied().unwrap(),
+                TermName: self.row.columns[309].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[154]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[155]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[156]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[157]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[158]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[159]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[160]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[11].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[161]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[103]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[126].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[162]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[149]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[163]],
-                Level: &self.row.columns[self.index_mapping[164]],
-                LevelMax: &self.row.columns[self.index_mapping[165]],
-                Unknown0: &self.row.columns[self.index_mapping[166]],
-                TermName: &self.row.columns[self.index_mapping[167]],
+                    .columns[172]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[195].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[218]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[241]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[264]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[287]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[34].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[57].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[80].into_u8().copied().unwrap(),
+                TermName: self.row.columns[310].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[168]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[169]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[170]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[171]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[172]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[173]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[174]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[12].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[175]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[104]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[127].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[176]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[150]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[177]],
-                Level: &self.row.columns[self.index_mapping[178]],
-                LevelMax: &self.row.columns[self.index_mapping[179]],
-                Unknown0: &self.row.columns[self.index_mapping[180]],
-                TermName: &self.row.columns[self.index_mapping[181]],
+                    .columns[173]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[196].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[219]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[242]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[265]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[288]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[35].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[58].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[81].into_u8().copied().unwrap(),
+                TermName: self.row.columns[311].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[182]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[183]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[184]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[185]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[186]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[187]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[188]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[13].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[189]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[105]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[128].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[190]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[151]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[191]],
-                Level: &self.row.columns[self.index_mapping[192]],
-                LevelMax: &self.row.columns[self.index_mapping[193]],
-                Unknown0: &self.row.columns[self.index_mapping[194]],
-                TermName: &self.row.columns[self.index_mapping[195]],
+                    .columns[174]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[197].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[220]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[243]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[266]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[289]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[36].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[59].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[82].into_u8().copied().unwrap(),
+                TermName: self.row.columns[312].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[196]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[197]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[198]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[199]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[200]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[201]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[202]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[14].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[203]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[106]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[129].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[204]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[152]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[205]],
-                Level: &self.row.columns[self.index_mapping[206]],
-                LevelMax: &self.row.columns[self.index_mapping[207]],
-                Unknown0: &self.row.columns[self.index_mapping[208]],
-                TermName: &self.row.columns[self.index_mapping[209]],
+                    .columns[175]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[198].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[221]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[244]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[267]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[290]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[37].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[60].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[83].into_u8().copied().unwrap(),
+                TermName: self.row.columns[313].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[210]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[211]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[212]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[213]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[214]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[215]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[216]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[15].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[217]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[107]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[130].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[218]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[153]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[219]],
-                Level: &self.row.columns[self.index_mapping[220]],
-                LevelMax: &self.row.columns[self.index_mapping[221]],
-                Unknown0: &self.row.columns[self.index_mapping[222]],
-                TermName: &self.row.columns[self.index_mapping[223]],
+                    .columns[176]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[199].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[222]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[245]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[268]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[291]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[38].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[61].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[84].into_u8().copied().unwrap(),
+                TermName: self.row.columns[314].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[224]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[225]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[226]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[227]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[228]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[229]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[230]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[16].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[231]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[108]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[131].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[232]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[154]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[233]],
-                Level: &self.row.columns[self.index_mapping[234]],
-                LevelMax: &self.row.columns[self.index_mapping[235]],
-                Unknown0: &self.row.columns[self.index_mapping[236]],
-                TermName: &self.row.columns[self.index_mapping[237]],
+                    .columns[177]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[200].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[223]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[246]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[269]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[292]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[39].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[62].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[85].into_u8().copied().unwrap(),
+                TermName: self.row.columns[315].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[238]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[239]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[240]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[241]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[242]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[243]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[244]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[17].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[245]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[109]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[132].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[246]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[155]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[247]],
-                Level: &self.row.columns[self.index_mapping[248]],
-                LevelMax: &self.row.columns[self.index_mapping[249]],
-                Unknown0: &self.row.columns[self.index_mapping[250]],
-                TermName: &self.row.columns[self.index_mapping[251]],
+                    .columns[178]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[201].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[224]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[247]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[270]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[293]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[40].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[63].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[86].into_u8().copied().unwrap(),
+                TermName: self.row.columns[316].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[252]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[253]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[254]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[255]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[256]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[257]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[258]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[18].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[259]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[110]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[133].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[260]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[156]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[261]],
-                Level: &self.row.columns[self.index_mapping[262]],
-                LevelMax: &self.row.columns[self.index_mapping[263]],
-                Unknown0: &self.row.columns[self.index_mapping[264]],
-                TermName: &self.row.columns[self.index_mapping[265]],
+                    .columns[179]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[202].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[225]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[248]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[271]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[294]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[41].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[64].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[87].into_u8().copied().unwrap(),
+                TermName: self.row.columns[317].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[266]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[267]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[268]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[269]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[270]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[271]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[272]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[19].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[273]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[111]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[134].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[274]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[157]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[275]],
-                Level: &self.row.columns[self.index_mapping[276]],
-                LevelMax: &self.row.columns[self.index_mapping[277]],
-                Unknown0: &self.row.columns[self.index_mapping[278]],
-                TermName: &self.row.columns[self.index_mapping[279]],
+                    .columns[180]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[203].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[226]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[249]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[272]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[295]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[42].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[65].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[88].into_u8().copied().unwrap(),
+                TermName: self.row.columns[318].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[280]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[281]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[282]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[283]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[284]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[285]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[286]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[20].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[287]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[112]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[135].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[288]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[158]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[289]],
-                Level: &self.row.columns[self.index_mapping[290]],
-                LevelMax: &self.row.columns[self.index_mapping[291]],
-                Unknown0: &self.row.columns[self.index_mapping[292]],
-                TermName: &self.row.columns[self.index_mapping[293]],
+                    .columns[181]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[204].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[227]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[250]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[273]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[296]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[43].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[66].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[89].into_u8().copied().unwrap(),
+                TermName: self.row.columns[319].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[294]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[295]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[296]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[297]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[298]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[299]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[300]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[21].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[301]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[113]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[136].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[302]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[159]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[303]],
-                Level: &self.row.columns[self.index_mapping[304]],
-                LevelMax: &self.row.columns[self.index_mapping[305]],
-                Unknown0: &self.row.columns[self.index_mapping[306]],
-                TermName: &self.row.columns[self.index_mapping[307]],
+                    .columns[182]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[205].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[228]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[251]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[274]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[297]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[44].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[67].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[90].into_u8().copied().unwrap(),
+                TermName: self.row.columns[320].into_u8().copied().unwrap(),
             },
             HWDCrafterSupplyParamsElement {
-                ItemTradeIn: &self.row.columns[self.index_mapping[308]],
-                BaseCollectableRating: &self.row.columns[self.index_mapping[309]],
-                MidCollectableRating: &self.row.columns[self.index_mapping[310]],
-                HighCollectableRating: &self.row.columns[self.index_mapping[311]],
-                BaseCollectableReward: &self.row.columns[self.index_mapping[312]],
-                MidCollectableReward: &self.row.columns[self.index_mapping[313]],
-                HighCollectableReward: &self.row.columns[self.index_mapping[314]],
-                BaseCollectableRewardPostPhase: &self
+                ItemTradeIn: self.row.columns[22].into_u32().copied().unwrap(),
+                BaseCollectableRating: self
                     .row
-                    .columns[self.index_mapping[315]],
-                MidCollectableRewardPostPhase: &self
+                    .columns[114]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRating: self.row.columns[137].into_u16().copied().unwrap(),
+                HighCollectableRating: self
                     .row
-                    .columns[self.index_mapping[316]],
-                HighCollectableRewardPostPhase: &self
+                    .columns[160]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableReward: self
                     .row
-                    .columns[self.index_mapping[317]],
-                Level: &self.row.columns[self.index_mapping[318]],
-                LevelMax: &self.row.columns[self.index_mapping[319]],
-                Unknown0: &self.row.columns[self.index_mapping[320]],
-                TermName: &self.row.columns[self.index_mapping[321]],
+                    .columns[183]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableReward: self.row.columns[206].into_u16().copied().unwrap(),
+                HighCollectableReward: self
+                    .row
+                    .columns[229]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                BaseCollectableRewardPostPhase: self
+                    .row
+                    .columns[252]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                MidCollectableRewardPostPhase: self
+                    .row
+                    .columns[275]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                HighCollectableRewardPostPhase: self
+                    .row
+                    .columns[298]
+                    .into_u16()
+                    .copied()
+                    .unwrap(),
+                Level: self.row.columns[45].into_u8().copied().unwrap(),
+                LevelMax: self.row.columns[68].into_u8().copied().unwrap(),
+                Unknown0: self.row.columns[91].into_u8().copied().unwrap(),
+                TermName: self.row.columns[321].into_u8().copied().unwrap(),
             },
         ]
     }

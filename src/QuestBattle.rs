@@ -8,13 +8,12 @@ use physis::{
     Language,
 };
 pub struct QuestBattleParamsElement<'a> {
-    pub ScriptInstruction: &'a Field,
-    pub ScriptValue: &'a Field,
+    pub ScriptInstruction: &'a str,
+    pub ScriptValue: u32,
 }
 #[derive(Debug, Clone)]
 pub struct QuestBattleSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl QuestBattleSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -24,18 +23,7 @@ impl QuestBattleSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestBattle")?;
         let sheet = resolver.read_excel_sheet(&exh, "QuestBattle", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<QuestBattleRow> {
@@ -55,10 +43,7 @@ impl QuestBattleSheet {
 impl<'a> StructuredSheet<'a> for QuestBattleSheet {
     type Row = QuestBattleRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a QuestBattleSheet {
@@ -74,903 +59,902 @@ impl<'a> IntoIterator for &'a QuestBattleSheet {
 #[derive(Debug, Clone)]
 pub struct QuestBattleRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> QuestBattleRow<'a> {
     pub fn QuestBattleParams(&'a self) -> [QuestBattleParamsElement<'a>; 220] {
         [
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[0]],
-                ScriptValue: &self.row.columns[self.index_mapping[1]],
+                ScriptInstruction: self.row.columns[4].into_string().unwrap(),
+                ScriptValue: self.row.columns[224].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[2]],
-                ScriptValue: &self.row.columns[self.index_mapping[3]],
+                ScriptInstruction: self.row.columns[5].into_string().unwrap(),
+                ScriptValue: self.row.columns[225].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[4]],
-                ScriptValue: &self.row.columns[self.index_mapping[5]],
+                ScriptInstruction: self.row.columns[6].into_string().unwrap(),
+                ScriptValue: self.row.columns[226].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[6]],
-                ScriptValue: &self.row.columns[self.index_mapping[7]],
+                ScriptInstruction: self.row.columns[7].into_string().unwrap(),
+                ScriptValue: self.row.columns[227].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[8]],
-                ScriptValue: &self.row.columns[self.index_mapping[9]],
+                ScriptInstruction: self.row.columns[8].into_string().unwrap(),
+                ScriptValue: self.row.columns[228].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[10]],
-                ScriptValue: &self.row.columns[self.index_mapping[11]],
+                ScriptInstruction: self.row.columns[9].into_string().unwrap(),
+                ScriptValue: self.row.columns[229].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[12]],
-                ScriptValue: &self.row.columns[self.index_mapping[13]],
+                ScriptInstruction: self.row.columns[10].into_string().unwrap(),
+                ScriptValue: self.row.columns[230].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[14]],
-                ScriptValue: &self.row.columns[self.index_mapping[15]],
+                ScriptInstruction: self.row.columns[11].into_string().unwrap(),
+                ScriptValue: self.row.columns[231].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[16]],
-                ScriptValue: &self.row.columns[self.index_mapping[17]],
+                ScriptInstruction: self.row.columns[12].into_string().unwrap(),
+                ScriptValue: self.row.columns[232].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[18]],
-                ScriptValue: &self.row.columns[self.index_mapping[19]],
+                ScriptInstruction: self.row.columns[13].into_string().unwrap(),
+                ScriptValue: self.row.columns[233].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[20]],
-                ScriptValue: &self.row.columns[self.index_mapping[21]],
+                ScriptInstruction: self.row.columns[14].into_string().unwrap(),
+                ScriptValue: self.row.columns[234].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[22]],
-                ScriptValue: &self.row.columns[self.index_mapping[23]],
+                ScriptInstruction: self.row.columns[15].into_string().unwrap(),
+                ScriptValue: self.row.columns[235].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[24]],
-                ScriptValue: &self.row.columns[self.index_mapping[25]],
+                ScriptInstruction: self.row.columns[16].into_string().unwrap(),
+                ScriptValue: self.row.columns[236].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[26]],
-                ScriptValue: &self.row.columns[self.index_mapping[27]],
+                ScriptInstruction: self.row.columns[17].into_string().unwrap(),
+                ScriptValue: self.row.columns[237].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[28]],
-                ScriptValue: &self.row.columns[self.index_mapping[29]],
+                ScriptInstruction: self.row.columns[18].into_string().unwrap(),
+                ScriptValue: self.row.columns[238].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[30]],
-                ScriptValue: &self.row.columns[self.index_mapping[31]],
+                ScriptInstruction: self.row.columns[19].into_string().unwrap(),
+                ScriptValue: self.row.columns[239].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[32]],
-                ScriptValue: &self.row.columns[self.index_mapping[33]],
+                ScriptInstruction: self.row.columns[20].into_string().unwrap(),
+                ScriptValue: self.row.columns[240].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[34]],
-                ScriptValue: &self.row.columns[self.index_mapping[35]],
+                ScriptInstruction: self.row.columns[21].into_string().unwrap(),
+                ScriptValue: self.row.columns[241].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[36]],
-                ScriptValue: &self.row.columns[self.index_mapping[37]],
+                ScriptInstruction: self.row.columns[22].into_string().unwrap(),
+                ScriptValue: self.row.columns[242].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[38]],
-                ScriptValue: &self.row.columns[self.index_mapping[39]],
+                ScriptInstruction: self.row.columns[23].into_string().unwrap(),
+                ScriptValue: self.row.columns[243].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[40]],
-                ScriptValue: &self.row.columns[self.index_mapping[41]],
+                ScriptInstruction: self.row.columns[24].into_string().unwrap(),
+                ScriptValue: self.row.columns[244].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[42]],
-                ScriptValue: &self.row.columns[self.index_mapping[43]],
+                ScriptInstruction: self.row.columns[25].into_string().unwrap(),
+                ScriptValue: self.row.columns[245].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[44]],
-                ScriptValue: &self.row.columns[self.index_mapping[45]],
+                ScriptInstruction: self.row.columns[26].into_string().unwrap(),
+                ScriptValue: self.row.columns[246].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[46]],
-                ScriptValue: &self.row.columns[self.index_mapping[47]],
+                ScriptInstruction: self.row.columns[27].into_string().unwrap(),
+                ScriptValue: self.row.columns[247].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[48]],
-                ScriptValue: &self.row.columns[self.index_mapping[49]],
+                ScriptInstruction: self.row.columns[28].into_string().unwrap(),
+                ScriptValue: self.row.columns[248].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[50]],
-                ScriptValue: &self.row.columns[self.index_mapping[51]],
+                ScriptInstruction: self.row.columns[29].into_string().unwrap(),
+                ScriptValue: self.row.columns[249].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[52]],
-                ScriptValue: &self.row.columns[self.index_mapping[53]],
+                ScriptInstruction: self.row.columns[30].into_string().unwrap(),
+                ScriptValue: self.row.columns[250].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[54]],
-                ScriptValue: &self.row.columns[self.index_mapping[55]],
+                ScriptInstruction: self.row.columns[31].into_string().unwrap(),
+                ScriptValue: self.row.columns[251].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[56]],
-                ScriptValue: &self.row.columns[self.index_mapping[57]],
+                ScriptInstruction: self.row.columns[32].into_string().unwrap(),
+                ScriptValue: self.row.columns[252].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[58]],
-                ScriptValue: &self.row.columns[self.index_mapping[59]],
+                ScriptInstruction: self.row.columns[33].into_string().unwrap(),
+                ScriptValue: self.row.columns[253].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[60]],
-                ScriptValue: &self.row.columns[self.index_mapping[61]],
+                ScriptInstruction: self.row.columns[34].into_string().unwrap(),
+                ScriptValue: self.row.columns[254].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[62]],
-                ScriptValue: &self.row.columns[self.index_mapping[63]],
+                ScriptInstruction: self.row.columns[35].into_string().unwrap(),
+                ScriptValue: self.row.columns[255].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[64]],
-                ScriptValue: &self.row.columns[self.index_mapping[65]],
+                ScriptInstruction: self.row.columns[36].into_string().unwrap(),
+                ScriptValue: self.row.columns[256].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[66]],
-                ScriptValue: &self.row.columns[self.index_mapping[67]],
+                ScriptInstruction: self.row.columns[37].into_string().unwrap(),
+                ScriptValue: self.row.columns[257].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[68]],
-                ScriptValue: &self.row.columns[self.index_mapping[69]],
+                ScriptInstruction: self.row.columns[38].into_string().unwrap(),
+                ScriptValue: self.row.columns[258].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[70]],
-                ScriptValue: &self.row.columns[self.index_mapping[71]],
+                ScriptInstruction: self.row.columns[39].into_string().unwrap(),
+                ScriptValue: self.row.columns[259].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[72]],
-                ScriptValue: &self.row.columns[self.index_mapping[73]],
+                ScriptInstruction: self.row.columns[40].into_string().unwrap(),
+                ScriptValue: self.row.columns[260].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[74]],
-                ScriptValue: &self.row.columns[self.index_mapping[75]],
+                ScriptInstruction: self.row.columns[41].into_string().unwrap(),
+                ScriptValue: self.row.columns[261].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[76]],
-                ScriptValue: &self.row.columns[self.index_mapping[77]],
+                ScriptInstruction: self.row.columns[42].into_string().unwrap(),
+                ScriptValue: self.row.columns[262].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[78]],
-                ScriptValue: &self.row.columns[self.index_mapping[79]],
+                ScriptInstruction: self.row.columns[43].into_string().unwrap(),
+                ScriptValue: self.row.columns[263].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[80]],
-                ScriptValue: &self.row.columns[self.index_mapping[81]],
+                ScriptInstruction: self.row.columns[44].into_string().unwrap(),
+                ScriptValue: self.row.columns[264].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[82]],
-                ScriptValue: &self.row.columns[self.index_mapping[83]],
+                ScriptInstruction: self.row.columns[45].into_string().unwrap(),
+                ScriptValue: self.row.columns[265].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[84]],
-                ScriptValue: &self.row.columns[self.index_mapping[85]],
+                ScriptInstruction: self.row.columns[46].into_string().unwrap(),
+                ScriptValue: self.row.columns[266].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[86]],
-                ScriptValue: &self.row.columns[self.index_mapping[87]],
+                ScriptInstruction: self.row.columns[47].into_string().unwrap(),
+                ScriptValue: self.row.columns[267].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[88]],
-                ScriptValue: &self.row.columns[self.index_mapping[89]],
+                ScriptInstruction: self.row.columns[48].into_string().unwrap(),
+                ScriptValue: self.row.columns[268].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[90]],
-                ScriptValue: &self.row.columns[self.index_mapping[91]],
+                ScriptInstruction: self.row.columns[49].into_string().unwrap(),
+                ScriptValue: self.row.columns[269].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[92]],
-                ScriptValue: &self.row.columns[self.index_mapping[93]],
+                ScriptInstruction: self.row.columns[50].into_string().unwrap(),
+                ScriptValue: self.row.columns[270].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[94]],
-                ScriptValue: &self.row.columns[self.index_mapping[95]],
+                ScriptInstruction: self.row.columns[51].into_string().unwrap(),
+                ScriptValue: self.row.columns[271].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[96]],
-                ScriptValue: &self.row.columns[self.index_mapping[97]],
+                ScriptInstruction: self.row.columns[52].into_string().unwrap(),
+                ScriptValue: self.row.columns[272].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[98]],
-                ScriptValue: &self.row.columns[self.index_mapping[99]],
+                ScriptInstruction: self.row.columns[53].into_string().unwrap(),
+                ScriptValue: self.row.columns[273].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[100]],
-                ScriptValue: &self.row.columns[self.index_mapping[101]],
+                ScriptInstruction: self.row.columns[54].into_string().unwrap(),
+                ScriptValue: self.row.columns[274].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[102]],
-                ScriptValue: &self.row.columns[self.index_mapping[103]],
+                ScriptInstruction: self.row.columns[55].into_string().unwrap(),
+                ScriptValue: self.row.columns[275].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[104]],
-                ScriptValue: &self.row.columns[self.index_mapping[105]],
+                ScriptInstruction: self.row.columns[56].into_string().unwrap(),
+                ScriptValue: self.row.columns[276].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[106]],
-                ScriptValue: &self.row.columns[self.index_mapping[107]],
+                ScriptInstruction: self.row.columns[57].into_string().unwrap(),
+                ScriptValue: self.row.columns[277].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[108]],
-                ScriptValue: &self.row.columns[self.index_mapping[109]],
+                ScriptInstruction: self.row.columns[58].into_string().unwrap(),
+                ScriptValue: self.row.columns[278].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[110]],
-                ScriptValue: &self.row.columns[self.index_mapping[111]],
+                ScriptInstruction: self.row.columns[59].into_string().unwrap(),
+                ScriptValue: self.row.columns[279].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[112]],
-                ScriptValue: &self.row.columns[self.index_mapping[113]],
+                ScriptInstruction: self.row.columns[60].into_string().unwrap(),
+                ScriptValue: self.row.columns[280].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[114]],
-                ScriptValue: &self.row.columns[self.index_mapping[115]],
+                ScriptInstruction: self.row.columns[61].into_string().unwrap(),
+                ScriptValue: self.row.columns[281].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[116]],
-                ScriptValue: &self.row.columns[self.index_mapping[117]],
+                ScriptInstruction: self.row.columns[62].into_string().unwrap(),
+                ScriptValue: self.row.columns[282].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[118]],
-                ScriptValue: &self.row.columns[self.index_mapping[119]],
+                ScriptInstruction: self.row.columns[63].into_string().unwrap(),
+                ScriptValue: self.row.columns[283].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[120]],
-                ScriptValue: &self.row.columns[self.index_mapping[121]],
+                ScriptInstruction: self.row.columns[64].into_string().unwrap(),
+                ScriptValue: self.row.columns[284].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[122]],
-                ScriptValue: &self.row.columns[self.index_mapping[123]],
+                ScriptInstruction: self.row.columns[65].into_string().unwrap(),
+                ScriptValue: self.row.columns[285].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[124]],
-                ScriptValue: &self.row.columns[self.index_mapping[125]],
+                ScriptInstruction: self.row.columns[66].into_string().unwrap(),
+                ScriptValue: self.row.columns[286].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[126]],
-                ScriptValue: &self.row.columns[self.index_mapping[127]],
+                ScriptInstruction: self.row.columns[67].into_string().unwrap(),
+                ScriptValue: self.row.columns[287].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[128]],
-                ScriptValue: &self.row.columns[self.index_mapping[129]],
+                ScriptInstruction: self.row.columns[68].into_string().unwrap(),
+                ScriptValue: self.row.columns[288].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[130]],
-                ScriptValue: &self.row.columns[self.index_mapping[131]],
+                ScriptInstruction: self.row.columns[69].into_string().unwrap(),
+                ScriptValue: self.row.columns[289].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[132]],
-                ScriptValue: &self.row.columns[self.index_mapping[133]],
+                ScriptInstruction: self.row.columns[70].into_string().unwrap(),
+                ScriptValue: self.row.columns[290].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[134]],
-                ScriptValue: &self.row.columns[self.index_mapping[135]],
+                ScriptInstruction: self.row.columns[71].into_string().unwrap(),
+                ScriptValue: self.row.columns[291].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[136]],
-                ScriptValue: &self.row.columns[self.index_mapping[137]],
+                ScriptInstruction: self.row.columns[72].into_string().unwrap(),
+                ScriptValue: self.row.columns[292].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[138]],
-                ScriptValue: &self.row.columns[self.index_mapping[139]],
+                ScriptInstruction: self.row.columns[73].into_string().unwrap(),
+                ScriptValue: self.row.columns[293].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[140]],
-                ScriptValue: &self.row.columns[self.index_mapping[141]],
+                ScriptInstruction: self.row.columns[74].into_string().unwrap(),
+                ScriptValue: self.row.columns[294].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[142]],
-                ScriptValue: &self.row.columns[self.index_mapping[143]],
+                ScriptInstruction: self.row.columns[75].into_string().unwrap(),
+                ScriptValue: self.row.columns[295].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[144]],
-                ScriptValue: &self.row.columns[self.index_mapping[145]],
+                ScriptInstruction: self.row.columns[76].into_string().unwrap(),
+                ScriptValue: self.row.columns[296].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[146]],
-                ScriptValue: &self.row.columns[self.index_mapping[147]],
+                ScriptInstruction: self.row.columns[77].into_string().unwrap(),
+                ScriptValue: self.row.columns[297].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[148]],
-                ScriptValue: &self.row.columns[self.index_mapping[149]],
+                ScriptInstruction: self.row.columns[78].into_string().unwrap(),
+                ScriptValue: self.row.columns[298].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[150]],
-                ScriptValue: &self.row.columns[self.index_mapping[151]],
+                ScriptInstruction: self.row.columns[79].into_string().unwrap(),
+                ScriptValue: self.row.columns[299].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[152]],
-                ScriptValue: &self.row.columns[self.index_mapping[153]],
+                ScriptInstruction: self.row.columns[80].into_string().unwrap(),
+                ScriptValue: self.row.columns[300].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[154]],
-                ScriptValue: &self.row.columns[self.index_mapping[155]],
+                ScriptInstruction: self.row.columns[81].into_string().unwrap(),
+                ScriptValue: self.row.columns[301].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[156]],
-                ScriptValue: &self.row.columns[self.index_mapping[157]],
+                ScriptInstruction: self.row.columns[82].into_string().unwrap(),
+                ScriptValue: self.row.columns[302].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[158]],
-                ScriptValue: &self.row.columns[self.index_mapping[159]],
+                ScriptInstruction: self.row.columns[83].into_string().unwrap(),
+                ScriptValue: self.row.columns[303].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[160]],
-                ScriptValue: &self.row.columns[self.index_mapping[161]],
+                ScriptInstruction: self.row.columns[84].into_string().unwrap(),
+                ScriptValue: self.row.columns[304].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[162]],
-                ScriptValue: &self.row.columns[self.index_mapping[163]],
+                ScriptInstruction: self.row.columns[85].into_string().unwrap(),
+                ScriptValue: self.row.columns[305].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[164]],
-                ScriptValue: &self.row.columns[self.index_mapping[165]],
+                ScriptInstruction: self.row.columns[86].into_string().unwrap(),
+                ScriptValue: self.row.columns[306].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[166]],
-                ScriptValue: &self.row.columns[self.index_mapping[167]],
+                ScriptInstruction: self.row.columns[87].into_string().unwrap(),
+                ScriptValue: self.row.columns[307].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[168]],
-                ScriptValue: &self.row.columns[self.index_mapping[169]],
+                ScriptInstruction: self.row.columns[88].into_string().unwrap(),
+                ScriptValue: self.row.columns[308].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[170]],
-                ScriptValue: &self.row.columns[self.index_mapping[171]],
+                ScriptInstruction: self.row.columns[89].into_string().unwrap(),
+                ScriptValue: self.row.columns[309].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[172]],
-                ScriptValue: &self.row.columns[self.index_mapping[173]],
+                ScriptInstruction: self.row.columns[90].into_string().unwrap(),
+                ScriptValue: self.row.columns[310].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[174]],
-                ScriptValue: &self.row.columns[self.index_mapping[175]],
+                ScriptInstruction: self.row.columns[91].into_string().unwrap(),
+                ScriptValue: self.row.columns[311].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[176]],
-                ScriptValue: &self.row.columns[self.index_mapping[177]],
+                ScriptInstruction: self.row.columns[92].into_string().unwrap(),
+                ScriptValue: self.row.columns[312].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[178]],
-                ScriptValue: &self.row.columns[self.index_mapping[179]],
+                ScriptInstruction: self.row.columns[93].into_string().unwrap(),
+                ScriptValue: self.row.columns[313].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[180]],
-                ScriptValue: &self.row.columns[self.index_mapping[181]],
+                ScriptInstruction: self.row.columns[94].into_string().unwrap(),
+                ScriptValue: self.row.columns[314].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[182]],
-                ScriptValue: &self.row.columns[self.index_mapping[183]],
+                ScriptInstruction: self.row.columns[95].into_string().unwrap(),
+                ScriptValue: self.row.columns[315].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[184]],
-                ScriptValue: &self.row.columns[self.index_mapping[185]],
+                ScriptInstruction: self.row.columns[96].into_string().unwrap(),
+                ScriptValue: self.row.columns[316].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[186]],
-                ScriptValue: &self.row.columns[self.index_mapping[187]],
+                ScriptInstruction: self.row.columns[97].into_string().unwrap(),
+                ScriptValue: self.row.columns[317].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[188]],
-                ScriptValue: &self.row.columns[self.index_mapping[189]],
+                ScriptInstruction: self.row.columns[98].into_string().unwrap(),
+                ScriptValue: self.row.columns[318].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[190]],
-                ScriptValue: &self.row.columns[self.index_mapping[191]],
+                ScriptInstruction: self.row.columns[99].into_string().unwrap(),
+                ScriptValue: self.row.columns[319].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[192]],
-                ScriptValue: &self.row.columns[self.index_mapping[193]],
+                ScriptInstruction: self.row.columns[100].into_string().unwrap(),
+                ScriptValue: self.row.columns[320].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[194]],
-                ScriptValue: &self.row.columns[self.index_mapping[195]],
+                ScriptInstruction: self.row.columns[101].into_string().unwrap(),
+                ScriptValue: self.row.columns[321].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[196]],
-                ScriptValue: &self.row.columns[self.index_mapping[197]],
+                ScriptInstruction: self.row.columns[102].into_string().unwrap(),
+                ScriptValue: self.row.columns[322].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[198]],
-                ScriptValue: &self.row.columns[self.index_mapping[199]],
+                ScriptInstruction: self.row.columns[103].into_string().unwrap(),
+                ScriptValue: self.row.columns[323].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[200]],
-                ScriptValue: &self.row.columns[self.index_mapping[201]],
+                ScriptInstruction: self.row.columns[104].into_string().unwrap(),
+                ScriptValue: self.row.columns[324].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[202]],
-                ScriptValue: &self.row.columns[self.index_mapping[203]],
+                ScriptInstruction: self.row.columns[105].into_string().unwrap(),
+                ScriptValue: self.row.columns[325].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[204]],
-                ScriptValue: &self.row.columns[self.index_mapping[205]],
+                ScriptInstruction: self.row.columns[106].into_string().unwrap(),
+                ScriptValue: self.row.columns[326].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[206]],
-                ScriptValue: &self.row.columns[self.index_mapping[207]],
+                ScriptInstruction: self.row.columns[107].into_string().unwrap(),
+                ScriptValue: self.row.columns[327].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[208]],
-                ScriptValue: &self.row.columns[self.index_mapping[209]],
+                ScriptInstruction: self.row.columns[108].into_string().unwrap(),
+                ScriptValue: self.row.columns[328].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[210]],
-                ScriptValue: &self.row.columns[self.index_mapping[211]],
+                ScriptInstruction: self.row.columns[109].into_string().unwrap(),
+                ScriptValue: self.row.columns[329].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[212]],
-                ScriptValue: &self.row.columns[self.index_mapping[213]],
+                ScriptInstruction: self.row.columns[110].into_string().unwrap(),
+                ScriptValue: self.row.columns[330].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[214]],
-                ScriptValue: &self.row.columns[self.index_mapping[215]],
+                ScriptInstruction: self.row.columns[111].into_string().unwrap(),
+                ScriptValue: self.row.columns[331].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[216]],
-                ScriptValue: &self.row.columns[self.index_mapping[217]],
+                ScriptInstruction: self.row.columns[112].into_string().unwrap(),
+                ScriptValue: self.row.columns[332].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[218]],
-                ScriptValue: &self.row.columns[self.index_mapping[219]],
+                ScriptInstruction: self.row.columns[113].into_string().unwrap(),
+                ScriptValue: self.row.columns[333].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[220]],
-                ScriptValue: &self.row.columns[self.index_mapping[221]],
+                ScriptInstruction: self.row.columns[114].into_string().unwrap(),
+                ScriptValue: self.row.columns[334].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[222]],
-                ScriptValue: &self.row.columns[self.index_mapping[223]],
+                ScriptInstruction: self.row.columns[115].into_string().unwrap(),
+                ScriptValue: self.row.columns[335].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[224]],
-                ScriptValue: &self.row.columns[self.index_mapping[225]],
+                ScriptInstruction: self.row.columns[116].into_string().unwrap(),
+                ScriptValue: self.row.columns[336].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[226]],
-                ScriptValue: &self.row.columns[self.index_mapping[227]],
+                ScriptInstruction: self.row.columns[117].into_string().unwrap(),
+                ScriptValue: self.row.columns[337].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[228]],
-                ScriptValue: &self.row.columns[self.index_mapping[229]],
+                ScriptInstruction: self.row.columns[118].into_string().unwrap(),
+                ScriptValue: self.row.columns[338].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[230]],
-                ScriptValue: &self.row.columns[self.index_mapping[231]],
+                ScriptInstruction: self.row.columns[119].into_string().unwrap(),
+                ScriptValue: self.row.columns[339].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[232]],
-                ScriptValue: &self.row.columns[self.index_mapping[233]],
+                ScriptInstruction: self.row.columns[120].into_string().unwrap(),
+                ScriptValue: self.row.columns[340].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[234]],
-                ScriptValue: &self.row.columns[self.index_mapping[235]],
+                ScriptInstruction: self.row.columns[121].into_string().unwrap(),
+                ScriptValue: self.row.columns[341].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[236]],
-                ScriptValue: &self.row.columns[self.index_mapping[237]],
+                ScriptInstruction: self.row.columns[122].into_string().unwrap(),
+                ScriptValue: self.row.columns[342].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[238]],
-                ScriptValue: &self.row.columns[self.index_mapping[239]],
+                ScriptInstruction: self.row.columns[123].into_string().unwrap(),
+                ScriptValue: self.row.columns[343].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[240]],
-                ScriptValue: &self.row.columns[self.index_mapping[241]],
+                ScriptInstruction: self.row.columns[124].into_string().unwrap(),
+                ScriptValue: self.row.columns[344].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[242]],
-                ScriptValue: &self.row.columns[self.index_mapping[243]],
+                ScriptInstruction: self.row.columns[125].into_string().unwrap(),
+                ScriptValue: self.row.columns[345].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[244]],
-                ScriptValue: &self.row.columns[self.index_mapping[245]],
+                ScriptInstruction: self.row.columns[126].into_string().unwrap(),
+                ScriptValue: self.row.columns[346].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[246]],
-                ScriptValue: &self.row.columns[self.index_mapping[247]],
+                ScriptInstruction: self.row.columns[127].into_string().unwrap(),
+                ScriptValue: self.row.columns[347].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[248]],
-                ScriptValue: &self.row.columns[self.index_mapping[249]],
+                ScriptInstruction: self.row.columns[128].into_string().unwrap(),
+                ScriptValue: self.row.columns[348].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[250]],
-                ScriptValue: &self.row.columns[self.index_mapping[251]],
+                ScriptInstruction: self.row.columns[129].into_string().unwrap(),
+                ScriptValue: self.row.columns[349].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[252]],
-                ScriptValue: &self.row.columns[self.index_mapping[253]],
+                ScriptInstruction: self.row.columns[130].into_string().unwrap(),
+                ScriptValue: self.row.columns[350].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[254]],
-                ScriptValue: &self.row.columns[self.index_mapping[255]],
+                ScriptInstruction: self.row.columns[131].into_string().unwrap(),
+                ScriptValue: self.row.columns[351].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[256]],
-                ScriptValue: &self.row.columns[self.index_mapping[257]],
+                ScriptInstruction: self.row.columns[132].into_string().unwrap(),
+                ScriptValue: self.row.columns[352].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[258]],
-                ScriptValue: &self.row.columns[self.index_mapping[259]],
+                ScriptInstruction: self.row.columns[133].into_string().unwrap(),
+                ScriptValue: self.row.columns[353].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[260]],
-                ScriptValue: &self.row.columns[self.index_mapping[261]],
+                ScriptInstruction: self.row.columns[134].into_string().unwrap(),
+                ScriptValue: self.row.columns[354].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[262]],
-                ScriptValue: &self.row.columns[self.index_mapping[263]],
+                ScriptInstruction: self.row.columns[135].into_string().unwrap(),
+                ScriptValue: self.row.columns[355].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[264]],
-                ScriptValue: &self.row.columns[self.index_mapping[265]],
+                ScriptInstruction: self.row.columns[136].into_string().unwrap(),
+                ScriptValue: self.row.columns[356].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[266]],
-                ScriptValue: &self.row.columns[self.index_mapping[267]],
+                ScriptInstruction: self.row.columns[137].into_string().unwrap(),
+                ScriptValue: self.row.columns[357].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[268]],
-                ScriptValue: &self.row.columns[self.index_mapping[269]],
+                ScriptInstruction: self.row.columns[138].into_string().unwrap(),
+                ScriptValue: self.row.columns[358].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[270]],
-                ScriptValue: &self.row.columns[self.index_mapping[271]],
+                ScriptInstruction: self.row.columns[139].into_string().unwrap(),
+                ScriptValue: self.row.columns[359].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[272]],
-                ScriptValue: &self.row.columns[self.index_mapping[273]],
+                ScriptInstruction: self.row.columns[140].into_string().unwrap(),
+                ScriptValue: self.row.columns[360].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[274]],
-                ScriptValue: &self.row.columns[self.index_mapping[275]],
+                ScriptInstruction: self.row.columns[141].into_string().unwrap(),
+                ScriptValue: self.row.columns[361].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[276]],
-                ScriptValue: &self.row.columns[self.index_mapping[277]],
+                ScriptInstruction: self.row.columns[142].into_string().unwrap(),
+                ScriptValue: self.row.columns[362].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[278]],
-                ScriptValue: &self.row.columns[self.index_mapping[279]],
+                ScriptInstruction: self.row.columns[143].into_string().unwrap(),
+                ScriptValue: self.row.columns[363].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[280]],
-                ScriptValue: &self.row.columns[self.index_mapping[281]],
+                ScriptInstruction: self.row.columns[144].into_string().unwrap(),
+                ScriptValue: self.row.columns[364].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[282]],
-                ScriptValue: &self.row.columns[self.index_mapping[283]],
+                ScriptInstruction: self.row.columns[145].into_string().unwrap(),
+                ScriptValue: self.row.columns[365].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[284]],
-                ScriptValue: &self.row.columns[self.index_mapping[285]],
+                ScriptInstruction: self.row.columns[146].into_string().unwrap(),
+                ScriptValue: self.row.columns[366].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[286]],
-                ScriptValue: &self.row.columns[self.index_mapping[287]],
+                ScriptInstruction: self.row.columns[147].into_string().unwrap(),
+                ScriptValue: self.row.columns[367].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[288]],
-                ScriptValue: &self.row.columns[self.index_mapping[289]],
+                ScriptInstruction: self.row.columns[148].into_string().unwrap(),
+                ScriptValue: self.row.columns[368].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[290]],
-                ScriptValue: &self.row.columns[self.index_mapping[291]],
+                ScriptInstruction: self.row.columns[149].into_string().unwrap(),
+                ScriptValue: self.row.columns[369].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[292]],
-                ScriptValue: &self.row.columns[self.index_mapping[293]],
+                ScriptInstruction: self.row.columns[150].into_string().unwrap(),
+                ScriptValue: self.row.columns[370].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[294]],
-                ScriptValue: &self.row.columns[self.index_mapping[295]],
+                ScriptInstruction: self.row.columns[151].into_string().unwrap(),
+                ScriptValue: self.row.columns[371].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[296]],
-                ScriptValue: &self.row.columns[self.index_mapping[297]],
+                ScriptInstruction: self.row.columns[152].into_string().unwrap(),
+                ScriptValue: self.row.columns[372].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[298]],
-                ScriptValue: &self.row.columns[self.index_mapping[299]],
+                ScriptInstruction: self.row.columns[153].into_string().unwrap(),
+                ScriptValue: self.row.columns[373].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[300]],
-                ScriptValue: &self.row.columns[self.index_mapping[301]],
+                ScriptInstruction: self.row.columns[154].into_string().unwrap(),
+                ScriptValue: self.row.columns[374].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[302]],
-                ScriptValue: &self.row.columns[self.index_mapping[303]],
+                ScriptInstruction: self.row.columns[155].into_string().unwrap(),
+                ScriptValue: self.row.columns[375].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[304]],
-                ScriptValue: &self.row.columns[self.index_mapping[305]],
+                ScriptInstruction: self.row.columns[156].into_string().unwrap(),
+                ScriptValue: self.row.columns[376].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[306]],
-                ScriptValue: &self.row.columns[self.index_mapping[307]],
+                ScriptInstruction: self.row.columns[157].into_string().unwrap(),
+                ScriptValue: self.row.columns[377].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[308]],
-                ScriptValue: &self.row.columns[self.index_mapping[309]],
+                ScriptInstruction: self.row.columns[158].into_string().unwrap(),
+                ScriptValue: self.row.columns[378].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[310]],
-                ScriptValue: &self.row.columns[self.index_mapping[311]],
+                ScriptInstruction: self.row.columns[159].into_string().unwrap(),
+                ScriptValue: self.row.columns[379].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[312]],
-                ScriptValue: &self.row.columns[self.index_mapping[313]],
+                ScriptInstruction: self.row.columns[160].into_string().unwrap(),
+                ScriptValue: self.row.columns[380].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[314]],
-                ScriptValue: &self.row.columns[self.index_mapping[315]],
+                ScriptInstruction: self.row.columns[161].into_string().unwrap(),
+                ScriptValue: self.row.columns[381].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[316]],
-                ScriptValue: &self.row.columns[self.index_mapping[317]],
+                ScriptInstruction: self.row.columns[162].into_string().unwrap(),
+                ScriptValue: self.row.columns[382].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[318]],
-                ScriptValue: &self.row.columns[self.index_mapping[319]],
+                ScriptInstruction: self.row.columns[163].into_string().unwrap(),
+                ScriptValue: self.row.columns[383].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[320]],
-                ScriptValue: &self.row.columns[self.index_mapping[321]],
+                ScriptInstruction: self.row.columns[164].into_string().unwrap(),
+                ScriptValue: self.row.columns[384].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[322]],
-                ScriptValue: &self.row.columns[self.index_mapping[323]],
+                ScriptInstruction: self.row.columns[165].into_string().unwrap(),
+                ScriptValue: self.row.columns[385].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[324]],
-                ScriptValue: &self.row.columns[self.index_mapping[325]],
+                ScriptInstruction: self.row.columns[166].into_string().unwrap(),
+                ScriptValue: self.row.columns[386].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[326]],
-                ScriptValue: &self.row.columns[self.index_mapping[327]],
+                ScriptInstruction: self.row.columns[167].into_string().unwrap(),
+                ScriptValue: self.row.columns[387].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[328]],
-                ScriptValue: &self.row.columns[self.index_mapping[329]],
+                ScriptInstruction: self.row.columns[168].into_string().unwrap(),
+                ScriptValue: self.row.columns[388].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[330]],
-                ScriptValue: &self.row.columns[self.index_mapping[331]],
+                ScriptInstruction: self.row.columns[169].into_string().unwrap(),
+                ScriptValue: self.row.columns[389].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[332]],
-                ScriptValue: &self.row.columns[self.index_mapping[333]],
+                ScriptInstruction: self.row.columns[170].into_string().unwrap(),
+                ScriptValue: self.row.columns[390].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[334]],
-                ScriptValue: &self.row.columns[self.index_mapping[335]],
+                ScriptInstruction: self.row.columns[171].into_string().unwrap(),
+                ScriptValue: self.row.columns[391].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[336]],
-                ScriptValue: &self.row.columns[self.index_mapping[337]],
+                ScriptInstruction: self.row.columns[172].into_string().unwrap(),
+                ScriptValue: self.row.columns[392].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[338]],
-                ScriptValue: &self.row.columns[self.index_mapping[339]],
+                ScriptInstruction: self.row.columns[173].into_string().unwrap(),
+                ScriptValue: self.row.columns[393].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[340]],
-                ScriptValue: &self.row.columns[self.index_mapping[341]],
+                ScriptInstruction: self.row.columns[174].into_string().unwrap(),
+                ScriptValue: self.row.columns[394].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[342]],
-                ScriptValue: &self.row.columns[self.index_mapping[343]],
+                ScriptInstruction: self.row.columns[175].into_string().unwrap(),
+                ScriptValue: self.row.columns[395].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[344]],
-                ScriptValue: &self.row.columns[self.index_mapping[345]],
+                ScriptInstruction: self.row.columns[176].into_string().unwrap(),
+                ScriptValue: self.row.columns[396].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[346]],
-                ScriptValue: &self.row.columns[self.index_mapping[347]],
+                ScriptInstruction: self.row.columns[177].into_string().unwrap(),
+                ScriptValue: self.row.columns[397].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[348]],
-                ScriptValue: &self.row.columns[self.index_mapping[349]],
+                ScriptInstruction: self.row.columns[178].into_string().unwrap(),
+                ScriptValue: self.row.columns[398].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[350]],
-                ScriptValue: &self.row.columns[self.index_mapping[351]],
+                ScriptInstruction: self.row.columns[179].into_string().unwrap(),
+                ScriptValue: self.row.columns[399].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[352]],
-                ScriptValue: &self.row.columns[self.index_mapping[353]],
+                ScriptInstruction: self.row.columns[180].into_string().unwrap(),
+                ScriptValue: self.row.columns[400].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[354]],
-                ScriptValue: &self.row.columns[self.index_mapping[355]],
+                ScriptInstruction: self.row.columns[181].into_string().unwrap(),
+                ScriptValue: self.row.columns[401].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[356]],
-                ScriptValue: &self.row.columns[self.index_mapping[357]],
+                ScriptInstruction: self.row.columns[182].into_string().unwrap(),
+                ScriptValue: self.row.columns[402].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[358]],
-                ScriptValue: &self.row.columns[self.index_mapping[359]],
+                ScriptInstruction: self.row.columns[183].into_string().unwrap(),
+                ScriptValue: self.row.columns[403].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[360]],
-                ScriptValue: &self.row.columns[self.index_mapping[361]],
+                ScriptInstruction: self.row.columns[184].into_string().unwrap(),
+                ScriptValue: self.row.columns[404].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[362]],
-                ScriptValue: &self.row.columns[self.index_mapping[363]],
+                ScriptInstruction: self.row.columns[185].into_string().unwrap(),
+                ScriptValue: self.row.columns[405].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[364]],
-                ScriptValue: &self.row.columns[self.index_mapping[365]],
+                ScriptInstruction: self.row.columns[186].into_string().unwrap(),
+                ScriptValue: self.row.columns[406].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[366]],
-                ScriptValue: &self.row.columns[self.index_mapping[367]],
+                ScriptInstruction: self.row.columns[187].into_string().unwrap(),
+                ScriptValue: self.row.columns[407].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[368]],
-                ScriptValue: &self.row.columns[self.index_mapping[369]],
+                ScriptInstruction: self.row.columns[188].into_string().unwrap(),
+                ScriptValue: self.row.columns[408].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[370]],
-                ScriptValue: &self.row.columns[self.index_mapping[371]],
+                ScriptInstruction: self.row.columns[189].into_string().unwrap(),
+                ScriptValue: self.row.columns[409].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[372]],
-                ScriptValue: &self.row.columns[self.index_mapping[373]],
+                ScriptInstruction: self.row.columns[190].into_string().unwrap(),
+                ScriptValue: self.row.columns[410].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[374]],
-                ScriptValue: &self.row.columns[self.index_mapping[375]],
+                ScriptInstruction: self.row.columns[191].into_string().unwrap(),
+                ScriptValue: self.row.columns[411].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[376]],
-                ScriptValue: &self.row.columns[self.index_mapping[377]],
+                ScriptInstruction: self.row.columns[192].into_string().unwrap(),
+                ScriptValue: self.row.columns[412].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[378]],
-                ScriptValue: &self.row.columns[self.index_mapping[379]],
+                ScriptInstruction: self.row.columns[193].into_string().unwrap(),
+                ScriptValue: self.row.columns[413].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[380]],
-                ScriptValue: &self.row.columns[self.index_mapping[381]],
+                ScriptInstruction: self.row.columns[194].into_string().unwrap(),
+                ScriptValue: self.row.columns[414].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[382]],
-                ScriptValue: &self.row.columns[self.index_mapping[383]],
+                ScriptInstruction: self.row.columns[195].into_string().unwrap(),
+                ScriptValue: self.row.columns[415].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[384]],
-                ScriptValue: &self.row.columns[self.index_mapping[385]],
+                ScriptInstruction: self.row.columns[196].into_string().unwrap(),
+                ScriptValue: self.row.columns[416].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[386]],
-                ScriptValue: &self.row.columns[self.index_mapping[387]],
+                ScriptInstruction: self.row.columns[197].into_string().unwrap(),
+                ScriptValue: self.row.columns[417].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[388]],
-                ScriptValue: &self.row.columns[self.index_mapping[389]],
+                ScriptInstruction: self.row.columns[198].into_string().unwrap(),
+                ScriptValue: self.row.columns[418].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[390]],
-                ScriptValue: &self.row.columns[self.index_mapping[391]],
+                ScriptInstruction: self.row.columns[199].into_string().unwrap(),
+                ScriptValue: self.row.columns[419].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[392]],
-                ScriptValue: &self.row.columns[self.index_mapping[393]],
+                ScriptInstruction: self.row.columns[200].into_string().unwrap(),
+                ScriptValue: self.row.columns[420].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[394]],
-                ScriptValue: &self.row.columns[self.index_mapping[395]],
+                ScriptInstruction: self.row.columns[201].into_string().unwrap(),
+                ScriptValue: self.row.columns[421].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[396]],
-                ScriptValue: &self.row.columns[self.index_mapping[397]],
+                ScriptInstruction: self.row.columns[202].into_string().unwrap(),
+                ScriptValue: self.row.columns[422].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[398]],
-                ScriptValue: &self.row.columns[self.index_mapping[399]],
+                ScriptInstruction: self.row.columns[203].into_string().unwrap(),
+                ScriptValue: self.row.columns[423].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[400]],
-                ScriptValue: &self.row.columns[self.index_mapping[401]],
+                ScriptInstruction: self.row.columns[204].into_string().unwrap(),
+                ScriptValue: self.row.columns[424].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[402]],
-                ScriptValue: &self.row.columns[self.index_mapping[403]],
+                ScriptInstruction: self.row.columns[205].into_string().unwrap(),
+                ScriptValue: self.row.columns[425].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[404]],
-                ScriptValue: &self.row.columns[self.index_mapping[405]],
+                ScriptInstruction: self.row.columns[206].into_string().unwrap(),
+                ScriptValue: self.row.columns[426].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[406]],
-                ScriptValue: &self.row.columns[self.index_mapping[407]],
+                ScriptInstruction: self.row.columns[207].into_string().unwrap(),
+                ScriptValue: self.row.columns[427].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[408]],
-                ScriptValue: &self.row.columns[self.index_mapping[409]],
+                ScriptInstruction: self.row.columns[208].into_string().unwrap(),
+                ScriptValue: self.row.columns[428].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[410]],
-                ScriptValue: &self.row.columns[self.index_mapping[411]],
+                ScriptInstruction: self.row.columns[209].into_string().unwrap(),
+                ScriptValue: self.row.columns[429].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[412]],
-                ScriptValue: &self.row.columns[self.index_mapping[413]],
+                ScriptInstruction: self.row.columns[210].into_string().unwrap(),
+                ScriptValue: self.row.columns[430].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[414]],
-                ScriptValue: &self.row.columns[self.index_mapping[415]],
+                ScriptInstruction: self.row.columns[211].into_string().unwrap(),
+                ScriptValue: self.row.columns[431].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[416]],
-                ScriptValue: &self.row.columns[self.index_mapping[417]],
+                ScriptInstruction: self.row.columns[212].into_string().unwrap(),
+                ScriptValue: self.row.columns[432].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[418]],
-                ScriptValue: &self.row.columns[self.index_mapping[419]],
+                ScriptInstruction: self.row.columns[213].into_string().unwrap(),
+                ScriptValue: self.row.columns[433].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[420]],
-                ScriptValue: &self.row.columns[self.index_mapping[421]],
+                ScriptInstruction: self.row.columns[214].into_string().unwrap(),
+                ScriptValue: self.row.columns[434].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[422]],
-                ScriptValue: &self.row.columns[self.index_mapping[423]],
+                ScriptInstruction: self.row.columns[215].into_string().unwrap(),
+                ScriptValue: self.row.columns[435].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[424]],
-                ScriptValue: &self.row.columns[self.index_mapping[425]],
+                ScriptInstruction: self.row.columns[216].into_string().unwrap(),
+                ScriptValue: self.row.columns[436].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[426]],
-                ScriptValue: &self.row.columns[self.index_mapping[427]],
+                ScriptInstruction: self.row.columns[217].into_string().unwrap(),
+                ScriptValue: self.row.columns[437].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[428]],
-                ScriptValue: &self.row.columns[self.index_mapping[429]],
+                ScriptInstruction: self.row.columns[218].into_string().unwrap(),
+                ScriptValue: self.row.columns[438].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[430]],
-                ScriptValue: &self.row.columns[self.index_mapping[431]],
+                ScriptInstruction: self.row.columns[219].into_string().unwrap(),
+                ScriptValue: self.row.columns[439].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[432]],
-                ScriptValue: &self.row.columns[self.index_mapping[433]],
+                ScriptInstruction: self.row.columns[220].into_string().unwrap(),
+                ScriptValue: self.row.columns[440].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[434]],
-                ScriptValue: &self.row.columns[self.index_mapping[435]],
+                ScriptInstruction: self.row.columns[221].into_string().unwrap(),
+                ScriptValue: self.row.columns[441].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[436]],
-                ScriptValue: &self.row.columns[self.index_mapping[437]],
+                ScriptInstruction: self.row.columns[222].into_string().unwrap(),
+                ScriptValue: self.row.columns[442].into_u32().copied().unwrap(),
             },
             QuestBattleParamsElement {
-                ScriptInstruction: &self.row.columns[self.index_mapping[438]],
-                ScriptValue: &self.row.columns[self.index_mapping[439]],
+                ScriptInstruction: self.row.columns[223].into_string().unwrap(),
+                ScriptValue: self.row.columns[443].into_u32().copied().unwrap(),
             },
         ]
     }
-    pub fn Quest(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[440]]
+    pub fn Quest(&'a self) -> i32 {
+        self.row.columns[0].into_i32().copied().unwrap()
     }
-    pub fn TimeLimit(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[441]]
+    pub fn TimeLimit(&'a self) -> u16 {
+        self.row.columns[2].into_u16().copied().unwrap()
     }
-    pub fn LevelSync(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[442]]
+    pub fn LevelSync(&'a self) -> u16 {
+        self.row.columns[3].into_u16().copied().unwrap()
     }
-    pub fn QuestBattleScene(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[443]]
+    pub fn QuestBattleScene(&'a self) -> u8 {
+        self.row.columns[1].into_u8().copied().unwrap()
     }
 }

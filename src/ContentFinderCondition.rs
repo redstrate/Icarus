@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ContentFinderConditionSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl ContentFinderConditionSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl ContentFinderConditionSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ContentFinderCondition")?;
         let sheet = resolver.read_excel_sheet(&exh, "ContentFinderCondition", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ContentFinderConditionRow> {
@@ -55,10 +43,7 @@ impl ContentFinderConditionSheet {
 impl<'a> StructuredSheet<'a> for ContentFinderConditionSheet {
     type Row = ContentFinderConditionRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a ContentFinderConditionSheet {
@@ -74,308 +59,307 @@ impl<'a> IntoIterator for &'a ContentFinderConditionSheet {
 #[derive(Debug, Clone)]
 pub struct ContentFinderConditionRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> ContentFinderConditionRow<'a> {
-    pub fn Name(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Name(&'a self) -> &'a str {
+        self.row.columns[43].into_string().unwrap()
     }
-    pub fn NameShort(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn NameShort(&'a self) -> &'a str {
+        self.row.columns[44].into_string().unwrap()
     }
-    pub fn LevelingRoulette(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn LevelingRoulette(&'a self) -> bool {
+        self.row.columns[58].into_bool().copied().unwrap()
     }
-    pub fn HighLevelRoulette(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn HighLevelRoulette(&'a self) -> bool {
+        self.row.columns[59].into_bool().copied().unwrap()
     }
-    pub fn MSQRoulette(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn MSQRoulette(&'a self) -> bool {
+        self.row.columns[60].into_bool().copied().unwrap()
     }
-    pub fn GuildHestRoulette(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn GuildHestRoulette(&'a self) -> bool {
+        self.row.columns[61].into_bool().copied().unwrap()
     }
-    pub fn ExpertRoulette(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn ExpertRoulette(&'a self) -> bool {
+        self.row.columns[62].into_bool().copied().unwrap()
     }
-    pub fn TrialRoulette(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn TrialRoulette(&'a self) -> bool {
+        self.row.columns[63].into_bool().copied().unwrap()
     }
-    pub fn DailyFrontlineChallenge(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn DailyFrontlineChallenge(&'a self) -> bool {
+        self.row.columns[64].into_bool().copied().unwrap()
     }
-    pub fn LevelCapRoulette(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn LevelCapRoulette(&'a self) -> bool {
+        self.row.columns[65].into_bool().copied().unwrap()
     }
-    pub fn MentorRoulette(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn MentorRoulette(&'a self) -> bool {
+        self.row.columns[66].into_bool().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn Unknown0(&'a self) -> bool {
+        self.row.columns[67].into_bool().copied().unwrap()
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn Unknown1(&'a self) -> bool {
+        self.row.columns[68].into_bool().copied().unwrap()
     }
-    pub fn Unknown2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn Unknown2(&'a self) -> bool {
+        self.row.columns[69].into_bool().copied().unwrap()
     }
-    pub fn Unknown3(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn Unknown3(&'a self) -> bool {
+        self.row.columns[70].into_bool().copied().unwrap()
     }
-    pub fn Unknown4(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn Unknown4(&'a self) -> bool {
+        self.row.columns[71].into_bool().copied().unwrap()
     }
-    pub fn AllianceRoulette(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn AllianceRoulette(&'a self) -> bool {
+        self.row.columns[72].into_bool().copied().unwrap()
     }
-    pub fn FeastTeamRoulette(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn FeastTeamRoulette(&'a self) -> bool {
+        self.row.columns[73].into_bool().copied().unwrap()
     }
-    pub fn NormalRaidRoulette(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn NormalRaidRoulette(&'a self) -> bool {
+        self.row.columns[74].into_bool().copied().unwrap()
     }
-    pub fn Unknown5(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[19]]
+    pub fn Unknown5(&'a self) -> bool {
+        self.row.columns[75].into_bool().copied().unwrap()
     }
-    pub fn Unknown6(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[20]]
+    pub fn Unknown6(&'a self) -> bool {
+        self.row.columns[76].into_bool().copied().unwrap()
     }
-    pub fn Unknown7(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[21]]
+    pub fn Unknown7(&'a self) -> bool {
+        self.row.columns[77].into_bool().copied().unwrap()
     }
-    pub fn Unknown8(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[22]]
+    pub fn Unknown8(&'a self) -> bool {
+        self.row.columns[78].into_bool().copied().unwrap()
     }
-    pub fn Unknown9(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[23]]
+    pub fn Unknown9(&'a self) -> bool {
+        self.row.columns[79].into_bool().copied().unwrap()
     }
-    pub fn Unknown10(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[24]]
+    pub fn Unknown10(&'a self) -> bool {
+        self.row.columns[80].into_bool().copied().unwrap()
     }
-    pub fn Unknown11(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[25]]
+    pub fn Unknown11(&'a self) -> bool {
+        self.row.columns[81].into_bool().copied().unwrap()
     }
-    pub fn Unknown12(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[26]]
+    pub fn Unknown12(&'a self) -> bool {
+        self.row.columns[82].into_bool().copied().unwrap()
     }
-    pub fn Unknown13(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[27]]
+    pub fn Unknown13(&'a self) -> bool {
+        self.row.columns[83].into_bool().copied().unwrap()
     }
-    pub fn Unknown14(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[28]]
+    pub fn Unknown14(&'a self) -> bool {
+        self.row.columns[84].into_bool().copied().unwrap()
     }
-    pub fn Unknown15(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[29]]
+    pub fn Unknown15(&'a self) -> bool {
+        self.row.columns[85].into_bool().copied().unwrap()
     }
-    pub fn Unknown16(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[30]]
+    pub fn Unknown16(&'a self) -> bool {
+        self.row.columns[86].into_bool().copied().unwrap()
     }
-    pub fn Unknown17(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[31]]
+    pub fn Unknown17(&'a self) -> bool {
+        self.row.columns[87].into_bool().copied().unwrap()
     }
-    pub fn Unknown18(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[32]]
+    pub fn Unknown18(&'a self) -> bool {
+        self.row.columns[88].into_bool().copied().unwrap()
     }
-    pub fn Unknown19(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[33]]
+    pub fn Unknown19(&'a self) -> bool {
+        self.row.columns[89].into_bool().copied().unwrap()
     }
-    pub fn Unknown20(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[34]]
+    pub fn Unknown20(&'a self) -> bool {
+        self.row.columns[90].into_bool().copied().unwrap()
     }
-    pub fn Unknown21(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[35]]
+    pub fn Unknown21(&'a self) -> bool {
+        self.row.columns[91].into_bool().copied().unwrap()
     }
-    pub fn Unknown22(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[36]]
+    pub fn Unknown22(&'a self) -> bool {
+        self.row.columns[92].into_bool().copied().unwrap()
     }
-    pub fn Unknown23(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[37]]
+    pub fn Unknown23(&'a self) -> bool {
+        self.row.columns[93].into_bool().copied().unwrap()
     }
-    pub fn Unknown24(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[38]]
+    pub fn Unknown24(&'a self) -> bool {
+        self.row.columns[94].into_bool().copied().unwrap()
     }
-    pub fn Unknown25(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[39]]
+    pub fn Unknown25(&'a self) -> bool {
+        self.row.columns[95].into_bool().copied().unwrap()
     }
-    pub fn Unknown26(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[40]]
+    pub fn Unknown26(&'a self) -> bool {
+        self.row.columns[96].into_bool().copied().unwrap()
     }
-    pub fn Unknown27(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[41]]
+    pub fn Unknown27(&'a self) -> bool {
+        self.row.columns[97].into_bool().copied().unwrap()
     }
-    pub fn Unknown28(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[42]]
+    pub fn Unknown28(&'a self) -> bool {
+        self.row.columns[98].into_bool().copied().unwrap()
     }
-    pub fn ShortCode(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[43]]
+    pub fn ShortCode(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
     /// This would show Addon#102618, if not 0, but the row is empty.
-    pub fn Unknown29(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[44]]
+    pub fn Unknown29(&'a self) -> u32 {
+        self.row.columns[7].into_u32().copied().unwrap()
     }
-    pub fn ContentCloseCycle(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[45]]
+    pub fn ContentCloseCycle(&'a self) -> u32 {
+        self.row.columns[8].into_u32().copied().unwrap()
     }
-    pub fn UnlockCriteria(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[46]]
+    pub fn UnlockCriteria(&'a self) -> u32 {
+        self.row.columns[14].into_u32().copied().unwrap()
     }
-    pub fn UnlockCriteria2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[47]]
+    pub fn UnlockCriteria2(&'a self) -> u32 {
+        self.row.columns[16].into_u32().copied().unwrap()
     }
-    pub fn JournalGenre(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[48]]
+    pub fn JournalGenre(&'a self) -> u32 {
+        self.row.columns[47].into_u32().copied().unwrap()
     }
-    pub fn Transient(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[49]]
+    pub fn Transient(&'a self) -> u32 {
+        self.row.columns[48].into_u32().copied().unwrap()
     }
-    pub fn Image(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[50]]
+    pub fn Image(&'a self) -> u32 {
+        self.row.columns[50].into_u32().copied().unwrap()
     }
-    pub fn Icon(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[51]]
+    pub fn Icon(&'a self) -> u32 {
+        self.row.columns[51].into_u32().copied().unwrap()
     }
-    pub fn Unknown32(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[52]]
+    pub fn Unknown32(&'a self) -> i32 {
+        self.row.columns[53].into_i32().copied().unwrap()
     }
-    pub fn Unknown58(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[53]]
+    pub fn Unknown58(&'a self) -> i32 {
+        self.row.columns[56].into_i32().copied().unwrap()
     }
-    pub fn TerritoryType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[54]]
+    pub fn TerritoryType(&'a self) -> u16 {
+        self.row.columns[1].into_u16().copied().unwrap()
     }
-    pub fn Content(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[55]]
+    pub fn Content(&'a self) -> u16 {
+        self.row.columns[3].into_u16().copied().unwrap()
     }
-    pub fn ItemLevelRequired(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[56]]
+    pub fn ItemLevelRequired(&'a self) -> u16 {
+        self.row.columns[19].into_u16().copied().unwrap()
     }
-    pub fn ItemLevelSync(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[57]]
+    pub fn ItemLevelSync(&'a self) -> u16 {
+        self.row.columns[20].into_u16().copied().unwrap()
     }
-    pub fn SortKey(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[58]]
+    pub fn SortKey(&'a self) -> u16 {
+        self.row.columns[49].into_u16().copied().unwrap()
     }
-    pub fn ContentLinkType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[59]]
+    pub fn ContentLinkType(&'a self) -> u8 {
+        self.row.columns[2].into_u8().copied().unwrap()
     }
-    pub fn RequiredExVersion(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[60]]
+    pub fn RequiredExVersion(&'a self) -> u8 {
+        self.row.columns[6].into_u8().copied().unwrap()
     }
-    pub fn AcceptClassJobCategory(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[61]]
+    pub fn AcceptClassJobCategory(&'a self) -> u8 {
+        self.row.columns[9].into_u8().copied().unwrap()
     }
-    pub fn ContentMemberType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[62]]
+    pub fn ContentMemberType(&'a self) -> u8 {
+        self.row.columns[10].into_u8().copied().unwrap()
     }
     /// Used to control what is displayed as player count (Addon#10806, Addon#10805, etc.). Has some weird logic behind it.
-    pub fn Unknown34(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[63]]
+    pub fn Unknown34(&'a self) -> u8 {
+        self.row.columns[11].into_u8().copied().unwrap()
     }
-    pub fn QueueMaxPlayers(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[64]]
+    pub fn QueueMaxPlayers(&'a self) -> u8 {
+        self.row.columns[12].into_u8().copied().unwrap()
     }
-    pub fn UnlockType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[65]]
+    pub fn UnlockType(&'a self) -> u8 {
+        self.row.columns[13].into_u8().copied().unwrap()
     }
-    pub fn UnlockType2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[66]]
+    pub fn UnlockType2(&'a self) -> u8 {
+        self.row.columns[15].into_u8().copied().unwrap()
     }
-    pub fn ClassJobLevelRequired(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[67]]
+    pub fn ClassJobLevelRequired(&'a self) -> u8 {
+        self.row.columns[17].into_u8().copied().unwrap()
     }
-    pub fn ClassJobLevelSync(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[68]]
+    pub fn ClassJobLevelSync(&'a self) -> u8 {
+        self.row.columns[18].into_u8().copied().unwrap()
     }
-    pub fn LootModeType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[69]]
+    pub fn LootModeType(&'a self) -> u8 {
+        self.row.columns[30].into_u8().copied().unwrap()
     }
-    pub fn RaidFinderParam(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[70]]
+    pub fn RaidFinderParam(&'a self) -> u8 {
+        self.row.columns[35].into_u8().copied().unwrap()
     }
-    pub fn ContentType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[71]]
+    pub fn ContentType(&'a self) -> u8 {
+        self.row.columns[45].into_u8().copied().unwrap()
     }
-    pub fn ContentUICategory(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[72]]
+    pub fn ContentUICategory(&'a self) -> u8 {
+        self.row.columns[46].into_u8().copied().unwrap()
     }
     /// Index in PlayerState.PenaltyTimestamps
-    pub fn PenaltyTimestampArrayIndex(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[73]]
+    pub fn PenaltyTimestampArrayIndex(&'a self) -> u8 {
+        self.row.columns[57].into_u8().copied().unwrap()
     }
-    pub fn Unknown41(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[74]]
+    pub fn Unknown41(&'a self) -> i8 {
+        self.row.columns[52].into_i8().copied().unwrap()
     }
-    pub fn PvP(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[75]]
+    pub fn PvP(&'a self) -> bool {
+        self.row.columns[4].into_bool().copied().unwrap()
     }
-    pub fn Unknown_70_2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[76]]
+    pub fn Unknown_70_2(&'a self) -> bool {
+        self.row.columns[5].into_bool().copied().unwrap()
     }
     /// If true, the players item level is always set to ItemLevelSync (up-sync and down-sync possible).
-    pub fn FixedItemLevelSync(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[77]]
+    pub fn FixedItemLevelSync(&'a self) -> bool {
+        self.row.columns[21].into_bool().copied().unwrap()
     }
-    pub fn AllowUndersized(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[78]]
+    pub fn AllowUndersized(&'a self) -> bool {
+        self.row.columns[22].into_bool().copied().unwrap()
     }
-    pub fn NeedsMemberInEveryParty(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[79]]
+    pub fn NeedsMemberInEveryParty(&'a self) -> bool {
+        self.row.columns[23].into_bool().copied().unwrap()
     }
-    pub fn Unknown57(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[80]]
+    pub fn Unknown57(&'a self) -> bool {
+        self.row.columns[24].into_bool().copied().unwrap()
     }
-    pub fn AllowReplacement(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[81]]
+    pub fn AllowReplacement(&'a self) -> bool {
+        self.row.columns[25].into_bool().copied().unwrap()
     }
-    pub fn AllowMinimumIL(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[82]]
+    pub fn AllowMinimumIL(&'a self) -> bool {
+        self.row.columns[26].into_bool().copied().unwrap()
     }
-    pub fn AllowExplorerMode(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[83]]
+    pub fn AllowExplorerMode(&'a self) -> bool {
+        self.row.columns[27].into_bool().copied().unwrap()
     }
-    pub fn RatedMatch(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[84]]
+    pub fn RatedMatch(&'a self) -> bool {
+        self.row.columns[28].into_bool().copied().unwrap()
     }
-    pub fn Rated(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[85]]
+    pub fn Rated(&'a self) -> bool {
+        self.row.columns[29].into_bool().copied().unwrap()
     }
-    pub fn Unknown47(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[86]]
+    pub fn Unknown47(&'a self) -> bool {
+        self.row.columns[31].into_bool().copied().unwrap()
     }
-    pub fn IsInDutyFinder(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[87]]
+    pub fn IsInDutyFinder(&'a self) -> bool {
+        self.row.columns[32].into_bool().copied().unwrap()
     }
-    pub fn HighEndDuty(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[88]]
+    pub fn HighEndDuty(&'a self) -> bool {
+        self.row.columns[33].into_bool().copied().unwrap()
     }
-    pub fn Unknown49(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[89]]
+    pub fn Unknown49(&'a self) -> bool {
+        self.row.columns[34].into_bool().copied().unwrap()
     }
-    pub fn HasOnePlayerPerJobDetails(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[90]]
+    pub fn HasOnePlayerPerJobDetails(&'a self) -> bool {
+        self.row.columns[36].into_bool().copied().unwrap()
     }
-    pub fn Unknown51(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[91]]
+    pub fn Unknown51(&'a self) -> bool {
+        self.row.columns[37].into_bool().copied().unwrap()
     }
-    pub fn DutyRecorderAllowed(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[92]]
+    pub fn DutyRecorderAllowed(&'a self) -> bool {
+        self.row.columns[38].into_bool().copied().unwrap()
     }
-    pub fn Unknown52(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[93]]
+    pub fn Unknown52(&'a self) -> bool {
+        self.row.columns[39].into_bool().copied().unwrap()
     }
-    pub fn IsRegistrationHomeWorldLimited(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[94]]
+    pub fn IsRegistrationHomeWorldLimited(&'a self) -> bool {
+        self.row.columns[40].into_bool().copied().unwrap()
     }
-    pub fn Unknown54(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[95]]
+    pub fn Unknown54(&'a self) -> bool {
+        self.row.columns[41].into_bool().copied().unwrap()
     }
-    pub fn Unknown55(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[96]]
+    pub fn Unknown55(&'a self) -> bool {
+        self.row.columns[42].into_bool().copied().unwrap()
     }
-    pub fn Unknown56(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[97]]
+    pub fn Unknown56(&'a self) -> bool {
+        self.row.columns[54].into_bool().copied().unwrap()
     }
-    pub fn IsRegistrationAllowedFromAnyDataCenter(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[98]]
+    pub fn IsRegistrationAllowedFromAnyDataCenter(&'a self) -> bool {
+        self.row.columns[55].into_bool().copied().unwrap()
     }
 }

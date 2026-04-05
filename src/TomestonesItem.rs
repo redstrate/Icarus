@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct TomestonesItemSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl TomestonesItemSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl TomestonesItemSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TomestonesItem")?;
         let sheet = resolver.read_excel_sheet(&exh, "TomestonesItem", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<TomestonesItemRow> {
@@ -51,10 +39,7 @@ impl TomestonesItemSheet {
 impl<'a> StructuredSheet<'a> for TomestonesItemSheet {
     type Row = TomestonesItemRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a TomestonesItemSheet {
@@ -70,16 +55,15 @@ impl<'a> IntoIterator for &'a TomestonesItemSheet {
 #[derive(Debug, Clone)]
 pub struct TomestonesItemRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> TomestonesItemRow<'a> {
-    pub fn Item(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Item(&'a self) -> i32 {
+        self.row.columns[0].into_i32().copied().unwrap()
     }
-    pub fn Tomestones(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Tomestones(&'a self) -> i32 {
+        self.row.columns[2].into_i32().copied().unwrap()
     }
-    pub fn CurrencyInventorySlot(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn CurrencyInventorySlot(&'a self) -> i8 {
+        self.row.columns[1].into_i8().copied().unwrap()
     }
 }

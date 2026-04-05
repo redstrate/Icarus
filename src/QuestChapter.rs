@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct QuestChapterSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl QuestChapterSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl QuestChapterSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("QuestChapter")?;
         let sheet = resolver.read_excel_sheet(&exh, "QuestChapter", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<QuestChapterRow> {
@@ -51,10 +39,7 @@ impl QuestChapterSheet {
 impl<'a> StructuredSheet<'a> for QuestChapterSheet {
     type Row = QuestChapterRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a QuestChapterSheet {
@@ -70,13 +55,12 @@ impl<'a> IntoIterator for &'a QuestChapterSheet {
 #[derive(Debug, Clone)]
 pub struct QuestChapterRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> QuestChapterRow<'a> {
-    pub fn Quest(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Quest(&'a self) -> u32 {
+        self.row.columns[0].into_u32().copied().unwrap()
     }
-    pub fn Redo(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Redo(&'a self) -> u16 {
+        self.row.columns[1].into_u16().copied().unwrap()
     }
 }

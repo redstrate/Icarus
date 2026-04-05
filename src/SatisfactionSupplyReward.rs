@@ -7,16 +7,15 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct SatisfactionSupplyRewardDataElement<'a> {
-    pub RewardCurrency: &'a Field,
-    pub QuantityLow: &'a Field,
-    pub QuantityMid: &'a Field,
-    pub QuantityHigh: &'a Field,
+pub struct SatisfactionSupplyRewardDataElement {
+    pub RewardCurrency: u16,
+    pub QuantityLow: u16,
+    pub QuantityMid: u16,
+    pub QuantityHigh: u16,
 }
 #[derive(Debug, Clone)]
 pub struct SatisfactionSupplyRewardSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl SatisfactionSupplyRewardSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -27,18 +26,7 @@ impl SatisfactionSupplyRewardSheet {
         let exh = resolver.read_excel_sheet_header("SatisfactionSupplyReward")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "SatisfactionSupplyReward", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<SatisfactionSupplyRewardRow> {
@@ -62,10 +50,7 @@ impl SatisfactionSupplyRewardSheet {
 impl<'a> StructuredSheet<'a> for SatisfactionSupplyRewardSheet {
     type Row = SatisfactionSupplyRewardRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a SatisfactionSupplyRewardSheet {
@@ -81,50 +66,49 @@ impl<'a> IntoIterator for &'a SatisfactionSupplyRewardSheet {
 #[derive(Debug, Clone)]
 pub struct SatisfactionSupplyRewardRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> SatisfactionSupplyRewardRow<'a> {
     pub fn SatisfactionSupplyRewardData(
         &'a self,
-    ) -> [SatisfactionSupplyRewardDataElement<'a>; 2] {
+    ) -> [SatisfactionSupplyRewardDataElement; 2] {
         [
             SatisfactionSupplyRewardDataElement {
-                RewardCurrency: &self.row.columns[self.index_mapping[0]],
-                QuantityLow: &self.row.columns[self.index_mapping[1]],
-                QuantityMid: &self.row.columns[self.index_mapping[2]],
-                QuantityHigh: &self.row.columns[self.index_mapping[3]],
+                RewardCurrency: self.row.columns[1].into_u16().copied().unwrap(),
+                QuantityLow: self.row.columns[2].into_u16().copied().unwrap(),
+                QuantityMid: self.row.columns[3].into_u16().copied().unwrap(),
+                QuantityHigh: self.row.columns[4].into_u16().copied().unwrap(),
             },
             SatisfactionSupplyRewardDataElement {
-                RewardCurrency: &self.row.columns[self.index_mapping[4]],
-                QuantityLow: &self.row.columns[self.index_mapping[5]],
-                QuantityMid: &self.row.columns[self.index_mapping[6]],
-                QuantityHigh: &self.row.columns[self.index_mapping[7]],
+                RewardCurrency: self.row.columns[5].into_u16().copied().unwrap(),
+                QuantityLow: self.row.columns[6].into_u16().copied().unwrap(),
+                QuantityMid: self.row.columns[7].into_u16().copied().unwrap(),
+                QuantityHigh: self.row.columns[8].into_u16().copied().unwrap(),
             },
         ]
     }
-    pub fn SatisfactionLow(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn SatisfactionLow(&'a self) -> u16 {
+        self.row.columns[10].into_u16().copied().unwrap()
     }
-    pub fn SatisfactionMid(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn SatisfactionMid(&'a self) -> u16 {
+        self.row.columns[11].into_u16().copied().unwrap()
     }
-    pub fn SatisfactionHigh(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn SatisfactionHigh(&'a self) -> u16 {
+        self.row.columns[12].into_u16().copied().unwrap()
     }
-    pub fn GilLow(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn GilLow(&'a self) -> u16 {
+        self.row.columns[13].into_u16().copied().unwrap()
     }
-    pub fn GilMid(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn GilMid(&'a self) -> u16 {
+        self.row.columns[14].into_u16().copied().unwrap()
     }
-    pub fn GilHigh(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn GilHigh(&'a self) -> u16 {
+        self.row.columns[15].into_u16().copied().unwrap()
     }
-    pub fn BonusMultiplier(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn BonusMultiplier(&'a self) -> u8 {
+        self.row.columns[0].into_u8().copied().unwrap()
     }
     /// 0 == current cap
-    pub fn MinLevelForSecondReward(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn MinLevelForSecondReward(&'a self) -> u8 {
+        self.row.columns[9].into_u8().copied().unwrap()
     }
 }

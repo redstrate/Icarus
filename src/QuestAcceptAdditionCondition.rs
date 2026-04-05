@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct QuestAcceptAdditionConditionSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl QuestAcceptAdditionConditionSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -21,18 +20,7 @@ impl QuestAcceptAdditionConditionSheet {
         let exh = resolver.read_excel_sheet_header("QuestAcceptAdditionCondition")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "QuestAcceptAdditionCondition", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<QuestAcceptAdditionConditionRow> {
@@ -56,10 +44,7 @@ impl QuestAcceptAdditionConditionSheet {
 impl<'a> StructuredSheet<'a> for QuestAcceptAdditionConditionSheet {
     type Row = QuestAcceptAdditionConditionRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a QuestAcceptAdditionConditionSheet {
@@ -77,22 +62,21 @@ impl<'a> IntoIterator for &'a QuestAcceptAdditionConditionSheet {
 #[derive(Debug, Clone)]
 pub struct QuestAcceptAdditionConditionRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> QuestAcceptAdditionConditionRow<'a> {
-    pub fn Requirement0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Requirement0(&'a self) -> u32 {
+        self.row.columns[1].into_u32().copied().unwrap()
     }
-    pub fn Requirement1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Requirement1(&'a self) -> u32 {
+        self.row.columns[2].into_u32().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Unknown0(&'a self) -> u32 {
+        self.row.columns[3].into_u32().copied().unwrap()
     }
-    pub fn Unknown2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn Unknown2(&'a self) -> bool {
+        self.row.columns[0].into_bool().copied().unwrap()
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn Unknown1(&'a self) -> bool {
+        self.row.columns[4].into_bool().copied().unwrap()
     }
 }

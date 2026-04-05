@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ClassJobCategorySheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl ClassJobCategorySheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl ClassJobCategorySheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ClassJobCategory")?;
         let sheet = resolver.read_excel_sheet(&exh, "ClassJobCategory", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ClassJobCategoryRow> {
@@ -51,10 +39,7 @@ impl ClassJobCategorySheet {
 impl<'a> StructuredSheet<'a> for ClassJobCategorySheet {
     type Row = ClassJobCategoryRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a ClassJobCategorySheet {
@@ -70,148 +55,147 @@ impl<'a> IntoIterator for &'a ClassJobCategorySheet {
 #[derive(Debug, Clone)]
 pub struct ClassJobCategoryRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> ClassJobCategoryRow<'a> {
-    pub fn Name(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Name(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn ADV(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn ADV(&'a self) -> bool {
+        self.row.columns[1].into_bool().copied().unwrap()
     }
-    pub fn GLA(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn GLA(&'a self) -> bool {
+        self.row.columns[2].into_bool().copied().unwrap()
     }
-    pub fn PGL(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn PGL(&'a self) -> bool {
+        self.row.columns[3].into_bool().copied().unwrap()
     }
-    pub fn MRD(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn MRD(&'a self) -> bool {
+        self.row.columns[4].into_bool().copied().unwrap()
     }
-    pub fn LNC(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn LNC(&'a self) -> bool {
+        self.row.columns[5].into_bool().copied().unwrap()
     }
-    pub fn ARC(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn ARC(&'a self) -> bool {
+        self.row.columns[6].into_bool().copied().unwrap()
     }
-    pub fn CNJ(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn CNJ(&'a self) -> bool {
+        self.row.columns[7].into_bool().copied().unwrap()
     }
-    pub fn THM(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn THM(&'a self) -> bool {
+        self.row.columns[8].into_bool().copied().unwrap()
     }
-    pub fn CRP(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn CRP(&'a self) -> bool {
+        self.row.columns[9].into_bool().copied().unwrap()
     }
-    pub fn BSM(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn BSM(&'a self) -> bool {
+        self.row.columns[10].into_bool().copied().unwrap()
     }
-    pub fn ARM(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn ARM(&'a self) -> bool {
+        self.row.columns[11].into_bool().copied().unwrap()
     }
-    pub fn GSM(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn GSM(&'a self) -> bool {
+        self.row.columns[12].into_bool().copied().unwrap()
     }
-    pub fn LTW(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn LTW(&'a self) -> bool {
+        self.row.columns[13].into_bool().copied().unwrap()
     }
-    pub fn WVR(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn WVR(&'a self) -> bool {
+        self.row.columns[14].into_bool().copied().unwrap()
     }
-    pub fn ALC(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn ALC(&'a self) -> bool {
+        self.row.columns[15].into_bool().copied().unwrap()
     }
-    pub fn CUL(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn CUL(&'a self) -> bool {
+        self.row.columns[16].into_bool().copied().unwrap()
     }
-    pub fn MIN(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn MIN(&'a self) -> bool {
+        self.row.columns[17].into_bool().copied().unwrap()
     }
-    pub fn BTN(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn BTN(&'a self) -> bool {
+        self.row.columns[18].into_bool().copied().unwrap()
     }
-    pub fn FSH(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[19]]
+    pub fn FSH(&'a self) -> bool {
+        self.row.columns[19].into_bool().copied().unwrap()
     }
-    pub fn PLD(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[20]]
+    pub fn PLD(&'a self) -> bool {
+        self.row.columns[20].into_bool().copied().unwrap()
     }
-    pub fn MNK(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[21]]
+    pub fn MNK(&'a self) -> bool {
+        self.row.columns[21].into_bool().copied().unwrap()
     }
-    pub fn WAR(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[22]]
+    pub fn WAR(&'a self) -> bool {
+        self.row.columns[22].into_bool().copied().unwrap()
     }
-    pub fn DRG(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[23]]
+    pub fn DRG(&'a self) -> bool {
+        self.row.columns[23].into_bool().copied().unwrap()
     }
-    pub fn BRD(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[24]]
+    pub fn BRD(&'a self) -> bool {
+        self.row.columns[24].into_bool().copied().unwrap()
     }
-    pub fn WHM(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[25]]
+    pub fn WHM(&'a self) -> bool {
+        self.row.columns[25].into_bool().copied().unwrap()
     }
-    pub fn BLM(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[26]]
+    pub fn BLM(&'a self) -> bool {
+        self.row.columns[26].into_bool().copied().unwrap()
     }
-    pub fn ACN(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[27]]
+    pub fn ACN(&'a self) -> bool {
+        self.row.columns[27].into_bool().copied().unwrap()
     }
-    pub fn SMN(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[28]]
+    pub fn SMN(&'a self) -> bool {
+        self.row.columns[28].into_bool().copied().unwrap()
     }
-    pub fn SCH(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[29]]
+    pub fn SCH(&'a self) -> bool {
+        self.row.columns[29].into_bool().copied().unwrap()
     }
-    pub fn ROG(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[30]]
+    pub fn ROG(&'a self) -> bool {
+        self.row.columns[30].into_bool().copied().unwrap()
     }
-    pub fn NIN(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[31]]
+    pub fn NIN(&'a self) -> bool {
+        self.row.columns[31].into_bool().copied().unwrap()
     }
-    pub fn MCH(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[32]]
+    pub fn MCH(&'a self) -> bool {
+        self.row.columns[32].into_bool().copied().unwrap()
     }
-    pub fn DRK(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[33]]
+    pub fn DRK(&'a self) -> bool {
+        self.row.columns[33].into_bool().copied().unwrap()
     }
-    pub fn AST(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[34]]
+    pub fn AST(&'a self) -> bool {
+        self.row.columns[34].into_bool().copied().unwrap()
     }
-    pub fn SAM(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[35]]
+    pub fn SAM(&'a self) -> bool {
+        self.row.columns[35].into_bool().copied().unwrap()
     }
-    pub fn RDM(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[36]]
+    pub fn RDM(&'a self) -> bool {
+        self.row.columns[36].into_bool().copied().unwrap()
     }
-    pub fn BLU(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[37]]
+    pub fn BLU(&'a self) -> bool {
+        self.row.columns[37].into_bool().copied().unwrap()
     }
-    pub fn GNB(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[38]]
+    pub fn GNB(&'a self) -> bool {
+        self.row.columns[38].into_bool().copied().unwrap()
     }
-    pub fn DNC(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[39]]
+    pub fn DNC(&'a self) -> bool {
+        self.row.columns[39].into_bool().copied().unwrap()
     }
-    pub fn RPR(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[40]]
+    pub fn RPR(&'a self) -> bool {
+        self.row.columns[40].into_bool().copied().unwrap()
     }
-    pub fn SGE(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[41]]
+    pub fn SGE(&'a self) -> bool {
+        self.row.columns[41].into_bool().copied().unwrap()
     }
-    pub fn VPR(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[42]]
+    pub fn VPR(&'a self) -> bool {
+        self.row.columns[42].into_bool().copied().unwrap()
     }
-    pub fn PCT(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[43]]
+    pub fn PCT(&'a self) -> bool {
+        self.row.columns[43].into_bool().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[44]]
+    pub fn Unknown0(&'a self) -> bool {
+        self.row.columns[44].into_bool().copied().unwrap()
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[45]]
+    pub fn Unknown1(&'a self) -> bool {
+        self.row.columns[45].into_bool().copied().unwrap()
     }
-    pub fn Unknown2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[46]]
+    pub fn Unknown2(&'a self) -> bool {
+        self.row.columns[46].into_bool().copied().unwrap()
     }
 }

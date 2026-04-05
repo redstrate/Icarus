@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct QuestEventAreaEntranceInfoSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl QuestEventAreaEntranceInfoSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -21,18 +20,7 @@ impl QuestEventAreaEntranceInfoSheet {
         let exh = resolver.read_excel_sheet_header("QuestEventAreaEntranceInfo")?;
         let sheet = resolver
             .read_excel_sheet(&exh, "QuestEventAreaEntranceInfo", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<QuestEventAreaEntranceInfoRow> {
@@ -56,10 +44,7 @@ impl QuestEventAreaEntranceInfoSheet {
 impl<'a> StructuredSheet<'a> for QuestEventAreaEntranceInfoSheet {
     type Row = QuestEventAreaEntranceInfoRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a QuestEventAreaEntranceInfoSheet {
@@ -75,16 +60,15 @@ impl<'a> IntoIterator for &'a QuestEventAreaEntranceInfoSheet {
 #[derive(Debug, Clone)]
 pub struct QuestEventAreaEntranceInfoRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> QuestEventAreaEntranceInfoRow<'a> {
-    pub fn Quest(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Quest(&'a self) -> u32 {
+        self.row.columns[0].into_u32().copied().unwrap()
     }
-    pub fn Location(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Location(&'a self) -> u32 {
+        self.row.columns[2].into_u32().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Unknown0(&'a self) -> u8 {
+        self.row.columns[1].into_u8().copied().unwrap()
     }
 }

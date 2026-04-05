@@ -7,15 +7,14 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
-pub struct ItemDataElement<'a> {
-    pub Item: &'a Field,
-    pub Cost: &'a Field,
-    pub FCRankRequired: &'a Field,
+pub struct ItemDataElement {
+    pub Item: u32,
+    pub Cost: u32,
+    pub FCRankRequired: u8,
 }
 #[derive(Debug, Clone)]
 pub struct FccShopSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl FccShopSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -25,18 +24,7 @@ impl FccShopSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("FccShop")?;
         let sheet = resolver.read_excel_sheet(&exh, "FccShop", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<FccShopRow> {
@@ -56,10 +44,7 @@ impl FccShopSheet {
 impl<'a> StructuredSheet<'a> for FccShopSheet {
     type Row = FccShopRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a FccShopSheet {
@@ -75,63 +60,62 @@ impl<'a> IntoIterator for &'a FccShopSheet {
 #[derive(Debug, Clone)]
 pub struct FccShopRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> FccShopRow<'a> {
-    pub fn Name(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Name(&'a self) -> &'a str {
+        self.row.columns[0].into_string().unwrap()
     }
-    pub fn ItemData(&'a self) -> [ItemDataElement<'a>; 10] {
+    pub fn ItemData(&'a self) -> [ItemDataElement; 10] {
         [
             ItemDataElement {
-                Item: &self.row.columns[self.index_mapping[1]],
-                Cost: &self.row.columns[self.index_mapping[2]],
-                FCRankRequired: &self.row.columns[self.index_mapping[3]],
+                Item: self.row.columns[1].into_u32().copied().unwrap(),
+                Cost: self.row.columns[11].into_u32().copied().unwrap(),
+                FCRankRequired: self.row.columns[21].into_u8().copied().unwrap(),
             },
             ItemDataElement {
-                Item: &self.row.columns[self.index_mapping[4]],
-                Cost: &self.row.columns[self.index_mapping[5]],
-                FCRankRequired: &self.row.columns[self.index_mapping[6]],
+                Item: self.row.columns[2].into_u32().copied().unwrap(),
+                Cost: self.row.columns[12].into_u32().copied().unwrap(),
+                FCRankRequired: self.row.columns[22].into_u8().copied().unwrap(),
             },
             ItemDataElement {
-                Item: &self.row.columns[self.index_mapping[7]],
-                Cost: &self.row.columns[self.index_mapping[8]],
-                FCRankRequired: &self.row.columns[self.index_mapping[9]],
+                Item: self.row.columns[3].into_u32().copied().unwrap(),
+                Cost: self.row.columns[13].into_u32().copied().unwrap(),
+                FCRankRequired: self.row.columns[23].into_u8().copied().unwrap(),
             },
             ItemDataElement {
-                Item: &self.row.columns[self.index_mapping[10]],
-                Cost: &self.row.columns[self.index_mapping[11]],
-                FCRankRequired: &self.row.columns[self.index_mapping[12]],
+                Item: self.row.columns[4].into_u32().copied().unwrap(),
+                Cost: self.row.columns[14].into_u32().copied().unwrap(),
+                FCRankRequired: self.row.columns[24].into_u8().copied().unwrap(),
             },
             ItemDataElement {
-                Item: &self.row.columns[self.index_mapping[13]],
-                Cost: &self.row.columns[self.index_mapping[14]],
-                FCRankRequired: &self.row.columns[self.index_mapping[15]],
+                Item: self.row.columns[5].into_u32().copied().unwrap(),
+                Cost: self.row.columns[15].into_u32().copied().unwrap(),
+                FCRankRequired: self.row.columns[25].into_u8().copied().unwrap(),
             },
             ItemDataElement {
-                Item: &self.row.columns[self.index_mapping[16]],
-                Cost: &self.row.columns[self.index_mapping[17]],
-                FCRankRequired: &self.row.columns[self.index_mapping[18]],
+                Item: self.row.columns[6].into_u32().copied().unwrap(),
+                Cost: self.row.columns[16].into_u32().copied().unwrap(),
+                FCRankRequired: self.row.columns[26].into_u8().copied().unwrap(),
             },
             ItemDataElement {
-                Item: &self.row.columns[self.index_mapping[19]],
-                Cost: &self.row.columns[self.index_mapping[20]],
-                FCRankRequired: &self.row.columns[self.index_mapping[21]],
+                Item: self.row.columns[7].into_u32().copied().unwrap(),
+                Cost: self.row.columns[17].into_u32().copied().unwrap(),
+                FCRankRequired: self.row.columns[27].into_u8().copied().unwrap(),
             },
             ItemDataElement {
-                Item: &self.row.columns[self.index_mapping[22]],
-                Cost: &self.row.columns[self.index_mapping[23]],
-                FCRankRequired: &self.row.columns[self.index_mapping[24]],
+                Item: self.row.columns[8].into_u32().copied().unwrap(),
+                Cost: self.row.columns[18].into_u32().copied().unwrap(),
+                FCRankRequired: self.row.columns[28].into_u8().copied().unwrap(),
             },
             ItemDataElement {
-                Item: &self.row.columns[self.index_mapping[25]],
-                Cost: &self.row.columns[self.index_mapping[26]],
-                FCRankRequired: &self.row.columns[self.index_mapping[27]],
+                Item: self.row.columns[9].into_u32().copied().unwrap(),
+                Cost: self.row.columns[19].into_u32().copied().unwrap(),
+                FCRankRequired: self.row.columns[29].into_u8().copied().unwrap(),
             },
             ItemDataElement {
-                Item: &self.row.columns[self.index_mapping[28]],
-                Cost: &self.row.columns[self.index_mapping[29]],
-                FCRankRequired: &self.row.columns[self.index_mapping[30]],
+                Item: self.row.columns[10].into_u32().copied().unwrap(),
+                Cost: self.row.columns[20].into_u32().copied().unwrap(),
+                FCRankRequired: self.row.columns[30].into_u8().copied().unwrap(),
             },
         ]
     }

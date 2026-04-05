@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ExportedGatheringPointSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl ExportedGatheringPointSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl ExportedGatheringPointSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ExportedGatheringPoint")?;
         let sheet = resolver.read_excel_sheet(&exh, "ExportedGatheringPoint", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ExportedGatheringPointRow> {
@@ -55,10 +43,7 @@ impl ExportedGatheringPointSheet {
 impl<'a> StructuredSheet<'a> for ExportedGatheringPointSheet {
     type Row = ExportedGatheringPointRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a ExportedGatheringPointSheet {
@@ -74,22 +59,21 @@ impl<'a> IntoIterator for &'a ExportedGatheringPointSheet {
 #[derive(Debug, Clone)]
 pub struct ExportedGatheringPointRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> ExportedGatheringPointRow<'a> {
-    pub fn X(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn X(&'a self) -> f32 {
+        self.row.columns[0].into_f32().copied().unwrap()
     }
-    pub fn Y(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Y(&'a self) -> f32 {
+        self.row.columns[1].into_f32().copied().unwrap()
     }
-    pub fn Radius(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Radius(&'a self) -> u16 {
+        self.row.columns[4].into_u16().copied().unwrap()
     }
-    pub fn GatheringType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn GatheringType(&'a self) -> u8 {
+        self.row.columns[2].into_u8().copied().unwrap()
     }
-    pub fn GatheringPointType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn GatheringPointType(&'a self) -> u8 {
+        self.row.columns[3].into_u8().copied().unwrap()
     }
 }

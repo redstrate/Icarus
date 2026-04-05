@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct ItemLevelSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl ItemLevelSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl ItemLevelSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("ItemLevel")?;
         let sheet = resolver.read_excel_sheet(&exh, "ItemLevel", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<ItemLevelRow> {
@@ -51,10 +39,7 @@ impl ItemLevelSheet {
 impl<'a> StructuredSheet<'a> for ItemLevelSheet {
     type Row = ItemLevelRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a ItemLevelSheet {
@@ -70,229 +55,228 @@ impl<'a> IntoIterator for &'a ItemLevelSheet {
 #[derive(Debug, Clone)]
 pub struct ItemLevelRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> ItemLevelRow<'a> {
-    pub fn Strength(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Strength(&'a self) -> u16 {
+        self.row.columns[0].into_u16().copied().unwrap()
     }
-    pub fn Dexterity(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Dexterity(&'a self) -> u16 {
+        self.row.columns[1].into_u16().copied().unwrap()
     }
-    pub fn Vitality(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Vitality(&'a self) -> u16 {
+        self.row.columns[2].into_u16().copied().unwrap()
     }
-    pub fn Intelligence(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn Intelligence(&'a self) -> u16 {
+        self.row.columns[3].into_u16().copied().unwrap()
     }
-    pub fn Mind(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn Mind(&'a self) -> u16 {
+        self.row.columns[4].into_u16().copied().unwrap()
     }
-    pub fn Piety(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn Piety(&'a self) -> u16 {
+        self.row.columns[5].into_u16().copied().unwrap()
     }
-    pub fn HP(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn HP(&'a self) -> u16 {
+        self.row.columns[6].into_u16().copied().unwrap()
     }
-    pub fn MP(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn MP(&'a self) -> u16 {
+        self.row.columns[7].into_u16().copied().unwrap()
     }
-    pub fn TP(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn TP(&'a self) -> u16 {
+        self.row.columns[8].into_u16().copied().unwrap()
     }
-    pub fn GP(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn GP(&'a self) -> u16 {
+        self.row.columns[9].into_u16().copied().unwrap()
     }
-    pub fn CP(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn CP(&'a self) -> u16 {
+        self.row.columns[10].into_u16().copied().unwrap()
     }
-    pub fn PhysicalDamage(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn PhysicalDamage(&'a self) -> u16 {
+        self.row.columns[11].into_u16().copied().unwrap()
     }
-    pub fn MagicalDamage(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn MagicalDamage(&'a self) -> u16 {
+        self.row.columns[12].into_u16().copied().unwrap()
     }
-    pub fn Delay(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn Delay(&'a self) -> u16 {
+        self.row.columns[13].into_u16().copied().unwrap()
     }
-    pub fn AdditionalEffect(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn AdditionalEffect(&'a self) -> u16 {
+        self.row.columns[14].into_u16().copied().unwrap()
     }
-    pub fn AttackSpeed(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn AttackSpeed(&'a self) -> u16 {
+        self.row.columns[15].into_u16().copied().unwrap()
     }
-    pub fn BlockRate(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn BlockRate(&'a self) -> u16 {
+        self.row.columns[16].into_u16().copied().unwrap()
     }
-    pub fn BlockStrength(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn BlockStrength(&'a self) -> u16 {
+        self.row.columns[17].into_u16().copied().unwrap()
     }
-    pub fn Tenacity(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn Tenacity(&'a self) -> u16 {
+        self.row.columns[18].into_u16().copied().unwrap()
     }
-    pub fn AttackPower(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[19]]
+    pub fn AttackPower(&'a self) -> u16 {
+        self.row.columns[19].into_u16().copied().unwrap()
     }
-    pub fn Defense(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[20]]
+    pub fn Defense(&'a self) -> u16 {
+        self.row.columns[20].into_u16().copied().unwrap()
     }
-    pub fn DirectHitRate(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[21]]
+    pub fn DirectHitRate(&'a self) -> u16 {
+        self.row.columns[21].into_u16().copied().unwrap()
     }
-    pub fn Evasion(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[22]]
+    pub fn Evasion(&'a self) -> u16 {
+        self.row.columns[22].into_u16().copied().unwrap()
     }
-    pub fn MagicDefense(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[23]]
+    pub fn MagicDefense(&'a self) -> u16 {
+        self.row.columns[23].into_u16().copied().unwrap()
     }
-    pub fn CriticalHitPower(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[24]]
+    pub fn CriticalHitPower(&'a self) -> u16 {
+        self.row.columns[24].into_u16().copied().unwrap()
     }
-    pub fn CriticalHitResilience(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[25]]
+    pub fn CriticalHitResilience(&'a self) -> u16 {
+        self.row.columns[25].into_u16().copied().unwrap()
     }
-    pub fn CriticalHit(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[26]]
+    pub fn CriticalHit(&'a self) -> u16 {
+        self.row.columns[26].into_u16().copied().unwrap()
     }
-    pub fn CriticalHitEvasion(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[27]]
+    pub fn CriticalHitEvasion(&'a self) -> u16 {
+        self.row.columns[27].into_u16().copied().unwrap()
     }
-    pub fn SlashingResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[28]]
+    pub fn SlashingResistance(&'a self) -> u16 {
+        self.row.columns[28].into_u16().copied().unwrap()
     }
-    pub fn PiercingResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[29]]
+    pub fn PiercingResistance(&'a self) -> u16 {
+        self.row.columns[29].into_u16().copied().unwrap()
     }
-    pub fn BluntResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[30]]
+    pub fn BluntResistance(&'a self) -> u16 {
+        self.row.columns[30].into_u16().copied().unwrap()
     }
-    pub fn ProjectileResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[31]]
+    pub fn ProjectileResistance(&'a self) -> u16 {
+        self.row.columns[31].into_u16().copied().unwrap()
     }
-    pub fn AttackMagicPotency(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[32]]
+    pub fn AttackMagicPotency(&'a self) -> u16 {
+        self.row.columns[32].into_u16().copied().unwrap()
     }
-    pub fn HealingMagicPotency(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[33]]
+    pub fn HealingMagicPotency(&'a self) -> u16 {
+        self.row.columns[33].into_u16().copied().unwrap()
     }
-    pub fn EnhancementMagicPotency(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[34]]
+    pub fn EnhancementMagicPotency(&'a self) -> u16 {
+        self.row.columns[34].into_u16().copied().unwrap()
     }
-    pub fn EnfeeblingMagicPotency(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[35]]
+    pub fn EnfeeblingMagicPotency(&'a self) -> u16 {
+        self.row.columns[35].into_u16().copied().unwrap()
     }
-    pub fn FireResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[36]]
+    pub fn FireResistance(&'a self) -> u16 {
+        self.row.columns[36].into_u16().copied().unwrap()
     }
-    pub fn IceResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[37]]
+    pub fn IceResistance(&'a self) -> u16 {
+        self.row.columns[37].into_u16().copied().unwrap()
     }
-    pub fn WindResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[38]]
+    pub fn WindResistance(&'a self) -> u16 {
+        self.row.columns[38].into_u16().copied().unwrap()
     }
-    pub fn EarthResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[39]]
+    pub fn EarthResistance(&'a self) -> u16 {
+        self.row.columns[39].into_u16().copied().unwrap()
     }
-    pub fn LightningResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[40]]
+    pub fn LightningResistance(&'a self) -> u16 {
+        self.row.columns[40].into_u16().copied().unwrap()
     }
-    pub fn WaterResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[41]]
+    pub fn WaterResistance(&'a self) -> u16 {
+        self.row.columns[41].into_u16().copied().unwrap()
     }
-    pub fn MagicResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[42]]
+    pub fn MagicResistance(&'a self) -> u16 {
+        self.row.columns[42].into_u16().copied().unwrap()
     }
-    pub fn Determination(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[43]]
+    pub fn Determination(&'a self) -> u16 {
+        self.row.columns[43].into_u16().copied().unwrap()
     }
-    pub fn SkillSpeed(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[44]]
+    pub fn SkillSpeed(&'a self) -> u16 {
+        self.row.columns[44].into_u16().copied().unwrap()
     }
-    pub fn SpellSpeed(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[45]]
+    pub fn SpellSpeed(&'a self) -> u16 {
+        self.row.columns[45].into_u16().copied().unwrap()
     }
-    pub fn Haste(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[46]]
+    pub fn Haste(&'a self) -> u16 {
+        self.row.columns[46].into_u16().copied().unwrap()
     }
-    pub fn Morale(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[47]]
+    pub fn Morale(&'a self) -> u16 {
+        self.row.columns[47].into_u16().copied().unwrap()
     }
-    pub fn Enmity(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[48]]
+    pub fn Enmity(&'a self) -> u16 {
+        self.row.columns[48].into_u16().copied().unwrap()
     }
-    pub fn EnmityReduction(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[49]]
+    pub fn EnmityReduction(&'a self) -> u16 {
+        self.row.columns[49].into_u16().copied().unwrap()
     }
-    pub fn CarefulDesynthesis(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[50]]
+    pub fn CarefulDesynthesis(&'a self) -> u16 {
+        self.row.columns[50].into_u16().copied().unwrap()
     }
-    pub fn EXPBonus(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[51]]
+    pub fn EXPBonus(&'a self) -> u16 {
+        self.row.columns[51].into_u16().copied().unwrap()
     }
-    pub fn Regen(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[52]]
+    pub fn Regen(&'a self) -> u16 {
+        self.row.columns[52].into_u16().copied().unwrap()
     }
-    pub fn Refresh(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[53]]
+    pub fn Refresh(&'a self) -> u16 {
+        self.row.columns[53].into_u16().copied().unwrap()
     }
-    pub fn MovementSpeed(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[54]]
+    pub fn MovementSpeed(&'a self) -> u16 {
+        self.row.columns[54].into_u16().copied().unwrap()
     }
-    pub fn Spikes(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[55]]
+    pub fn Spikes(&'a self) -> u16 {
+        self.row.columns[55].into_u16().copied().unwrap()
     }
-    pub fn SlowResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[56]]
+    pub fn SlowResistance(&'a self) -> u16 {
+        self.row.columns[56].into_u16().copied().unwrap()
     }
-    pub fn PetrificationResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[57]]
+    pub fn PetrificationResistance(&'a self) -> u16 {
+        self.row.columns[57].into_u16().copied().unwrap()
     }
-    pub fn ParalysisResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[58]]
+    pub fn ParalysisResistance(&'a self) -> u16 {
+        self.row.columns[58].into_u16().copied().unwrap()
     }
-    pub fn SilenceResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[59]]
+    pub fn SilenceResistance(&'a self) -> u16 {
+        self.row.columns[59].into_u16().copied().unwrap()
     }
-    pub fn BlindResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[60]]
+    pub fn BlindResistance(&'a self) -> u16 {
+        self.row.columns[60].into_u16().copied().unwrap()
     }
-    pub fn PoisonResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[61]]
+    pub fn PoisonResistance(&'a self) -> u16 {
+        self.row.columns[61].into_u16().copied().unwrap()
     }
-    pub fn StunResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[62]]
+    pub fn StunResistance(&'a self) -> u16 {
+        self.row.columns[62].into_u16().copied().unwrap()
     }
-    pub fn SleepResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[63]]
+    pub fn SleepResistance(&'a self) -> u16 {
+        self.row.columns[63].into_u16().copied().unwrap()
     }
-    pub fn BindResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[64]]
+    pub fn BindResistance(&'a self) -> u16 {
+        self.row.columns[64].into_u16().copied().unwrap()
     }
-    pub fn HeavyResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[65]]
+    pub fn HeavyResistance(&'a self) -> u16 {
+        self.row.columns[65].into_u16().copied().unwrap()
     }
-    pub fn DoomResistance(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[66]]
+    pub fn DoomResistance(&'a self) -> u16 {
+        self.row.columns[66].into_u16().copied().unwrap()
     }
-    pub fn ReducedDurabilityLoss(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[67]]
+    pub fn ReducedDurabilityLoss(&'a self) -> u16 {
+        self.row.columns[67].into_u16().copied().unwrap()
     }
-    pub fn IncreasedSpiritbondGain(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[68]]
+    pub fn IncreasedSpiritbondGain(&'a self) -> u16 {
+        self.row.columns[68].into_u16().copied().unwrap()
     }
-    pub fn Craftsmanship(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[69]]
+    pub fn Craftsmanship(&'a self) -> u16 {
+        self.row.columns[69].into_u16().copied().unwrap()
     }
-    pub fn Control(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[70]]
+    pub fn Control(&'a self) -> u16 {
+        self.row.columns[70].into_u16().copied().unwrap()
     }
-    pub fn Gathering(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[71]]
+    pub fn Gathering(&'a self) -> u16 {
+        self.row.columns[71].into_u16().copied().unwrap()
     }
-    pub fn Perception(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[72]]
+    pub fn Perception(&'a self) -> u16 {
+        self.row.columns[72].into_u16().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[73]]
+    pub fn Unknown0(&'a self) -> u16 {
+        self.row.columns[73].into_u16().copied().unwrap()
     }
 }

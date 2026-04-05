@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct WKSMissionRewardSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl WKSMissionRewardSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl WKSMissionRewardSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("WKSMissionReward")?;
         let sheet = resolver.read_excel_sheet(&exh, "WKSMissionReward", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<WKSMissionRewardRow> {
@@ -51,10 +39,7 @@ impl WKSMissionRewardSheet {
 impl<'a> StructuredSheet<'a> for WKSMissionRewardSheet {
     type Row = WKSMissionRewardRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a WKSMissionRewardSheet {
@@ -70,55 +55,54 @@ impl<'a> IntoIterator for &'a WKSMissionRewardSheet {
 #[derive(Debug, Clone)]
 pub struct WKSMissionRewardRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> WKSMissionRewardRow<'a> {
-    pub fn Item(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Item(&'a self) -> u32 {
+        self.row.columns[16].into_u32().copied().unwrap()
     }
     /// ExpReward = ExpToNex * (lvl < 50 ? ExpModifier[0] : lvl < 90 ? ExpModifier[1] : ExpModifier[2]) / 100
-    pub fn ExpModifier(&'a self) -> [&'a Field; 3] {
+    pub fn ExpModifier(&'a self) -> [u16; 3] {
         [
-            &self.row.columns[self.index_mapping[1]],
-            &self.row.columns[self.index_mapping[2]],
-            &self.row.columns[self.index_mapping[3]],
+            self.row.columns[0].into_u16().copied().unwrap(),
+            self.row.columns[1].into_u16().copied().unwrap(),
+            self.row.columns[2].into_u16().copied().unwrap(),
         ]
     }
-    pub fn CosmoCredits(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn CosmoCredits(&'a self) -> u16 {
+        self.row.columns[3].into_u16().copied().unwrap()
     }
-    pub fn PlanetCredits(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn PlanetCredits(&'a self) -> u16 {
+        self.row.columns[4].into_u16().copied().unwrap()
     }
-    pub fn Unknown20(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn Unknown20(&'a self) -> u16 {
+        self.row.columns[5].into_u16().copied().unwrap()
     }
-    pub fn ResearchReward(&'a self) -> [&'a Field; 3] {
+    pub fn ResearchReward(&'a self) -> [u16; 3] {
         [
-            &self.row.columns[self.index_mapping[7]],
-            &self.row.columns[self.index_mapping[8]],
-            &self.row.columns[self.index_mapping[9]],
+            self.row.columns[9].into_u16().copied().unwrap(),
+            self.row.columns[12].into_u16().copied().unwrap(),
+            self.row.columns[15].into_u16().copied().unwrap(),
         ]
     }
-    pub fn ItemCount(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn ItemCount(&'a self) -> u16 {
+        self.row.columns[17].into_u16().copied().unwrap()
     }
     /// Needs to match WKSEmergencyProblem.Unknown2 to be active?
-    pub fn Unknown19(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn Unknown19(&'a self) -> u8 {
+        self.row.columns[6].into_u8().copied().unwrap()
     }
-    pub fn Tool(&'a self) -> [&'a Field; 3] {
+    pub fn Tool(&'a self) -> [u8; 3] {
         [
-            &self.row.columns[self.index_mapping[12]],
-            &self.row.columns[self.index_mapping[13]],
-            &self.row.columns[self.index_mapping[14]],
+            self.row.columns[7].into_u8().copied().unwrap(),
+            self.row.columns[10].into_u8().copied().unwrap(),
+            self.row.columns[13].into_u8().copied().unwrap(),
         ]
     }
-    pub fn TypeIndex(&'a self) -> [&'a Field; 3] {
+    pub fn TypeIndex(&'a self) -> [u8; 3] {
         [
-            &self.row.columns[self.index_mapping[15]],
-            &self.row.columns[self.index_mapping[16]],
-            &self.row.columns[self.index_mapping[17]],
+            self.row.columns[8].into_u8().copied().unwrap(),
+            self.row.columns[11].into_u8().copied().unwrap(),
+            self.row.columns[14].into_u8().copied().unwrap(),
         ]
     }
 }

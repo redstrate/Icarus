@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct RetainerTaskParameterSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl RetainerTaskParameterSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl RetainerTaskParameterSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("RetainerTaskParameter")?;
         let sheet = resolver.read_excel_sheet(&exh, "RetainerTaskParameter", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<RetainerTaskParameterRow> {
@@ -55,10 +43,7 @@ impl RetainerTaskParameterSheet {
 impl<'a> StructuredSheet<'a> for RetainerTaskParameterSheet {
     type Row = RetainerTaskParameterRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a RetainerTaskParameterSheet {
@@ -74,31 +59,30 @@ impl<'a> IntoIterator for &'a RetainerTaskParameterSheet {
 #[derive(Debug, Clone)]
 pub struct RetainerTaskParameterRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> RetainerTaskParameterRow<'a> {
-    pub fn ItemLevelDoW(&'a self) -> [&'a Field; 4] {
+    pub fn ItemLevelDoW(&'a self) -> [i16; 4] {
         [
-            &self.row.columns[self.index_mapping[0]],
-            &self.row.columns[self.index_mapping[1]],
-            &self.row.columns[self.index_mapping[2]],
-            &self.row.columns[self.index_mapping[3]],
+            self.row.columns[0].into_i16().copied().unwrap(),
+            self.row.columns[1].into_i16().copied().unwrap(),
+            self.row.columns[2].into_i16().copied().unwrap(),
+            self.row.columns[3].into_i16().copied().unwrap(),
         ]
     }
-    pub fn PerceptionDoL(&'a self) -> [&'a Field; 4] {
+    pub fn PerceptionDoL(&'a self) -> [i16; 4] {
         [
-            &self.row.columns[self.index_mapping[4]],
-            &self.row.columns[self.index_mapping[5]],
-            &self.row.columns[self.index_mapping[6]],
-            &self.row.columns[self.index_mapping[7]],
+            self.row.columns[4].into_i16().copied().unwrap(),
+            self.row.columns[5].into_i16().copied().unwrap(),
+            self.row.columns[6].into_i16().copied().unwrap(),
+            self.row.columns[7].into_i16().copied().unwrap(),
         ]
     }
-    pub fn PerceptionFSH(&'a self) -> [&'a Field; 4] {
+    pub fn PerceptionFSH(&'a self) -> [i16; 4] {
         [
-            &self.row.columns[self.index_mapping[8]],
-            &self.row.columns[self.index_mapping[9]],
-            &self.row.columns[self.index_mapping[10]],
-            &self.row.columns[self.index_mapping[11]],
+            self.row.columns[8].into_i16().copied().unwrap(),
+            self.row.columns[9].into_i16().copied().unwrap(),
+            self.row.columns[10].into_i16().copied().unwrap(),
+            self.row.columns[11].into_i16().copied().unwrap(),
         ]
     }
 }

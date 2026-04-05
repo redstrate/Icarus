@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct HousingYardObjectSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl HousingYardObjectSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl HousingYardObjectSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("HousingYardObject")?;
         let sheet = resolver.read_excel_sheet(&exh, "HousingYardObject", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<HousingYardObjectRow> {
@@ -51,10 +39,7 @@ impl HousingYardObjectSheet {
 impl<'a> StructuredSheet<'a> for HousingYardObjectSheet {
     type Row = HousingYardObjectRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a HousingYardObjectSheet {
@@ -70,52 +55,51 @@ impl<'a> IntoIterator for &'a HousingYardObjectSheet {
 #[derive(Debug, Clone)]
 pub struct HousingYardObjectRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> HousingYardObjectRow<'a> {
-    pub fn UsageParameter(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn UsageParameter(&'a self) -> u32 {
+        self.row.columns[3].into_u32().copied().unwrap()
     }
-    pub fn CustomTalk(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn CustomTalk(&'a self) -> u32 {
+        self.row.columns[5].into_u32().copied().unwrap()
     }
-    pub fn Item(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Item(&'a self) -> u32 {
+        self.row.columns[6].into_u32().copied().unwrap()
     }
-    pub fn ModelKey(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn ModelKey(&'a self) -> u16 {
+        self.row.columns[0].into_u16().copied().unwrap()
     }
-    pub fn HousingItemCategory(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn HousingItemCategory(&'a self) -> u8 {
+        self.row.columns[1].into_u8().copied().unwrap()
     }
-    pub fn UsageType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn UsageType(&'a self) -> u8 {
+        self.row.columns[2].into_u8().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn Unknown0(&'a self) -> u8 {
+        self.row.columns[4].into_u8().copied().unwrap()
     }
-    pub fn Unknown1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn Unknown1(&'a self) -> u8 {
+        self.row.columns[10].into_u8().copied().unwrap()
     }
-    pub fn Unknown2(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn Unknown2(&'a self) -> u8 {
+        self.row.columns[11].into_u8().copied().unwrap()
     }
-    pub fn Unknown3(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn Unknown3(&'a self) -> u8 {
+        self.row.columns[12].into_u8().copied().unwrap()
     }
-    pub fn DestroyOnRemoval(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn DestroyOnRemoval(&'a self) -> bool {
+        self.row.columns[7].into_bool().copied().unwrap()
     }
-    pub fn Unknown4(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn Unknown4(&'a self) -> bool {
+        self.row.columns[8].into_bool().copied().unwrap()
     }
-    pub fn Unknown5(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn Unknown5(&'a self) -> bool {
+        self.row.columns[9].into_bool().copied().unwrap()
     }
-    pub fn Unknown6(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn Unknown6(&'a self) -> bool {
+        self.row.columns[13].into_bool().copied().unwrap()
     }
-    pub fn Unknown7(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn Unknown7(&'a self) -> bool {
+        self.row.columns[14].into_bool().copied().unwrap()
     }
 }

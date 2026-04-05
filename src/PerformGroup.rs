@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct PerformGroupSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl PerformGroupSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl PerformGroupSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("PerformGroup")?;
         let sheet = resolver.read_excel_sheet(&exh, "PerformGroup", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<PerformGroupRow> {
@@ -51,10 +39,7 @@ impl PerformGroupSheet {
 impl<'a> StructuredSheet<'a> for PerformGroupSheet {
     type Row = PerformGroupRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a PerformGroupSheet {
@@ -70,16 +55,15 @@ impl<'a> IntoIterator for &'a PerformGroupSheet {
 #[derive(Debug, Clone)]
 pub struct PerformGroupRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> PerformGroupRow<'a> {
-    pub fn Perform(&'a self) -> [&'a Field; 5] {
+    pub fn Perform(&'a self) -> [u8; 5] {
         [
-            &self.row.columns[self.index_mapping[0]],
-            &self.row.columns[self.index_mapping[1]],
-            &self.row.columns[self.index_mapping[2]],
-            &self.row.columns[self.index_mapping[3]],
-            &self.row.columns[self.index_mapping[4]],
+            self.row.columns[0].into_u8().copied().unwrap(),
+            self.row.columns[1].into_u8().copied().unwrap(),
+            self.row.columns[2].into_u8().copied().unwrap(),
+            self.row.columns[3].into_u8().copied().unwrap(),
+            self.row.columns[4].into_u8().copied().unwrap(),
         ]
     }
 }

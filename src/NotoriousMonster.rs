@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct NotoriousMonsterSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl NotoriousMonsterSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl NotoriousMonsterSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("NotoriousMonster")?;
         let sheet = resolver.read_excel_sheet(&exh, "NotoriousMonster", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<NotoriousMonsterRow> {
@@ -51,10 +39,7 @@ impl NotoriousMonsterSheet {
 impl<'a> StructuredSheet<'a> for NotoriousMonsterSheet {
     type Row = NotoriousMonsterRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a NotoriousMonsterSheet {
@@ -70,19 +55,18 @@ impl<'a> IntoIterator for &'a NotoriousMonsterSheet {
 #[derive(Debug, Clone)]
 pub struct NotoriousMonsterRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> NotoriousMonsterRow<'a> {
-    pub fn BNpcName(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn BNpcName(&'a self) -> u32 {
+        self.row.columns[2].into_u32().copied().unwrap()
     }
-    pub fn BNpcBase(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn BNpcBase(&'a self) -> i32 {
+        self.row.columns[0].into_i32().copied().unwrap()
     }
-    pub fn Unknown0(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Unknown0(&'a self) -> u16 {
+        self.row.columns[3].into_u16().copied().unwrap()
     }
-    pub fn Rank(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn Rank(&'a self) -> u8 {
+        self.row.columns[1].into_u8().copied().unwrap()
     }
 }

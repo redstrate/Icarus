@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct TradeScreenImageSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl TradeScreenImageSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl TradeScreenImageSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("TradeScreenImage")?;
         let sheet = resolver.read_excel_sheet(&exh, "TradeScreenImage", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<TradeScreenImageRow> {
@@ -51,10 +39,7 @@ impl TradeScreenImageSheet {
 impl<'a> StructuredSheet<'a> for TradeScreenImageSheet {
     type Row = TradeScreenImageRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a TradeScreenImageSheet {
@@ -70,29 +55,28 @@ impl<'a> IntoIterator for &'a TradeScreenImageSheet {
 #[derive(Debug, Clone)]
 pub struct TradeScreenImageRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> TradeScreenImageRow<'a> {
-    pub fn Items(&'a self) -> [&'a Field; 2] {
+    pub fn Items(&'a self) -> [u32; 2] {
         [
-            &self.row.columns[self.index_mapping[0]],
-            &self.row.columns[self.index_mapping[1]],
+            self.row.columns[0].into_u32().copied().unwrap(),
+            self.row.columns[1].into_u32().copied().unwrap(),
         ]
     }
-    pub fn ItemIcons(&'a self) -> [&'a Field; 2] {
+    pub fn ItemIcons(&'a self) -> [u32; 2] {
         [
-            &self.row.columns[self.index_mapping[2]],
-            &self.row.columns[self.index_mapping[3]],
+            self.row.columns[2].into_u32().copied().unwrap(),
+            self.row.columns[3].into_u32().copied().unwrap(),
         ]
     }
-    pub fn ItemValues(&'a self) -> [&'a Field; 2] {
+    pub fn ItemValues(&'a self) -> [u32; 2] {
         [
-            &self.row.columns[self.index_mapping[4]],
-            &self.row.columns[self.index_mapping[5]],
+            self.row.columns[4].into_u32().copied().unwrap(),
+            self.row.columns[5].into_u32().copied().unwrap(),
         ]
     }
     /// 1 = Icon 180096 ("Excellent Trade!"), 2 = Icon 180097 ("Feat Accomplished!")
-    pub fn BannerType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn BannerType(&'a self) -> u8 {
+        self.row.columns[6].into_u8().copied().unwrap()
     }
 }

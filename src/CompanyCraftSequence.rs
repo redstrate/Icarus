@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct CompanyCraftSequenceSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl CompanyCraftSequenceSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl CompanyCraftSequenceSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("CompanyCraftSequence")?;
         let sheet = resolver.read_excel_sheet(&exh, "CompanyCraftSequence", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<CompanyCraftSequenceRow> {
@@ -55,10 +43,7 @@ impl CompanyCraftSequenceSheet {
 impl<'a> StructuredSheet<'a> for CompanyCraftSequenceSheet {
     type Row = CompanyCraftSequenceRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a CompanyCraftSequenceSheet {
@@ -74,37 +59,36 @@ impl<'a> IntoIterator for &'a CompanyCraftSequenceSheet {
 #[derive(Debug, Clone)]
 pub struct CompanyCraftSequenceRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> CompanyCraftSequenceRow<'a> {
-    pub fn Order(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Order(&'a self) -> u32 {
+        self.row.columns[13].into_u32().copied().unwrap()
     }
-    pub fn ResultItem(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn ResultItem(&'a self) -> i32 {
+        self.row.columns[0].into_i32().copied().unwrap()
     }
-    pub fn Category(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn Category(&'a self) -> i32 {
+        self.row.columns[1].into_i32().copied().unwrap()
     }
-    pub fn CompanyCraftDraftCategory(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn CompanyCraftDraftCategory(&'a self) -> i32 {
+        self.row.columns[2].into_i32().copied().unwrap()
     }
-    pub fn CompanyCraftType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn CompanyCraftType(&'a self) -> i32 {
+        self.row.columns[3].into_i32().copied().unwrap()
     }
-    pub fn CompanyCraftDraft(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn CompanyCraftDraft(&'a self) -> i32 {
+        self.row.columns[4].into_i32().copied().unwrap()
     }
-    pub fn CompanyCraftPart(&'a self) -> [&'a Field; 8] {
+    pub fn CompanyCraftPart(&'a self) -> [u16; 8] {
         [
-            &self.row.columns[self.index_mapping[6]],
-            &self.row.columns[self.index_mapping[7]],
-            &self.row.columns[self.index_mapping[8]],
-            &self.row.columns[self.index_mapping[9]],
-            &self.row.columns[self.index_mapping[10]],
-            &self.row.columns[self.index_mapping[11]],
-            &self.row.columns[self.index_mapping[12]],
-            &self.row.columns[self.index_mapping[13]],
+            self.row.columns[5].into_u16().copied().unwrap(),
+            self.row.columns[6].into_u16().copied().unwrap(),
+            self.row.columns[7].into_u16().copied().unwrap(),
+            self.row.columns[8].into_u16().copied().unwrap(),
+            self.row.columns[9].into_u16().copied().unwrap(),
+            self.row.columns[10].into_u16().copied().unwrap(),
+            self.row.columns[11].into_u16().copied().unwrap(),
+            self.row.columns[12].into_u16().copied().unwrap(),
         ]
     }
 }

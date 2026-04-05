@@ -10,7 +10,6 @@ use physis::{
 #[derive(Debug, Clone)]
 pub struct BNpcCustomizeSheet {
     sheet: Sheet,
-    index_mapping: Vec<usize>,
 }
 impl BNpcCustomizeSheet {
     /// Read the sheet from a `ResourceResolver`.
@@ -20,18 +19,7 @@ impl BNpcCustomizeSheet {
     ) -> Result<Self, Error> {
         let exh = resolver.read_excel_sheet_header("BNpcCustomize")?;
         let sheet = resolver.read_excel_sheet(&exh, "BNpcCustomize", language)?;
-        let mut index_mapping: Vec<(usize, &ExcelColumnDefinition)> = sheet
-            .exh
-            .column_definitions
-            .iter()
-            .enumerate()
-            .collect();
-        index_mapping.sort_by(|(_, a_col), (_, b_col)| a_col.offset.cmp(&b_col.offset));
-        let index_mapping: Vec<usize> = index_mapping
-            .iter()
-            .map(|(index, _)| *index)
-            .collect();
-        Ok(Self { sheet, index_mapping })
+        Ok(Self { sheet })
     }
     /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
     pub fn row(&self, row_id: u32) -> Option<BNpcCustomizeRow> {
@@ -51,10 +39,7 @@ impl BNpcCustomizeSheet {
 impl<'a> StructuredSheet<'a> for BNpcCustomizeSheet {
     type Row = BNpcCustomizeRow<'a>;
     fn read_row(&self, row: &'a Row) -> Option<Self::Row> {
-        Some(Self::Row {
-            row,
-            index_mapping: self.index_mapping.clone(),
-        })
+        Some(Self::Row { row })
     }
 }
 impl<'a> IntoIterator for &'a BNpcCustomizeSheet {
@@ -70,85 +55,84 @@ impl<'a> IntoIterator for &'a BNpcCustomizeSheet {
 #[derive(Debug, Clone)]
 pub struct BNpcCustomizeRow<'a> {
     row: &'a Row,
-    index_mapping: Vec<usize>,
 }
 impl<'a> BNpcCustomizeRow<'a> {
-    pub fn Race(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[0]]
+    pub fn Race(&'a self) -> u8 {
+        self.row.columns[0].into_u8().copied().unwrap()
     }
-    pub fn Gender(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[1]]
+    pub fn Gender(&'a self) -> u8 {
+        self.row.columns[1].into_u8().copied().unwrap()
     }
-    pub fn BodyType(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[2]]
+    pub fn BodyType(&'a self) -> u8 {
+        self.row.columns[2].into_u8().copied().unwrap()
     }
-    pub fn Height(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[3]]
+    pub fn Height(&'a self) -> u8 {
+        self.row.columns[3].into_u8().copied().unwrap()
     }
-    pub fn Tribe(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[4]]
+    pub fn Tribe(&'a self) -> u8 {
+        self.row.columns[4].into_u8().copied().unwrap()
     }
-    pub fn Face(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[5]]
+    pub fn Face(&'a self) -> u8 {
+        self.row.columns[5].into_u8().copied().unwrap()
     }
-    pub fn HairStyle(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[6]]
+    pub fn HairStyle(&'a self) -> u8 {
+        self.row.columns[6].into_u8().copied().unwrap()
     }
-    pub fn HairHighlight(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[7]]
+    pub fn HairHighlight(&'a self) -> u8 {
+        self.row.columns[7].into_u8().copied().unwrap()
     }
-    pub fn SkinColor(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[8]]
+    pub fn SkinColor(&'a self) -> u8 {
+        self.row.columns[8].into_u8().copied().unwrap()
     }
-    pub fn EyeHeterochromia(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[9]]
+    pub fn EyeHeterochromia(&'a self) -> u8 {
+        self.row.columns[9].into_u8().copied().unwrap()
     }
-    pub fn HairColor(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[10]]
+    pub fn HairColor(&'a self) -> u8 {
+        self.row.columns[10].into_u8().copied().unwrap()
     }
-    pub fn HairHighlightColor(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[11]]
+    pub fn HairHighlightColor(&'a self) -> u8 {
+        self.row.columns[11].into_u8().copied().unwrap()
     }
-    pub fn FacialFeature(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[12]]
+    pub fn FacialFeature(&'a self) -> u8 {
+        self.row.columns[12].into_u8().copied().unwrap()
     }
-    pub fn FacialFeatureColor(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[13]]
+    pub fn FacialFeatureColor(&'a self) -> u8 {
+        self.row.columns[13].into_u8().copied().unwrap()
     }
-    pub fn Eyebrows(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[14]]
+    pub fn Eyebrows(&'a self) -> u8 {
+        self.row.columns[14].into_u8().copied().unwrap()
     }
-    pub fn EyeColor(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[15]]
+    pub fn EyeColor(&'a self) -> u8 {
+        self.row.columns[15].into_u8().copied().unwrap()
     }
-    pub fn EyeShape(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[16]]
+    pub fn EyeShape(&'a self) -> u8 {
+        self.row.columns[16].into_u8().copied().unwrap()
     }
-    pub fn Nose(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[17]]
+    pub fn Nose(&'a self) -> u8 {
+        self.row.columns[17].into_u8().copied().unwrap()
     }
-    pub fn Jaw(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[18]]
+    pub fn Jaw(&'a self) -> u8 {
+        self.row.columns[18].into_u8().copied().unwrap()
     }
-    pub fn Mouth(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[19]]
+    pub fn Mouth(&'a self) -> u8 {
+        self.row.columns[19].into_u8().copied().unwrap()
     }
-    pub fn LipColor(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[20]]
+    pub fn LipColor(&'a self) -> u8 {
+        self.row.columns[20].into_u8().copied().unwrap()
     }
-    pub fn BustOrTone1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[21]]
+    pub fn BustOrTone1(&'a self) -> u8 {
+        self.row.columns[21].into_u8().copied().unwrap()
     }
-    pub fn ExtraFeature1(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[22]]
+    pub fn ExtraFeature1(&'a self) -> u8 {
+        self.row.columns[22].into_u8().copied().unwrap()
     }
-    pub fn ExtraFeature2OrBust(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[23]]
+    pub fn ExtraFeature2OrBust(&'a self) -> u8 {
+        self.row.columns[23].into_u8().copied().unwrap()
     }
-    pub fn FacePaint(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[24]]
+    pub fn FacePaint(&'a self) -> u8 {
+        self.row.columns[24].into_u8().copied().unwrap()
     }
-    pub fn FacePaintColor(&'a self) -> &'a Field {
-        &self.row.columns[self.index_mapping[25]]
+    pub fn FacePaintColor(&'a self) -> u8 {
+        self.row.columns[25].into_u8().copied().unwrap()
     }
 }
