@@ -7,6 +7,7 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ObjectiveIconElement {
     pub LayoutId: u32,
     pub Icon: u16,

@@ -7,6 +7,7 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct GFATEParamsElement {
     pub LGBPopRange: u32,
     pub Icon: u32,

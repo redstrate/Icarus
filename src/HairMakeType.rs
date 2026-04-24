@@ -7,6 +7,7 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct CharaMakeStructElement {
     pub Menu: u32,
     pub SubMenuMask: u32,
@@ -19,6 +20,7 @@ pub struct CharaMakeStructElement {
     pub LookAt: u8,
     pub SubMenuGraphic: [u8; 10],
 }
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct FacialFeatureOptionElement {
     pub Option1: i32,
     pub Option2: i32,

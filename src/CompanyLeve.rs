@@ -7,6 +7,7 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct CompanyLeveStructElement {
     pub BNpcName: u32,
     pub ToDoParam: [u32; 6],

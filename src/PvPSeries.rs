@@ -7,6 +7,7 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct LevelRewardsElement {
     pub LevelRewardItem: [i32; 2],
     pub Unknown0: i32,

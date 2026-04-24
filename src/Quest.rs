@@ -7,10 +7,12 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct QuestParamsElement<'a> {
     pub ScriptInstruction: &'a str,
     pub ScriptArg: u32,
 }
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct QuestListenerParamsElement {
     pub Listener: u32,
     pub ConditionValue: u32,
@@ -31,6 +33,7 @@ pub struct QuestListenerParamsElement {
     pub QualifiedBool: bool,
     pub CanTargetBool: bool,
 }
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct TodoParamsElement {
     pub ToDoLocation: [u32; 8],
     pub ToDoCompleteSeq: u8,

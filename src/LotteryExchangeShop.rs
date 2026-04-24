@@ -7,6 +7,7 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct LotteryExchangeParamsElement {
     pub AmountAccepted: u32,
     pub ItemAccepted: i32,

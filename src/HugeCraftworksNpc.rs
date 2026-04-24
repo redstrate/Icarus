@@ -7,6 +7,7 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct HugeCraftworksTurnInParamElement {
     pub RequestedItem: u32,
     pub Unknown0: u16,
@@ -18,6 +19,7 @@ pub struct HugeCraftworksTurnInParamElement {
     pub Unknown5: u8,
     pub Unknown6: bool,
 }
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct HugeCraftworksRewardParamElement {
     pub RewardItem: [u32; 2],
     pub RewardQuantity: [u8; 2],

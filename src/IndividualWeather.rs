@@ -7,6 +7,7 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct IndividualWeatherDataElement {
     pub Quest: u32,
     pub Unknown0: u32,

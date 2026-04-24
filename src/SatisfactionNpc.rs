@@ -7,6 +7,7 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SatisfactionNpcParamsElement {
     pub SupplyIndex: i32,
     pub Item: [i32; 3],
@@ -14,6 +15,7 @@ pub struct SatisfactionNpcParamsElement {
     pub ItemCount: [u8; 3],
     pub IsHQ: [bool; 3],
 }
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct RankParamsElement {
     pub ImageId: i32,
     pub Unknown1: i32,

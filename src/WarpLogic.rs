@@ -7,6 +7,7 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WarpParamsElement<'a> {
     pub Function: &'a str,
     pub Argument: u32,

@@ -7,6 +7,7 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct DefaultTalkParamsElement {
     pub ActionTimelinePose: u16,
     pub Unknown0: u16,

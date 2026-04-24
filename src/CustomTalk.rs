@@ -7,6 +7,7 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct ScriptElement<'a> {
     pub ScriptInstruction: &'a str,
     pub ScriptArg: u32,

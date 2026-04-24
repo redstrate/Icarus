@@ -7,10 +7,12 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct StoryParamsElement<'a> {
     pub Instruction: &'a str,
     pub Argument: u32,
 }
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct StoryDefineElement {
     pub CompletedQuest: [u32; 3],
     pub AcceptedQuest: [u32; 3],
@@ -20,6 +22,7 @@ pub struct StoryDefineElement {
     pub AcceptedQuestOperator: u8,
     pub AcceptedQuestSequence: [u8; 3],
 }
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct StoryListenerElement {
     pub Listener: u32,
     pub SequenceBegin: u16,

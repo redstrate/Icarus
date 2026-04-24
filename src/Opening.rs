@@ -7,6 +7,7 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct VariablesElement<'a> {
     pub Name: &'a str,
     pub Value: u32,

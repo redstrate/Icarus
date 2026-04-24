@@ -7,11 +7,13 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct StagesElement {
     pub Unknown0: u32,
     pub Item: i32,
     pub Name: u16,
 }
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct TypesElement {
     pub Icon: u32,
     pub Name: u16,

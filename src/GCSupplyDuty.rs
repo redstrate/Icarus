@@ -7,6 +7,7 @@ use physis::{
     excel::{Sheet, Field, Row},
     Language,
 };
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub struct SupplyDataElement {
     pub Item: [i32; 3],
     pub ItemCount: [u8; 3],
