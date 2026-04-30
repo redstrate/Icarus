@@ -1,0 +1,364 @@
+//! This file is auto-generated, do not edit it manually! This is generated based on the schema from https://github.com/xivdev/EXDSchema.
+#![allow(warnings)]
+use crate::{StructuredSheet, StructuredSheetIterator};
+use physis::{
+    Error, resource::{Resource, ResourceResolver},
+    exd::EXD, exh::{EXH, ExcelColumnDefinition},
+    excel::{Sheet, Field, Row},
+    Language,
+};
+#[derive(Debug, Clone)]
+pub struct GoldSaucerArcadeMachineSheet {
+    sheet: Sheet,
+}
+impl GoldSaucerArcadeMachineSheet {
+    /// Read the sheet from a `ResourceResolver`.
+    pub fn read_from(
+        resolver: &mut ResourceResolver,
+        language: Language,
+    ) -> Result<Self, Error> {
+        let exh = resolver.read_excel_sheet_header("GoldSaucerArcadeMachine")?;
+        let sheet = resolver
+            .read_excel_sheet(&exh, "GoldSaucerArcadeMachine", language)?;
+        Ok(Self { sheet })
+    }
+    /// Fetches a single row from the sheet. If the row contains subrows, it returns the first one.
+    pub fn row(&self, row_id: u32) -> Option<GoldSaucerArcadeMachineRow> {
+        let row = &self.sheet.row(row_id)?;
+        self.read_row(row)
+    }
+    /// Fetches the specified subrow from the sheet.
+    pub fn subrow(
+        &self,
+        row_id: u32,
+        subrow_id: u16,
+    ) -> Option<GoldSaucerArcadeMachineRow> {
+        let row = &self.sheet.subrow(row_id, subrow_id)?;
+        self.read_row(row)
+    }
+    /// Returns the number of rows in this sheet.
+    pub fn row_count(&self) -> u32 {
+        self.sheet.exh.header.row_count
+    }
+}
+impl StructuredSheet for GoldSaucerArcadeMachineSheet {
+    type Row = GoldSaucerArcadeMachineRow;
+    fn read_row(&self, row: &Row) -> Option<Self::Row> {
+        Some(Self::Row {
+            Unknown0: row
+                .columns[27]
+                .into_u32()
+                .copied()
+                .expect("Expected column 27 to be a uint32!"),
+            Poor: row
+                .columns[35]
+                .into_u32()
+                .copied()
+                .expect("Expected column 35 to be a uint32!"),
+            Unknown1: row
+                .columns[15]
+                .into_u8()
+                .copied()
+                .expect("Expected column 15 to be a uint8!"),
+            Unknown2: row
+                .columns[19]
+                .into_u8()
+                .copied()
+                .expect("Expected column 19 to be a uint8!"),
+            Unknown3: row
+                .columns[23]
+                .into_u8()
+                .copied()
+                .expect("Expected column 23 to be a uint8!"),
+            Unknown4: row
+                .columns[31]
+                .into_u8()
+                .copied()
+                .expect("Expected column 31 to be a uint8!"),
+            Unknown5: row
+                .columns[28]
+                .into_u32()
+                .copied()
+                .expect("Expected column 28 to be a uint32!"),
+            Good: row
+                .columns[36]
+                .into_u32()
+                .copied()
+                .expect("Expected column 36 to be a uint32!"),
+            Unknown6: row
+                .columns[16]
+                .into_u8()
+                .copied()
+                .expect("Expected column 16 to be a uint8!"),
+            Unknown7: row
+                .columns[20]
+                .into_u8()
+                .copied()
+                .expect("Expected column 20 to be a uint8!"),
+            Unknown8: row
+                .columns[24]
+                .into_u8()
+                .copied()
+                .expect("Expected column 24 to be a uint8!"),
+            Unknown9: row
+                .columns[32]
+                .into_u8()
+                .copied()
+                .expect("Expected column 32 to be a uint8!"),
+            Unknown10: row
+                .columns[29]
+                .into_u32()
+                .copied()
+                .expect("Expected column 29 to be a uint32!"),
+            Great: row
+                .columns[37]
+                .into_u32()
+                .copied()
+                .expect("Expected column 37 to be a uint32!"),
+            Unknown11: row
+                .columns[17]
+                .into_u8()
+                .copied()
+                .expect("Expected column 17 to be a uint8!"),
+            Unknown12: row
+                .columns[21]
+                .into_u8()
+                .copied()
+                .expect("Expected column 21 to be a uint8!"),
+            Unknown13: row
+                .columns[25]
+                .into_u8()
+                .copied()
+                .expect("Expected column 25 to be a uint8!"),
+            Unknown14: row
+                .columns[33]
+                .into_u8()
+                .copied()
+                .expect("Expected column 33 to be a uint8!"),
+            Unknown15: row
+                .columns[30]
+                .into_u32()
+                .copied()
+                .expect("Expected column 30 to be a uint32!"),
+            Excellent: row
+                .columns[38]
+                .into_u32()
+                .copied()
+                .expect("Expected column 38 to be a uint32!"),
+            Unknown16: row
+                .columns[18]
+                .into_u8()
+                .copied()
+                .expect("Expected column 18 to be a uint8!"),
+            Unknown17: row
+                .columns[22]
+                .into_u8()
+                .copied()
+                .expect("Expected column 22 to be a uint8!"),
+            Unknown18: row
+                .columns[26]
+                .into_u8()
+                .copied()
+                .expect("Expected column 26 to be a uint8!"),
+            Unknown19: row
+                .columns[34]
+                .into_u8()
+                .copied()
+                .expect("Expected column 34 to be a uint8!"),
+            Name: row
+                .columns[39]
+                .into_string()
+                .cloned()
+                .expect("Expected column 39 to be a string!"),
+            PayoutExplanation: row
+                .columns[40]
+                .into_string()
+                .cloned()
+                .expect("Expected column 40 to be a string!"),
+            Description: row
+                .columns[41]
+                .into_string()
+                .cloned()
+                .expect("Expected column 41 to be a string!"),
+            TotalPayoutText: row
+                .columns[42]
+                .into_string()
+                .cloned()
+                .expect("Expected column 42 to be a string!"),
+            FailImage: row
+                .columns[6]
+                .into_u32()
+                .copied()
+                .expect("Expected column 6 to be a uint32!"),
+            Unknown24: row
+                .columns[10]
+                .into_u32()
+                .copied()
+                .expect("Expected column 10 to be a uint32!"),
+            Unknown25: row
+                .columns[4]
+                .into_u16()
+                .copied()
+                .expect("Expected column 4 to be a uint16!"),
+            Unknown26: row
+                .columns[0]
+                .into_u8()
+                .copied()
+                .expect("Expected column 0 to be a uint8!"),
+            Timeout: row
+                .columns[1]
+                .into_u8()
+                .copied()
+                .expect("Expected column 1 to be a uint8!"),
+            Unknown28: row
+                .columns[2]
+                .into_u8()
+                .copied()
+                .expect("Expected column 2 to be a uint8!"),
+            Unknown29: row
+                .columns[3]
+                .into_u8()
+                .copied()
+                .expect("Expected column 3 to be a uint8!"),
+            Unknown30: row
+                .columns[5]
+                .into_u8()
+                .copied()
+                .expect("Expected column 5 to be a uint8!"),
+            Unknown31: row
+                .columns[11]
+                .into_u8()
+                .copied()
+                .expect("Expected column 11 to be a uint8!"),
+            Unknown32: row
+                .columns[7]
+                .into_i8()
+                .copied()
+                .expect("Expected column 7 to be a int8!"),
+            Unknown33: row
+                .columns[8]
+                .into_i8()
+                .copied()
+                .expect("Expected column 8 to be a int8!"),
+            Unknown34: row
+                .columns[9]
+                .into_i8()
+                .copied()
+                .expect("Expected column 9 to be a int8!"),
+            Unknown35: row
+                .columns[12]
+                .into_i8()
+                .copied()
+                .expect("Expected column 12 to be a int8!"),
+            Unknown36: row
+                .columns[13]
+                .into_i8()
+                .copied()
+                .expect("Expected column 13 to be a int8!"),
+            Unknown37: row
+                .columns[14]
+                .into_i8()
+                .copied()
+                .expect("Expected column 14 to be a int8!"),
+        })
+    }
+}
+impl<'a> IntoIterator for &'a GoldSaucerArcadeMachineSheet {
+    type Item = (u32, Vec<(u16, GoldSaucerArcadeMachineRow)>);
+    type IntoIter = StructuredSheetIterator<'a, GoldSaucerArcadeMachineSheet>;
+    fn into_iter(self) -> StructuredSheetIterator<'a, GoldSaucerArcadeMachineSheet> {
+        StructuredSheetIterator {
+            sheet: self,
+            iterator: (&self.sheet).into_iter(),
+        }
+    }
+}
+#[derive(Clone, Debug, PartialEq)]
+pub struct GoldSaucerArcadeMachineRow {
+    ///""
+    pub Unknown0: u32,
+    ///""
+    pub Poor: u32,
+    ///""
+    pub Unknown1: u8,
+    ///""
+    pub Unknown2: u8,
+    ///""
+    pub Unknown3: u8,
+    ///""
+    pub Unknown4: u8,
+    ///""
+    pub Unknown5: u32,
+    ///""
+    pub Good: u32,
+    ///""
+    pub Unknown6: u8,
+    ///""
+    pub Unknown7: u8,
+    ///""
+    pub Unknown8: u8,
+    ///""
+    pub Unknown9: u8,
+    ///""
+    pub Unknown10: u32,
+    ///""
+    pub Great: u32,
+    ///""
+    pub Unknown11: u8,
+    ///""
+    pub Unknown12: u8,
+    ///""
+    pub Unknown13: u8,
+    ///""
+    pub Unknown14: u8,
+    ///""
+    pub Unknown15: u32,
+    ///""
+    pub Excellent: u32,
+    ///""
+    pub Unknown16: u8,
+    ///""
+    pub Unknown17: u8,
+    ///""
+    pub Unknown18: u8,
+    ///""
+    pub Unknown19: u8,
+    ///"Shown in the Duty List."
+    pub Name: String,
+    ///"Shown in the Duty List below Description."
+    pub PayoutExplanation: String,
+    ///"Shown in the Duty List."
+    pub Description: String,
+    ///"Shown in the Duty List if this machine has multiple rounds."
+    pub TotalPayoutText: String,
+    ///""
+    pub FailImage: u32,
+    ///""
+    pub Unknown24: u32,
+    ///""
+    pub Unknown25: u16,
+    ///""
+    pub Unknown26: u8,
+    ///"How long until the machine shuts down, in seconds."
+    pub Timeout: u8,
+    ///""
+    pub Unknown28: u8,
+    ///""
+    pub Unknown29: u8,
+    ///""
+    pub Unknown30: u8,
+    ///""
+    pub Unknown31: u8,
+    ///""
+    pub Unknown32: i8,
+    ///""
+    pub Unknown33: i8,
+    ///""
+    pub Unknown34: i8,
+    ///""
+    pub Unknown35: i8,
+    ///""
+    pub Unknown36: i8,
+    ///""
+    pub Unknown37: i8,
+}
