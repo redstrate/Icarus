@@ -40,7 +40,7 @@ impl StructuredSheet for ModelScaleSheet {
     type Row = ModelScaleRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Scale: row
                 .columns[0]
                 .into_f32()
                 .copied()
@@ -61,5 +61,5 @@ impl<'a> IntoIterator for &'a ModelScaleSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ModelScaleRow {
     ///""
-    pub Unknown0: f32,
+    pub Scale: f32,
 }

@@ -45,12 +45,12 @@ impl StructuredSheet for IKDPlayerMissionConditionSheet {
     type Row = IKDPlayerMissionConditionRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            MissionText: row
                 .columns[1]
                 .into_string()
                 .cloned()
                 .expect("Expected column 1 to be a string!"),
-            Unknown1: row
+            Count: row
                 .columns[0]
                 .into_u8()
                 .copied()
@@ -71,7 +71,7 @@ impl<'a> IntoIterator for &'a IKDPlayerMissionConditionSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct IKDPlayerMissionConditionRow {
     ///""
-    pub Unknown0: String,
-    ///""
-    pub Unknown1: u8,
+    pub MissionText: String,
+    ///"How many to actually catch"
+    pub Count: u8,
 }

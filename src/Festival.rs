@@ -45,12 +45,12 @@ impl StructuredSheet for FestivalSheet {
                 .into_string()
                 .cloned()
                 .expect("Expected column 0 to be a string!"),
-            Unknown1: row
+            IsAllSaintsWake: row
                 .columns[1]
                 .into_u8()
                 .copied()
                 .expect("Expected column 1 to be a uint8!"),
-            Unknown0: row
+            WeatherRate: row
                 .columns[2]
                 .into_u8()
                 .copied()
@@ -73,7 +73,7 @@ pub struct FestivalRow {
     ///""
     pub Name: String,
     ///""
-    pub Unknown1: u8,
+    pub IsAllSaintsWake: u8,
     ///""
-    pub Unknown0: u8,
+    pub WeatherRate: u8,
 }

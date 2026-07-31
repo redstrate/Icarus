@@ -45,7 +45,7 @@ impl StructuredSheet for QuestAdditionalToolIconSheet {
     type Row = QuestAdditionalToolIconRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Icon: row
                 .columns[0]
                 .into_u32()
                 .copied()
@@ -66,5 +66,5 @@ impl<'a> IntoIterator for &'a QuestAdditionalToolIconSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct QuestAdditionalToolIconRow {
     ///""
-    pub Unknown0: u32,
+    pub Icon: u32,
 }

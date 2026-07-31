@@ -40,7 +40,7 @@ impl StructuredSheet for ModelCharaSheet {
     type Row = ModelCharaRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Radius: row
                 .columns[19]
                 .into_f32()
                 .copied()
@@ -171,7 +171,7 @@ impl<'a> IntoIterator for &'a ModelCharaSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ModelCharaRow {
     ///""
-    pub Unknown0: f32,
+    pub Radius: f32,
     ///""
     pub Unknown1: f32,
     ///""

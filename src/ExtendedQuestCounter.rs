@@ -44,7 +44,7 @@ impl StructuredSheet for ExtendedQuestCounterSheet {
     type Row = ExtendedQuestCounterRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Quest: row
                 .columns[3]
                 .into_u32()
                 .copied()
@@ -59,7 +59,7 @@ impl StructuredSheet for ExtendedQuestCounterSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 0 to be a uint8!"),
-            Unknown3: row
+            QuestCustomTodoIndex: row
                 .columns[2]
                 .into_u8()
                 .copied()
@@ -85,13 +85,13 @@ impl<'a> IntoIterator for &'a ExtendedQuestCounterSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ExtendedQuestCounterRow {
     ///""
-    pub Unknown0: u32,
+    pub Quest: u32,
     ///""
     pub Unknown1: u16,
     ///""
     pub Unknown2: u8,
     ///""
-    pub Unknown3: u8,
+    pub QuestCustomTodoIndex: u8,
     ///""
     pub Unknown4: u8,
 }

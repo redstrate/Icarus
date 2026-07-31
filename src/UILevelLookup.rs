@@ -40,7 +40,7 @@ impl StructuredSheet for UILevelLookupSheet {
     type Row = UILevelLookupRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Level: row
                 .columns[0]
                 .into_u32()
                 .copied()
@@ -61,5 +61,5 @@ impl<'a> IntoIterator for &'a UILevelLookupSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct UILevelLookupRow {
     ///""
-    pub Unknown0: u32,
+    pub Level: u32,
 }

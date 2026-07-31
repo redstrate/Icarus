@@ -87,36 +87,38 @@ impl StructuredSheet for PetSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 11 to be a uint8!"),
-            Unknown8: row
-                .columns[13]
-                .into_u8()
-                .copied()
-                .expect("Expected column 13 to be a uint8!"),
-            Unknown9: row
-                .columns[14]
-                .into_u8()
-                .copied()
-                .expect("Expected column 14 to be a uint8!"),
-            Unknown10: row
-                .columns[15]
-                .into_u8()
-                .copied()
-                .expect("Expected column 15 to be a uint8!"),
-            Unknown11: row
-                .columns[16]
-                .into_u8()
-                .copied()
-                .expect("Expected column 16 to be a uint8!"),
-            Unknown12: row
-                .columns[17]
-                .into_u8()
-                .copied()
-                .expect("Expected column 17 to be a uint8!"),
-            Unknown13: row
-                .columns[18]
-                .into_u8()
-                .copied()
-                .expect("Expected column 18 to be a uint8!"),
+            AllowedPetMirage: [
+                row
+                    .columns[13]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 13 to be a uint8!"),
+                row
+                    .columns[14]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 14 to be a uint8!"),
+                row
+                    .columns[15]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 15 to be a uint8!"),
+                row
+                    .columns[16]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 16 to be a uint8!"),
+                row
+                    .columns[17]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 17 to be a uint8!"),
+                row
+                    .columns[18]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 18 to be a uint8!"),
+            ],
             Unknown18: row
                 .columns[19]
                 .into_u8()
@@ -127,7 +129,7 @@ impl StructuredSheet for PetSheet {
                 .into_i8()
                 .copied()
                 .expect("Expected column 12 to be a int8!"),
-            Unknown15: row
+            AutoDespawn: row
                 .columns[6]
                 .into_bool()
                 .copied()
@@ -137,7 +139,7 @@ impl StructuredSheet for PetSheet {
                 .into_bool()
                 .copied()
                 .expect("Expected column 7 to be a bool!"),
-            Unknown17: row
+            ShowPetActionBar: row
                 .columns[8]
                 .into_bool()
                 .copied()
@@ -170,25 +172,15 @@ pub struct PetRow {
     ///""
     pub LargeScalePercentage: u8,
     ///""
-    pub Unknown8: u8,
-    ///""
-    pub Unknown9: u8,
-    ///""
-    pub Unknown10: u8,
-    ///""
-    pub Unknown11: u8,
-    ///""
-    pub Unknown12: u8,
-    ///""
-    pub Unknown13: u8,
+    pub AllowedPetMirage: [u8; 6],
     ///""
     pub Unknown18: u8,
     ///""
     pub Unknown14: i8,
     ///""
-    pub Unknown15: bool,
+    pub AutoDespawn: bool,
     ///""
     pub NonCombatSummon: bool,
     ///""
-    pub Unknown17: bool,
+    pub ShowPetActionBar: bool,
 }

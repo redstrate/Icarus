@@ -40,12 +40,12 @@ impl StructuredSheet for HWDDevLevelWebTextSheet {
     type Row = HWDDevLevelWebTextRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Text: row
                 .columns[0]
                 .into_string()
                 .cloned()
                 .expect("Expected column 0 to be a string!"),
-            Unknown1: row
+            InProgressText: row
                 .columns[1]
                 .into_string()
                 .cloned()
@@ -66,7 +66,7 @@ impl<'a> IntoIterator for &'a HWDDevLevelWebTextSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct HWDDevLevelWebTextRow {
     ///""
-    pub Unknown0: String,
+    pub Text: String,
     ///""
-    pub Unknown1: String,
+    pub InProgressText: String,
 }

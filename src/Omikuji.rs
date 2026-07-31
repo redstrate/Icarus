@@ -40,37 +40,37 @@ impl StructuredSheet for OmikujiSheet {
     type Row = OmikujiRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Fortune: row
                 .columns[5]
                 .into_string()
                 .cloned()
                 .expect("Expected column 5 to be a string!"),
-            Unknown1: row
+            Description: row
                 .columns[6]
                 .into_string()
                 .cloned()
                 .expect("Expected column 6 to be a string!"),
-            Unknown2: row
+            GuidanceAdventure: row
                 .columns[0]
                 .into_i32()
                 .copied()
                 .expect("Expected column 0 to be a int32!"),
-            Unknown3: row
+            GuidanceRelationships: row
                 .columns[1]
                 .into_i32()
                 .copied()
                 .expect("Expected column 1 to be a int32!"),
-            Unknown4: row
+            GuidanceProsperity: row
                 .columns[2]
                 .into_i32()
                 .copied()
                 .expect("Expected column 2 to be a int32!"),
-            Unknown5: row
+            GuidanceConflict: row
                 .columns[3]
                 .into_i32()
                 .copied()
                 .expect("Expected column 3 to be a int32!"),
-            Unknown6: row
+            GuidanceFavor: row
                 .columns[4]
                 .into_i32()
                 .copied()
@@ -91,17 +91,17 @@ impl<'a> IntoIterator for &'a OmikujiSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct OmikujiRow {
     ///""
-    pub Unknown0: String,
+    pub Fortune: String,
     ///""
-    pub Unknown1: String,
+    pub Description: String,
     ///""
-    pub Unknown2: i32,
+    pub GuidanceAdventure: i32,
     ///""
-    pub Unknown3: i32,
+    pub GuidanceRelationships: i32,
     ///""
-    pub Unknown4: i32,
+    pub GuidanceProsperity: i32,
     ///""
-    pub Unknown5: i32,
+    pub GuidanceConflict: i32,
     ///""
-    pub Unknown6: i32,
+    pub GuidanceFavor: i32,
 }

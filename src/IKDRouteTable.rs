@@ -40,12 +40,12 @@ impl StructuredSheet for IKDRouteTableSheet {
     type Row = IKDRouteTableRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Route: row
+            IndigoRoute: row
                 .columns[0]
                 .into_u32()
                 .copied()
                 .expect("Expected column 0 to be a uint32!"),
-            Unknown0: row
+            RubyRoute: row
                 .columns[1]
                 .into_u32()
                 .copied()
@@ -66,7 +66,7 @@ impl<'a> IntoIterator for &'a IKDRouteTableSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct IKDRouteTableRow {
     ///""
-    pub Route: u32,
+    pub IndigoRoute: u32,
     ///""
-    pub Unknown0: u32,
+    pub RubyRoute: u32,
 }

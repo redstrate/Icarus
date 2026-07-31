@@ -40,12 +40,12 @@ impl StructuredSheet for OmikujiGuidanceSheet {
     type Row = OmikujiGuidanceRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Type: row
                 .columns[1]
                 .into_string()
                 .cloned()
                 .expect("Expected column 1 to be a string!"),
-            Unknown1: row
+            Outcome: row
                 .columns[2]
                 .into_string()
                 .cloned()
@@ -71,9 +71,9 @@ impl<'a> IntoIterator for &'a OmikujiGuidanceSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct OmikujiGuidanceRow {
     ///""
-    pub Unknown0: String,
+    pub Type: String,
     ///""
-    pub Unknown1: String,
+    pub Outcome: String,
     ///""
     pub Unknown2: bool,
 }

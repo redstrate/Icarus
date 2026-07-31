@@ -87,22 +87,22 @@ impl StructuredSheet for FateSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 39 to be a uint32!"),
-            ReqEventItem: row
+            Unknown14: row
                 .columns[40]
                 .into_u32()
                 .copied()
                 .expect("Expected column 40 to be a uint32!"),
-            TurnInEventItem: row
+            ReqEventItem: row
                 .columns[41]
                 .into_u32()
                 .copied()
                 .expect("Expected column 41 to be a uint32!"),
+            TurnInEventItem: row
+                .columns[42]
+                .into_u32()
+                .copied()
+                .expect("Expected column 42 to be a uint32!"),
             Unknown2: [
-                row
-                    .columns[42]
-                    .into_u32()
-                    .copied()
-                    .expect("Expected column 42 to be a uint32!"),
                 row
                     .columns[43]
                     .into_u32()
@@ -113,23 +113,23 @@ impl StructuredSheet for FateSheet {
                     .into_u32()
                     .copied()
                     .expect("Expected column 44 to be a uint32!"),
+                row
+                    .columns[45]
+                    .into_u32()
+                    .copied()
+                    .expect("Expected column 45 to be a uint32!"),
             ],
             Unknown10: row
-                .columns[45]
-                .into_u32()
-                .copied()
-                .expect("Expected column 45 to be a uint32!"),
-            Unknown11: row
                 .columns[46]
                 .into_u32()
                 .copied()
                 .expect("Expected column 46 to be a uint32!"),
-            Unknown12: row
+            Unknown11: row
                 .columns[47]
                 .into_u32()
                 .copied()
                 .expect("Expected column 47 to be a uint32!"),
-            Unknown14: row
+            Unknown12: row
                 .columns[48]
                 .into_u32()
                 .copied()
@@ -710,6 +710,8 @@ pub struct FateRow {
     ///""
     pub Unknown1: u32,
     ///""
+    pub Unknown14: u32,
+    ///""
     pub ReqEventItem: u32,
     ///""
     pub TurnInEventItem: u32,
@@ -721,8 +723,6 @@ pub struct FateRow {
     pub Unknown11: u32,
     ///""
     pub Unknown12: u32,
-    ///""
-    pub Unknown14: u32,
     ///""
     pub ObjectiveIcon: [ObjectiveIconElement; 32],
     ///"Instance ID of the EventRange where this spawns."

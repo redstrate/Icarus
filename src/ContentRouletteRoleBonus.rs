@@ -45,66 +45,72 @@ impl StructuredSheet for ContentRouletteRoleBonusSheet {
     type Row = ContentRouletteRoleBonusRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            ItemRewardType: row
-                .columns[6]
-                .into_u32()
-                .copied()
-                .expect("Expected column 6 to be a uint32!"),
-            Unknown0: row
-                .columns[9]
-                .into_u32()
-                .copied()
-                .expect("Expected column 9 to be a uint32!"),
-            Unknown1: row
+            Item: [
+                row
+                    .columns[6]
+                    .into_u32()
+                    .copied()
+                    .expect("Expected column 6 to be a uint32!"),
+                row
+                    .columns[9]
+                    .into_u32()
+                    .copied()
+                    .expect("Expected column 9 to be a uint32!"),
+            ],
+            BaseExperience: row
                 .columns[0]
                 .into_u16()
                 .copied()
                 .expect("Expected column 0 to be a uint16!"),
-            Unknown2: row
+            GilMultiplier: row
                 .columns[1]
                 .into_u16()
                 .copied()
                 .expect("Expected column 1 to be a uint16!"),
-            Unknown3: row
+            GCSealsMultiplier: row
                 .columns[2]
                 .into_u16()
                 .copied()
                 .expect("Expected column 2 to be a uint16!"),
-            Unknown4: row
+            CurrencyA: row
                 .columns[3]
                 .into_u16()
                 .copied()
                 .expect("Expected column 3 to be a uint16!"),
-            Unknown5: row
+            CurrencyB: row
                 .columns[4]
                 .into_u16()
                 .copied()
                 .expect("Expected column 4 to be a uint16!"),
-            Unknown6: row
+            CurrencyC: row
                 .columns[5]
                 .into_u16()
                 .copied()
                 .expect("Expected column 5 to be a uint16!"),
-            RewardAmount: row
-                .columns[7]
-                .into_u8()
-                .copied()
-                .expect("Expected column 7 to be a uint8!"),
-            Unknown7: row
-                .columns[10]
-                .into_u8()
-                .copied()
-                .expect("Expected column 10 to be a uint8!"),
-            Unknown8: row
-                .columns[8]
-                .into_u8()
-                .copied()
-                .expect("Expected column 8 to be a uint8!"),
-            Unknown9: row
-                .columns[11]
-                .into_u8()
-                .copied()
-                .expect("Expected column 11 to be a uint8!"),
+            ItemQuantity: [
+                row
+                    .columns[7]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 7 to be a uint8!"),
+                row
+                    .columns[10]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 10 to be a uint8!"),
+            ],
+            ItemMaxLevelCondition: [
+                row
+                    .columns[8]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 8 to be a uint8!"),
+                row
+                    .columns[11]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 11 to be a uint8!"),
+            ],
         })
     }
 }
@@ -121,27 +127,21 @@ impl<'a> IntoIterator for &'a ContentRouletteRoleBonusSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ContentRouletteRoleBonusRow {
     ///""
-    pub ItemRewardType: u32,
+    pub Item: [u32; 2],
+    ///"Formula: BaseExperience * ParamGrow.ScaledQuestXP * ParamGrow.QuestExpModifier / 1000"
+    pub BaseExperience: u16,
+    ///"Formula: InstanceContent.InstanceClearGil * GilMultiplier / 1000"
+    pub GilMultiplier: u16,
+    ///"Formula: CurrentLevel * GCSealsMultiplier / 1000"
+    pub GCSealsMultiplier: u16,
     ///""
-    pub Unknown0: u32,
+    pub CurrencyA: u16,
     ///""
-    pub Unknown1: u16,
+    pub CurrencyB: u16,
     ///""
-    pub Unknown2: u16,
+    pub CurrencyC: u16,
     ///""
-    pub Unknown3: u16,
-    ///""
-    pub Unknown4: u16,
-    ///""
-    pub Unknown5: u16,
-    ///""
-    pub Unknown6: u16,
-    ///""
-    pub RewardAmount: u8,
-    ///""
-    pub Unknown7: u8,
-    ///""
-    pub Unknown8: u8,
-    ///""
-    pub Unknown9: u8,
+    pub ItemQuantity: [u8; 2],
+    ///"0 = Always rewarded\n /// 1 = Character has reached current expansions max level\n /// 2 = Character has reached at least 50\n /// 3 = Character has reached at least 60\n /// 4 = Character has reached at least 70\n /// 5 = Character has reached at least 80\n /// 6 = Character has reached at least 90\n /// "
+    pub ItemMaxLevelCondition: [u8; 2],
 }

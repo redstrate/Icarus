@@ -40,17 +40,17 @@ impl StructuredSheet for QuestStatusParamSheet {
     type Row = QuestStatusParamRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Status: row
                 .columns[0]
                 .into_u16()
                 .copied()
                 .expect("Expected column 0 to be a uint16!"),
-            Unknown1: row
+            StatusParam1: row
                 .columns[2]
                 .into_i16()
                 .copied()
                 .expect("Expected column 2 to be a int16!"),
-            Unknown2: row
+            StatusParam2: row
                 .columns[1]
                 .into_u8()
                 .copied()
@@ -71,9 +71,9 @@ impl<'a> IntoIterator for &'a QuestStatusParamSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct QuestStatusParamRow {
     ///""
-    pub Unknown0: u16,
+    pub Status: u16,
     ///""
-    pub Unknown1: i16,
+    pub StatusParam1: i16,
     ///""
-    pub Unknown2: u8,
+    pub StatusParam2: u8,
 }

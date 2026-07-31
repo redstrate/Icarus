@@ -140,18 +140,18 @@ impl StructuredSheet for OrnamentCustomizeGroupSheet {
                     .into_u16()
                     .copied()
                     .expect("Expected column 19 to be a uint16!"),
+                row
+                    .columns[20]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 20 to be a uint16!"),
+                row
+                    .columns[21]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 21 to be a uint16!"),
             ],
-            Unknown19: row
-                .columns[20]
-                .into_u16()
-                .copied()
-                .expect("Expected column 20 to be a uint16!"),
-            Unknown20: row
-                .columns[21]
-                .into_u16()
-                .copied()
-                .expect("Expected column 21 to be a uint16!"),
-            Unknown18: row
+            AttachmentPoint: row
                 .columns[0]
                 .into_u8()
                 .copied()
@@ -172,11 +172,7 @@ impl<'a> IntoIterator for &'a OrnamentCustomizeGroupSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct OrnamentCustomizeGroupRow {
     ///""
-    pub Customize: [u16; 19],
+    pub Customize: [u16; 21],
     ///""
-    pub Unknown19: u16,
-    ///""
-    pub Unknown20: u16,
-    ///""
-    pub Unknown18: u8,
+    pub AttachmentPoint: u8,
 }

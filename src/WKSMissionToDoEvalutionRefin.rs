@@ -45,17 +45,17 @@ impl StructuredSheet for WKSMissionToDoEvalutionRefinSheet {
     type Row = WKSMissionToDoEvalutionRefinRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            LowPercent: row
                 .columns[0]
                 .into_u16()
                 .copied()
                 .expect("Expected column 0 to be a uint16!"),
-            Unknown1: row
+            MidPercent: row
                 .columns[1]
                 .into_u16()
                 .copied()
                 .expect("Expected column 1 to be a uint16!"),
-            Unknown2: row
+            HighPercent: row
                 .columns[2]
                 .into_u16()
                 .copied()
@@ -78,9 +78,9 @@ impl<'a> IntoIterator for &'a WKSMissionToDoEvalutionRefinSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct WKSMissionToDoEvalutionRefinRow {
     ///""
-    pub Unknown0: u16,
+    pub LowPercent: u16,
     ///""
-    pub Unknown1: u16,
+    pub MidPercent: u16,
     ///""
-    pub Unknown2: u16,
+    pub HighPercent: u16,
 }

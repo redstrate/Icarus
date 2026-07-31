@@ -105,7 +105,7 @@ impl StructuredSheet for XBMItemSheet {
                 .into_u16()
                 .copied()
                 .expect("Expected column 2 to be a uint16!"),
-            Unknown13: row
+            Type: row
                 .columns[0]
                 .into_u8()
                 .copied()
@@ -152,5 +152,5 @@ pub struct XBMItemRow {
     ///""
     pub Unknown12: u16,
     ///""
-    pub Unknown13: u8,
+    pub Type: u8,
 }

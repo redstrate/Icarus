@@ -80,7 +80,7 @@ impl StructuredSheet for MountSheet {
                 .into_i8()
                 .copied()
                 .expect("Expected column 7 to be a int8!"),
-            Unknown1: row
+            WhistlePath: row
                 .columns[18]
                 .into_string()
                 .cloned()
@@ -90,7 +90,7 @@ impl StructuredSheet for MountSheet {
                 .into_string()
                 .cloned()
                 .expect("Expected column 19 to be a string!"),
-            Unknown3: row
+            DismountSCDPath: row
                 .columns[20]
                 .into_string()
                 .cloned()
@@ -145,22 +145,22 @@ impl StructuredSheet for MountSheet {
                 .into_u16()
                 .copied()
                 .expect("Expected column 38 to be a uint16!"),
-            Unknown_70_1: row
+            GroundTiltParam: row
                 .columns[48]
                 .into_u16()
                 .copied()
                 .expect("Expected column 48 to be a uint16!"),
-            Unknown_70_2: row
+            FlightSwimTiltParam: row
                 .columns[49]
                 .into_u16()
                 .copied()
                 .expect("Expected column 49 to be a uint16!"),
-            Unknown16: row
+            RiderGroundTiltParam: row
                 .columns[50]
                 .into_u16()
                 .copied()
                 .expect("Expected column 50 to be a uint16!"),
-            Unknown17: row
+            RiderFlightSwimTiltParam: row
                 .columns[52]
                 .into_u16()
                 .copied()
@@ -175,7 +175,7 @@ impl StructuredSheet for MountSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 10 to be a uint8!"),
-            Unknown5: row
+            FlyUpDownAngle: row
                 .columns[11]
                 .into_u8()
                 .copied()
@@ -190,12 +190,12 @@ impl StructuredSheet for MountSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 13 to be a uint8!"),
-            IsFlying: row
+            FlyingMoveVfx: row
                 .columns[14]
                 .into_u8()
                 .copied()
                 .expect("Expected column 14 to be a uint8!"),
-            Unknown8: row
+            GlideVFX: row
                 .columns[15]
                 .into_u8()
                 .copied()
@@ -230,7 +230,7 @@ impl StructuredSheet for MountSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 35 to be a uint8!"),
-            Unknown9: row
+            BaseMotionSpeed_Swim: row
                 .columns[36]
                 .into_u8()
                 .copied()
@@ -300,12 +300,12 @@ impl StructuredSheet for MountSheet {
                 .into_bool()
                 .copied()
                 .expect("Expected column 47 to be a bool!"),
-            Unknown18: row
+            OwnerGroundTiltEnable: row
                 .columns[51]
                 .into_bool()
                 .copied()
                 .expect("Expected column 51 to be a bool!"),
-            Unknown19: row
+            OwnerGroundFlySwimEnable: row
                 .columns[53]
                 .into_bool()
                 .copied()
@@ -342,11 +342,11 @@ pub struct MountRow {
     ///""
     pub Article: i8,
     ///""
-    pub Unknown1: String,
+    pub WhistlePath: String,
     ///""
     pub Unknown2: String,
     ///""
-    pub Unknown3: String,
+    pub DismountSCDPath: String,
     ///""
     pub ModelChara: i32,
     ///""
@@ -368,27 +368,27 @@ pub struct MountRow {
     ///""
     pub MountAction: u16,
     ///""
-    pub Unknown_70_1: u16,
+    pub GroundTiltParam: u16,
     ///""
-    pub Unknown_70_2: u16,
+    pub FlightSwimTiltParam: u16,
     ///""
-    pub Unknown16: u16,
+    pub RiderGroundTiltParam: u16,
     ///""
-    pub Unknown17: u16,
+    pub RiderFlightSwimTiltParam: u16,
     ///""
     pub Order: i16,
     ///""
     pub FlyingCondition: u8,
     ///""
-    pub Unknown5: u8,
+    pub FlyUpDownAngle: u8,
     ///""
     pub Unknown6: u8,
     ///""
     pub Unknown7: u8,
     ///""
-    pub IsFlying: u8,
+    pub FlyingMoveVfx: u8,
     ///""
-    pub Unknown8: u8,
+    pub GlideVFX: u8,
     ///""
     pub MountCustomize: u8,
     ///""
@@ -402,7 +402,7 @@ pub struct MountRow {
     ///""
     pub BaseMotionSpeed_Walk: u8,
     ///""
-    pub Unknown9: u8,
+    pub BaseMotionSpeed_Swim: u8,
     ///""
     pub ExtraSeats: u8,
     ///""
@@ -430,7 +430,7 @@ pub struct MountRow {
     ///""
     pub HideHeadgear: bool,
     ///""
-    pub Unknown18: bool,
+    pub OwnerGroundTiltEnable: bool,
     ///""
-    pub Unknown19: bool,
+    pub OwnerGroundFlySwimEnable: bool,
 }

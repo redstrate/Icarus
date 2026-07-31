@@ -70,7 +70,7 @@ impl StructuredSheet for StatusSheet {
                 .into_u16()
                 .copied()
                 .expect("Expected column 26 to be a uint16!"),
-            Unknown0: row
+            ExclusionGroup: row
                 .columns[3]
                 .into_u8()
                 .copied()
@@ -253,7 +253,7 @@ pub struct StatusRow {
     ///""
     pub Log: u16,
     ///""
-    pub Unknown0: u8,
+    pub ExclusionGroup: u8,
     ///""
     pub MaxStacks: u8,
     ///""

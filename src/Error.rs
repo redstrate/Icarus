@@ -40,7 +40,7 @@ impl StructuredSheet for ErrorSheet {
     type Row = ErrorRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Text: row
                 .columns[0]
                 .into_string()
                 .cloned()
@@ -61,5 +61,5 @@ impl<'a> IntoIterator for &'a ErrorSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ErrorRow {
     ///""
-    pub Unknown0: String,
+    pub Text: String,
 }

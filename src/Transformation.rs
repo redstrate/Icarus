@@ -70,41 +70,43 @@ impl StructuredSheet for TransformationSheet {
                 .into_u16()
                 .copied()
                 .expect("Expected column 2 to be a uint16!"),
-            Action0: row
-                .columns[6]
-                .into_u16()
-                .copied()
-                .expect("Expected column 6 to be a uint16!"),
-            Action1: row
-                .columns[8]
-                .into_u16()
-                .copied()
-                .expect("Expected column 8 to be a uint16!"),
-            Action2: row
-                .columns[10]
-                .into_u16()
-                .copied()
-                .expect("Expected column 10 to be a uint16!"),
-            Action3: row
-                .columns[12]
-                .into_u16()
-                .copied()
-                .expect("Expected column 12 to be a uint16!"),
-            Action4: row
-                .columns[14]
-                .into_u16()
-                .copied()
-                .expect("Expected column 14 to be a uint16!"),
-            Action5: row
-                .columns[16]
-                .into_u16()
-                .copied()
-                .expect("Expected column 16 to be a uint16!"),
-            RPParameter: row
-                .columns[18]
-                .into_u16()
-                .copied()
-                .expect("Expected column 18 to be a uint16!"),
+            Action: [
+                row
+                    .columns[6]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 6 to be a uint16!"),
+                row
+                    .columns[8]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 8 to be a uint16!"),
+                row
+                    .columns[10]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 10 to be a uint16!"),
+                row
+                    .columns[12]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 12 to be a uint16!"),
+                row
+                    .columns[14]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 14 to be a uint16!"),
+                row
+                    .columns[16]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 16 to be a uint16!"),
+                row
+                    .columns[18]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 18 to be a uint16!"),
+            ],
             RemoveAction: row
                 .columns[19]
                 .into_u16()
@@ -140,7 +142,7 @@ impl StructuredSheet for TransformationSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 22 to be a uint8!"),
-            RPParameter2: row
+            RPParameter: row
                 .columns[37]
                 .into_u8()
                 .copied()
@@ -155,41 +157,43 @@ impl StructuredSheet for TransformationSheet {
                 .into_i8()
                 .copied()
                 .expect("Expected column 35 to be a int8!"),
-            ExHotbarEnableConfig: row
-                .columns[5]
-                .into_bool()
-                .copied()
-                .expect("Expected column 5 to be a bool!"),
-            Unknown5: row
-                .columns[7]
-                .into_bool()
-                .copied()
-                .expect("Expected column 7 to be a bool!"),
-            Unknown6: row
-                .columns[9]
-                .into_bool()
-                .copied()
-                .expect("Expected column 9 to be a bool!"),
-            Unknown7: row
-                .columns[11]
-                .into_bool()
-                .copied()
-                .expect("Expected column 11 to be a bool!"),
-            Unknown8: row
-                .columns[13]
-                .into_bool()
-                .copied()
-                .expect("Expected column 13 to be a bool!"),
-            Unknown9: row
-                .columns[15]
-                .into_bool()
-                .copied()
-                .expect("Expected column 15 to be a bool!"),
-            Unknown10: row
-                .columns[17]
-                .into_bool()
-                .copied()
-                .expect("Expected column 17 to be a bool!"),
+            ExHotbarEnableConfig: [
+                row
+                    .columns[5]
+                    .into_bool()
+                    .copied()
+                    .expect("Expected column 5 to be a bool!"),
+                row
+                    .columns[7]
+                    .into_bool()
+                    .copied()
+                    .expect("Expected column 7 to be a bool!"),
+                row
+                    .columns[9]
+                    .into_bool()
+                    .copied()
+                    .expect("Expected column 9 to be a bool!"),
+                row
+                    .columns[11]
+                    .into_bool()
+                    .copied()
+                    .expect("Expected column 11 to be a bool!"),
+                row
+                    .columns[13]
+                    .into_bool()
+                    .copied()
+                    .expect("Expected column 13 to be a bool!"),
+                row
+                    .columns[15]
+                    .into_bool()
+                    .copied()
+                    .expect("Expected column 15 to be a bool!"),
+                row
+                    .columns[17]
+                    .into_bool()
+                    .copied()
+                    .expect("Expected column 17 to be a bool!"),
+            ],
             Unknown11: row
                 .columns[20]
                 .into_bool()
@@ -268,19 +272,7 @@ pub struct TransformationRow {
     ///""
     pub BNpcName: u16,
     ///""
-    pub Action0: u16,
-    ///""
-    pub Action1: u16,
-    ///""
-    pub Action2: u16,
-    ///""
-    pub Action3: u16,
-    ///""
-    pub Action4: u16,
-    ///""
-    pub Action5: u16,
-    ///""
-    pub RPParameter: u16,
+    pub Action: [u16; 7],
     ///""
     pub RemoveAction: u16,
     ///""
@@ -296,25 +288,13 @@ pub struct TransformationRow {
     ///""
     pub Unknown1: u8,
     ///""
-    pub RPParameter2: u8,
+    pub RPParameter: u8,
     ///""
     pub Unknown3: i8,
     ///""
     pub Unknown4: i8,
     ///""
-    pub ExHotbarEnableConfig: bool,
-    ///""
-    pub Unknown5: bool,
-    ///""
-    pub Unknown6: bool,
-    ///""
-    pub Unknown7: bool,
-    ///""
-    pub Unknown8: bool,
-    ///""
-    pub Unknown9: bool,
-    ///""
-    pub Unknown10: bool,
+    pub ExHotbarEnableConfig: [bool; 7],
     ///""
     pub Unknown11: bool,
     ///""

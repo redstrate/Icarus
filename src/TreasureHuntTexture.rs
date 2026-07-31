@@ -40,7 +40,7 @@ impl StructuredSheet for TreasureHuntTextureSheet {
     type Row = TreasureHuntTextureRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Texture: row
                 .columns[0]
                 .into_string()
                 .cloned()
@@ -61,5 +61,5 @@ impl<'a> IntoIterator for &'a TreasureHuntTextureSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct TreasureHuntTextureRow {
     ///""
-    pub Unknown0: String,
+    pub Texture: String,
 }

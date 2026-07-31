@@ -40,7 +40,7 @@ impl StructuredSheet for XBMContentBattleSheet {
     type Row = XBMContentBattleRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            BattleDetail: row
                 .columns[0]
                 .into_u16()
                 .copied()
@@ -61,5 +61,5 @@ impl<'a> IntoIterator for &'a XBMContentBattleSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct XBMContentBattleRow {
     ///""
-    pub Unknown0: u16,
+    pub BattleDetail: u16,
 }

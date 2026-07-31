@@ -45,7 +45,7 @@ impl StructuredSheet for XBMContentRandomStageEventSheet {
     type Row = XBMContentRandomStageEventRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            RandomStageEvent: row
                 .columns[0]
                 .into_u16()
                 .copied()
@@ -66,5 +66,5 @@ impl<'a> IntoIterator for &'a XBMContentRandomStageEventSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct XBMContentRandomStageEventRow {
     ///""
-    pub Unknown0: u16,
+    pub RandomStageEvent: u16,
 }

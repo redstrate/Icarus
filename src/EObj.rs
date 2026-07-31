@@ -65,12 +65,12 @@ impl StructuredSheet for EObjSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 18 to be a uint8!"),
-            Unknown11: row
+            AdditionalInteractRangeX: row
                 .columns[15]
                 .into_i8()
                 .copied()
                 .expect("Expected column 15 to be a int8!"),
-            Unknown12: row
+            AdditionalInteractRangeY: row
                 .columns[16]
                 .into_i8()
                 .copied()
@@ -115,32 +115,32 @@ impl StructuredSheet for EObjSheet {
                 .into_bool()
                 .copied()
                 .expect("Expected column 7 to be a bool!"),
-            EyeCollision: row
+            Targetable: row
                 .columns[12]
                 .into_bool()
                 .copied()
                 .expect("Expected column 12 to be a bool!"),
-            DirectorControl: row
+            Unknown9: row
                 .columns[13]
                 .into_bool()
                 .copied()
                 .expect("Expected column 13 to be a bool!"),
-            Target: row
+            Unknown10: row
                 .columns[14]
                 .into_bool()
                 .copied()
                 .expect("Expected column 14 to be a bool!"),
-            Unknown9: row
+            Unknown11: row
                 .columns[17]
                 .into_bool()
                 .copied()
                 .expect("Expected column 17 to be a bool!"),
-            AddedIn53: row
+            LuaSetup: row
                 .columns[19]
                 .into_bool()
                 .copied()
                 .expect("Expected column 19 to be a bool!"),
-            Unknown10: row
+            SharedTimelineStateUnknown: row
                 .columns[20]
                 .into_bool()
                 .copied()
@@ -170,10 +170,10 @@ pub struct EObjRow {
     pub Invisibility: u8,
     ///""
     pub Unknown0: u8,
-    ///""
-    pub Unknown11: i8,
-    ///""
-    pub Unknown12: i8,
+    ///"Used in EventFramework.CheckInteractRangeEx."
+    pub AdditionalInteractRangeX: i8,
+    ///"Used in EventFramework.CheckInteractRangeEx."
+    pub AdditionalInteractRangeY: i8,
     ///""
     pub Unknown1: bool,
     ///""
@@ -191,15 +191,15 @@ pub struct EObjRow {
     ///""
     pub Unknown8: bool,
     ///""
-    pub EyeCollision: bool,
-    ///""
-    pub DirectorControl: bool,
-    ///""
-    pub Target: bool,
+    pub Targetable: bool,
     ///""
     pub Unknown9: bool,
     ///""
-    pub AddedIn53: bool,
-    ///""
     pub Unknown10: bool,
+    ///""
+    pub Unknown11: bool,
+    ///"If set, EObjs managed by a QuestEventHandler calls into Lua first to set up initial shared group timeline state. This can be used by Quest scripting to animate an SGB during a specific sequence of the quest."
+    pub LuaSetup: bool,
+    ///"Not sure what the true meaning of this field means, but its checked within EventObject.UpdateSharedTimelineState."
+    pub SharedTimelineStateUnknown: bool,
 }

@@ -44,7 +44,7 @@ impl StructuredSheet for WKSMissionLotteryCondSheet {
     type Row = WKSMissionLotteryCondRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            RequiredFunction: row
                 .columns[0]
                 .into_u8()
                 .copied()
@@ -65,5 +65,5 @@ impl<'a> IntoIterator for &'a WKSMissionLotteryCondSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct WKSMissionLotteryCondRow {
     ///""
-    pub Unknown0: u8,
+    pub RequiredFunction: u8,
 }

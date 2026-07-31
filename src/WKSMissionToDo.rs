@@ -45,7 +45,7 @@ impl StructuredSheet for WKSMissionToDoSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 0 to be a uint32!"),
-            Unknown2: row
+            BronzeScore: row
                 .columns[3]
                 .into_u32()
                 .copied()
@@ -89,7 +89,7 @@ impl StructuredSheet for WKSMissionToDoSheet {
                     .copied()
                     .expect("Expected column 9 to be a uint16!"),
             ],
-            Unknown9: row
+            RequiredFishVariety: row
                 .columns[11]
                 .into_u16()
                 .copied()
@@ -129,7 +129,7 @@ impl StructuredSheet for WKSMissionToDoSheet {
                 .into_u16()
                 .copied()
                 .expect("Expected column 21 to be a uint16!"),
-            Unknown14: row
+            TemporaryActionCount: row
                 .columns[1]
                 .into_u8()
                 .copied()
@@ -144,7 +144,7 @@ impl StructuredSheet for WKSMissionToDoSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 10 to be a uint8!"),
-            Unknown17: row
+            RequiredFishQuantity: row
                 .columns[12]
                 .into_u8()
                 .copied()
@@ -172,7 +172,7 @@ pub struct WKSMissionToDoRow {
     ///""
     pub TemporaryAction: u32,
     ///""
-    pub Unknown2: u32,
+    pub BronzeScore: u32,
     ///""
     pub Unknown1: u32,
     ///""
@@ -180,7 +180,7 @@ pub struct WKSMissionToDoRow {
     ///""
     pub RequiredItemQuantity: [u16; 3],
     ///""
-    pub Unknown9: u16,
+    pub RequiredFishVariety: u16,
     ///""
     pub Unknown10: u16,
     ///""
@@ -196,13 +196,13 @@ pub struct WKSMissionToDoRow {
     ///""
     pub WKSMissionText: u16,
     ///""
-    pub Unknown14: u8,
+    pub TemporaryActionCount: u8,
     ///""
     pub Unknown15: u8,
     ///""
     pub Unknown16: u8,
     ///""
-    pub Unknown17: u8,
+    pub RequiredFishQuantity: u8,
     ///""
     pub MissionType: u8,
 }

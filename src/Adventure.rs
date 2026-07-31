@@ -105,17 +105,17 @@ impl StructuredSheet for AdventureSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 2 to be a uint8!"),
-            IsInitial: row
+            WeatherCategory: row
                 .columns[4]
                 .into_u8()
                 .copied()
                 .expect("Expected column 4 to be a uint8!"),
-            Unknown0: row
+            Weather: row
                 .columns[5]
                 .into_u8()
                 .copied()
                 .expect("Expected column 5 to be a uint8!"),
-            Unknown1: row
+            IsInitial: row
                 .columns[12]
                 .into_bool()
                 .copied()
@@ -162,9 +162,9 @@ pub struct AdventureRow {
     ///""
     pub MaxLevel: u8,
     ///""
-    pub IsInitial: u8,
+    pub WeatherCategory: u8,
     ///""
-    pub Unknown0: u8,
+    pub Weather: u8,
     ///""
-    pub Unknown1: bool,
+    pub IsInitial: bool,
 }

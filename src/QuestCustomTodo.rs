@@ -40,76 +40,80 @@ impl StructuredSheet for QuestCustomTodoSheet {
     type Row = QuestCustomTodoRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
-                .columns[1]
-                .into_u16()
-                .copied()
-                .expect("Expected column 1 to be a uint16!"),
-            Unknown2: row
-                .columns[3]
-                .into_u16()
-                .copied()
-                .expect("Expected column 3 to be a uint16!"),
-            Unknown3: row
-                .columns[5]
-                .into_u16()
-                .copied()
-                .expect("Expected column 5 to be a uint16!"),
-            Unknown4: row
-                .columns[7]
-                .into_u16()
-                .copied()
-                .expect("Expected column 7 to be a uint16!"),
-            Unknown9: row
-                .columns[9]
-                .into_u16()
-                .copied()
-                .expect("Expected column 9 to be a uint16!"),
-            Unknown10: row
-                .columns[11]
-                .into_u16()
-                .copied()
-                .expect("Expected column 11 to be a uint16!"),
-            Unknown11: row
-                .columns[13]
-                .into_u16()
-                .copied()
-                .expect("Expected column 13 to be a uint16!"),
-            Unknown1: row
-                .columns[2]
-                .into_u16()
-                .copied()
-                .expect("Expected column 2 to be a uint16!"),
-            Unknown5: row
-                .columns[4]
-                .into_u16()
-                .copied()
-                .expect("Expected column 4 to be a uint16!"),
-            Unknown6: row
-                .columns[6]
-                .into_u16()
-                .copied()
-                .expect("Expected column 6 to be a uint16!"),
-            Unknown7: row
-                .columns[8]
-                .into_u16()
-                .copied()
-                .expect("Expected column 8 to be a uint16!"),
-            Unknown12: row
-                .columns[10]
-                .into_u16()
-                .copied()
-                .expect("Expected column 10 to be a uint16!"),
-            Unknown13: row
-                .columns[12]
-                .into_u16()
-                .copied()
-                .expect("Expected column 12 to be a uint16!"),
-            Unknown14: row
-                .columns[14]
-                .into_u16()
-                .copied()
-                .expect("Expected column 14 to be a uint16!"),
+            Unknown0: [
+                row
+                    .columns[1]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 1 to be a uint16!"),
+                row
+                    .columns[3]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 3 to be a uint16!"),
+                row
+                    .columns[5]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 5 to be a uint16!"),
+                row
+                    .columns[7]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 7 to be a uint16!"),
+                row
+                    .columns[9]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 9 to be a uint16!"),
+                row
+                    .columns[11]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 11 to be a uint16!"),
+                row
+                    .columns[13]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 13 to be a uint16!"),
+            ],
+            Unknown1: [
+                row
+                    .columns[2]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 2 to be a uint16!"),
+                row
+                    .columns[4]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 4 to be a uint16!"),
+                row
+                    .columns[6]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 6 to be a uint16!"),
+                row
+                    .columns[8]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 8 to be a uint16!"),
+                row
+                    .columns[10]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 10 to be a uint16!"),
+                row
+                    .columns[12]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 12 to be a uint16!"),
+                row
+                    .columns[14]
+                    .into_u16()
+                    .copied()
+                    .expect("Expected column 14 to be a uint16!"),
+            ],
             Unknown8: row
                 .columns[0]
                 .into_u8()
@@ -131,33 +135,9 @@ impl<'a> IntoIterator for &'a QuestCustomTodoSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct QuestCustomTodoRow {
     ///""
-    pub Unknown0: u16,
+    pub Unknown0: [u16; 7],
     ///""
-    pub Unknown2: u16,
-    ///""
-    pub Unknown3: u16,
-    ///""
-    pub Unknown4: u16,
-    ///""
-    pub Unknown9: u16,
-    ///""
-    pub Unknown10: u16,
-    ///""
-    pub Unknown11: u16,
-    ///""
-    pub Unknown1: u16,
-    ///""
-    pub Unknown5: u16,
-    ///""
-    pub Unknown6: u16,
-    ///""
-    pub Unknown7: u16,
-    ///""
-    pub Unknown12: u16,
-    ///""
-    pub Unknown13: u16,
-    ///""
-    pub Unknown14: u16,
+    pub Unknown1: [u16; 7],
     ///""
     pub Unknown8: u8,
 }

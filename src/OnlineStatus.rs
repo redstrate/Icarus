@@ -50,7 +50,7 @@ impl StructuredSheet for OnlineStatusSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 4 to be a uint32!"),
-            Unknown0: row
+            TextIcon: row
                 .columns[5]
                 .into_i32()
                 .copied()
@@ -95,7 +95,7 @@ pub struct OnlineStatusRow {
     ///""
     pub Icon: u32,
     ///""
-    pub Unknown0: i32,
+    pub TextIcon: i32,
     ///""
     pub Priority: u8,
     ///""

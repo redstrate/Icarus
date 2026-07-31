@@ -40,7 +40,7 @@ impl StructuredSheet for XBMElementSheet {
     type Row = XBMElementRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Name: row
                 .columns[0]
                 .into_string()
                 .cloned()
@@ -61,5 +61,5 @@ impl<'a> IntoIterator for &'a XBMElementSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct XBMElementRow {
     ///""
-    pub Unknown0: String,
+    pub Name: String,
 }

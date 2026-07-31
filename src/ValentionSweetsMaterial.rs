@@ -45,7 +45,7 @@ impl StructuredSheet for ValentionSweetsMaterialSheet {
     type Row = ValentionSweetsMaterialRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Name: row
                 .columns[0]
                 .into_string()
                 .cloned()
@@ -66,5 +66,5 @@ impl<'a> IntoIterator for &'a ValentionSweetsMaterialSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ValentionSweetsMaterialRow {
     ///""
-    pub Unknown0: String,
+    pub Name: String,
 }

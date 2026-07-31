@@ -65,7 +65,7 @@ impl StructuredSheet for NotebookDivisionSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 3 to be a uint8!"),
-            Unknown1: row
+            MinimumQuestSequence: row
                 .columns[5]
                 .into_u8()
                 .copied()
@@ -160,7 +160,7 @@ pub struct NotebookDivisionRow {
     ///""
     pub GatheringOpeningLevel: u8,
     ///""
-    pub Unknown1: u8,
+    pub MinimumQuestSequence: u8,
     ///""
     pub Unknown0: u8,
     ///""

@@ -60,7 +60,7 @@ impl StructuredSheet for DisposalShopItemSheet {
                 .into_u16()
                 .copied()
                 .expect("Expected column 5 to be a uint16!"),
-            Unknown1: row
+            DisposedHq: row
                 .columns[1]
                 .into_bool()
                 .copied()
@@ -94,7 +94,7 @@ pub struct DisposalShopItemRow {
     ///""
     pub Unknown0: u16,
     ///""
-    pub Unknown1: bool,
+    pub DisposedHq: bool,
     ///""
     pub Unknown2: bool,
 }

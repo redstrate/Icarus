@@ -40,7 +40,7 @@ impl StructuredSheet for MKDGrowDataSJobSheet {
     type Row = MKDGrowDataSJobRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            ExpToNext: row
                 .columns[0]
                 .into_u32()
                 .copied()
@@ -61,5 +61,5 @@ impl<'a> IntoIterator for &'a MKDGrowDataSJobSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct MKDGrowDataSJobRow {
     ///""
-    pub Unknown0: u32,
+    pub ExpToNext: u32,
 }

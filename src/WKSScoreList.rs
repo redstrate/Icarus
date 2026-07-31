@@ -40,27 +40,27 @@ impl StructuredSheet for WKSScoreListSheet {
     type Row = WKSScoreListRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown5: row
+            ScoreItemId: row
                 .columns[6]
                 .into_u32()
                 .copied()
                 .expect("Expected column 6 to be a uint32!"),
-            Unknown0: row
+            Achievement50k: row
                 .columns[2]
                 .into_u16()
                 .copied()
                 .expect("Expected column 2 to be a uint16!"),
-            Unknown1: row
+            Achievement150k: row
                 .columns[3]
                 .into_u16()
                 .copied()
                 .expect("Expected column 3 to be a uint16!"),
-            Unknown2: row
+            Achievement500k: row
                 .columns[4]
                 .into_u16()
                 .copied()
                 .expect("Expected column 4 to be a uint16!"),
-            Unknown6: row
+            MasteryAchievement: row
                 .columns[5]
                 .into_u16()
                 .copied()
@@ -70,7 +70,7 @@ impl StructuredSheet for WKSScoreListSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 1 to be a uint8!"),
-            Unknown4: row
+            ClassJob: row
                 .columns[0]
                 .into_i8()
                 .copied()
@@ -91,17 +91,17 @@ impl<'a> IntoIterator for &'a WKSScoreListSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct WKSScoreListRow {
     ///""
-    pub Unknown5: u32,
+    pub ScoreItemId: u32,
     ///""
-    pub Unknown0: u16,
+    pub Achievement50k: u16,
     ///""
-    pub Unknown1: u16,
+    pub Achievement150k: u16,
     ///""
-    pub Unknown2: u16,
+    pub Achievement500k: u16,
     ///""
-    pub Unknown6: u16,
+    pub MasteryAchievement: u16,
     ///""
     pub Unknown3: u8,
     ///""
-    pub Unknown4: i8,
+    pub ClassJob: i8,
 }

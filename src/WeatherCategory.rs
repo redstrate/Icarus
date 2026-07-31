@@ -40,31 +40,33 @@ impl StructuredSheet for WeatherCategorySheet {
     type Row = WeatherCategoryRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
-                .columns[0]
-                .into_i32()
-                .copied()
-                .expect("Expected column 0 to be a int32!"),
-            Unknown1: row
-                .columns[1]
-                .into_i32()
-                .copied()
-                .expect("Expected column 1 to be a int32!"),
-            Unknown2: row
-                .columns[2]
-                .into_i32()
-                .copied()
-                .expect("Expected column 2 to be a int32!"),
-            Unknown3: row
-                .columns[3]
-                .into_i32()
-                .copied()
-                .expect("Expected column 3 to be a int32!"),
-            Unknown4: row
-                .columns[4]
-                .into_i32()
-                .copied()
-                .expect("Expected column 4 to be a int32!"),
+            Weather: [
+                row
+                    .columns[0]
+                    .into_i32()
+                    .copied()
+                    .expect("Expected column 0 to be a int32!"),
+                row
+                    .columns[1]
+                    .into_i32()
+                    .copied()
+                    .expect("Expected column 1 to be a int32!"),
+                row
+                    .columns[2]
+                    .into_i32()
+                    .copied()
+                    .expect("Expected column 2 to be a int32!"),
+                row
+                    .columns[3]
+                    .into_i32()
+                    .copied()
+                    .expect("Expected column 3 to be a int32!"),
+                row
+                    .columns[4]
+                    .into_i32()
+                    .copied()
+                    .expect("Expected column 4 to be a int32!"),
+            ],
         })
     }
 }
@@ -81,13 +83,5 @@ impl<'a> IntoIterator for &'a WeatherCategorySheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct WeatherCategoryRow {
     ///""
-    pub Unknown0: i32,
-    ///""
-    pub Unknown1: i32,
-    ///""
-    pub Unknown2: i32,
-    ///""
-    pub Unknown3: i32,
-    ///""
-    pub Unknown4: i32,
+    pub Weather: [i32; 5],
 }

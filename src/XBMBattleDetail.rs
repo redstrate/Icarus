@@ -40,7 +40,7 @@ impl StructuredSheet for XBMBattleDetailSheet {
     type Row = XBMBattleDetailRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Name: row
                 .columns[0]
                 .into_u32()
                 .copied()
@@ -60,7 +60,7 @@ impl StructuredSheet for XBMBattleDetailSheet {
                 .into_u16()
                 .copied()
                 .expect("Expected column 7 to be a uint16!"),
-            Unknown4: row
+            Resist: row
                 .columns[9]
                 .into_u16()
                 .copied()
@@ -90,7 +90,7 @@ impl StructuredSheet for XBMBattleDetailSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 5 to be a uint8!"),
-            Unknown10: row
+            Element: row
                 .columns[8]
                 .into_u8()
                 .copied()
@@ -111,7 +111,7 @@ impl<'a> IntoIterator for &'a XBMBattleDetailSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct XBMBattleDetailRow {
     ///""
-    pub Unknown0: u32,
+    pub Name: u32,
     ///""
     pub Unknown1: u32,
     ///""
@@ -119,7 +119,7 @@ pub struct XBMBattleDetailRow {
     ///""
     pub Unknown3: u16,
     ///""
-    pub Unknown4: u16,
+    pub Resist: u16,
     ///""
     pub Unknown5: u8,
     ///""
@@ -131,5 +131,5 @@ pub struct XBMBattleDetailRow {
     ///""
     pub Unknown9: u8,
     ///""
-    pub Unknown10: u8,
+    pub Element: u8,
 }

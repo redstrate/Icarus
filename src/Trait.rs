@@ -65,7 +65,7 @@ impl StructuredSheet for TraitSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 3 to be a uint8!"),
-            Unknown_70: row
+            ClassJobCategory: row
                 .columns[4]
                 .into_u8()
                 .copied()
@@ -75,7 +75,7 @@ impl StructuredSheet for TraitSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 5 to be a uint8!"),
-            ClassJobCategory: row
+            Unknown2: row
                 .columns[8]
                 .into_u8()
                 .copied()
@@ -116,11 +116,11 @@ pub struct TraitRow {
     ///""
     pub ClassJob: u8,
     ///""
-    pub Unknown_70: u8,
+    pub ClassJobCategory: u8,
     ///""
     pub Level: u8,
     ///""
-    pub ClassJobCategory: u8,
+    pub Unknown2: u8,
     ///""
     pub Unknown0: u8,
     ///""

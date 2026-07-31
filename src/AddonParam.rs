@@ -40,12 +40,12 @@ impl StructuredSheet for AddonParamSheet {
     type Row = AddonParamRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            AddonName: row
                 .columns[0]
                 .into_string()
                 .cloned()
                 .expect("Expected column 0 to be a string!"),
-            Unknown1: row
+            Param: row
                 .columns[1]
                 .into_bool()
                 .copied()
@@ -66,7 +66,7 @@ impl<'a> IntoIterator for &'a AddonParamSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct AddonParamRow {
     ///""
-    pub Unknown0: String,
+    pub AddonName: String,
     ///""
-    pub Unknown1: bool,
+    pub Param: bool,
 }

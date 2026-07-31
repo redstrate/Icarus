@@ -127,22 +127,22 @@ impl StructuredSheet for EmoteSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 12 to be a uint8!"),
-            Unknown1: row
+            HasMountedAnimation: row
                 .columns[8]
                 .into_bool()
                 .copied()
                 .expect("Expected column 8 to be a bool!"),
-            Unknown2: row
+            HasSwimmingAnimation: row
                 .columns[9]
                 .into_bool()
                 .copied()
                 .expect("Expected column 9 to be a bool!"),
-            Unknown3: row
+            HasDivingAnimation: row
                 .columns[10]
                 .into_bool()
                 .copied()
                 .expect("Expected column 10 to be a bool!"),
-            Unknown4: row
+            DontSetEmoteMode: row
                 .columns[13]
                 .into_bool()
                 .copied()
@@ -152,7 +152,7 @@ impl StructuredSheet for EmoteSheet {
                 .into_bool()
                 .copied()
                 .expect("Expected column 14 to be a bool!"),
-            HasCancelEmote: row
+            UsableWhenFishing: row
                 .columns[15]
                 .into_bool()
                 .copied()
@@ -162,7 +162,7 @@ impl StructuredSheet for EmoteSheet {
                 .into_bool()
                 .copied()
                 .expect("Expected column 16 to be a bool!"),
-            Unknown6: row
+            SheathesWeapon: row
                 .columns[17]
                 .into_bool()
                 .copied()
@@ -190,7 +190,7 @@ pub struct EmoteRow {
     pub UnlockLink: u32,
     ///""
     pub TextCommand: i32,
-    ///""
+    ///"0 = Standing\n /// 1 = Start animation\n /// 2 = Ground sit\n /// 3 = Chair sit\n /// 4 = Mounted (when HasMountedAnimation) / Swimming (when HasSwimmingAnimation) / Diving (when HasDivingAnimation)\n /// 5 = Dozing\n /// 6 = Unused\n /// "
     pub ActionTimeline: [u16; 7],
     ///""
     pub Order: u16,
@@ -205,19 +205,19 @@ pub struct EmoteRow {
     ///""
     pub EmoteMode: u8,
     ///""
-    pub Unknown1: bool,
+    pub HasMountedAnimation: bool,
     ///""
-    pub Unknown2: bool,
+    pub HasSwimmingAnimation: bool,
     ///""
-    pub Unknown3: bool,
+    pub HasDivingAnimation: bool,
     ///""
-    pub Unknown4: bool,
-    ///""
+    pub DontSetEmoteMode: bool,
+    ///"Maybe controls whether or not the emote can be synced in GPose?!"
     pub Unknown5: bool,
     ///""
-    pub HasCancelEmote: bool,
+    pub UsableWhenFishing: bool,
     ///""
     pub DrawsWeapon: bool,
     ///""
-    pub Unknown6: bool,
+    pub SheathesWeapon: bool,
 }

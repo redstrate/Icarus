@@ -139,7 +139,7 @@ impl StructuredSheet for WKSMissionUnitSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 8 to be a uint8!"),
-            Unknown0: row
+            MissionLotteryCond: row
                 .columns[16]
                 .into_u8()
                 .copied()
@@ -212,7 +212,7 @@ pub struct WKSMissionUnitRow {
     ///""
     pub LevelGroup: u8,
     ///""
-    pub Unknown0: u8,
+    pub MissionLotteryCond: u8,
     ///""
     pub WKSMissionLotterySpecialCond: u8,
     ///""

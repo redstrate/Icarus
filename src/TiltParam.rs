@@ -40,17 +40,17 @@ impl StructuredSheet for TiltParamSheet {
     type Row = TiltParamRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            TiltSpeed: row
                 .columns[3]
                 .into_f32()
                 .copied()
                 .expect("Expected column 3 to be a float32!"),
-            Unknown1: row
+            RotationOrigin: row
                 .columns[0]
                 .into_u8()
                 .copied()
                 .expect("Expected column 0 to be a uint8!"),
-            Unknown2: row
+            TiltAngle: row
                 .columns[1]
                 .into_u8()
                 .copied()
@@ -65,7 +65,7 @@ impl StructuredSheet for TiltParamSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 5 to be a uint8!"),
-            Unknown5: row
+            ReverseRotation: row
                 .columns[2]
                 .into_bool()
                 .copied()
@@ -86,15 +86,15 @@ impl<'a> IntoIterator for &'a TiltParamSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct TiltParamRow {
     ///""
-    pub Unknown0: f32,
+    pub TiltSpeed: f32,
     ///""
-    pub Unknown1: u8,
+    pub RotationOrigin: u8,
     ///""
-    pub Unknown2: u8,
+    pub TiltAngle: u8,
     ///""
     pub Unknown3: u8,
     ///""
     pub Unknown4: u8,
     ///""
-    pub Unknown5: bool,
+    pub ReverseRotation: bool,
 }

@@ -289,7 +289,7 @@ impl StructuredSheet for ContentFinderConditionSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 47 to be a uint32!"),
-            Transient: row
+            Unknown59: row
                 .columns[48]
                 .into_u32()
                 .copied()
@@ -653,7 +653,7 @@ pub struct ContentFinderConditionRow {
     ///""
     pub JournalGenre: u32,
     ///""
-    pub Transient: u32,
+    pub Unknown59: u32,
     ///""
     pub Image: u32,
     ///""

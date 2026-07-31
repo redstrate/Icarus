@@ -8,10 +8,10 @@ use physis::{
     Language,
 };
 #[derive(Clone, Debug, PartialEq)]
-pub struct UnknownStructElement {
-    pub Unknown1: u32,
-    pub Unknown_70: u32,
-    pub Unknown2: u8,
+pub struct EffectsElement {
+    pub Param1: u32,
+    pub Param2: u32,
+    pub Type: u8,
 }
 #[derive(Debug, Clone)]
 pub struct QuestEffectSheet {
@@ -46,82 +46,82 @@ impl StructuredSheet for QuestEffectSheet {
     type Row = QuestEffectRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            UnknownStruct: [
-                UnknownStructElement {
-                    Unknown1: row
+            Effects: [
+                EffectsElement {
+                    Param1: row
                         .columns[4]
                         .into_u32()
                         .copied()
                         .expect("Expected column 4 to be a uint32!"),
-                    Unknown_70: row
+                    Param2: row
                         .columns[8]
                         .into_u32()
                         .copied()
                         .expect("Expected column 8 to be a uint32!"),
-                    Unknown2: row
+                    Type: row
                         .columns[0]
                         .into_u8()
                         .copied()
                         .expect("Expected column 0 to be a uint8!"),
                 },
-                UnknownStructElement {
-                    Unknown1: row
+                EffectsElement {
+                    Param1: row
                         .columns[5]
                         .into_u32()
                         .copied()
                         .expect("Expected column 5 to be a uint32!"),
-                    Unknown_70: row
+                    Param2: row
                         .columns[9]
                         .into_u32()
                         .copied()
                         .expect("Expected column 9 to be a uint32!"),
-                    Unknown2: row
+                    Type: row
                         .columns[1]
                         .into_u8()
                         .copied()
                         .expect("Expected column 1 to be a uint8!"),
                 },
-                UnknownStructElement {
-                    Unknown1: row
+                EffectsElement {
+                    Param1: row
                         .columns[6]
                         .into_u32()
                         .copied()
                         .expect("Expected column 6 to be a uint32!"),
-                    Unknown_70: row
+                    Param2: row
                         .columns[10]
                         .into_u32()
                         .copied()
                         .expect("Expected column 10 to be a uint32!"),
-                    Unknown2: row
+                    Type: row
                         .columns[2]
                         .into_u8()
                         .copied()
                         .expect("Expected column 2 to be a uint8!"),
                 },
-                UnknownStructElement {
-                    Unknown1: row
+                EffectsElement {
+                    Param1: row
                         .columns[7]
                         .into_u32()
                         .copied()
                         .expect("Expected column 7 to be a uint32!"),
-                    Unknown_70: row
+                    Param2: row
                         .columns[11]
                         .into_u32()
                         .copied()
                         .expect("Expected column 11 to be a uint32!"),
-                    Unknown2: row
+                    Type: row
                         .columns[3]
                         .into_u8()
                         .copied()
                         .expect("Expected column 3 to be a uint8!"),
                 },
             ],
-            Unknown8: row
+            OutOfRangeWarningMessage: row
                 .columns[12]
                 .into_u32()
                 .copied()
                 .expect("Expected column 12 to be a uint32!"),
-            Unknown9: row
+            OutOfRangeMessage: row
                 .columns[13]
                 .into_u32()
                 .copied()
@@ -147,11 +147,11 @@ impl<'a> IntoIterator for &'a QuestEffectSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct QuestEffectRow {
     ///""
-    pub UnknownStruct: [UnknownStructElement; 4],
+    pub Effects: [EffectsElement; 4],
     ///""
-    pub Unknown8: u32,
+    pub OutOfRangeWarningMessage: u32,
     ///""
-    pub Unknown9: u32,
+    pub OutOfRangeMessage: u32,
     ///""
     pub Unknown_70: bool,
 }

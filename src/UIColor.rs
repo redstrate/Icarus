@@ -70,12 +70,12 @@ impl StructuredSheet for UIColorSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 5 to be a uint32!"),
-            Unknown2: row
+            ClearGrey: row
                 .columns[6]
                 .into_u32()
                 .copied()
                 .expect("Expected column 6 to be a uint32!"),
-            Unknown3: row
+            ClearPink: row
                 .columns[7]
                 .into_u32()
                 .copied()
@@ -108,7 +108,7 @@ pub struct UIColorRow {
     ///""
     pub ClearGreen: u32,
     ///""
-    pub Unknown2: u32,
+    pub ClearGrey: u32,
     ///""
-    pub Unknown3: u32,
+    pub ClearPink: u32,
 }

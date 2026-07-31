@@ -40,12 +40,12 @@ impl StructuredSheet for HudSheet {
     type Row = HudRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            DisplayName: row
                 .columns[0]
                 .into_string()
                 .cloned()
                 .expect("Expected column 0 to be a string!"),
-            Unknown1: row
+            AddonName: row
                 .columns[1]
                 .into_string()
                 .cloned()
@@ -71,9 +71,9 @@ impl<'a> IntoIterator for &'a HudSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct HudRow {
     ///""
-    pub Unknown0: String,
+    pub DisplayName: String,
     ///""
-    pub Unknown1: String,
+    pub AddonName: String,
     ///""
     pub Unknown2: String,
 }

@@ -40,7 +40,7 @@ impl StructuredSheet for UIConstSheet {
     type Row = UIConstRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Value: row
                 .columns[0]
                 .into_i32()
                 .copied()
@@ -61,5 +61,5 @@ impl<'a> IntoIterator for &'a UIConstSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct UIConstRow {
     ///""
-    pub Unknown0: i32,
+    pub Value: i32,
 }

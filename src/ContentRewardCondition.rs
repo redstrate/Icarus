@@ -44,7 +44,7 @@ impl StructuredSheet for ContentRewardConditionSheet {
     type Row = ContentRewardConditionRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            MaxLevelCondition: row
                 .columns[0]
                 .into_u8()
                 .copied()
@@ -64,6 +64,6 @@ impl<'a> IntoIterator for &'a ContentRewardConditionSheet {
 }
 #[derive(Clone, Debug, PartialEq)]
 pub struct ContentRewardConditionRow {
-    ///""
-    pub Unknown0: u8,
+    ///"0 = Always rewarded\n /// 1 = Character has reached current expansions max level\n /// 2 = Character has reached at least 50\n /// 3 = Character has reached at least 60\n /// 4 = Character has reached at least 70\n /// 5 = Character has reached at least 80\n /// 6 = Character has reached at least 90\n /// "
+    pub MaxLevelCondition: u8,
 }

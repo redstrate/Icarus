@@ -40,12 +40,12 @@ impl StructuredSheet for QuestEquipModelSheet {
     type Row = QuestEquipModelRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Model: row
                 .columns[1]
                 .into_u64()
                 .copied()
                 .expect("Expected column 1 to be a uint64!"),
-            Unknown1: row
+            Slot: row
                 .columns[0]
                 .into_i8()
                 .copied()
@@ -66,7 +66,7 @@ impl<'a> IntoIterator for &'a QuestEquipModelSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct QuestEquipModelRow {
     ///""
-    pub Unknown0: u64,
+    pub Model: u64,
     ///""
-    pub Unknown1: i8,
+    pub Slot: i8,
 }

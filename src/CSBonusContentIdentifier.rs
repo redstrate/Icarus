@@ -75,7 +75,7 @@ impl StructuredSheet for CSBonusContentIdentifierSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 7 to be a uint32!"),
-            Unknown7: row
+            Icon: row
                 .columns[8]
                 .into_i32()
                 .copied()
@@ -118,7 +118,7 @@ pub struct CSBonusContentIdentifierRow {
     ///""
     pub Map: u32,
     ///""
-    pub Unknown7: i32,
+    pub Icon: i32,
     ///""
     pub ContentLinkType: u8,
     ///""

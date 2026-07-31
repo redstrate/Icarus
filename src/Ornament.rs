@@ -105,7 +105,7 @@ impl StructuredSheet for OrnamentSheet {
                 .into_i16()
                 .copied()
                 .expect("Expected column 5 to be a int16!"),
-            AttachmentPoint: row
+            CustomizeGroup: row
                 .columns[1]
                 .into_u8()
                 .copied()
@@ -162,7 +162,7 @@ pub struct OrnamentRow {
     ///""
     pub Order: i16,
     ///""
-    pub AttachmentPoint: u8,
+    pub CustomizeGroup: u8,
     ///""
     pub Unknown3: u8,
     ///""

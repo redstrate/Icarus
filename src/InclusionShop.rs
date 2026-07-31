@@ -202,7 +202,7 @@ impl StructuredSheet for InclusionShopSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 0 to be a uint32!"),
-            Unknown2: row
+            InclusionShopWelcom: row
                 .columns[1]
                 .into_u8()
                 .copied()
@@ -229,5 +229,5 @@ pub struct InclusionShopRow {
     ///""
     pub UnlockQuest: u32,
     ///""
-    pub Unknown2: u8,
+    pub InclusionShopWelcom: u8,
 }

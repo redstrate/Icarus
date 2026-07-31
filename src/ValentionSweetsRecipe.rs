@@ -44,91 +44,95 @@ impl StructuredSheet for ValentionSweetsRecipeSheet {
     type Row = ValentionSweetsRecipeRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Name: row
                 .columns[0]
                 .into_string()
                 .cloned()
                 .expect("Expected column 0 to be a string!"),
-            Unknown1: row
-                .columns[1]
-                .into_u8()
-                .copied()
-                .expect("Expected column 1 to be a uint8!"),
-            Unknown2: row
-                .columns[3]
-                .into_u8()
-                .copied()
-                .expect("Expected column 3 to be a uint8!"),
-            Unknown3: row
-                .columns[5]
-                .into_u8()
-                .copied()
-                .expect("Expected column 5 to be a uint8!"),
-            Unknown4: row
-                .columns[7]
-                .into_u8()
-                .copied()
-                .expect("Expected column 7 to be a uint8!"),
-            Unknown5: row
-                .columns[9]
-                .into_u8()
-                .copied()
-                .expect("Expected column 9 to be a uint8!"),
-            Unknown6: row
-                .columns[11]
-                .into_u8()
-                .copied()
-                .expect("Expected column 11 to be a uint8!"),
-            Unknown7: row
-                .columns[13]
-                .into_u8()
-                .copied()
-                .expect("Expected column 13 to be a uint8!"),
-            Unknown8: row
-                .columns[15]
-                .into_u8()
-                .copied()
-                .expect("Expected column 15 to be a uint8!"),
-            Unknown9: row
-                .columns[2]
-                .into_u8()
-                .copied()
-                .expect("Expected column 2 to be a uint8!"),
-            Unknown10: row
-                .columns[4]
-                .into_u8()
-                .copied()
-                .expect("Expected column 4 to be a uint8!"),
-            Unknown11: row
-                .columns[6]
-                .into_u8()
-                .copied()
-                .expect("Expected column 6 to be a uint8!"),
-            Unknown12: row
-                .columns[8]
-                .into_u8()
-                .copied()
-                .expect("Expected column 8 to be a uint8!"),
-            Unknown13: row
-                .columns[10]
-                .into_u8()
-                .copied()
-                .expect("Expected column 10 to be a uint8!"),
-            Unknown14: row
-                .columns[12]
-                .into_u8()
-                .copied()
-                .expect("Expected column 12 to be a uint8!"),
-            Unknown15: row
-                .columns[14]
-                .into_u8()
-                .copied()
-                .expect("Expected column 14 to be a uint8!"),
-            Unknown16: row
-                .columns[16]
-                .into_u8()
-                .copied()
-                .expect("Expected column 16 to be a uint8!"),
+            Material: [
+                row
+                    .columns[1]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 1 to be a uint8!"),
+                row
+                    .columns[3]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 3 to be a uint8!"),
+                row
+                    .columns[5]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 5 to be a uint8!"),
+                row
+                    .columns[7]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 7 to be a uint8!"),
+                row
+                    .columns[9]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 9 to be a uint8!"),
+                row
+                    .columns[11]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 11 to be a uint8!"),
+                row
+                    .columns[13]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 13 to be a uint8!"),
+                row
+                    .columns[15]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 15 to be a uint8!"),
+            ],
+            Quantity: [
+                row
+                    .columns[2]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 2 to be a uint8!"),
+                row
+                    .columns[4]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 4 to be a uint8!"),
+                row
+                    .columns[6]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 6 to be a uint8!"),
+                row
+                    .columns[8]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 8 to be a uint8!"),
+                row
+                    .columns[10]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 10 to be a uint8!"),
+                row
+                    .columns[12]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 12 to be a uint8!"),
+                row
+                    .columns[14]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 14 to be a uint8!"),
+                row
+                    .columns[16]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 16 to be a uint8!"),
+            ],
         })
     }
 }
@@ -145,37 +149,9 @@ impl<'a> IntoIterator for &'a ValentionSweetsRecipeSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ValentionSweetsRecipeRow {
     ///""
-    pub Unknown0: String,
+    pub Name: String,
     ///""
-    pub Unknown1: u8,
+    pub Material: [u8; 8],
     ///""
-    pub Unknown2: u8,
-    ///""
-    pub Unknown3: u8,
-    ///""
-    pub Unknown4: u8,
-    ///""
-    pub Unknown5: u8,
-    ///""
-    pub Unknown6: u8,
-    ///""
-    pub Unknown7: u8,
-    ///""
-    pub Unknown8: u8,
-    ///""
-    pub Unknown9: u8,
-    ///""
-    pub Unknown10: u8,
-    ///""
-    pub Unknown11: u8,
-    ///""
-    pub Unknown12: u8,
-    ///""
-    pub Unknown13: u8,
-    ///""
-    pub Unknown14: u8,
-    ///""
-    pub Unknown15: u8,
-    ///""
-    pub Unknown16: u8,
+    pub Quantity: [u8; 8],
 }

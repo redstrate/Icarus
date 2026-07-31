@@ -67,7 +67,7 @@ impl StructuredSheet for IKDRouteSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 6 to be a uint32!"),
-            Unknown0: row
+            AltImage: row
                 .columns[7]
                 .into_u32()
                 .copied()
@@ -82,7 +82,7 @@ impl StructuredSheet for IKDRouteSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 9 to be a uint32!"),
-            Unknown2: row
+            PrerequisiteQuest: row
                 .columns[10]
                 .into_u32()
                 .copied()
@@ -126,13 +126,13 @@ pub struct IKDRouteRow {
     ///""
     pub Image: u32,
     ///""
-    pub Unknown0: u32,
+    pub AltImage: u32,
     ///""
     pub Unknown1: u32,
     ///""
     pub Instance: u32,
     ///""
-    pub Unknown2: u32,
+    pub PrerequisiteQuest: u32,
     ///""
     pub Time: [u8; 3],
 }

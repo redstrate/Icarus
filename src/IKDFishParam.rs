@@ -45,18 +45,16 @@ impl StructuredSheet for IKDFishParamSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 0 to be a uint32!"),
-            IKDContentBonus: [
-                row
-                    .columns[1]
-                    .into_u8()
-                    .copied()
-                    .expect("Expected column 1 to be a uint8!"),
-                row
-                    .columns[2]
-                    .into_u8()
-                    .copied()
-                    .expect("Expected column 2 to be a uint8!"),
-            ],
+            PartyBonus: row
+                .columns[1]
+                .into_u8()
+                .copied()
+                .expect("Expected column 1 to be a uint8!"),
+            IndividualBonus: row
+                .columns[2]
+                .into_u8()
+                .copied()
+                .expect("Expected column 2 to be a uint8!"),
         })
     }
 }
@@ -75,5 +73,7 @@ pub struct IKDFishParamRow {
     ///""
     pub Fish: u32,
     ///""
-    pub IKDContentBonus: [u8; 2],
+    pub PartyBonus: u8,
+    ///""
+    pub IndividualBonus: u8,
 }

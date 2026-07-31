@@ -40,17 +40,17 @@ impl StructuredSheet for EventItemCategorySheet {
     type Row = EventItemCategoryRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Text: row
                 .columns[0]
                 .into_string()
                 .cloned()
                 .expect("Expected column 0 to be a string!"),
-            Unknown1: row
+            ReceiveLogMessage: row
                 .columns[1]
                 .into_u32()
                 .copied()
                 .expect("Expected column 1 to be a uint32!"),
-            Unknown2: row
+            DiscardLogMessage: row
                 .columns[2]
                 .into_u32()
                 .copied()
@@ -71,9 +71,9 @@ impl<'a> IntoIterator for &'a EventItemCategorySheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct EventItemCategoryRow {
     ///""
-    pub Unknown0: String,
+    pub Text: String,
     ///""
-    pub Unknown1: u32,
+    pub ReceiveLogMessage: u32,
     ///""
-    pub Unknown2: u32,
+    pub DiscardLogMessage: u32,
 }

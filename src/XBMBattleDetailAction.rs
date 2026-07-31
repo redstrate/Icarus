@@ -44,22 +44,22 @@ impl StructuredSheet for XBMBattleDetailActionSheet {
     type Row = XBMBattleDetailActionRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Action: row
                 .columns[0]
                 .into_u32()
                 .copied()
                 .expect("Expected column 0 to be a uint32!"),
-            Unknown1: row
+            Status: row
                 .columns[3]
                 .into_u32()
                 .copied()
                 .expect("Expected column 3 to be a uint32!"),
-            Unknown2: row
+            ActionTarget: row
                 .columns[1]
                 .into_u8()
                 .copied()
                 .expect("Expected column 1 to be a uint8!"),
-            Unknown3: row
+            ActionEffectType: row
                 .columns[2]
                 .into_u8()
                 .copied()
@@ -80,11 +80,11 @@ impl<'a> IntoIterator for &'a XBMBattleDetailActionSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct XBMBattleDetailActionRow {
     ///""
-    pub Unknown0: u32,
+    pub Action: u32,
     ///""
-    pub Unknown1: u32,
+    pub Status: u32,
     ///""
-    pub Unknown2: u8,
+    pub ActionTarget: u8,
     ///""
-    pub Unknown3: u8,
+    pub ActionEffectType: u8,
 }

@@ -75,17 +75,17 @@ impl StructuredSheet for ContentRouletteSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 16 to be a uint32!"),
-            Unknown2: row
+            RewardPvPExp: row
                 .columns[21]
                 .into_u32()
                 .copied()
                 .expect("Expected column 21 to be a uint32!"),
-            Unknown3: row
+            RewardSeriesExp: row
                 .columns[23]
                 .into_u32()
                 .copied()
                 .expect("Expected column 23 to be a uint32!"),
-            Unknown6: row
+            Region: row
                 .columns[47]
                 .into_i32()
                 .copied()
@@ -115,7 +115,7 @@ impl StructuredSheet for ContentRouletteSheet {
                 .into_u16()
                 .copied()
                 .expect("Expected column 20 to be a uint16!"),
-            Unknown5: row
+            RewardWolfMarks: row
                 .columns[22]
                 .into_u16()
                 .copied()
@@ -180,7 +180,7 @@ impl StructuredSheet for ContentRouletteSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 31 to be a uint8!"),
-            Unknown12: row
+            UICategory: row
                 .columns[32]
                 .into_u8()
                 .copied()
@@ -315,11 +315,11 @@ pub struct ContentRouletteRow {
     ///""
     pub Image: u32,
     ///""
-    pub Unknown2: u32,
+    pub RewardPvPExp: u32,
     ///""
-    pub Unknown3: u32,
+    pub RewardSeriesExp: u32,
     ///""
-    pub Unknown6: i32,
+    pub Region: i32,
     ///""
     pub ItemLevelRequired: u16,
     ///""
@@ -331,7 +331,7 @@ pub struct ContentRouletteRow {
     ///""
     pub RewardTomeC: u16,
     ///""
-    pub Unknown5: u16,
+    pub RewardWolfMarks: u16,
     ///""
     pub InstanceContent: u16,
     ///""
@@ -357,7 +357,7 @@ pub struct ContentRouletteRow {
     ///""
     pub ContentType: u8,
     ///""
-    pub Unknown12: u8,
+    pub UICategory: u8,
     ///"In minutes."
     pub TimeLimit: u8,
     ///"In minutes. If 0, only TimeLimit is displayed."

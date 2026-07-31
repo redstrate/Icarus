@@ -50,7 +50,7 @@ impl StructuredSheet for HalloweenNpcSelectSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 2 to be a uint32!"),
-            Unknown2: row
+            RequiredQuest: row
                 .columns[3]
                 .into_u32()
                 .copied()
@@ -65,7 +65,7 @@ impl StructuredSheet for HalloweenNpcSelectSheet {
                 .into_u16()
                 .copied()
                 .expect("Expected column 0 to be a uint16!"),
-            Unknown5: row
+            Festival: row
                 .columns[4]
                 .into_u16()
                 .copied()
@@ -95,13 +95,13 @@ pub struct HalloweenNpcSelectRow {
     ///""
     pub Unknown1: u32,
     ///""
-    pub Unknown2: u32,
+    pub RequiredQuest: u32,
     ///""
     pub PreviewIcon: u32,
     ///""
     pub Transformation: u16,
-    ///""
-    pub Unknown5: u16,
+    ///"The Festival where this option became available."
+    pub Festival: u16,
     ///""
     pub Expansion: u8,
 }

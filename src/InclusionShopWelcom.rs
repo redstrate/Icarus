@@ -45,12 +45,12 @@ impl StructuredSheet for InclusionShopWelcomSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 0 to be a uint8!"),
-            Unknown1: row
+            ShopName: row
                 .columns[1]
                 .into_u8()
                 .copied()
                 .expect("Expected column 1 to be a uint8!"),
-            Unknown2: row
+            WelcomeText: row
                 .columns[2]
                 .into_u8()
                 .copied()
@@ -73,7 +73,7 @@ pub struct InclusionShopWelcomRow {
     ///""
     pub Unknown0: u8,
     ///""
-    pub Unknown1: u8,
+    pub ShopName: u8,
     ///""
-    pub Unknown2: u8,
+    pub WelcomeText: u8,
 }

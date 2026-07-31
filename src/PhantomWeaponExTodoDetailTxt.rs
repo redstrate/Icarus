@@ -45,7 +45,7 @@ impl StructuredSheet for PhantomWeaponExTodoDetailTxtSheet {
     type Row = PhantomWeaponExTodoDetailTxtRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Text: row
                 .columns[0]
                 .into_string()
                 .cloned()
@@ -68,5 +68,5 @@ impl<'a> IntoIterator for &'a PhantomWeaponExTodoDetailTxtSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct PhantomWeaponExTodoDetailTxtRow {
     ///""
-    pub Unknown0: String,
+    pub Text: String,
 }

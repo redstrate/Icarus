@@ -244,7 +244,7 @@ impl StructuredSheet for ItemSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 50 to be a uint8!"),
-            Unknown3: row
+            DefaultActionRange: row
                 .columns[54]
                 .into_u8()
                 .copied()
@@ -393,7 +393,7 @@ impl StructuredSheet for ItemSheet {
                 .into_u16()
                 .copied()
                 .expect("Expected column 11 to be a uint16!"),
-            Unknown4: row
+            SubcategorySort: row
                 .columns[19]
                 .into_u16()
                 .copied()
@@ -579,7 +579,7 @@ pub struct ItemRow {
     ///""
     pub Unknown2: u8,
     ///""
-    pub Unknown3: u8,
+    pub DefaultActionRange: u8,
     ///""
     pub BaseParam: [u8; 6],
     ///""
@@ -616,8 +616,8 @@ pub struct ItemRow {
     pub Icon: u16,
     ///""
     pub LevelItem: u16,
-    ///""
-    pub Unknown4: u16,
+    ///"Used in conjunction with the ItemUICategory sortkeys to sort things like vendor lists"
+    pub SubcategorySort: u16,
     ///""
     pub ItemAction: u16,
     ///""
@@ -628,7 +628,7 @@ pub struct ItemRow {
     pub AetherialReduce: u16,
     ///""
     pub Rarity: u8,
-    ///"1 = Physical Weapon\n /// 2 = Magical Weapon\n /// 3 = Shield\n /// 4 = Gear\n /// 5 = Meal\n /// 6 = Medicine\n /// 7 = Deep Dungeon Usable (Manuals, Medicine, Potions)\n /// 8 = Potion (HP)\n /// 9 = Ether (MP)\n /// 10 = Elixir (HP+MP)\n /// 11 = Crystal\n /// 12 = Crafting Material\n /// 13 = Materia\n /// 14 = Housing\n /// 15 = Stain\n /// 16 = Misc (Various stuff)\n /// 17 = Fishing Bait\n /// 18 = Treasure Map\n /// 19 = Useables (Various stuff)\n /// 20 = Gardening Seed\n /// 21 = Gardening Soil\n /// 22 = Gardening Fertilizer\n /// 23 = Secret Recipe Book\n /// 24 = unused\n /// 25 = Aetherial Wheel\n /// 26 = Primed Aetherial Wheel\n /// 27 = Triple Triad Card\n /// 28 = Airship Component\n /// 29 = Currency\n /// 30 = Folklore Book\n /// 31 = Soul Crystal\n /// 32 = Orchestrion Roll\n /// 33 = Aquarium Tank Trimming\n /// 34 = Painting\n /// 35 = Tales Of Adventure Retainer\n /// 36 = Submersible Component\n /// 37 = Eureka Logos Action Ingredient\n /// 38 = Bozja Mettle\n /// 39 = Bozja Lost Action\n /// 40 = Bozjan Cluster\n /// 41 = unused\n /// 42 = unused\n /// 43 = Placeholder Item\n /// 44 = Belts\n /// 45 = ArchiveItem (RowId in AdditionalData)\n /// 46 = unused\n /// 47 = Sanctuary Cowrie\n /// 48 = Sanctuary Material\n /// 49 = Adventurers Parcel\n /// 50 = Cosmic Exploration Material\n /// 51 = Outfit\n /// 52 = Occult Crescent Knowledge\n /// 53 = Occult Crescent Phantom Experience\n /// 54 = Occult Crescent Enlightenment Piece\n /// 55 = Cosmic Exploration Cosmocredit\n /// 56 = Cosmic Exploration Lunar Credit\n /// 57 = Occult Crescent Sanguine Cipher\n /// "
+    ///"1 = Physical Weapon\n /// 2 = Magical Weapon\n /// 3 = Shield\n /// 4 = Gear\n /// 5 = Meal\n /// 6 = Medicine\n /// 7 = Deep Dungeon Usable (Manuals, Medicine, Potions)\n /// 8 = Potion (HP)\n /// 9 = Ether (MP)\n /// 10 = Elixir (HP+MP)\n /// 11 = Crystal\n /// 12 = Crafting Material\n /// 13 = Materia\n /// 14 = Housing\n /// 15 = Dyes\n /// 16 = Misc (Various stuff)\n /// 17 = Fishing Bait\n /// 18 = Treasure Map\n /// 19 = Useables (Various stuff)\n /// 20 = Gardening Seed\n /// 21 = Gardening Soil\n /// 22 = Gardening Fertilizer\n /// 23 = Secret Recipe Book\n /// 24 = unused\n /// 25 = Aetherial Wheel\n /// 26 = Primed Aetherial Wheel\n /// 27 = Triple Triad Card\n /// 28 = Airship Component\n /// 29 = Currency\n /// 30 = Folklore Book\n /// 31 = Soul Crystal\n /// 32 = Orchestrion Roll\n /// 33 = Aquarium Tank Trimming\n /// 34 = Painting\n /// 35 = Tales Of Adventure Retainer\n /// 36 = Submersible Component\n /// 37 = Eureka Logos Action Ingredient\n /// 38 = Bozja Mettle\n /// 39 = Bozja Lost Action\n /// 40 = Bozjan Cluster\n /// 41 = unused\n /// 42 = unused\n /// 43 = Placeholder Item\n /// 44 = Belts\n /// 45 = ArchiveItem (RowId in AdditionalData)\n /// 46 = unused\n /// 47 = Sanctuary Cowrie\n /// 48 = Sanctuary Material\n /// 49 = Adventurers Parcel\n /// 50 = Cosmic Exploration Material\n /// 51 = Outfit\n /// 52 = Occult Crescent Knowledge\n /// 53 = Occult Crescent Phantom Experience\n /// 54 = Occult Crescent Enlightenment Piece\n /// 55 = Cosmic Exploration Cosmocredit\n /// 56 = Cosmic Exploration Lunar Credit\n /// 57 = Occult Crescent Sanguine Cipher\n /// 58 = Cosmic Exploration Dronebits\n /// 59 = Cosmic Exploration Tool Mastery Points\n /// 60 = Old Dyes\n /// "
     pub FilterGroup: u8,
     ///""
     pub ItemUICategory: u8,
@@ -642,7 +642,7 @@ pub struct ItemRow {
     pub DyeCount: u8,
     ///""
     pub CastTimeSeconds: u8,
-    ///""
+    ///"This applies to both repairs and desynthesis, so irreparable but desynthesizable items such as fish or furniture will have a ClassJobRepair value."
     pub ClassJobRepair: u8,
     ///""
     pub IsUnique: bool,

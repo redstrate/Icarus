@@ -45,27 +45,27 @@ impl StructuredSheet for PhantomWeaponExTodoDetailsSheet {
     type Row = PhantomWeaponExTodoDetailsRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            LogMessage: row
                 .columns[0]
                 .into_u32()
                 .copied()
                 .expect("Expected column 0 to be a uint32!"),
-            Unknown1: row
+            ExtendedQuestCounter: row
                 .columns[1]
                 .into_u32()
                 .copied()
                 .expect("Expected column 1 to be a uint32!"),
-            Unknown2: row
+            DetailText: row
                 .columns[2]
                 .into_u32()
                 .copied()
                 .expect("Expected column 2 to be a uint32!"),
-            Unknown3: row
+            ContentFinderCondition: row
                 .columns[3]
                 .into_u32()
                 .copied()
                 .expect("Expected column 3 to be a uint32!"),
-            Unknown4: row
+            TerritoryType: row
                 .columns[5]
                 .into_u32()
                 .copied()
@@ -91,15 +91,15 @@ impl<'a> IntoIterator for &'a PhantomWeaponExTodoDetailsSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct PhantomWeaponExTodoDetailsRow {
     ///""
-    pub Unknown0: u32,
+    pub LogMessage: u32,
     ///""
-    pub Unknown1: u32,
+    pub ExtendedQuestCounter: u32,
     ///""
-    pub Unknown2: u32,
+    pub DetailText: u32,
     ///""
-    pub Unknown3: u32,
+    pub ContentFinderCondition: u32,
     ///""
-    pub Unknown4: u32,
+    pub TerritoryType: u32,
     ///""
     pub Unknown5: u16,
 }

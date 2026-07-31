@@ -205,7 +205,7 @@ impl StructuredSheet for XBMContentSheet {
                 .into_u16()
                 .copied()
                 .expect("Expected column 36 to be a uint16!"),
-            Unknown33: row
+            ContentFinderCondition: row
                 .columns[0]
                 .into_u16()
                 .copied()
@@ -307,7 +307,7 @@ pub struct XBMContentRow {
     ///""
     pub Unknown32: u16,
     ///""
-    pub Unknown33: u16,
+    pub ContentFinderCondition: u16,
     ///""
     pub Unknown34: u8,
     ///""
