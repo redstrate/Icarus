@@ -12,6 +12,8 @@ pub struct PhantomWeaponExTodoDetailTxtSheet {
     sheet: Sheet,
 }
 impl PhantomWeaponExTodoDetailTxtSheet {
+    /// The ID of the first row, on the first page.
+    pub const STARTING_ROW: u32 = 0u32;
     /// Read the sheet from a `ResourceResolver`.
     pub fn read_from(
         resolver: &mut ResourceResolver,
@@ -50,6 +52,11 @@ impl StructuredSheet for PhantomWeaponExTodoDetailTxtSheet {
                 .into_string()
                 .cloned()
                 .expect("Expected column 0 to be a string!"),
+            Description: row
+                .columns[1]
+                .into_string()
+                .cloned()
+                .expect("Expected column 1 to be a string!"),
         })
     }
 }
@@ -69,4 +76,6 @@ impl<'a> IntoIterator for &'a PhantomWeaponExTodoDetailTxtSheet {
 pub struct PhantomWeaponExTodoDetailTxtRow {
     ///""
     pub Text: String,
+    ///""
+    pub Description: String,
 }

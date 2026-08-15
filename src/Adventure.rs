@@ -12,6 +12,8 @@ pub struct AdventureSheet {
     sheet: Sheet,
 }
 impl AdventureSheet {
+    /// The ID of the first row, on the first page.
+    pub const STARTING_ROW: u32 = 2162688u32;
     /// Read the sheet from a `ResourceResolver`.
     pub fn read_from(
         resolver: &mut ResourceResolver,

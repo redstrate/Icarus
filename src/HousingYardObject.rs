@@ -12,6 +12,8 @@ pub struct HousingYardObjectSheet {
     sheet: Sheet,
 }
 impl HousingYardObjectSheet {
+    /// The ID of the first row, on the first page.
+    pub const STARTING_ROW: u32 = 131072u32;
     /// Read the sheet from a `ResourceResolver`.
     pub fn read_from(
         resolver: &mut ResourceResolver,

@@ -12,6 +12,8 @@ pub struct ExtendedQuestCounterSheet {
     sheet: Sheet,
 }
 impl ExtendedQuestCounterSheet {
+    /// The ID of the first row, on the first page.
+    pub const STARTING_ROW: u32 = 5u32;
     /// Read the sheet from a `ResourceResolver`.
     pub fn read_from(
         resolver: &mut ResourceResolver,

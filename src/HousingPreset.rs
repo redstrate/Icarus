@@ -12,6 +12,8 @@ pub struct HousingPresetSheet {
     sheet: Sheet,
 }
 impl HousingPresetSheet {
+    /// The ID of the first row, on the first page.
+    pub const STARTING_ROW: u32 = 262144u32;
     /// Read the sheet from a `ResourceResolver`.
     pub fn read_from(
         resolver: &mut ResourceResolver,

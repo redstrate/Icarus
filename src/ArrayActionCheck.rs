@@ -12,6 +12,8 @@ pub struct ArrayActionCheckSheet {
     sheet: Sheet,
 }
 impl ArrayActionCheckSheet {
+    /// The ID of the first row, on the first page.
+    pub const STARTING_ROW: u32 = 10000000u32;
     /// Read the sheet from a `ResourceResolver`.
     pub fn read_from(
         resolver: &mut ResourceResolver,

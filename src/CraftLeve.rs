@@ -12,6 +12,8 @@ pub struct CraftLeveSheet {
     sheet: Sheet,
 }
 impl CraftLeveSheet {
+    /// The ID of the first row, on the first page.
+    pub const STARTING_ROW: u32 = 917504u32;
     /// Read the sheet from a `ResourceResolver`.
     pub fn read_from(
         resolver: &mut ResourceResolver,

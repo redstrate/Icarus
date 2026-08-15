@@ -12,6 +12,8 @@ pub struct MandervilleWeaponEnhanceSheet {
     sheet: Sheet,
 }
 impl MandervilleWeaponEnhanceSheet {
+    /// The ID of the first row, on the first page.
+    pub const STARTING_ROW: u32 = 39920u32;
     /// Read the sheet from a `ResourceResolver`.
     pub fn read_from(
         resolver: &mut ResourceResolver,

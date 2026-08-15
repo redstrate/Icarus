@@ -12,6 +12,8 @@ pub struct EventMountGimmickPathMoveSheet {
     sheet: Sheet,
 }
 impl EventMountGimmickPathMoveSheet {
+    /// The ID of the first row, on the first page.
+    pub const STARTING_ROW: u32 = 4259840u32;
     /// Read the sheet from a `ResourceResolver`.
     pub fn read_from(
         resolver: &mut ResourceResolver,

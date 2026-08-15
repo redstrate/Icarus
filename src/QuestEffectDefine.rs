@@ -12,6 +12,8 @@ pub struct QuestEffectDefineSheet {
     sheet: Sheet,
 }
 impl QuestEffectDefineSheet {
+    /// The ID of the first row, on the first page.
+    pub const STARTING_ROW: u32 = 65536u32;
     /// Read the sheet from a `ResourceResolver`.
     pub fn read_from(
         resolver: &mut ResourceResolver,

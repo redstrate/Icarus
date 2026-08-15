@@ -12,6 +12,8 @@ pub struct ChocoboRaceRankingSheet {
     sheet: Sheet,
 }
 impl ChocoboRaceRankingSheet {
+    /// The ID of the first row, on the first page.
+    pub const STARTING_ROW: u32 = 0u32;
     /// Read the sheet from a `ResourceResolver`.
     pub fn read_from(
         resolver: &mut ResourceResolver,

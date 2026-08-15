@@ -17,6 +17,8 @@ pub struct OpeningSheet {
     sheet: Sheet,
 }
 impl OpeningSheet {
+    /// The ID of the first row, on the first page.
+    pub const STARTING_ROW: u32 = 1245184u32;
     /// Read the sheet from a `ResourceResolver`.
     pub fn read_from(
         resolver: &mut ResourceResolver,

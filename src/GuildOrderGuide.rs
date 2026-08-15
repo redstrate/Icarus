@@ -12,6 +12,8 @@ pub struct GuildOrderGuideSheet {
     sheet: Sheet,
 }
 impl GuildOrderGuideSheet {
+    /// The ID of the first row, on the first page.
+    pub const STARTING_ROW: u32 = 1507328u32;
     /// Read the sheet from a `ResourceResolver`.
     pub fn read_from(
         resolver: &mut ResourceResolver,

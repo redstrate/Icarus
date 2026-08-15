@@ -12,6 +12,8 @@ pub struct GatheringSubCategorySheet {
     sheet: Sheet,
 }
 impl GatheringSubCategorySheet {
+    /// The ID of the first row, on the first page.
+    pub const STARTING_ROW: u32 = 2000u32;
     /// Read the sheet from a `ResourceResolver`.
     pub fn read_from(
         resolver: &mut ResourceResolver,
