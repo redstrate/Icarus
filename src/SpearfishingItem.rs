@@ -62,12 +62,12 @@ impl StructuredSheet for SpearfishingItemSheet {
                 .into_u16()
                 .copied()
                 .expect("Expected column 3 to be a uint16!"),
-            TerritoryType: row
+            SpearfishingNotebook: row
                 .columns[6]
                 .into_u16()
                 .copied()
                 .expect("Expected column 6 to be a uint16!"),
-            Unknown0: row
+            GatheringSubCategory: row
                 .columns[7]
                 .into_u16()
                 .copied()
@@ -77,12 +77,12 @@ impl StructuredSheet for SpearfishingItemSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 5 to be a uint8!"),
-            Unknown1: row
+            IsHidden: row
                 .columns[4]
                 .into_bool()
                 .copied()
                 .expect("Expected column 4 to be a bool!"),
-            IsVisible: row
+            IsInLog: row
                 .columns[8]
                 .into_bool()
                 .copied()
@@ -111,13 +111,13 @@ pub struct SpearfishingItemRow {
     ///""
     pub Unknown2: u16,
     ///""
-    pub TerritoryType: u16,
+    pub SpearfishingNotebook: u16,
     ///""
-    pub Unknown0: u16,
+    pub GatheringSubCategory: u16,
     ///""
     pub FishingRecordType: u8,
     ///""
-    pub Unknown1: bool,
+    pub IsHidden: bool,
     ///""
-    pub IsVisible: bool,
+    pub IsInLog: bool,
 }

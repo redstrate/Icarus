@@ -87,12 +87,12 @@ impl StructuredSheet for ClassJobSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 44 to be a uint32!"),
-            Unknown_70_1: row
+            ReplaceAction: row
                 .columns[23]
                 .into_i32()
                 .copied()
                 .expect("Expected column 23 to be a int32!"),
-            Unknown_70_2: row
+            ReplaceActionPvP: row
                 .columns[24]
                 .into_i32()
                 .copied()
@@ -292,7 +292,7 @@ impl StructuredSheet for ClassJobSheet {
                 .into_bool()
                 .copied()
                 .expect("Expected column 48 to be a bool!"),
-            Unknown10: row
+            CanWearShield: row
                 .columns[49]
                 .into_bool()
                 .copied()
@@ -331,9 +331,9 @@ pub struct ClassJobRow {
     ///""
     pub Prerequisite: u32,
     ///""
-    pub Unknown_70_1: i32,
+    pub ReplaceAction: i32,
     ///""
-    pub Unknown_70_2: i32,
+    pub ReplaceActionPvP: i32,
     ///""
     pub Unknown9: i32,
     ///""
@@ -413,5 +413,5 @@ pub struct ClassJobRow {
     ///""
     pub IsLimitedJob: bool,
     ///""
-    pub Unknown10: bool,
+    pub CanWearShield: bool,
 }

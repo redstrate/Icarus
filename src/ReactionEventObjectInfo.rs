@@ -47,7 +47,7 @@ impl StructuredSheet for ReactionEventObjectInfoSheet {
     type Row = ReactionEventObjectInfoRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            EObj: row
                 .columns[0]
                 .into_u32()
                 .copied()
@@ -68,5 +68,5 @@ impl<'a> IntoIterator for &'a ReactionEventObjectInfoSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ReactionEventObjectInfoRow {
     ///""
-    pub Unknown0: u32,
+    pub EObj: u32,
 }

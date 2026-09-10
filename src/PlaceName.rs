@@ -52,42 +52,42 @@ impl StructuredSheet for PlaceNameSheet {
                 .into_string()
                 .cloned()
                 .expect("Expected column 2 to be a string!"),
-            Unknown0: row
+            NamePrepositional: row
                 .columns[8]
                 .into_string()
                 .cloned()
                 .expect("Expected column 8 to be a string!"),
-            Unknown1: row
+            Adjective: row
                 .columns[1]
                 .into_i8()
                 .copied()
                 .expect("Expected column 1 to be a int8!"),
-            Unknown2: row
+            PossessivePronoun: row
                 .columns[3]
                 .into_i8()
                 .copied()
                 .expect("Expected column 3 to be a int8!"),
-            Unknown3: row
+            StartsWithVowel: row
                 .columns[4]
                 .into_i8()
                 .copied()
                 .expect("Expected column 4 to be a int8!"),
-            Unknown4: row
+            Countability: row
                 .columns[5]
                 .into_i8()
                 .copied()
                 .expect("Expected column 5 to be a int8!"),
-            Unknown5: row
+            Pronoun: row
                 .columns[6]
                 .into_i8()
                 .copied()
                 .expect("Expected column 6 to be a int8!"),
-            Unknown6: row
+            Article: row
                 .columns[7]
                 .into_i8()
                 .copied()
                 .expect("Expected column 7 to be a int8!"),
-            Unknown7: row
+            Order: row
                 .columns[10]
                 .into_u16()
                 .copied()
@@ -122,21 +122,21 @@ pub struct PlaceNameRow {
     ///""
     pub NameNoArticle: String,
     ///""
-    pub Unknown0: String,
+    pub NamePrepositional: String,
     ///""
-    pub Unknown1: i8,
+    pub Adjective: i8,
     ///""
-    pub Unknown2: i8,
+    pub PossessivePronoun: i8,
     ///""
-    pub Unknown3: i8,
+    pub StartsWithVowel: i8,
     ///""
-    pub Unknown4: i8,
+    pub Countability: i8,
     ///""
-    pub Unknown5: i8,
+    pub Pronoun: i8,
     ///""
-    pub Unknown6: i8,
+    pub Article: i8,
     ///""
-    pub Unknown7: u16,
+    pub Order: u16,
     ///""
     pub Unknown8: u8,
     ///""

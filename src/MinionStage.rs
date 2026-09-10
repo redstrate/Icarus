@@ -42,7 +42,7 @@ impl StructuredSheet for MinionStageSheet {
     type Row = MinionStageRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Name: row
                 .columns[0]
                 .into_string()
                 .cloned()
@@ -73,7 +73,7 @@ impl<'a> IntoIterator for &'a MinionStageSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct MinionStageRow {
     ///""
-    pub Unknown0: String,
+    pub Name: String,
     ///""
     pub Unknown1: u16,
     ///""

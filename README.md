@@ -2,7 +2,7 @@
 
 This is an auto-generated library for Rust, based on [EXDSchema](https://github.com/xivdev/EXDSchema/) and [Physis](https://github.com/redstrate/physis). The generator is located [here](https://github.com/redstrate/EXDGen).
 
-**Applicable Game Version**: `2026.07.16.0001.0000`.
+**Applicable Game Version**: `2026.09.01.0000.0000`.
 
 **NOTE:** This is still a WIP, the full schema is not supported yet nor is the API finalized.
 
@@ -12,14 +12,14 @@ Include it in your `Cargo.toml`:
 
 ```toml
 [dependencies]
-icarus = { git = "https://github.com/redstrate/Icarus", branch = "2026.07.16.0001.0000", default-features = false }
+icarus = { git = "https://github.com/redstrate/Icarus", branch = "2026.09.01.0000.0000", default-features = false }
 ```
 
 By default, **all sheets are included**. For most situations you will not want that[^1], hence `no-default-features` above. Instead, include the sheets you actually need:
 
 ```toml
 [dependencies]
-icarus = { git = "https://github.com/redstrate/Icarus", branch= "2026.07.16.0001.0000", features = ["Item"], default-features = false }
+icarus = { git = "https://github.com/redstrate/Icarus", branch= "2026.09.01.0000.0000", features = ["Item"], default-features = false }
 ```
 
 Then include the sheet and use it!

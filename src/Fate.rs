@@ -79,7 +79,7 @@ impl StructuredSheet for FateSheet {
                     .cloned()
                     .expect("Expected column 5 to be a string!"),
             ],
-            Unknown0: row
+            ArrayEventHandler: row
                 .columns[38]
                 .into_u32()
                 .copied()
@@ -562,7 +562,7 @@ impl StructuredSheet for FateSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 34 to be a uint32!"),
-            Unknown13: row
+            RequiredQuest2: row
                 .columns[36]
                 .into_u32()
                 .copied()
@@ -602,12 +602,12 @@ impl StructuredSheet for FateSheet {
                 .into_u16()
                 .copied()
                 .expect("Expected column 30 to be a uint16!"),
-            Unknown5: row
+            OccupiedPermission: row
                 .columns[37]
                 .into_u16()
                 .copied()
                 .expect("Expected column 37 to be a uint16!"),
-            EurekaFate: row
+            FateMode: row
                 .columns[6]
                 .into_u8()
                 .copied()
@@ -649,7 +649,7 @@ impl StructuredSheet for FateSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 24 to be a uint8!"),
-            Unknown7: row
+            RequiredClassJobCategory: row
                 .columns[35]
                 .into_u8()
                 .copied()
@@ -708,7 +708,7 @@ pub struct FateRow {
     ///""
     pub StatusText: [String; 3],
     ///""
-    pub Unknown0: u32,
+    pub ArrayEventHandler: u32,
     ///""
     pub Unknown1: u32,
     ///""
@@ -743,8 +743,8 @@ pub struct FateRow {
     pub RequiredQuest: u32,
     ///""
     pub FATEChain: u32,
-    ///""
-    pub Unknown13: u32,
+    ///"Used when Unknown6 is 3"
+    pub RequiredQuest2: u32,
     ///""
     pub FateRuleEx: u16,
     ///""
@@ -760,9 +760,9 @@ pub struct FateRow {
     ///""
     pub Unknown4: u16,
     ///""
-    pub Unknown5: u16,
+    pub OccupiedPermission: u16,
     ///""
-    pub EurekaFate: u8,
+    pub FateMode: u8,
     ///""
     pub Rule: u8,
     ///""
@@ -774,7 +774,7 @@ pub struct FateRow {
     ///""
     pub Unknown6: u8,
     ///""
-    pub Unknown7: u8,
+    pub RequiredClassJobCategory: u8,
     ///""
     pub SpecialFate: bool,
     ///""

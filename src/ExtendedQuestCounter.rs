@@ -51,12 +51,12 @@ impl StructuredSheet for ExtendedQuestCounterSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 3 to be a uint32!"),
-            Unknown1: row
+            CounterValue: row
                 .columns[1]
                 .into_u16()
                 .copied()
                 .expect("Expected column 1 to be a uint16!"),
-            Unknown2: row
+            Mode: row
                 .columns[0]
                 .into_u8()
                 .copied()
@@ -89,9 +89,9 @@ pub struct ExtendedQuestCounterRow {
     ///""
     pub Quest: u32,
     ///""
-    pub Unknown1: u16,
-    ///""
-    pub Unknown2: u8,
+    pub CounterValue: u16,
+    ///"1 = 8-bit bitflag check on current value using CounterValue\n /// 2 = 16-bit bitflag check on current value using CounterValue\n /// 3/4 = full 32 bit current value\n /// 5 = upper 8 bits of current value\n /// 6 = lower 8 bits of current value\n /// "
+    pub Mode: u8,
     ///""
     pub QuestCustomTodoIndex: u8,
     ///""

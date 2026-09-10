@@ -47,7 +47,7 @@ impl StructuredSheet for LiveMinigamesTerritoryTypeSheet {
     type Row = LiveMinigamesTerritoryTypeRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            TerritoryType: row
                 .columns[0]
                 .into_u32()
                 .copied()
@@ -93,7 +93,7 @@ impl<'a> IntoIterator for &'a LiveMinigamesTerritoryTypeSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct LiveMinigamesTerritoryTypeRow {
     ///""
-    pub Unknown0: u32,
+    pub TerritoryType: u32,
     ///""
     pub Unknown1: u32,
     ///""

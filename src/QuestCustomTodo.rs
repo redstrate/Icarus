@@ -42,7 +42,7 @@ impl StructuredSheet for QuestCustomTodoSheet {
     type Row = QuestCustomTodoRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: [
+            Index: [
                 row
                     .columns[1]
                     .into_u16()
@@ -79,7 +79,7 @@ impl StructuredSheet for QuestCustomTodoSheet {
                     .copied()
                     .expect("Expected column 13 to be a uint16!"),
             ],
-            Unknown1: [
+            MaxValue: [
                 row
                     .columns[2]
                     .into_u16()
@@ -116,7 +116,7 @@ impl StructuredSheet for QuestCustomTodoSheet {
                     .copied()
                     .expect("Expected column 14 to be a uint16!"),
             ],
-            Unknown8: row
+            DataType: row
                 .columns[0]
                 .into_u8()
                 .copied()
@@ -136,10 +136,10 @@ impl<'a> IntoIterator for &'a QuestCustomTodoSheet {
 }
 #[derive(Clone, Debug, PartialEq)]
 pub struct QuestCustomTodoRow {
+    ///"65535 if unused. Index in the CustomTodoManager."
+    pub Index: [u16; 7],
     ///""
-    pub Unknown0: [u16; 7],
-    ///""
-    pub Unknown1: [u16; 7],
-    ///""
-    pub Unknown8: u8,
+    pub MaxValue: [u16; 7],
+    ///"Which array to choose in the CustomTodoManager and how big the values can be. 0 = Byte, 1 = UShort"
+    pub DataType: u8,
 }

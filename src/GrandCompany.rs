@@ -42,47 +42,47 @@ impl StructuredSheet for GrandCompanySheet {
     type Row = GrandCompanyRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Name: row
+            Singular: row
                 .columns[0]
                 .into_string()
                 .cloned()
                 .expect("Expected column 0 to be a string!"),
-            Unknown0: row
+            Plural: row
                 .columns[2]
                 .into_string()
                 .cloned()
                 .expect("Expected column 2 to be a string!"),
-            Unknown1: row
+            NamePrepositional: row
                 .columns[8]
                 .into_string()
                 .cloned()
                 .expect("Expected column 8 to be a string!"),
-            Unknown2: row
+            Adjective: row
                 .columns[1]
                 .into_i8()
                 .copied()
                 .expect("Expected column 1 to be a int8!"),
-            Unknown3: row
+            PossessivePronoun: row
                 .columns[3]
                 .into_i8()
                 .copied()
                 .expect("Expected column 3 to be a int8!"),
-            Unknown4: row
+            StartsWithVowel: row
                 .columns[4]
                 .into_i8()
                 .copied()
                 .expect("Expected column 4 to be a int8!"),
-            Unknown5: row
+            Countability: row
                 .columns[5]
                 .into_i8()
                 .copied()
                 .expect("Expected column 5 to be a int8!"),
-            Unknown6: row
+            Pronoun: row
                 .columns[6]
                 .into_i8()
                 .copied()
                 .expect("Expected column 6 to be a int8!"),
-            Unknown7: row
+            Article: row
                 .columns[7]
                 .into_i8()
                 .copied()
@@ -108,23 +108,23 @@ impl<'a> IntoIterator for &'a GrandCompanySheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct GrandCompanyRow {
     ///""
-    pub Name: String,
+    pub Singular: String,
     ///""
-    pub Unknown0: String,
+    pub Plural: String,
     ///""
-    pub Unknown1: String,
+    pub NamePrepositional: String,
     ///""
-    pub Unknown2: i8,
+    pub Adjective: i8,
     ///""
-    pub Unknown3: i8,
+    pub PossessivePronoun: i8,
     ///""
-    pub Unknown4: i8,
+    pub StartsWithVowel: i8,
     ///""
-    pub Unknown5: i8,
+    pub Countability: i8,
     ///""
-    pub Unknown6: i8,
+    pub Pronoun: i8,
     ///""
-    pub Unknown7: i8,
+    pub Article: i8,
     ///""
     pub MonsterNote: i8,
 }

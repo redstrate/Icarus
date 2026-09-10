@@ -42,7 +42,7 @@ impl StructuredSheet for FateModeSheet {
     type Row = FateModeRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            LogMessage: row
                 .columns[0]
                 .into_u32()
                 .copied()
@@ -83,7 +83,7 @@ impl<'a> IntoIterator for &'a FateModeSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct FateModeRow {
     ///""
-    pub Unknown0: u32,
+    pub LogMessage: u32,
     ///""
     pub MotivationIcon: u32,
     ///""

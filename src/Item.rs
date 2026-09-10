@@ -77,7 +77,7 @@ impl StructuredSheet for ItemSheet {
                 .into_i8()
                 .copied()
                 .expect("Expected column 4 to be a int8!"),
-            Unknown0: row
+            Countability: row
                 .columns[5]
                 .into_i8()
                 .copied()
@@ -241,7 +241,7 @@ impl StructuredSheet for ItemSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 49 to be a uint8!"),
-            Unknown2: row
+            DamagePhysType: row
                 .columns[50]
                 .into_u8()
                 .copied()
@@ -535,7 +535,7 @@ pub struct ItemRow {
     ///""
     pub StartsWithVowel: i8,
     ///""
-    pub Unknown0: i8,
+    pub Countability: i8,
     ///""
     pub Pronoun: i8,
     ///""
@@ -578,8 +578,8 @@ pub struct ItemRow {
     pub BaseParamModifier: u8,
     ///""
     pub ClassJobUse: u8,
-    ///""
-    pub Unknown2: u8,
+    ///"1 = slashing (GLA/PLD, MRD/WAR, ROG/NIN, DRK, SAM, GNB, RPR, VPR, AST; CRP saw, LTW knife, BTN hatchet)\n /// 2 = piercing (LNC/DRG, ARC/BRD, MCH, DNC, RDM; WVR needle)\n /// 3 = blunt (PGL/MNK, CNJ/WHM, THM/BLM, ACN/SMN, SCH, SGE, BLU, PCT; BSM/ARM/GSM hammers, ALC, CUL, MIN pick, FSH rod)\n /// "
+    pub DamagePhysType: u8,
     ///""
     pub DefaultActionRange: u8,
     ///""

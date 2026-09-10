@@ -126,22 +126,22 @@ impl StructuredSheet for TerritoryIntendedUseSheet {
                 .into_bool()
                 .copied()
                 .expect("Expected column 11 to be a bool!"),
-            Unknown16: row
+            EnableMinions: row
                 .columns[12]
                 .into_bool()
                 .copied()
                 .expect("Expected column 12 to be a bool!"),
-            Unknown17: row
+            EnableOrnaments: row
                 .columns[13]
                 .into_bool()
                 .copied()
                 .expect("Expected column 13 to be a bool!"),
-            EnableRecommendList: row
+            EnableRevive: row
                 .columns[14]
                 .into_bool()
                 .copied()
                 .expect("Expected column 14 to be a bool!"),
-            Unknown19: row
+            EnableRecommendedDuties: row
                 .columns[15]
                 .into_bool()
                 .copied()
@@ -201,7 +201,7 @@ impl StructuredSheet for TerritoryIntendedUseSheet {
                 .into_bool()
                 .copied()
                 .expect("Expected column 28 to be a bool!"),
-            Unknown31: row
+            EnableIdleCamLineOfSightCheck: row
                 .columns[29]
                 .into_bool()
                 .copied()
@@ -226,7 +226,7 @@ impl StructuredSheet for TerritoryIntendedUseSheet {
                 .into_bool()
                 .copied()
                 .expect("Expected column 34 to be a bool!"),
-            Unknown36: row
+            EnablePerform: row
                 .columns[35]
                 .into_bool()
                 .copied()
@@ -309,13 +309,13 @@ pub struct TerritoryIntendedUseRow {
     ///""
     pub EnableReturn: bool,
     ///""
-    pub Unknown16: bool,
+    pub EnableMinions: bool,
     ///""
-    pub Unknown17: bool,
-    ///""
-    pub EnableRecommendList: bool,
-    ///""
-    pub Unknown19: bool,
+    pub EnableOrnaments: bool,
+    ///"Can return to the starting point when dead. Do not confuse with Raise."
+    pub EnableRevive: bool,
+    ///"Opens the Recommended Duties window upon login or area change"
+    pub EnableRecommendedDuties: bool,
     ///""
     pub Unknown20: bool,
     ///""
@@ -338,8 +338,8 @@ pub struct TerritoryIntendedUseRow {
     pub Unknown29: bool,
     ///""
     pub Unknown30: bool,
-    ///"Related to Idle Cam"
-    pub Unknown31: bool,
+    ///"Only entities in line of sight will be shown."
+    pub EnableIdleCamLineOfSightCheck: bool,
     ///""
     pub CanPauseTimeWeather: bool,
     ///""
@@ -349,7 +349,7 @@ pub struct TerritoryIntendedUseRow {
     ///""
     pub Unknown35: bool,
     ///""
-    pub Unknown36: bool,
+    pub EnablePerform: bool,
     ///""
     pub CanApplyGlamourPlatesAnywhere: bool,
     ///"Related to idle timer"

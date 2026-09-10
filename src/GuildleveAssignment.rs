@@ -69,7 +69,7 @@ impl StructuredSheet for GuildleveAssignmentSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 1 to be a uint8!"),
-            Unknown1: row
+            RequiredGrandCompanyRank: row
                 .columns[10]
                 .into_u8()
                 .copied()
@@ -123,7 +123,7 @@ pub struct GuildleveAssignmentRow {
     ///""
     pub Unknown0: u8,
     ///""
-    pub Unknown1: u8,
+    pub RequiredGrandCompanyRank: u8,
     ///""
     pub Unknown2: bool,
     ///""

@@ -42,7 +42,7 @@ impl StructuredSheet for HudTransientSheet {
     type Row = HudTransientRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            EditCategory: row
                 .columns[0]
                 .into_i8()
                 .copied()
@@ -52,12 +52,12 @@ impl StructuredSheet for HudTransientSheet {
                 .into_i8()
                 .copied()
                 .expect("Expected column 1 to be a int8!"),
-            Unknown2: row
+            Size: row
                 .columns[2]
                 .into_i8()
                 .copied()
                 .expect("Expected column 2 to be a int8!"),
-            Unknown3: row
+            SimpleModeSize: row
                 .columns[3]
                 .into_i8()
                 .copied()
@@ -77,12 +77,12 @@ impl<'a> IntoIterator for &'a HudTransientSheet {
 }
 #[derive(Clone, Debug, PartialEq)]
 pub struct HudTransientRow {
-    ///""
-    pub Unknown0: i8,
-    ///""
+    ///"System = 0, Hotbars = 1, Duty = 2"
+    pub EditCategory: i8,
+    ///"Job gauge = 1, Non-cross hotbar = 2, Party list = 3"
     pub Unknown1: i8,
     ///""
-    pub Unknown2: i8,
+    pub Size: i8,
     ///""
-    pub Unknown3: i8,
+    pub SimpleModeSize: i8,
 }

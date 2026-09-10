@@ -12,8 +12,7 @@ pub struct CharaMakeStructElement {
     pub Menu: u32,
     pub SubMenuMask: u32,
     pub Customize: u32,
-    pub SubMenuParam: [u32; 100],
-    pub Unknown0: [u32; 6],
+    pub SubMenuParam: [u32; 106],
     pub InitVal: u8,
     pub SubMenuType: u8,
     pub SubMenuNum: u8,
@@ -593,8 +592,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2971 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[2999]
                             .into_u32()
@@ -1216,8 +1213,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2972 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3000]
                             .into_u32()
@@ -1839,8 +1834,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2973 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3001]
                             .into_u32()
@@ -2462,8 +2455,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2974 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3002]
                             .into_u32()
@@ -3085,8 +3076,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2975 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3003]
                             .into_u32()
@@ -3708,8 +3697,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2976 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3004]
                             .into_u32()
@@ -4331,8 +4318,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2977 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3005]
                             .into_u32()
@@ -4954,8 +4939,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2978 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3006]
                             .into_u32()
@@ -5577,8 +5560,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2979 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3007]
                             .into_u32()
@@ -6200,8 +6181,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2980 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3008]
                             .into_u32()
@@ -6823,8 +6802,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2981 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3009]
                             .into_u32()
@@ -7446,8 +7423,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2982 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3010]
                             .into_u32()
@@ -8069,8 +8044,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2983 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3011]
                             .into_u32()
@@ -8692,8 +8665,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2984 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3012]
                             .into_u32()
@@ -9315,8 +9286,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2985 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3013]
                             .into_u32()
@@ -9938,8 +9907,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2986 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3014]
                             .into_u32()
@@ -10561,8 +10528,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2987 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3015]
                             .into_u32()
@@ -11184,8 +11149,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2988 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3016]
                             .into_u32()
@@ -11807,8 +11770,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2989 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3017]
                             .into_u32()
@@ -12430,8 +12391,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2990 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3018]
                             .into_u32()
@@ -13053,8 +13012,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2991 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3019]
                             .into_u32()
@@ -13676,8 +13633,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2992 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3020]
                             .into_u32()
@@ -14299,8 +14254,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2993 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3021]
                             .into_u32()
@@ -14922,8 +14875,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2994 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3022]
                             .into_u32()
@@ -15545,8 +15496,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2995 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3023]
                             .into_u32()
@@ -16168,8 +16117,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2996 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3024]
                             .into_u32()
@@ -16791,8 +16738,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2997 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3025]
                             .into_u32()
@@ -17414,8 +17359,6 @@ impl StructuredSheet for CharaMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 2998 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[3026]
                             .into_u32()

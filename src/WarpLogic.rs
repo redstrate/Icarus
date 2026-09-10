@@ -189,7 +189,7 @@ impl StructuredSheet for WarpLogicSheet {
                 .into_string()
                 .cloned()
                 .expect("Expected column 1 to be a string!"),
-            Unknown0: row
+            Icon: row
                 .columns[0]
                 .into_u32()
                 .copied()
@@ -225,7 +225,7 @@ pub struct WarpLogicRow {
     ///""
     pub WarpName: String,
     ///""
-    pub Unknown0: u32,
+    pub Icon: u32,
     ///""
     pub CanSkipCutscene: bool,
 }

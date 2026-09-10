@@ -47,7 +47,7 @@ impl StructuredSheet for LiveMinigamesDynamicDefineSheet {
     type Row = LiveMinigamesDynamicDefineRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            DefineValue: row
                 .columns[0]
                 .into_u32()
                 .copied()
@@ -68,5 +68,5 @@ impl<'a> IntoIterator for &'a LiveMinigamesDynamicDefineSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct LiveMinigamesDynamicDefineRow {
     ///""
-    pub Unknown0: u32,
+    pub DefineValue: u32,
 }

@@ -12,8 +12,7 @@ pub struct CharaMakeStructElement {
     pub Menu: u32,
     pub SubMenuMask: u32,
     pub Customize: u32,
-    pub SubMenuParam: [u32; 100],
-    pub Unknown0: [u32; 6],
+    pub SubMenuParam: [u32; 106],
     pub InitVal: u8,
     pub SubMenuType: u8,
     pub SubMenuNum: u8,
@@ -583,8 +582,6 @@ impl StructuredSheet for HairMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 957 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[966]
                             .into_u32()
@@ -1206,8 +1203,6 @@ impl StructuredSheet for HairMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 958 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[967]
                             .into_u32()
@@ -1829,8 +1824,6 @@ impl StructuredSheet for HairMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 959 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[968]
                             .into_u32()
@@ -2452,8 +2445,6 @@ impl StructuredSheet for HairMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 960 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[969]
                             .into_u32()
@@ -3075,8 +3066,6 @@ impl StructuredSheet for HairMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 961 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[970]
                             .into_u32()
@@ -3698,8 +3687,6 @@ impl StructuredSheet for HairMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 962 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[971]
                             .into_u32()
@@ -4321,8 +4308,6 @@ impl StructuredSheet for HairMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 963 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[972]
                             .into_u32()
@@ -4944,8 +4929,6 @@ impl StructuredSheet for HairMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 964 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[973]
                             .into_u32()
@@ -5567,8 +5550,6 @@ impl StructuredSheet for HairMakeTypeSheet {
                             .into_u32()
                             .copied()
                             .expect("Expected column 965 to be a uint32!"),
-                    ],
-                    Unknown0: [
                         row
                             .columns[974]
                             .into_u32()

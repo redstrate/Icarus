@@ -66,32 +66,32 @@ impl StructuredSheet for DeepDungeonDemicloneSheet {
                 .into_string()
                 .cloned()
                 .expect("Expected column 10 to be a string!"),
-            Unknown4: row
+            Adjective: row
                 .columns[2]
                 .into_i8()
                 .copied()
                 .expect("Expected column 2 to be a int8!"),
-            Unknown5: row
+            PossessivePronoun: row
                 .columns[4]
                 .into_i8()
                 .copied()
                 .expect("Expected column 4 to be a int8!"),
-            Unknown6: row
+            StartsWithVowel: row
                 .columns[5]
                 .into_i8()
                 .copied()
                 .expect("Expected column 5 to be a int8!"),
-            Unknown7: row
+            Countability: row
                 .columns[6]
                 .into_i8()
                 .copied()
                 .expect("Expected column 6 to be a int8!"),
-            Unknown8: row
+            Pronoun: row
                 .columns[7]
                 .into_i8()
                 .copied()
                 .expect("Expected column 7 to be a int8!"),
-            Unknown9: row
+            Article: row
                 .columns[8]
                 .into_i8()
                 .copied()
@@ -125,17 +125,17 @@ pub struct DeepDungeonDemicloneRow {
     ///""
     pub Description: String,
     ///""
-    pub Unknown4: i8,
+    pub Adjective: i8,
     ///""
-    pub Unknown5: i8,
+    pub PossessivePronoun: i8,
     ///""
-    pub Unknown6: i8,
+    pub StartsWithVowel: i8,
     ///""
-    pub Unknown7: i8,
+    pub Countability: i8,
     ///""
-    pub Unknown8: i8,
+    pub Pronoun: i8,
     ///""
-    pub Unknown9: i8,
+    pub Article: i8,
     ///""
     pub Icon: u32,
 }

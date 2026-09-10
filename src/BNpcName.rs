@@ -67,7 +67,7 @@ impl StructuredSheet for BNpcNameSheet {
                 .into_i8()
                 .copied()
                 .expect("Expected column 4 to be a int8!"),
-            Unknown0: row
+            Countability: row
                 .columns[5]
                 .into_i8()
                 .copied()
@@ -108,7 +108,7 @@ pub struct BNpcNameRow {
     ///""
     pub StartsWithVowel: i8,
     ///""
-    pub Unknown0: i8,
+    pub Countability: i8,
     ///""
     pub Pronoun: i8,
     ///""

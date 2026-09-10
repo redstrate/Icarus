@@ -42,22 +42,22 @@ impl StructuredSheet for AddonHudSizeSheet {
     type Row = AddonHudSizeRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Width: row
                 .columns[2]
                 .into_u16()
                 .copied()
                 .expect("Expected column 2 to be a uint16!"),
-            Unknown1: row
+            Height: row
                 .columns[3]
                 .into_u16()
                 .copied()
                 .expect("Expected column 3 to be a uint16!"),
-            Unknown2: row
+            OffsetX: row
                 .columns[0]
                 .into_i16()
                 .copied()
                 .expect("Expected column 0 to be a int16!"),
-            Unknown3: row
+            OffsetY: row
                 .columns[1]
                 .into_i16()
                 .copied()
@@ -78,11 +78,11 @@ impl<'a> IntoIterator for &'a AddonHudSizeSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct AddonHudSizeRow {
     ///""
-    pub Unknown0: u16,
+    pub Width: u16,
     ///""
-    pub Unknown1: u16,
+    pub Height: u16,
     ///""
-    pub Unknown2: i16,
+    pub OffsetX: i16,
     ///""
-    pub Unknown3: i16,
+    pub OffsetY: i16,
 }

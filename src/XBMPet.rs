@@ -99,6 +99,31 @@ impl StructuredSheet for XBMPetSheet {
                 .expect("Expected column 6 to be a uint8!"),
             Unknown11: [
                 row
+                    .columns[22]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 22 to be a uint8!"),
+                row
+                    .columns[23]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 23 to be a uint8!"),
+                row
+                    .columns[24]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 24 to be a uint8!"),
+                row
+                    .columns[25]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 25 to be a uint8!"),
+                row
+                    .columns[26]
+                    .into_u8()
+                    .copied()
+                    .expect("Expected column 26 to be a uint8!"),
+                row
                     .columns[11]
                     .into_bool()
                     .copied()
@@ -128,31 +153,6 @@ impl StructuredSheet for XBMPetSheet {
                     .into_bool()
                     .copied()
                     .expect("Expected column 16 to be a bool!"),
-                row
-                    .columns[17]
-                    .into_bool()
-                    .copied()
-                    .expect("Expected column 17 to be a bool!"),
-                row
-                    .columns[18]
-                    .into_bool()
-                    .copied()
-                    .expect("Expected column 18 to be a bool!"),
-                row
-                    .columns[19]
-                    .into_bool()
-                    .copied()
-                    .expect("Expected column 19 to be a bool!"),
-                row
-                    .columns[20]
-                    .into_bool()
-                    .copied()
-                    .expect("Expected column 20 to be a bool!"),
-                row
-                    .columns[21]
-                    .into_bool()
-                    .copied()
-                    .expect("Expected column 21 to be a bool!"),
             ],
         })
     }
@@ -192,5 +192,5 @@ pub struct XBMPetRow {
     ///""
     pub LocationKey: u8,
     ///""
-    pub Unknown11: [bool; 11],
+    pub Unknown11: [u8; 11],
 }

@@ -47,7 +47,7 @@ impl StructuredSheet for ChocoboRaceStatusSheet {
                 .into_i32()
                 .copied()
                 .expect("Expected column 0 to be a int32!"),
-            Unknown0: row
+            VFX: row
                 .columns[1]
                 .into_u16()
                 .copied()
@@ -70,5 +70,5 @@ pub struct ChocoboRaceStatusRow {
     ///""
     pub Status: i32,
     ///""
-    pub Unknown0: u16,
+    pub VFX: u16,
 }

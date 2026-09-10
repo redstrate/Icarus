@@ -42,42 +42,42 @@ impl StructuredSheet for AttributiveSheet {
     type Row = AttributiveRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            JapaneseSingularDemonstrative: row
+            JapaneseDemonstrative: row
                 .columns[0]
                 .into_string()
                 .cloned()
                 .expect("Expected column 0 to be a string!"),
-            JapanesePluralDemonstrative: row
+            JapaneseDemonstrativePlural: row
                 .columns[1]
                 .into_string()
                 .cloned()
                 .expect("Expected column 1 to be a string!"),
-            EnglishArticleSingularConsonant: row
+            EnglishConsonantSingular: row
                 .columns[2]
                 .into_string()
                 .cloned()
                 .expect("Expected column 2 to be a string!"),
-            EnglishArticleGenericConsonant: row
+            EnglishConsonantGeneric: row
                 .columns[3]
                 .into_string()
                 .cloned()
                 .expect("Expected column 3 to be a string!"),
-            EnglishArticlePluralConsonant: row
+            EnglishConsonantPlural: row
                 .columns[4]
                 .into_string()
                 .cloned()
                 .expect("Expected column 4 to be a string!"),
-            EnglishArticleSingularVowel: row
+            EnglishVowelSingular: row
                 .columns[5]
                 .into_string()
                 .cloned()
                 .expect("Expected column 5 to be a string!"),
-            EnglishArticleGenericVowel: row
+            EnglishVowelGeneric: row
                 .columns[6]
                 .into_string()
                 .cloned()
                 .expect("Expected column 6 to be a string!"),
-            EnglishArticlePluralVowel: row
+            EnglishVowelPlural: row
                 .columns[7]
                 .into_string()
                 .cloned()
@@ -162,87 +162,87 @@ impl StructuredSheet for AttributiveSheet {
                 .into_string()
                 .cloned()
                 .expect("Expected column 23 to be a string!"),
-            FrenchArticleSingular: row
+            FrenchMasculineConsonantBase: row
                 .columns[24]
                 .into_string()
                 .cloned()
                 .expect("Expected column 24 to be a string!"),
-            FrenchArticleSingularMasculine: row
+            FrenchMasculineConsonantSingular: row
                 .columns[25]
                 .into_string()
                 .cloned()
                 .expect("Expected column 25 to be a string!"),
-            FrenchArticlePluralMasculine: row
+            FrenchMasculineConsonantPlural: row
                 .columns[26]
                 .into_string()
                 .cloned()
                 .expect("Expected column 26 to be a string!"),
-            FrenchArticleSingularMasculineElided: row
+            FrenchMasculineConsonantMass: row
                 .columns[27]
                 .into_string()
                 .cloned()
                 .expect("Expected column 27 to be a string!"),
-            FrenchArticlePluralMasculineElided: row
+            FrenchMasculineVowelBase: row
                 .columns[28]
                 .into_string()
                 .cloned()
                 .expect("Expected column 28 to be a string!"),
-            FrenchArticleSingularElided: row
+            FrenchMasculineVowelSingular: row
                 .columns[29]
                 .into_string()
                 .cloned()
                 .expect("Expected column 29 to be a string!"),
-            FrenchArticlePluralElided: row
+            FrenchMasculineVowelPlural: row
                 .columns[30]
                 .into_string()
                 .cloned()
                 .expect("Expected column 30 to be a string!"),
-            FrenchArticleSingularMasculineContracted: row
+            FrenchMasculineVowelMass: row
                 .columns[31]
                 .into_string()
                 .cloned()
                 .expect("Expected column 31 to be a string!"),
-            FrenchArticlePluralMasculineContracted: row
+            FrenchFeminineConsonantBase: row
                 .columns[32]
                 .into_string()
                 .cloned()
                 .expect("Expected column 32 to be a string!"),
-            FrenchArticleSingularFeminine: row
+            FrenchFeminineConsonantSingular: row
                 .columns[33]
                 .into_string()
                 .cloned()
                 .expect("Expected column 33 to be a string!"),
-            FrenchArticlePluralFeminine: row
+            FrenchFeminineConsonantPlural: row
                 .columns[34]
                 .into_string()
                 .cloned()
                 .expect("Expected column 34 to be a string!"),
-            FrenchArticleSingularFeminineElided: row
+            FrenchFeminineConsonantMass: row
                 .columns[35]
                 .into_string()
                 .cloned()
                 .expect("Expected column 35 to be a string!"),
-            FrenchArticlePluralFeminineElided: row
+            FrenchFeminineVowelBase: row
                 .columns[36]
                 .into_string()
                 .cloned()
                 .expect("Expected column 36 to be a string!"),
-            FrenchArticleSingularElidedAlt: row
+            FrenchFeminineVowelSingular: row
                 .columns[37]
                 .into_string()
                 .cloned()
                 .expect("Expected column 37 to be a string!"),
-            FrenchArticlePluralElidedAlt: row
+            FrenchFeminineVowelPlural: row
                 .columns[38]
                 .into_string()
                 .cloned()
                 .expect("Expected column 38 to be a string!"),
-            FrenchArticleSingularNeutral: row
+            FrenchFeminineVowelMass: row
                 .columns[39]
                 .into_string()
                 .cloned()
                 .expect("Expected column 39 to be a string!"),
-            FrenchArticlePluralNeutral: row
+            Unknown40: row
                 .columns[40]
                 .into_string()
                 .cloned()
@@ -263,21 +263,21 @@ impl<'a> IntoIterator for &'a AttributiveSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct AttributiveRow {
     ///""
-    pub JapaneseSingularDemonstrative: String,
+    pub JapaneseDemonstrative: String,
     ///""
-    pub JapanesePluralDemonstrative: String,
+    pub JapaneseDemonstrativePlural: String,
     ///""
-    pub EnglishArticleSingularConsonant: String,
+    pub EnglishConsonantSingular: String,
     ///""
-    pub EnglishArticleGenericConsonant: String,
+    pub EnglishConsonantGeneric: String,
     ///""
-    pub EnglishArticlePluralConsonant: String,
+    pub EnglishConsonantPlural: String,
     ///""
-    pub EnglishArticleSingularVowel: String,
+    pub EnglishVowelSingular: String,
     ///""
-    pub EnglishArticleGenericVowel: String,
+    pub EnglishVowelGeneric: String,
     ///""
-    pub EnglishArticlePluralVowel: String,
+    pub EnglishVowelPlural: String,
     ///""
     pub GermanNominativeMasculine: String,
     ///""
@@ -311,37 +311,37 @@ pub struct AttributiveRow {
     ///""
     pub GermanAccusativePlural: String,
     ///""
-    pub FrenchArticleSingular: String,
+    pub FrenchMasculineConsonantBase: String,
     ///""
-    pub FrenchArticleSingularMasculine: String,
+    pub FrenchMasculineConsonantSingular: String,
     ///""
-    pub FrenchArticlePluralMasculine: String,
+    pub FrenchMasculineConsonantPlural: String,
     ///""
-    pub FrenchArticleSingularMasculineElided: String,
+    pub FrenchMasculineConsonantMass: String,
     ///""
-    pub FrenchArticlePluralMasculineElided: String,
+    pub FrenchMasculineVowelBase: String,
     ///""
-    pub FrenchArticleSingularElided: String,
+    pub FrenchMasculineVowelSingular: String,
     ///""
-    pub FrenchArticlePluralElided: String,
+    pub FrenchMasculineVowelPlural: String,
     ///""
-    pub FrenchArticleSingularMasculineContracted: String,
+    pub FrenchMasculineVowelMass: String,
     ///""
-    pub FrenchArticlePluralMasculineContracted: String,
+    pub FrenchFeminineConsonantBase: String,
     ///""
-    pub FrenchArticleSingularFeminine: String,
+    pub FrenchFeminineConsonantSingular: String,
     ///""
-    pub FrenchArticlePluralFeminine: String,
+    pub FrenchFeminineConsonantPlural: String,
     ///""
-    pub FrenchArticleSingularFeminineElided: String,
+    pub FrenchFeminineConsonantMass: String,
     ///""
-    pub FrenchArticlePluralFeminineElided: String,
+    pub FrenchFeminineVowelBase: String,
     ///""
-    pub FrenchArticleSingularElidedAlt: String,
+    pub FrenchFeminineVowelSingular: String,
     ///""
-    pub FrenchArticlePluralElidedAlt: String,
+    pub FrenchFeminineVowelPlural: String,
     ///""
-    pub FrenchArticleSingularNeutral: String,
+    pub FrenchFeminineVowelMass: String,
     ///""
-    pub FrenchArticlePluralNeutral: String,
+    pub Unknown40: String,
 }

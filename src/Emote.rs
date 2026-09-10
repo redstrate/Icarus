@@ -129,17 +129,17 @@ impl StructuredSheet for EmoteSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 12 to be a uint8!"),
-            HasMountedAnimation: row
+            UsableWhenMounted: row
                 .columns[8]
                 .into_bool()
                 .copied()
                 .expect("Expected column 8 to be a bool!"),
-            HasSwimmingAnimation: row
+            UsableWhenSwimming: row
                 .columns[9]
                 .into_bool()
                 .copied()
                 .expect("Expected column 9 to be a bool!"),
-            HasDivingAnimation: row
+            UsableWhenDiving: row
                 .columns[10]
                 .into_bool()
                 .copied()
@@ -192,7 +192,7 @@ pub struct EmoteRow {
     pub UnlockLink: u32,
     ///""
     pub TextCommand: i32,
-    ///"0 = Standing\n /// 1 = Start animation\n /// 2 = Ground sit\n /// 3 = Chair sit\n /// 4 = Mounted (when HasMountedAnimation) / Swimming (when HasSwimmingAnimation) / Diving (when HasDivingAnimation)\n /// 5 = Dozing\n /// 6 = Unused\n /// "
+    ///"0 = Standing\n /// 1 = Start animation\n /// 2 = Ground sit\n /// 3 = Chair sit\n /// 4 = Mounted / Swimming / Diving\n /// 5 = Dozing\n /// 6 = Unused\n /// "
     pub ActionTimeline: [u16; 7],
     ///""
     pub Order: u16,
@@ -202,16 +202,16 @@ pub struct EmoteRow {
     pub LogMessageUntargeted: u16,
     ///""
     pub Patch: u16,
-    ///""
+    ///"3 (Expressions) = Usable everywhere (other columns are overridden)\n /// "
     pub EmoteCategory: u8,
     ///""
     pub EmoteMode: u8,
     ///""
-    pub HasMountedAnimation: bool,
+    pub UsableWhenMounted: bool,
     ///""
-    pub HasSwimmingAnimation: bool,
+    pub UsableWhenSwimming: bool,
     ///""
-    pub HasDivingAnimation: bool,
+    pub UsableWhenDiving: bool,
     ///""
     pub DontSetEmoteMode: bool,
     ///"Maybe controls whether or not the emote can be synced in GPose?!"

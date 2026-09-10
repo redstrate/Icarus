@@ -81,7 +81,7 @@ impl StructuredSheet for DeepDungeonEquipmentSheet {
                 .into_i8()
                 .copied()
                 .expect("Expected column 5 to be a int8!"),
-            Unknown0: row
+            Countability: row
                 .columns[6]
                 .into_i8()
                 .copied()
@@ -131,7 +131,7 @@ pub struct DeepDungeonEquipmentRow {
     ///""
     pub StartsWithVowel: i8,
     ///""
-    pub Unknown0: i8,
+    pub Countability: i8,
     ///""
     pub Pronoun: i8,
     ///""

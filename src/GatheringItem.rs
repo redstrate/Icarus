@@ -42,7 +42,7 @@ impl StructuredSheet for GatheringItemSheet {
     type Row = GatheringItemRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            RequiredQuest: row
                 .columns[5]
                 .into_u32()
                 .copied()
@@ -108,7 +108,7 @@ impl<'a> IntoIterator for &'a GatheringItemSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct GatheringItemRow {
     ///""
-    pub Unknown0: u32,
+    pub RequiredQuest: u32,
     ///""
     pub SublimeVariant: u32,
     ///""

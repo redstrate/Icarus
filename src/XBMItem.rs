@@ -42,67 +42,67 @@ impl StructuredSheet for XBMItemSheet {
     type Row = XBMItemRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Singular: row
                 .columns[3]
                 .into_string()
                 .cloned()
                 .expect("Expected column 3 to be a string!"),
-            Unknown1: row
+            Plural: row
                 .columns[5]
                 .into_string()
                 .cloned()
                 .expect("Expected column 5 to be a string!"),
-            Unknown2: row
+            Name: row
                 .columns[11]
                 .into_string()
                 .cloned()
                 .expect("Expected column 11 to be a string!"),
-            Unknown3: row
+            Description: row
                 .columns[12]
                 .into_string()
                 .cloned()
                 .expect("Expected column 12 to be a string!"),
-            Unknown4: row
+            ShortDescription: row
                 .columns[13]
                 .into_string()
                 .cloned()
                 .expect("Expected column 13 to be a string!"),
-            Unknown5: row
+            Adjective: row
                 .columns[4]
                 .into_i8()
                 .copied()
                 .expect("Expected column 4 to be a int8!"),
-            Unknown6: row
+            PossessivePronoun: row
                 .columns[6]
                 .into_i8()
                 .copied()
                 .expect("Expected column 6 to be a int8!"),
-            Unknown7: row
+            StartsWithVowel: row
                 .columns[7]
                 .into_i8()
                 .copied()
                 .expect("Expected column 7 to be a int8!"),
-            Unknown8: row
+            Countability: row
                 .columns[8]
                 .into_i8()
                 .copied()
                 .expect("Expected column 8 to be a int8!"),
-            Unknown9: row
+            Pronoun: row
                 .columns[9]
                 .into_i8()
                 .copied()
                 .expect("Expected column 9 to be a int8!"),
-            Unknown10: row
+            Article: row
                 .columns[10]
                 .into_i8()
                 .copied()
                 .expect("Expected column 10 to be a int8!"),
-            Unknown11: row
+            Icon: row
                 .columns[1]
                 .into_u32()
                 .copied()
                 .expect("Expected column 1 to be a uint32!"),
-            Unknown12: row
+            SellPrice: row
                 .columns[2]
                 .into_u16()
                 .copied()
@@ -128,31 +128,31 @@ impl<'a> IntoIterator for &'a XBMItemSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct XBMItemRow {
     ///""
-    pub Unknown0: String,
+    pub Singular: String,
     ///""
-    pub Unknown1: String,
+    pub Plural: String,
     ///""
-    pub Unknown2: String,
+    pub Name: String,
     ///""
-    pub Unknown3: String,
+    pub Description: String,
     ///""
-    pub Unknown4: String,
+    pub ShortDescription: String,
     ///""
-    pub Unknown5: i8,
+    pub Adjective: i8,
     ///""
-    pub Unknown6: i8,
+    pub PossessivePronoun: i8,
     ///""
-    pub Unknown7: i8,
+    pub StartsWithVowel: i8,
     ///""
-    pub Unknown8: i8,
+    pub Countability: i8,
     ///""
-    pub Unknown9: i8,
+    pub Pronoun: i8,
     ///""
-    pub Unknown10: i8,
+    pub Article: i8,
     ///""
-    pub Unknown11: u32,
+    pub Icon: u32,
     ///""
-    pub Unknown12: u16,
+    pub SellPrice: u16,
     ///""
     pub Type: u8,
 }

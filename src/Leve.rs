@@ -162,7 +162,7 @@ impl StructuredSheet for LeveSheet {
                 .into_u8()
                 .copied()
                 .expect("Expected column 8 to be a uint8!"),
-            Unknown2: row
+            SpearfishingNotebook: row
                 .columns[12]
                 .into_u8()
                 .copied()
@@ -261,7 +261,7 @@ pub struct LeveRow {
     ///""
     pub AllowanceCost: u8,
     ///""
-    pub Unknown2: u8,
+    pub SpearfishingNotebook: u8,
     ///""
     pub ClassJobCategory: u8,
     ///""

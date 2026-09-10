@@ -72,7 +72,7 @@ impl StructuredSheet for GlassesStyleSheet {
                 .into_i8()
                 .copied()
                 .expect("Expected column 19 to be a int8!"),
-            Unknown_70_4: row
+            Countability: row
                 .columns[20]
                 .into_i8()
                 .copied()
@@ -192,7 +192,7 @@ pub struct GlassesStyleRow {
     ///""
     pub StartsWithVowel: i8,
     ///""
-    pub Unknown_70_4: i8,
+    pub Countability: i8,
     ///""
     pub Pronoun: i8,
     ///""

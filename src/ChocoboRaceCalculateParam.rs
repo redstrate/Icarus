@@ -47,7 +47,7 @@ impl StructuredSheet for ChocoboRaceCalculateParamSheet {
     type Row = ChocoboRaceCalculateParamRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            Value: row
                 .columns[0]
                 .into_i32()
                 .copied()
@@ -68,5 +68,5 @@ impl<'a> IntoIterator for &'a ChocoboRaceCalculateParamSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ChocoboRaceCalculateParamRow {
     ///""
-    pub Unknown0: i32,
+    pub Value: i32,
 }

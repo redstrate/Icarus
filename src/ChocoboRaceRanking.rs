@@ -42,7 +42,7 @@ impl StructuredSheet for ChocoboRaceRankingSheet {
     type Row = ChocoboRaceRankingRow;
     fn read_row(&self, row: &Row) -> Option<Self::Row> {
         Some(Self::Row {
-            Unknown0: row
+            BGM: row
                 .columns[0]
                 .into_u16()
                 .copied()
@@ -63,5 +63,5 @@ impl<'a> IntoIterator for &'a ChocoboRaceRankingSheet {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ChocoboRaceRankingRow {
     ///""
-    pub Unknown0: u16,
+    pub BGM: u16,
 }

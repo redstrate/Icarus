@@ -47,12 +47,12 @@ impl StructuredSheet for CuttingGrassSheet {
                 .into_string()
                 .cloned()
                 .expect("Expected column 0 to be a string!"),
-            Unknown1: row
+            PopRange: row
                 .columns[1]
                 .into_u32()
                 .copied()
                 .expect("Expected column 1 to be a uint32!"),
-            Unknown2: row
+            Duration: row
                 .columns[3]
                 .into_u32()
                 .copied()
@@ -67,31 +67,33 @@ impl StructuredSheet for CuttingGrassSheet {
                 .into_u32()
                 .copied()
                 .expect("Expected column 5 to be a uint32!"),
-            Unknown5: row
+            ScreenImageStart: row
                 .columns[6]
                 .into_u32()
                 .copied()
                 .expect("Expected column 6 to be a uint32!"),
-            Unknown6: row
+            ScreenImageEnd: row
                 .columns[7]
                 .into_u32()
                 .copied()
                 .expect("Expected column 7 to be a uint32!"),
-            Unknown7: row
-                .columns[8]
-                .into_u32()
-                .copied()
-                .expect("Expected column 8 to be a uint32!"),
-            Unknown8: row
-                .columns[9]
-                .into_u32()
-                .copied()
-                .expect("Expected column 9 to be a uint32!"),
-            Unknown9: row
-                .columns[10]
-                .into_u32()
-                .copied()
-                .expect("Expected column 10 to be a uint32!"),
+            Action: [
+                row
+                    .columns[8]
+                    .into_u32()
+                    .copied()
+                    .expect("Expected column 8 to be a uint32!"),
+                row
+                    .columns[9]
+                    .into_u32()
+                    .copied()
+                    .expect("Expected column 9 to be a uint32!"),
+                row
+                    .columns[10]
+                    .into_u32()
+                    .copied()
+                    .expect("Expected column 10 to be a uint32!"),
+            ],
             Unknown10: row
                 .columns[2]
                 .into_i32()
@@ -114,24 +116,20 @@ impl<'a> IntoIterator for &'a CuttingGrassSheet {
 pub struct CuttingGrassRow {
     ///""
     pub Unknown0: String,
-    ///""
-    pub Unknown1: u32,
-    ///""
-    pub Unknown2: u32,
+    ///"Center of the playing area."
+    pub PopRange: u32,
+    ///"How much time the player has at the start of the game, in seconds."
+    pub Duration: u32,
     ///""
     pub Unknown3: u32,
     ///""
     pub Unknown4: u32,
     ///""
-    pub Unknown5: u32,
+    pub ScreenImageStart: u32,
     ///""
-    pub Unknown6: u32,
+    pub ScreenImageEnd: u32,
     ///""
-    pub Unknown7: u32,
-    ///""
-    pub Unknown8: u32,
-    ///""
-    pub Unknown9: u32,
+    pub Action: [u32; 3],
     ///""
     pub Unknown10: i32,
 }
